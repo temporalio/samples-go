@@ -49,49 +49,49 @@ vendor/glide.updated: glide.lock glide.yaml
 	touch vendor/glide.updated
 
 helloworld: vendor/glide.updated $(ALL_SRC)
-	go build -i -o helloworld cmd/samples/recipes/helloworld/*.go
+	go build -i -o bin/helloworld cmd/samples/recipes/helloworld/*.go
 
 branch: vendor/glide.updated $(ALL_SRC)
-	go build -i -o branch cmd/samples/recipes/branch/*.go
+	go build -i -o bin/branch cmd/samples/recipes/branch/*.go
 
 childworkflow: vendor/glide.updated $(ALL_SRC)
-	go build -i -o childworkflow cmd/samples/recipes/childworkflow/*.go
+	go build -i -o bin/childworkflow cmd/samples/recipes/childworkflow/*.go
 
 choice: vendor/glide.updated $(ALL_SRC)
-	go build -i -o choice cmd/samples/recipes/choice/*.go
+	go build -i -o bin/choice cmd/samples/recipes/choice/*.go
 
 dynamic: vendor/glide.updated $(ALL_SRC)
-	go build -i -o dynamic cmd/samples/recipes/dynamic/*.go
+	go build -i -o bin/dynamic cmd/samples/recipes/dynamic/*.go
 
 greetings: vendor/glide.updated $(ALL_SRC)
-	go build -i -o greetings cmd/samples/recipes/greetings/*.go
+	go build -i -o bin/greetings cmd/samples/recipes/greetings/*.go
 
 pickfirst: vendor/glide.updated $(ALL_SRC)
-	go build -i -o pickfirst cmd/samples/recipes/pickfirst/*.go
+	go build -i -o bin/pickfirst cmd/samples/recipes/pickfirst/*.go
 
 retryactivity: vendor/glide.updated $(ALL_SRC)
-	go build -i -o retryactivity cmd/samples/recipes/retryactivity/*.go
+	go build -i -o bin/retryactivity cmd/samples/recipes/retryactivity/*.go
 
 splitmerge: vendor/glide.updated $(ALL_SRC)
-	go build -i -o splitmerge cmd/samples/recipes/splitmerge/*.go
+	go build -i -o bin/splitmerge cmd/samples/recipes/splitmerge/*.go
 
 timer: vendor/glide.updated $(ALL_SRC)
-	go build -i -o timer cmd/samples/recipes/timer/*.go
+	go build -i -o bin/timer cmd/samples/recipes/timer/*.go
 
 cron: vendor/glide.updated $(ALL_SRC)
-	go build -i -o cron cmd/samples/cron/*.go
+	go build -i -o bin/cron cmd/samples/cron/*.go
 
 dsl: vendor/glide.updated $(ALL_SRC)
-	go build -i -o dsl cmd/samples/dsl/*.go
+	go build -i -o bin/dsl cmd/samples/dsl/*.go
 
 fileprocessing: vendor/glide.updated $(ALL_SRC)
-	go build -i -o fileprocessing cmd/samples/fileprocessing/*.go
+	go build -i -o bin/fileprocessing cmd/samples/fileprocessing/*.go
 
 dummy: vendor/glide.updated $(ALL_SRC)
-	go build -i -o dummy cmd/samples/expense/server/*.go
+	go build -i -o bin/dummy cmd/samples/expense/server/*.go
 
 expense: vendor/glide.updated $(ALL_SRC)
-	go build -i -o expense cmd/samples/expense/*.go
+	go build -i -o bin/expense cmd/samples/expense/*.go
 
 bins: helloworld \
 	branch \
@@ -118,19 +118,5 @@ test: bins
 	done;
 
 clean:
-	rm -f helloworld
-	rm -f branch
-	rm -f childworkflow
-	rm -f choice
-	rm -f dynamic
-	rm -f greetings
-	rm -f pickfirst
-	rm -f retryactivity
-	rm -f splitmerge
-	rm -f timer
-	rm -f cron
-	rm -f dsl
-	rm -f fileprocessing
-	rm -f dummy
-	rm -f expense
+	rm -rf bin
 	rm -Rf $(BUILD)

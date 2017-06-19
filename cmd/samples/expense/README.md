@@ -10,8 +10,8 @@ This sample rely on an a dummy expense server to work.
 
 Steps to run this sample:
 1) You need a cadence service running. See cmd/samples/README.md for more details.
-2) Run "./dummy" to start the dummy server. If dummy is not found, run make to build it.
-3) Run "./expense -m worker" to start workers.
-4) Run "./expense -m trigger" to kick off an expense workflow.
+2) Run "./bin/dummy" to start the dummy server. If dummy is not found, run make to build it.
+3) Run "./bin/expense -m worker" to start workers.
+4) Run "./bin/expense -m trigger" to kick off an expense workflow.
 5) When you see the console print out the expense is created, go to [localhost](http://localhost:8080/list) to approve the expense.
 6) You should see the workflow complete after you approve the expense. You can also reject the expense.

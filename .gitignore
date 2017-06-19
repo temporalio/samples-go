@@ -12,18 +12,4 @@ test
 test.log
 
 # Executables produced by cadence-samples repo
-./cron
-./dsl
-./expense
-./dummy
-./fileprocessing
-./branch
-./childworkflow
-./choice
-./dynamic
-./greetings
-./helloworld
-./pickfirst
-./retryactivity
-./splitmerge
-./timer
+bin/
