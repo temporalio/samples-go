@@ -1,0 +1,13 @@
+*.out
+*.test
+*.xml
+*.swp
+.idea/
+*.iml
+*.cov
+*.html
+.tmp/
+/vendor
+cadence-client
+test
+test.log

@@ -1,0 +1,78 @@
+hash: 35a1d8948673bb753430bcce7bc3789b1853af8ed4b958a95965df764f5adc5a
+updated: 2017-06-19T15:04:18.497728224-07:00
+imports:
+- name: github.com/apache/thrift
+  version: 9549b25c77587b29be4e0b5c258221a4ed85d37a
+  subpackages:
+  - lib/go/thrift
+- name: github.com/davecgh/go-spew
+  version: 346938d642f2ec3594ed81d874461961cd0faa76
+  subpackages:
+  - spew
+- name: github.com/facebookgo/clock
+  version: 600d898af40aa09a7a93ecb9265d87b0504b6f03
+- name: github.com/opentracing/opentracing-go
+  version: 1949ddbfd147afd4d964a9f00b24eb291e0e7c38
+  subpackages:
+  - ext
+  - log
+- name: github.com/pborman/uuid
+  version: a97ce2ca70fa5a848076093f05e639a89ca34d06
+- name: github.com/pkg/errors
+  version: 645ef00459ed84a119197bfb8d8205042c6df63d
+- name: github.com/pmezard/go-difflib
+  version: 792786c7400a136282c1664665ae0a8db921c6c2
+  subpackages:
+  - difflib
+- name: github.com/stretchr/objx
+  version: 1a9d0bb9f541897e62256577b352fdbc1fb4fd94
+- name: github.com/stretchr/testify
+  version: f6abca593680b2315d2075e0f5e2a9751e3f431a
+  subpackages:
+  - assert
+  - mock
+  - require
+  - suite
+- name: github.com/uber-go/atomic
+  version: e682c1008ac17bf26d2e4b5ad6cdd08520ed0b22
+- name: github.com/uber-go/tally
+  version: e9b601813b0be4771b1b3995390567b67ab2b3fc
+- name: github.com/uber/tchannel-go
+  version: 0b7f160817553b0bacb5b108dd84a5022dbdd1c4
+  subpackages:
+  - internal/argreader
+  - relay
+  - thrift
+  - thrift/gen-go/meta
+  - tnet
+  - trand
+  - typed
+- name: go.uber.org/atomic
+  version: 4e336646b2ef9fc6e47be8e21594178f98e5ebcf
+- name: go.uber.org/cadence
+  version: 0a1527697519c3a953d94db21b5ec2ad8d82f9eb
+  subpackages:
+  - .gen/go/cadence
+  - .gen/go/shared
+  - common
+  - common/backoff
+  - common/metrics
+  - common/util
+  - mock
+  - mocks
+- name: go.uber.org/zap
+  version: fab453050a7a08c35f31fc5fff6f2dbd962285ab
+  subpackages:
+  - buffer
+  - internal/bufferpool
+  - internal/color
+  - internal/exit
+  - internal/multierror
+  - zapcore
+- name: golang.org/x/net
+  version: 1816238e220c6657276d3bc6118dc95b3eb21e71
+  subpackages:
+  - context
+- name: gopkg.in/yaml.v2
+  version: a83829b6f1293c91addabc89d0571c246397bbf4
+testImports: []

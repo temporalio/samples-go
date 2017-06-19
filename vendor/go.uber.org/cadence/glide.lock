@@ -1,0 +1,69 @@
+hash: bd37bde215b9bf8bee37d2bd3c32a6db97cf09671a9976de4816f9469ac5ac16
+updated: 2017-05-16T18:24:52.574723354-07:00
+imports:
+- name: github.com/apache/thrift
+  version: 9549b25c77587b29be4e0b5c258221a4ed85d37a
+  subpackages:
+  - lib/go/thrift
+- name: github.com/davecgh/go-spew
+  version: 346938d642f2ec3594ed81d874461961cd0faa76
+  subpackages:
+  - spew
+- name: github.com/facebookgo/clock
+  version: 600d898af40aa09a7a93ecb9265d87b0504b6f03
+- name: github.com/opentracing/opentracing-go
+  version: eaa2524c1b95618f98127d9c4149d28b852397b4
+  subpackages:
+  - ext
+  - log
+- name: github.com/pborman/uuid
+  version: a97ce2ca70fa5a848076093f05e639a89ca34d06
+- name: github.com/pmezard/go-difflib
+  version: 792786c7400a136282c1664665ae0a8db921c6c2
+  subpackages:
+  - difflib
+- name: github.com/stretchr/objx
+  version: 1a9d0bb9f541897e62256577b352fdbc1fb4fd94
+- name: github.com/stretchr/testify
+  version: e964b172ca7f4c322ee4c39ea605ff53fab44f79
+  subpackages:
+  - assert
+  - mock
+  - require
+  - suite
+- name: github.com/uber-go/atomic
+  version: e682c1008ac17bf26d2e4b5ad6cdd08520ed0b22
+- name: github.com/uber-go/tally
+  version: e9b601813b0be4771b1b3995390567b67ab2b3fc
+- name: github.com/uber/tchannel-go
+  version: 0b7f160817553b0bacb5b108dd84a5022dbdd1c4
+  subpackages:
+  - internal/argreader
+  - relay
+  - thrift
+  - thrift/gen-go/meta
+  - tnet
+  - trand
+  - typed
+- name: go.uber.org/atomic
+  version: 4e336646b2ef9fc6e47be8e21594178f98e5ebcf
+- name: go.uber.org/zap
+  version: fab453050a7a08c35f31fc5fff6f2dbd962285ab
+  subpackages:
+  - buffer
+  - internal/bufferpool
+  - internal/color
+  - internal/exit
+  - internal/multierror
+  - zapcore
+- name: golang.org/x/net
+  version: 34057069f4ab13dc4433c68d368737ebeafcccdc
+  subpackages:
+  - context
+testImports:
+- name: github.com/Sirupsen/logrus
+  version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
+- name: golang.org/x/sys
+  version: f3918c30c5c2cb527c0b071a27c35120a6c0719a
+  subpackages:
+  - unix

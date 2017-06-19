@@ -1,0 +1,11 @@
+package: github.com/samarabbas/cadence-samples
+import:
+- package: go.uber.org/cadence
+  subpackages:
+  - .gen/go/cadence
+  - .gen/go/shared
+- package: github.com/uber-go/tally
+- package: github.com/uber/tchannel-go
+  subpackages:
+  - thrift
+- package: gopkg.in/yaml.v2
