@@ -21,7 +21,8 @@ If dummy is not found, run make to build it.
 ./bin/expense -m worker
 ```
 * Start expanse workflow execution
-```./bin/expense -m trigger
+```
+./bin/expense -m trigger
 ```
 * When you see the console print out the expense is created, go to [localhost](http://localhost:8080/list) to approve the expense.
 * You should see the workflow complete after you approve the expense. You can also reject the expense.
