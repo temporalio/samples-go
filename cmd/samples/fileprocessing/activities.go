@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/activity"
 	"go.uber.org/zap"
 )
 
@@ -17,13 +17,13 @@ import (
 
 // This is registration process where you register all your activity handlers.
 func init() {
-	cadence.RegisterActivity(downloadFileActivity)
-	cadence.RegisterActivity(processFileActivity)
-	cadence.RegisterActivity(uploadFileActivity)
+	activity.Register(downloadFileActivity)
+	activity.Register(processFileActivity)
+	activity.Register(uploadFileActivity)
 }
 
 func downloadFileActivity(ctx context.Context, fileID string) (*fileInfo, error) {
-	logger := cadence.GetActivityLogger(ctx)
+	logger := activity.GetLogger(ctx)
 	logger.Info("Downloading file...", zap.String("FileID", fileID))
 	data := downloadFile(fileID)
 
@@ -39,7 +39,7 @@ func downloadFileActivity(ctx context.Context, fileID string) (*fileInfo, error)
 }
 
 func processFileActivity(ctx context.Context, fInfo fileInfo) (*fileInfo, error) {
-	logger := cadence.GetActivityLogger(ctx).With(zap.String("HostID", HostID))
+	logger := activity.GetLogger(ctx).With(zap.String("HostID", HostID))
 	// assert that we are running on the same host as the file was downloaded
 	// this check is not necessary, just to demo the host specific tasklist is working
 	if fInfo.HostID != HostID {
@@ -72,7 +72,7 @@ func processFileActivity(ctx context.Context, fInfo fileInfo) (*fileInfo, error)
 }
 
 func uploadFileActivity(ctx context.Context, fInfo fileInfo) error {
-	logger := cadence.GetActivityLogger(ctx).With(zap.String("HostID", HostID))
+	logger := activity.GetLogger(ctx).With(zap.String("HostID", HostID))
 	// assert that we are running on the same host as the file was downloaded
 	// this check is not necessary, just to demo the host specific tasklist is working
 	if fInfo.HostID != HostID {

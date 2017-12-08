@@ -68,6 +68,7 @@ type serverTester struct {
 
 func init() {
 	testHookOnPanicMu = new(sync.Mutex)
+	goAwayTimeout = 25 * time.Millisecond
 }
 
 func resetHooks() {
@@ -286,7 +287,7 @@ func (st *serverTester) greetAndCheckSettings(checkSetting func(s Setting) error
 
 		case *WindowUpdateFrame:
 			if f.FrameHeader.StreamID != 0 {
-				st.t.Fatalf("WindowUpdate StreamID = %d; want 0", f.FrameHeader.StreamID, 0)
+				st.t.Fatalf("WindowUpdate StreamID = %d; want 0", f.FrameHeader.StreamID)
 			}
 			incr := uint32((&Server{}).initialConnRecvWindowSize() - initialWindowSize)
 			if f.Increment != incr {
@@ -1717,7 +1718,6 @@ func TestServer_Response_NoData_Header_FooBar(t *testing.T) {
 		wanth := [][2]string{
 			{":status", "200"},
 			{"foo-bar", "some-value"},
-			{"content-type", "text/plain; charset=utf-8"},
 			{"content-length", "0"},
 		}
 		if !reflect.DeepEqual(goth, wanth) {
@@ -2952,7 +2952,6 @@ func TestServerDoesntWriteInvalidHeaders(t *testing.T) {
 		wanth := [][2]string{
 			{":status", "200"},
 			{"ok1", "x"},
-			{"content-type", "text/plain; charset=utf-8"},
 			{"content-length", "0"},
 		}
 		if !reflect.DeepEqual(goth, wanth) {
@@ -3189,11 +3188,17 @@ func TestConfigureServer(t *testing.T) {
 			},
 		},
 		{
+			name: "just the alternative required cipher suite",
+			tlsConfig: &tls.Config{
+				CipherSuites: []uint16{tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256},
+			},
+		},
+		{
 			name: "missing required cipher suite",
 			tlsConfig: &tls.Config{
 				CipherSuites: []uint16{tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384},
 			},
-			wantErr: "is missing HTTP/2-required TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+			wantErr: "is missing an HTTP/2-required AES_128_GCM_SHA256 cipher.",
 		},
 		{
 			name: "required after bad",
@@ -3259,7 +3264,6 @@ func TestServerNoAutoContentLengthOnHead(t *testing.T) {
 	headers := st.decodeHeader(h.HeaderBlockFragment())
 	want := [][2]string{
 		{":status", "200"},
-		{"content-type", "text/plain; charset=utf-8"},
 	}
 	if !reflect.DeepEqual(headers, want) {
 		t.Errorf("Headers mismatch.\n got: %q\nwant: %q\n", headers, want)
@@ -3683,5 +3687,39 @@ func TestRequestBodyReadCloseRace(t *testing.T) {
 		}()
 		body.Read(buf)
 		<-done
+	}
+}
+
+func TestIssue20704Race(t *testing.T) {
+	if testing.Short() && os.Getenv("GO_BUILDER_NAME") == "" {
+		t.Skip("skipping in short mode")
+	}
+	const (
+		itemSize  = 1 << 10
+		itemCount = 100
+	)
+
+	st := newServerTester(t, func(w http.ResponseWriter, r *http.Request) {
+		for i := 0; i < itemCount; i++ {
+			_, err := w.Write(make([]byte, itemSize))
+			if err != nil {
+				return
+			}
+		}
+	}, optOnlyServer)
+	defer st.Close()
+
+	tr := &Transport{TLSClientConfig: tlsConfigInsecure}
+	defer tr.CloseIdleConnections()
+	cl := &http.Client{Transport: tr}
+
+	for i := 0; i < 1000; i++ {
+		resp, err := cl.Get(st.ts.URL)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// Force a RST stream to the server by closing without
+		// reading the body:
+		resp.Body.Close()
 	}
 }

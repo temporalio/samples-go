@@ -4,7 +4,8 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
-	"go.uber.org/cadence"
+
+	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 )
 
@@ -24,53 +25,53 @@ var HostID = ApplicationName + "_" + uuid.New()
 
 // This is registration process where you register all your workflow handlers.
 func init() {
-	cadence.RegisterWorkflow(SampleFileProcessingWorkflow)
+	workflow.Register(SampleFileProcessingWorkflow)
 }
 
 //SampleFileProcessingWorkflow workflow decider
-func SampleFileProcessingWorkflow(ctx cadence.Context, fileID string) (err error) {
+func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err error) {
 	// step 1: download resource file
-	ao := cadence.ActivityOptions{
+	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
 		HeartbeatTimeout:       time.Second * 20,
 	}
-	ctx = cadence.WithActivityOptions(ctx, ao)
+	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	var fInfo *fileInfo
-	err = cadence.ExecuteActivity(ctx, downloadFileActivity, fileID).Get(ctx, &fInfo)
+	err = workflow.ExecuteActivity(ctx, downloadFileActivity, fileID).Get(ctx, &fInfo)
 	if err != nil {
-		cadence.GetLogger(ctx).Error("Workflow failed.", zap.String("Error", err.Error()))
+		workflow.GetLogger(ctx).Error("Workflow failed.", zap.String("Error", err.Error()))
 		return err
 	}
 
 	// following activities needs to be run on the same host as first activity, through this host specific tasklist.
 	// HostSpecificGroupList and with a shorter queue timeout.
-	hCtx := cadence.WithTaskList(ctx, fInfo.HostID)
-	hCtx = cadence.WithScheduleToStartTimeout(ctx, time.Second*10)
+	hCtx := workflow.WithTaskList(ctx, fInfo.HostID)
+	hCtx = workflow.WithScheduleToStartTimeout(ctx, time.Second*10)
 
 	// step 2: process file. We use simple retry strategy to retry on queue timeout error
 	var fInfoProcessed *fileInfo
 	err = retryOnQueueTimeout(hCtx, &fInfoProcessed, processFileActivity, *fInfo)
 	if err != nil {
-		cadence.GetLogger(ctx).Error("Workflow failed.", zap.String("Error", err.Error()))
+		workflow.GetLogger(ctx).Error("Workflow failed.", zap.String("Error", err.Error()))
 		return err
 	}
 
 	// step 3: upload processed file.
 	err = retryOnQueueTimeout(hCtx, nil, uploadFileActivity, *fInfoProcessed)
 	if err != nil {
-		cadence.GetLogger(ctx).Error("Workflow failed.", zap.String("Error", err.Error()))
+		workflow.GetLogger(ctx).Error("Workflow failed.", zap.String("Error", err.Error()))
 		return err
 	}
 
-	cadence.GetLogger(ctx).Info("Workflow completed.")
+	workflow.GetLogger(ctx).Info("Workflow completed.")
 	return nil
 }
 
-func retryOnQueueTimeout(ctx cadence.Context, result interface{}, fn interface{}, args ...interface{}) (err error) {
+func retryOnQueueTimeout(ctx workflow.Context, result interface{}, fn interface{}, args ...interface{}) (err error) {
 	for i := 1; i < 5; i++ {
-		future := cadence.ExecuteActivity(ctx, fn, args...)
+		future := workflow.ExecuteActivity(ctx, fn, args...)
 		// wait until it is done, but we don't care about the result yet.
 		err = future.Get(ctx, result)
 		if err != nil {

@@ -20,6 +20,8 @@
 
 package cadence
 
+import "go.uber.org/cadence/internal"
+
 // LibraryVersion is a semver string that represents
 // the version of this cadence client library
 // it will be embedded as a "version" header in every
@@ -29,4 +31,4 @@ package cadence
 // Update to this version number is typically done
 // by the cadence team as part of a major feature or
 // behavior change
-const LibraryVersion = "v0.2.0"
+const LibraryVersion = internal.LibraryVersion

@@ -4,7 +4,8 @@ import (
 	"context"
 	"time"
 
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/activity"
+	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 )
 
@@ -18,23 +19,23 @@ const ApplicationName = "helloWorldGroup"
 // This is registration process where you register all your workflows
 // and activity function handlers.
 func init() {
-	cadence.RegisterWorkflow(Workflow)
-	cadence.RegisterActivity(helloworldActivity)
+	workflow.Register(Workflow)
+	activity.Register(helloworldActivity)
 }
 
 // Workflow workflow decider
-func Workflow(ctx cadence.Context, name string) error {
-	ao := cadence.ActivityOptions{
+func Workflow(ctx workflow.Context, name string) error {
+	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
 		HeartbeatTimeout:       time.Second * 20,
 	}
-	ctx = cadence.WithActivityOptions(ctx, ao)
+	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	logger := cadence.GetLogger(ctx)
+	logger := workflow.GetLogger(ctx)
 	logger.Info("helloworld workflow started")
 	var helloworldResult string
-	err := cadence.ExecuteActivity(ctx, helloworldActivity, name).Get(ctx, &helloworldResult)
+	err := workflow.ExecuteActivity(ctx, helloworldActivity, name).Get(ctx, &helloworldResult)
 	if err != nil {
 		logger.Error("Activity failed.", zap.Error(err))
 		return err
@@ -46,7 +47,7 @@ func Workflow(ctx cadence.Context, name string) error {
 }
 
 func helloworldActivity(ctx context.Context, name string) (string, error) {
-	logger := cadence.GetActivityLogger(ctx)
+	logger := activity.GetLogger(ctx)
 	logger.Info("helloworld activity started")
 	return "Hello " + name + "!", nil
 }

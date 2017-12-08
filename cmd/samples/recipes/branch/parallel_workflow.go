@@ -3,46 +3,46 @@ package main
 import (
 	"time"
 
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 )
 
 /**
- * This sample workflow executes multiple branches in parallel using cadence.Go() method.
+ * This sample workflow executes multiple branches in parallel using workflow.Go() method.
  */
 
 // This is registration process where you register all your workflows
 // and activity function handlers.
 func init() {
-	cadence.RegisterWorkflow(SampleParallelWorkflow)
+	workflow.Register(SampleParallelWorkflow)
 }
 
 // SampleParallelWorkflow workflow decider
-func SampleParallelWorkflow(ctx cadence.Context) error {
-	waitChannel := cadence.NewChannel(ctx)
+func SampleParallelWorkflow(ctx workflow.Context) error {
+	waitChannel := workflow.NewChannel(ctx)
 
-	ao := cadence.ActivityOptions{
+	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
 		HeartbeatTimeout:       time.Second * 20,
 	}
-	ctx = cadence.WithActivityOptions(ctx, ao)
+	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	logger := cadence.GetLogger(ctx)
-	cadence.Go(ctx, func(ctx cadence.Context) {
-		err := cadence.ExecuteActivity(ctx, sampleActivity, "branch1.1").Get(ctx, nil)
+	logger := workflow.GetLogger(ctx)
+	workflow.Go(ctx, func(ctx workflow.Context) {
+		err := workflow.ExecuteActivity(ctx, sampleActivity, "branch1.1").Get(ctx, nil)
 		if err != nil {
 			logger.Error("Activity failed", zap.Error(err))
 		}
-		err = cadence.ExecuteActivity(ctx, sampleActivity, "branch1.2").Get(ctx, nil)
+		err = workflow.ExecuteActivity(ctx, sampleActivity, "branch1.2").Get(ctx, nil)
 		if err != nil {
 			logger.Error("Activity failed", zap.Error(err))
 		}
 		waitChannel.Send(ctx, true)
 	})
 
-	cadence.Go(ctx, func(ctx cadence.Context) {
-		err := cadence.ExecuteActivity(ctx, sampleActivity, "branch2").Get(ctx, nil)
+	workflow.Go(ctx, func(ctx workflow.Context) {
+		err := workflow.ExecuteActivity(ctx, sampleActivity, "branch2").Get(ctx, nil)
 		if err != nil {
 			logger.Error("Activity failed", zap.Error(err))
 		}

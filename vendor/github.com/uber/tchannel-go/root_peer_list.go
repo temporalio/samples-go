@@ -27,14 +27,16 @@ import "sync"
 type RootPeerList struct {
 	sync.RWMutex
 
-	channel         Connectable
-	peersByHostPort map[string]*Peer
+	channel             Connectable
+	onPeerStatusChanged func(*Peer)
+	peersByHostPort     map[string]*Peer
 }
 
-func newRootPeerList(ch Connectable) *RootPeerList {
+func newRootPeerList(ch Connectable, onPeerStatusChanged func(*Peer)) *RootPeerList {
 	return &RootPeerList{
-		channel:         ch,
-		peersByHostPort: make(map[string]*Peer),
+		channel:             ch,
+		onPeerStatusChanged: onPeerStatusChanged,
+		peersByHostPort:     make(map[string]*Peer),
 	}
 }
 
@@ -65,7 +67,7 @@ func (l *RootPeerList) Add(hostPort string) *Peer {
 	var p *Peer
 	// To avoid duplicate connections, only the root list should create new
 	// peers. All other lists should keep refs to the root list's peers.
-	p = newPeer(l.channel, hostPort, l.onClosedConnRemoved)
+	p = newPeer(l.channel, hostPort, l.onPeerStatusChanged, l.onClosedConnRemoved)
 	l.peersByHostPort[hostPort] = p
 	return p
 }

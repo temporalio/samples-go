@@ -46,6 +46,14 @@ exception ServiceBusyError {
   1: required string message
 }
 
+exception CancellationAlreadyRequestedError {
+  1: required string message
+}
+
+exception QueryFailedError {
+  1: required string message
+}
+
 enum DomainStatus {
   REGISTERED,
   DEPRECATED,
@@ -126,6 +134,7 @@ enum DecisionTaskFailedCause {
   BAD_CANCEL_WORKFLOW_EXECUTION_ATTRIBUTES,
   BAD_REQUEST_CANCEL_EXTERNAL_WORKFLOW_EXECUTION_ATTRIBUTES,
   BAD_CONTINUE_AS_NEW_ATTRIBUTES,
+  START_TIMER_DUPLICATE_ID,
 }
 
 enum CancelExternalWorkflowExecutionFailedCause {
@@ -149,6 +158,11 @@ enum ChildPolicy {
   TERMINATE,
   REQUEST_CANCEL,
   ABANDON,
+}
+
+enum QueryTaskCompletedType {
+  COMPLETED,
+  FAILED,
 }
 
 struct WorkflowType {
@@ -175,6 +189,13 @@ struct WorkflowExecutionInfo {
   40: optional i64 (js.type = "Long") closeTime
   50: optional WorkflowExecutionCloseStatus closeStatus
   60: optional i64 (js.type = "Long") historyLength
+}
+
+struct WorkflowExecutionConfiguration {
+  10: optional TaskList taskList
+  20: optional i32 executionStartToCloseTimeoutSeconds
+  30: optional i32 taskStartToCloseTimeoutSeconds
+  40: optional ChildPolicy childPolicy
 }
 
 struct ScheduleActivityTaskDecisionAttributes {
@@ -677,8 +698,15 @@ struct PollForDecisionTaskResponse {
   30: optional WorkflowType workflowType
   40: optional i64 (js.type = "Long") previousStartedEventId
   50: optional i64 (js.type = "Long") startedEventId
+  54: optional i64 (js.type = "Long") backlogCountHint
   60: optional History history
   70: optional binary nextPageToken
+  80: optional WorkflowQuery query
+}
+
+struct StickyExecutionAttributes {
+  10: optional TaskList workerTaskList
+  20: optional i32 scheduleToStartTimeoutSeconds
 }
 
 struct RespondDecisionTaskCompletedRequest {
@@ -686,6 +714,7 @@ struct RespondDecisionTaskCompletedRequest {
   20: optional list<Decision> decisions
   30: optional binary executionContext
   40: optional string identity
+  50: optional StickyExecutionAttributes stickyAttributes
 }
 
 struct PollForActivityTaskRequest {
@@ -700,7 +729,6 @@ struct PollForActivityTaskResponse {
   30:  optional string activityId
   40:  optional ActivityType activityType
   50:  optional binary input
-  60:  optional i64 (js.type = "Long") startedEventId
   70:  optional i64 (js.type = "Long") scheduledTimestamp
   80:  optional i32 scheduleToCloseTimeoutSeconds
   90:  optional i64 (js.type = "Long") startedTimestamp
@@ -737,10 +765,39 @@ struct RespondActivityTaskCanceledRequest {
   30: optional string identity
 }
 
+struct RespondActivityTaskCompletedByIDRequest {
+  10: optional string domainID
+  20: optional string workflowID
+  30: optional string runID
+  40: optional string activityID
+  50: optional binary result
+  60: optional string identity
+}
+
+struct RespondActivityTaskFailedByIDRequest {
+  10: optional string domainID
+  20: optional string workflowID
+  30: optional string runID
+  40: optional string activityID
+  50: optional string reason
+  60: optional binary details
+  70: optional string identity
+}
+
+struct RespondActivityTaskCanceledByIDRequest {
+  10: optional string domainID
+  20: optional string workflowID
+  30: optional string runID
+  40: optional string activityID
+  50: optional binary details
+  60: optional string identity
+}
+
 struct RequestCancelWorkflowExecutionRequest {
   10: optional string domain
   20: optional WorkflowExecution workflowExecution
   30: optional string identity
+  40: optional string requestId
 }
 
 struct GetWorkflowExecutionHistoryRequest {
@@ -798,4 +855,36 @@ struct ListClosedWorkflowExecutionsRequest {
 struct ListClosedWorkflowExecutionsResponse {
   10: optional list<WorkflowExecutionInfo> executions
   20: optional binary nextPageToken
+}
+
+struct QueryWorkflowRequest {
+  10: optional string domain
+  20: optional WorkflowExecution execution
+  30: optional WorkflowQuery query
+}
+
+struct QueryWorkflowResponse {
+  10: optional binary queryResult
+}
+
+struct WorkflowQuery {
+  10: optional string queryType
+  20: optional binary queryArgs
+}
+
+struct RespondQueryTaskCompletedRequest {
+  10: optional binary taskToken
+  20: optional QueryTaskCompletedType completedType
+  30: optional binary queryResult
+  40: optional string errorMessage
+}
+
+struct DescribeWorkflowExecutionRequest {
+  10: optional string domain
+  20: optional WorkflowExecution execution
+}
+
+struct DescribeWorkflowExecutionResponse {
+  10: optional WorkflowExecutionConfiguration executionConfiguration
+  20: optional WorkflowExecutionInfo workflowExecutionInfo
 }

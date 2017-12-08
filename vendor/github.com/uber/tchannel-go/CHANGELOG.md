@@ -1,6 +1,14 @@
 Changelog
 =========
 
+# v1.6.0
+
+* Locks Apache Thrift to version 0.9.3 to maintain backward-compatibility.
+* Add `OnPeerStatusChanged` channel option to receive a notification each time
+  the number of available connections changes for any given peer.
+* Set DiffServ (QoS) bit on outbound connections.
+* Improve resilience of the frame parser.
+
 # v1.5.0
 
 * Add `PeerList.Len` to expose the number of peers in the peer list.

@@ -6,10 +6,10 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/samarabbas/cadence-samples/cmd/samples/common"
-
 	"github.com/pborman/uuid"
-	"go.uber.org/cadence"
+	"github.com/samarabbas/cadence-samples/cmd/samples/common"
+	"go.uber.org/cadence/client"
+	"go.uber.org/cadence/worker"
 	"gopkg.in/yaml.v2"
 )
 
@@ -17,7 +17,7 @@ import (
 // The workers are supposed to be long running.
 func startWorkers(h *common.SampleHelper) {
 	// Configure worker options.
-	workerOptions := cadence.WorkerOptions{
+	workerOptions := worker.Options{
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
@@ -25,7 +25,7 @@ func startWorkers(h *common.SampleHelper) {
 }
 
 func startWorkflow(h *common.SampleHelper, w Workflow) {
-	workflowOptions := cadence.StartWorkflowOptions{
+	workflowOptions := client.StartWorkflowOptions{
 		ID:                              "dsl_" + uuid.New(),
 		TaskList:                        ApplicationName,
 		ExecutionStartToCloseTimeout:    time.Minute,

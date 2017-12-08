@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"go.uber.org/cadence/activity"
+	"go.uber.org/cadence/workflow"
 	"time"
-
-	"go.uber.org/cadence"
 )
 
 /**
@@ -18,36 +18,36 @@ const ApplicationName = "pickfirstGroup"
 
 // This is registration process where you register all your workflows and activities
 func init() {
-	cadence.RegisterWorkflow(SamplePickFirstWorkflow)
-	cadence.RegisterActivity(sampleActivity)
+	workflow.Register(SamplePickFirstWorkflow)
+	activity.Register(sampleActivity)
 }
 
 // SamplePickFirstWorkflow workflow decider
-func SamplePickFirstWorkflow(ctx cadence.Context) error {
-	selector := cadence.NewSelector(ctx)
+func SamplePickFirstWorkflow(ctx workflow.Context) error {
+	selector := workflow.NewSelector(ctx)
 	var firstResponse string
 
 	// Use one cancel handler to cancel all of them. Cancelling on parent handler will close all the child ones
 	// as well.
-	childCtx, cancelHandler := cadence.WithCancel(ctx)
-	ao := cadence.ActivityOptions{
+	childCtx, cancelHandler := workflow.WithCancel(ctx)
+	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
 		HeartbeatTimeout:       time.Second * 20,
 		WaitForCancellation:    true, // Wait for cancellation to complete.
 	}
-	childCtx = cadence.WithActivityOptions(ctx, ao)
+	childCtx = workflow.WithActivityOptions(childCtx, ao)
 
 	// Set WaitForCancellation to true to demonstrate the cancellation to the other activities. In real world case,
 	// you might not care about them and could set WaitForCancellation to false (which is default value).
 
 	// starts 2 activities in parallel
-	f1 := cadence.ExecuteActivity(childCtx, sampleActivity, 0, time.Second*2)
-	f2 := cadence.ExecuteActivity(childCtx, sampleActivity, 1, time.Second*10)
-	pendingFutures := []cadence.Future{f1, f2}
-	selector.AddFuture(f1, func(f cadence.Future) {
+	f1 := workflow.ExecuteActivity(childCtx, sampleActivity, 0, time.Second*2)
+	f2 := workflow.ExecuteActivity(childCtx, sampleActivity, 1, time.Second*10)
+	pendingFutures := []workflow.Future{f1, f2}
+	selector.AddFuture(f1, func(f workflow.Future) {
 		f.Get(ctx, &firstResponse)
-	}).AddFuture(f2, func(f cadence.Future) {
+	}).AddFuture(f2, func(f workflow.Future) {
 		f.Get(ctx, &firstResponse)
 	})
 
@@ -64,20 +64,20 @@ func SamplePickFirstWorkflow(ctx cadence.Context) error {
 	for _, f := range pendingFutures {
 		f.Get(ctx, nil)
 	}
-	cadence.GetLogger(ctx).Info("Workflow completed.")
+	workflow.GetLogger(ctx).Info("Workflow completed.")
 	return nil
 }
 
 func sampleActivity(ctx context.Context, currentBranchID int, totalDuration time.Duration) (string, error) {
 
-	logger := cadence.GetActivityLogger(ctx)
+	logger := activity.GetLogger(ctx)
 	elapsedDuration := time.Nanosecond
 	for elapsedDuration < totalDuration {
 		time.Sleep(time.Second)
 		elapsedDuration += time.Second
 
 		// record heartbeat every second to check if we are been cancelled
-		cadence.RecordActivityHeartbeat(ctx, "status-report-to-workflow")
+		activity.RecordHeartbeat(ctx, "status-report-to-workflow")
 
 		select {
 		case <-ctx.Done():

@@ -57,7 +57,9 @@ type ChannelOptions struct {
 	// The name of the process, for logging and reporting to peers
 	ProcessName string
 
-	// OnPeerStatusChanged
+	// OnPeerStatusChanged is an optional callback that receives a notification
+	// whenever the channel establishes a usable connection to a peer, or loses
+	// a connection to a peer.
 	OnPeerStatusChanged func(*Peer)
 
 	// The logger to use for this channel
@@ -123,14 +125,15 @@ const (
 type Channel struct {
 	channelConnectionCommon
 
-	chID              uint32
-	createdStack      string
-	commonStatsTags   map[string]string
-	connectionOptions ConnectionOptions
-	peers             *PeerList
-	relayHost         RelayHost
-	relayMaxTimeout   time.Duration
-	handler           Handler
+	chID                uint32
+	createdStack        string
+	commonStatsTags     map[string]string
+	connectionOptions   ConnectionOptions
+	peers               *PeerList
+	relayHost           RelayHost
+	relayMaxTimeout     time.Duration
+	handler             Handler
+	onPeerStatusChanged func(*Peer)
 
 	// mutable contains all the members of Channel which are mutable.
 	mutable struct {
@@ -220,7 +223,7 @@ func NewChannel(serviceName string, opts *ChannelOptions) (*Channel, error) {
 		relayHost:         opts.RelayHost,
 		relayMaxTimeout:   validateRelayMaxTimeout(opts.RelayMaxTimeout, logger),
 	}
-	ch.peers = newRootPeerList(ch).newChild()
+	ch.peers = newRootPeerList(ch, opts.OnPeerStatusChanged).newChild()
 
 	if opts.Handler != nil {
 		ch.handler = opts.Handler
@@ -287,7 +290,9 @@ func (ch *Channel) Serve(l net.Listener) error {
 	ch.log = ch.log.WithFields(LogField{"hostPort", mutable.peerInfo.HostPort})
 
 	peerInfo := mutable.peerInfo
-	ch.log.Debugf("%v (%v) listening on %v", peerInfo.ProcessName, peerInfo.ServiceName, peerInfo.HostPort)
+	ch.log.WithFields(
+		LogField{"hostPort", peerInfo.HostPort},
+	).Info("Channel is listening.")
 	go ch.serve()
 	return nil
 }
@@ -738,7 +743,7 @@ func (ch *Channel) State() ChannelState {
 // Close starts a graceful Close for the channel. This does not happen immediately:
 // 1. This call closes the Listener and starts closing connections.
 // 2. When all incoming connections are drained, the connection blocks new outgoing calls.
-// 3. When all connections are drainged, the channel's state is updated to Closed.
+// 3. When all connections are drained, the channel's state is updated to Closed.
 func (ch *Channel) Close() {
 	ch.Logger().Info("Channel.Close called.")
 	var connections []*Connection

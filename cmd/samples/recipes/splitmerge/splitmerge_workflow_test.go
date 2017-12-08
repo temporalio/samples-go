@@ -4,12 +4,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/testsuite"
 )
 
 type UnitTestSuite struct {
 	suite.Suite
-	cadence.WorkflowTestSuite
+	testsuite.WorkflowTestSuite
 }
 
 func TestUnitTestSuite(t *testing.T) {

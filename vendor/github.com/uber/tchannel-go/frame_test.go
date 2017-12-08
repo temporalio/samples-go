@@ -22,10 +22,13 @@ package tchannel
 
 import (
 	"bytes"
+	"encoding/binary"
 	"encoding/json"
 	"io"
+	"math"
 	"testing"
 	"testing/iotest"
+	"testing/quick"
 
 	"github.com/uber/tchannel-go/testutils/testreader"
 	"github.com/uber/tchannel-go/typed"
@@ -141,4 +144,140 @@ func TestMessageType(t *testing.T) {
 	err := frame.write(&callReq{Service: "foo"})
 	require.NoError(t, err, "Error writing message to frame.")
 	assert.Equal(t, messageTypeCallReq, frame.messageType(), "Failed to read message type from frame.")
+}
+
+func TestFrameReadIn(t *testing.T) {
+	maxPayload := bytes.Repeat([]byte{1}, MaxFramePayloadSize)
+	tests := []struct {
+		msg              string
+		bs               []byte
+		wantFrameHeader  FrameHeader
+		wantFramePayload []byte
+		wantErr          string
+	}{
+		{
+			msg: "frame with no payload",
+			bs: []byte{
+				0, 16 /* size */, 1 /* type */, 2 /* reserved */, 0, 0, 0, 3, /* id */
+				9, 8, 7, 6, 5, 4, 3, 2, // reserved
+			},
+			wantFrameHeader: FrameHeader{
+				size:        16,
+				messageType: 1,
+				reserved1:   2,
+				ID:          3,
+				// reserved:    [8]byte{9, 8, 7, 6, 5, 4, 3, 2}, // currently ignored.
+			},
+			wantFramePayload: []byte{},
+		},
+		{
+			msg: "frame with small payload",
+			bs: []byte{
+				0, 18 /* size */, 1 /* type */, 2 /* reserved */, 0, 0, 0, 3, /* id */
+				9, 8, 7, 6, 5, 4, 3, 2, // reserved
+				100, 200, // payload
+			},
+			wantFrameHeader: FrameHeader{
+				size:        18,
+				messageType: 1,
+				reserved1:   2,
+				ID:          3,
+				// reserved:    [8]byte{9, 8, 7, 6, 5, 4, 3, 2}, // currently ignored.
+			},
+			wantFramePayload: []byte{100, 200},
+		},
+		{
+			msg: "frame with max size",
+			bs: append([]byte{
+				math.MaxUint8, math.MaxUint8 /* size */, 1 /* type */, 2 /* reserved */, 0, 0, 0, 3, /* id */
+				9, 8, 7, 6, 5, 4, 3, 2, // reserved
+			}, maxPayload...),
+			wantFrameHeader: FrameHeader{
+				size:        math.MaxUint16,
+				messageType: 1,
+				reserved1:   2,
+				ID:          3,
+				// currently ignored.
+				// reserved:    [8]byte{9, 8, 7, 6, 5, 4, 3, 2},
+			},
+			wantFramePayload: maxPayload,
+		},
+		{
+			msg: "frame with 0 size",
+			bs: []byte{
+				0, 0 /* size */, 1 /* type */, 2 /* reserved */, 0, 0, 0, 3, /* id */
+				9, 8, 7, 6, 5, 4, 3, 2, // reserved
+			},
+			wantErr: "invalid frame size 0",
+		},
+		{
+			msg: "frame with size < HeaderSize",
+			bs: []byte{
+				0, 15 /* size */, 1 /* type */, 2 /* reserved */, 0, 0, 0, 3, /* id */
+				9, 8, 7, 6, 5, 4, 3, 2, // reserved
+			},
+			wantErr: "invalid frame size 15",
+		},
+		{
+			msg: "frame with partial header",
+			bs: []byte{
+				0, 16 /* size */, 1 /* type */, 2 /* reserved */, 0, 0, 0, 3, /* id */
+				// missing reserved bytes
+			},
+			wantErr: "unexpected EOF",
+		},
+		{
+			msg: "frame with partial payload",
+			bs: []byte{
+				0, 24 /* size */, 1 /* type */, 2 /* reserved */, 0, 0, 0, 3, /* id */
+				9, 8, 7, 6, 5, 4, 3, 2, // reserved
+				1, 2, // partial payload
+			},
+			wantErr: "unexpected EOF",
+		},
+	}
+
+	for _, tt := range tests {
+		f := DefaultFramePool.Get()
+		r := bytes.NewReader(tt.bs)
+		err := f.ReadIn(r)
+		if tt.wantErr != "" {
+			require.Error(t, err, tt.msg)
+			assert.Contains(t, err.Error(), tt.wantErr, tt.msg)
+			continue
+		}
+
+		require.NoError(t, err, tt.msg)
+		assert.Equal(t, tt.wantFrameHeader, f.Header, "%v: header mismatch", tt.msg)
+		assert.Equal(t, tt.wantFramePayload, f.SizedPayload(), "%v: unexpected payload")
+	}
+}
+
+func frameReadIn(bs []byte) (decoded bool) {
+	frame := DefaultFramePool.Get()
+	defer DefaultFramePool.Release(frame)
+
+	defer func() {
+		if r := recover(); r != nil {
+			decoded = false
+		}
+	}()
+	frame.ReadIn(bytes.NewReader(bs))
+	return true
+}
+
+func TestQuickFrameReadIn(t *testing.T) {
+	// Try to read any set of bytes as a frame.
+	err := quick.Check(frameReadIn, &quick.Config{MaxCount: 10000})
+	require.NoError(t, err, "Failed to fuzz test ReadIn")
+
+	// Limit the search space to just headers.
+	err = quick.Check(func(size uint16, t byte, id uint32) bool {
+		bs := make([]byte, FrameHeaderSize)
+		binary.BigEndian.PutUint16(bs[0:2], size)
+		bs[2] = t
+		binary.BigEndian.PutUint32(bs[4:8], id)
+		return frameReadIn(bs)
+	}, &quick.Config{MaxCount: 10000})
+	require.NoError(t, err, "Failed to fuzz test ReadIn")
 }

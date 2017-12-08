@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 )
 
@@ -19,23 +19,23 @@ const ApplicationName = "childWorkflowGroup"
 // This is registration process where you register all your workflows
 // and activity function handlers.
 func init() {
-	cadence.RegisterWorkflow(SampleParentWorkflow)
+	workflow.Register(SampleParentWorkflow)
 }
 
 // SampleParentWorkflow workflow decider
-func SampleParentWorkflow(ctx cadence.Context) error {
-	logger := cadence.GetLogger(ctx)
-	execution := cadence.GetWorkflowInfo(ctx).WorkflowExecution
+func SampleParentWorkflow(ctx workflow.Context) error {
+	logger := workflow.GetLogger(ctx)
+	execution := workflow.GetInfo(ctx).WorkflowExecution
 	// Parent workflow can choose to specify it's own ID for child execution.  Make sure they are unique for each execution.
 	childID := fmt.Sprintf("child_workflow:%v", execution.RunID)
-	cwo := cadence.ChildWorkflowOptions{
+	cwo := workflow.ChildWorkflowOptions{
 		// Do not specify WorkflowID if you want cadence to generate a unique ID for child execution
 		WorkflowID:                   childID,
 		ExecutionStartToCloseTimeout: time.Minute,
 	}
-	ctx = cadence.WithChildWorkflowOptions(ctx, cwo)
+	ctx = workflow.WithChildOptions(ctx, cwo)
 	var result string
-	err := cadence.ExecuteChildWorkflow(ctx, SampleChildWorkflow, 0, 5).Get(ctx, &result)
+	err := workflow.ExecuteChildWorkflow(ctx, SampleChildWorkflow, 0, 5).Get(ctx, &result)
 	if err != nil {
 		logger.Error("Parent execution received child execution failure.", zap.Error(err))
 		return err

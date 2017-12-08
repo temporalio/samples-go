@@ -1,7 +1,7 @@
 package: github.com/uber/tchannel-go
 import:
 - package: github.com/apache/thrift
-  version: master
+  version: ">=0.9.3, <0.11.0"
   subpackages:
   - lib/go/thrift
 - package: github.com/cactus/go-statsd-client
@@ -46,4 +46,5 @@ import:
 - package: github.com/prashantv/protectmem
 - package: github.com/opentracing/opentracing-go
 - package: github.com/uber/jaeger-client-go
+  version: ^2.7
 - package: github.com/crossdock/crossdock-go

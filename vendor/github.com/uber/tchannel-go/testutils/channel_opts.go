@@ -26,6 +26,7 @@ import (
 	"time"
 
 	"github.com/uber/tchannel-go"
+	"github.com/uber/tchannel-go/tos"
 
 	"github.com/uber-go/atomic"
 )
@@ -124,6 +125,12 @@ func (o *ChannelOpts) SetSendBufferSize(bufSize int) *ChannelOpts {
 	return o
 }
 
+// SetTosPriority set TosPriority in DefaultConnectionOptions.
+func (o *ChannelOpts) SetTosPriority(tosPriority tos.ToS) *ChannelOpts {
+	o.DefaultConnectionOptions.TosPriority = tosPriority
+	return o
+}
+
 // SetTimeNow sets TimeNow in ChannelOptions.
 func (o *ChannelOpts) SetTimeNow(timeNow func() time.Time) *ChannelOpts {
 	o.TimeNow = timeNow
@@ -190,6 +197,13 @@ func (o *ChannelOpts) SetRelayLocal(relayLocal ...string) *ChannelOpts {
 // SetRelayMaxTimeout sets the maximum allowable timeout for relayed calls.
 func (o *ChannelOpts) SetRelayMaxTimeout(d time.Duration) *ChannelOpts {
 	o.ChannelOptions.RelayMaxTimeout = d
+	return o
+}
+
+// SetOnPeerStatusChanged sets the callback for channel status change
+// noficiations.
+func (o *ChannelOpts) SetOnPeerStatusChanged(f func(*tchannel.Peer)) *ChannelOpts {
+	o.ChannelOptions.OnPeerStatusChanged = f
 	return o
 }
 

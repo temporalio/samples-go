@@ -20,7 +20,10 @@
 
 package tchannel
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+)
 
 // channelMap is used to ensure that applications don't create multiple channels with
 // the same service name in a single process.
@@ -34,7 +37,10 @@ var channelMap = struct {
 func registerNewChannel(ch *Channel) {
 	serviceName := ch.ServiceName()
 	ch.createdStack = string(getStacks(false /* all */))
-	ch.log.Debugf("NewChannel created at %s", ch.createdStack)
+	ch.log.WithFields(
+		LogField{"channelPtr", fmt.Sprintf("%p", ch)},
+		LogField{"createdStack", ch.createdStack},
+	).Info("Created new channel.")
 
 	channelMap.Lock()
 	defer channelMap.Unlock()

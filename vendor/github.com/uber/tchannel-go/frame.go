@@ -136,7 +136,10 @@ func (f *Frame) ReadIn(r io.Reader) error {
 	if err := f.Header.read(&rbuf); err != nil {
 		return err
 	}
-	if f.Header.PayloadSize() > 0 {
+	switch payloadSize := f.Header.PayloadSize(); {
+	case payloadSize > MaxFramePayloadSize:
+		return fmt.Errorf("invalid frame size %v", f.Header.size)
+	case payloadSize > 0:
 		if _, err := io.ReadFull(r, f.SizedPayload()); err != nil {
 			return err
 		}

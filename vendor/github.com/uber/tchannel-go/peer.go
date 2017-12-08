@@ -320,6 +320,7 @@ type Peer struct {
 
 	channel             Connectable
 	hostPort            string
+	onStatusChanged     func(*Peer)
 	onClosedConnRemoved func(*Peer)
 
 	// scCount is the number of subchannels that this peer is added to.
@@ -335,13 +336,17 @@ type Peer struct {
 	onUpdate func(*Peer)
 }
 
-func newPeer(channel Connectable, hostPort string, onClosedConnRemoved func(*Peer)) *Peer {
+func newPeer(channel Connectable, hostPort string, onStatusChanged func(*Peer), onClosedConnRemoved func(*Peer)) *Peer {
 	if hostPort == "" {
 		panic("Cannot create peer with blank hostPort")
+	}
+	if onStatusChanged == nil {
+		onStatusChanged = noopOnStatusChanged
 	}
 	return &Peer{
 		channel:             channel,
 		hostPort:            hostPort,
+		onStatusChanged:     onStatusChanged,
 		onClosedConnRemoved: onClosedConnRemoved,
 	}
 }
@@ -461,18 +466,21 @@ func (p *Peer) canRemove() bool {
 }
 
 // addConnection adds an active connection to the peer's connection list.
-// If a connection is not active, ErrInvalidConnectionState is returned.
+// If a connection is not active, returns ErrInvalidConnectionState.
 func (p *Peer) addConnection(c *Connection, direction connectionDirection) error {
 	conns := p.connectionsFor(direction)
-
-	p.Lock()
-	defer p.Unlock()
 
 	if c.readState() != connectionActive {
 		return ErrInvalidConnectionState
 	}
 
+	p.Lock()
 	*conns = append(*conns, c)
+	p.Unlock()
+
+	// Inform third parties that a peer gained a connection.
+	p.onStatusChanged(p)
+
 	return nil
 }
 
@@ -517,6 +525,8 @@ func (p *Peer) connectionCloseStateChange(changed *Connection) {
 
 	if found {
 		p.onClosedConnRemoved(p)
+		// Inform third parties that a peer lost a connection.
+		p.onStatusChanged(p)
 	}
 }
 
@@ -595,6 +605,8 @@ func (p *Peer) callOnUpdateComplete() {
 		f(p)
 	}
 }
+
+func noopOnStatusChanged(*Peer) {}
 
 // isEphemeralHostPort returns if hostPort is the default ephemeral hostPort.
 func isEphemeralHostPort(hostPort string) bool {

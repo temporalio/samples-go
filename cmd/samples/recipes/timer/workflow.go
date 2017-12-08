@@ -5,7 +5,8 @@ import (
 	"math/rand"
 	"time"
 
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/activity"
+	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 )
 
@@ -15,41 +16,41 @@ const ApplicationName = "timerGroup"
 // This is registration process where you register all your workflows
 // and activity function handlers.
 func init() {
-	cadence.RegisterWorkflow(SampleTimerWorkflow)
-	cadence.RegisterActivity(orderProcessingActivity)
-	cadence.RegisterActivity(sendEmailActivity)
+	workflow.Register(SampleTimerWorkflow)
+	activity.Register(orderProcessingActivity)
+	activity.Register(sendEmailActivity)
 }
 
 // SampleTimerWorkflow workflow decider
-func SampleTimerWorkflow(ctx cadence.Context, processingTimeThreshold time.Duration) error {
-	ao := cadence.ActivityOptions{
+func SampleTimerWorkflow(ctx workflow.Context, processingTimeThreshold time.Duration) error {
+	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
 		HeartbeatTimeout:       time.Second * 20,
 	}
-	ctx = cadence.WithActivityOptions(ctx, ao)
+	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	childCtx, cancelHandler := cadence.WithCancel(ctx)
-	selector := cadence.NewSelector(ctx)
+	childCtx, cancelHandler := workflow.WithCancel(ctx)
+	selector := workflow.NewSelector(ctx)
 
 	// In this sample case, we want to demo a use case where the workflow starts a long running order processing operation
 	// and in the case that the processing takes too long, we want to send out a notification email to user about the delay,
 	// but we won't cancel the operation. If the operation finishes before the timer fires, then we want to cancel the timer.
 
 	var processingDone bool
-	f := cadence.ExecuteActivity(ctx, orderProcessingActivity)
-	selector.AddFuture(f, func(f cadence.Future) {
+	f := workflow.ExecuteActivity(ctx, orderProcessingActivity)
+	selector.AddFuture(f, func(f workflow.Future) {
 		processingDone = true
 		// cancel timerFuture
 		cancelHandler()
 	})
 
 	// use timer future to send notification email if processing takes too long
-	timerFuture := cadence.NewTimer(childCtx, processingTimeThreshold)
-	selector.AddFuture(timerFuture, func(f cadence.Future) {
+	timerFuture := workflow.NewTimer(childCtx, processingTimeThreshold)
+	selector.AddFuture(timerFuture, func(f workflow.Future) {
 		if !processingDone {
 			// processing is not done yet when timer fires, send notification email
-			cadence.ExecuteActivity(ctx, sendEmailActivity).Get(ctx, nil)
+			workflow.ExecuteActivity(ctx, sendEmailActivity).Get(ctx, nil)
 		}
 	})
 
@@ -63,12 +64,12 @@ func SampleTimerWorkflow(ctx cadence.Context, processingTimeThreshold time.Durat
 		selector.Select(ctx)
 	}
 
-	cadence.GetLogger(ctx).Info("Workflow completed.")
+	workflow.GetLogger(ctx).Info("Workflow completed.")
 	return nil
 }
 
 func orderProcessingActivity(ctx context.Context) error {
-	logger := cadence.GetActivityLogger(ctx)
+	logger := activity.GetLogger(ctx)
 	logger.Info("sampleActivity processing started.")
 	timeNeededToProcess := time.Second * time.Duration(rand.Intn(10))
 	time.Sleep(timeNeededToProcess)
@@ -77,6 +78,6 @@ func orderProcessingActivity(ctx context.Context) error {
 }
 
 func sendEmailActivity(ctx context.Context) error {
-	cadence.GetActivityLogger(ctx).Info("sendEmailActivity sending notification email as the process takes long time.")
+	activity.GetLogger(ctx).Info("sendEmailActivity sending notification email as the process takes long time.")
 	return nil
 }

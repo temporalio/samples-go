@@ -8,6 +8,9 @@
 *.html
 .tmp/
 /vendor
+bins
 cadence-client
+bins
 test
 test.log
+/dummy

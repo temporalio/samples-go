@@ -5,12 +5,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/activity"
+	"go.uber.org/cadence/encoded"
+	"go.uber.org/cadence/testsuite"
 )
 
 type UnitTestSuite struct {
 	suite.Suite
-	cadence.WorkflowTestSuite
+	testsuite.WorkflowTestSuite
 }
 
 func TestUnitTestSuite(t *testing.T) {
@@ -21,7 +23,7 @@ func (s *UnitTestSuite) Test_SampleGreetingsWorkflow() {
 	sayGreetingActivityName := "github.com/samarabbas/cadence-samples/cmd/samples/recipes/greetings.sayGreetingActivity"
 	env := s.NewTestWorkflowEnvironment()
 	var startCalled, endCalled bool
-	env.SetOnActivityStartedListener(func(activityInfo *cadence.ActivityInfo, ctx context.Context, args cadence.EncodedValues) {
+	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {
 		if sayGreetingActivityName == activityInfo.ActivityType.Name {
 			var greeting, name string
 			args.Get(&greeting, &name)
@@ -30,7 +32,7 @@ func (s *UnitTestSuite) Test_SampleGreetingsWorkflow() {
 			startCalled = true
 		}
 	})
-	env.SetOnActivityCompletedListener(func(activityInfo *cadence.ActivityInfo, result cadence.EncodedValue, err error) {
+	env.SetOnActivityCompletedListener(func(activityInfo *activity.Info, result encoded.Value, err error) {
 		if sayGreetingActivityName == activityInfo.ActivityType.Name {
 			var sayResult string
 			result.Get(&sayResult)

@@ -29,8 +29,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/uber/tchannel-go/tos"
+
 	"github.com/uber-go/atomic"
 	"golang.org/x/net/context"
+	"golang.org/x/net/ipv4"
+	"golang.org/x/net/ipv6"
 )
 
 const (
@@ -129,6 +133,9 @@ type ConnectionOptions struct {
 
 	// The type of checksum to use when sending messages.
 	ChecksumType ChecksumType
+
+	// ToS class name marked on outbound packets.
+	TosPriority tos.ToS
 }
 
 // connectionEvents are the events that can be triggered by a connection.
@@ -176,10 +183,6 @@ type Connection struct {
 	stoppedExchanges atomic.Uint32
 	// pendingMethods is the number of methods running that may block closing of sendCh.
 	pendingMethods atomic.Int64
-	// ignoreRemotePeer is used to avoid a data race between setting the RemotePeerInfo
-	// and the connection failing, causing a read of the RemotePeerInfo at the same time.
-	ignoreRemotePeer bool
-
 	// remotePeerAddress is used as a cache for remote peer address parsed into individual
 	// components that can be used to set peer tags on OpenTracing Span.
 	remotePeerAddress peerAddressComponents
@@ -237,6 +240,23 @@ func (co ConnectionOptions) withDefaults() ConnectionOptions {
 	return co
 }
 
+func (ch *Channel) setConnectionTosPriority(tosPriority tos.ToS, c net.Conn) error {
+	tcpAddr, isTCP := c.RemoteAddr().(*net.TCPAddr)
+	if !isTCP {
+		return nil
+	}
+
+	// Handle dual stack listeners and set Traffic Class.
+	var err error
+	switch ip := tcpAddr.IP; {
+	case ip.To16() != nil && ip.To4() == nil:
+		err = ipv6.NewConn(c).SetTrafficClass(int(tosPriority))
+	case ip.To4() != nil:
+		err = ipv4.NewConn(c).SetTOS(int(tosPriority))
+	}
+	return err
+}
+
 func (ch *Channel) newConnection(conn net.Conn, initialID uint32, outboundHP string, remotePeer PeerInfo, remotePeerAddress peerAddressComponents, events connectionEvents) *Connection {
 	opts := ch.connectionOptions.withDefaults()
 
@@ -277,6 +297,12 @@ func (ch *Channel) newConnection(conn net.Conn, initialID uint32, outboundHP str
 		handler:           ch.handler,
 		events:            events,
 		commonStatsTags:   ch.commonStatsTags,
+	}
+
+	if tosPriority := opts.TosPriority; tosPriority > 0 {
+		if err := ch.setConnectionTosPriority(tosPriority, conn); err != nil {
+			log.WithFields(ErrField(err)).Error("Failed to set ToS priority.")
+		}
 	}
 
 	c.nextMessageID.Store(initialID)
@@ -501,12 +527,6 @@ func (c *Connection) logConnectionError(site string, err error) error {
 
 // connectionError handles a connection level error
 func (c *Connection) connectionError(site string, err error) error {
-	// Avoid racing with setting the peer info.
-	c.withStateLock(func() error {
-		c.ignoreRemotePeer = true
-		return nil
-	})
-
 	var closeLogFields LogFields
 	if err == io.EOF {
 		closeLogFields = LogFields{{"reason", "network connection EOF"}}
