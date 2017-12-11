@@ -64,7 +64,7 @@ func (h *SampleHelper) SetupServiceConfig() {
 	logger.Info("Logger created.")
 	h.Logger = logger
 	h.Scope = tally.NoopScope
-	h.Builder = NewBuilder().
+	h.Builder = NewBuilder(logger).
 		SetHostPort(h.Config.HostNameAndPort).
 		SetDomain(h.Config.DomainName).
 		SetMetricsScope(h.Scope)
