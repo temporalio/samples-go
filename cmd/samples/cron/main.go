@@ -4,10 +4,10 @@ import (
 	"flag"
 	"time"
 
-	"github.com/samarabbas/cadence-samples/cmd/samples/common"
-
 	"github.com/pborman/uuid"
-	"go.uber.org/cadence"
+	"github.com/samarabbas/cadence-samples/cmd/samples/common"
+	"go.uber.org/cadence/client"
+	"go.uber.org/cadence/worker"
 )
 
 // The cron job can be scheduled with a specified timer interval, if you need cron at a shorter durations less than
@@ -18,7 +18,7 @@ var cronSchedule = ScheduleSpec{JobCount: 5, ScheduleInterval: time.Minute * 10}
 // The workers are supposed to be long running.
 func startWorkers(h *common.SampleHelper) {
 	// Configure worker options.
-	workerOptions := cadence.WorkerOptions{
+	workerOptions := worker.Options{
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
@@ -31,7 +31,7 @@ func startWorkers(h *common.SampleHelper) {
 func startWorkflow(h *common.SampleHelper) {
 	// This workflow ID can be user business logic identifier as well.
 	workflowID := "cron_" + uuid.New()
-	workflowOptions := cadence.StartWorkflowOptions{
+	workflowOptions := client.StartWorkflowOptions{
 		ID:                              workflowID,
 		TaskList:                        ApplicationName,
 		ExecutionStartToCloseTimeout:    time.Minute,

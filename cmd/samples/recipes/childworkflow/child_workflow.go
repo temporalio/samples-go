@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 )
 
@@ -16,12 +16,12 @@ import (
 // This is registration process where you register all your workflows
 // and activity function handlers.
 func init() {
-	cadence.RegisterWorkflow(SampleChildWorkflow)
+	workflow.Register(SampleChildWorkflow)
 }
 
 // SampleChildWorkflow workflow decider
-func SampleChildWorkflow(ctx cadence.Context, totalCount, runCount int) (string, error) {
-	logger := cadence.GetLogger(ctx)
+func SampleChildWorkflow(ctx workflow.Context, totalCount, runCount int) (string, error) {
+	logger := workflow.GetLogger(ctx)
 	logger.Info("Child workflow execution started.")
 	if runCount <= 0 {
 		logger.Error("Invalid valid for run count.", zap.Int("RunCount", runCount))
@@ -38,5 +38,5 @@ func SampleChildWorkflow(ctx cadence.Context, totalCount, runCount int) (string,
 
 	logger.Info("Child workflow starting new run.", zap.Int("RunCount", runCount), zap.Int("TotalCount",
 		totalCount))
-	return "", cadence.NewContinueAsNewError(ctx, SampleChildWorkflow, totalCount, runCount)
+	return "", workflow.NewContinueAsNewError(ctx, SampleChildWorkflow, totalCount, runCount)
 }

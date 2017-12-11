@@ -4,23 +4,23 @@ import (
 	"flag"
 	"time"
 
-	"github.com/samarabbas/cadence-samples/cmd/samples/common"
-
 	"github.com/pborman/uuid"
-	"go.uber.org/cadence"
+	"github.com/samarabbas/cadence-samples/cmd/samples/common"
+	"go.uber.org/cadence/client"
+	"go.uber.org/cadence/worker"
 )
 
 // This needs to be done as part of a bootstrap step when the process starts.
 // The workers are supposed to be long running.
 func startWorkers(h *common.SampleHelper) {
 	// Configure worker options.
-	workerOptions := cadence.WorkerOptions{
+	workerOptions := worker.Options{
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
 
 	// Start Worker.
-	worker := cadence.NewWorker(
+	worker := worker.NewWorker(
 		h.Service,
 		h.Config.DomainName,
 		ApplicationName,
@@ -32,7 +32,7 @@ func startWorkers(h *common.SampleHelper) {
 }
 
 func startWorkflow(h *common.SampleHelper) {
-	workflowOptions := cadence.StartWorkflowOptions{
+	workflowOptions := client.StartWorkflowOptions{
 		ID:                              "pickfirst_" + uuid.New(),
 		TaskList:                        ApplicationName,
 		ExecutionStartToCloseTimeout:    time.Minute,

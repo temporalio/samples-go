@@ -5,7 +5,8 @@ import (
 	"math/rand"
 	"time"
 
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/activity"
+	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 )
 
@@ -28,42 +29,42 @@ var _orderChoices = []string{orderChoiceApple, orderChoiceBanana, orderChoiceChe
 // This is registration process where you register all your workflows
 // and activity function handlers.
 func init() {
-	cadence.RegisterWorkflow(ExclusiveChoiceWorkflow)
-	cadence.RegisterActivity(getOrderActivity)
-	cadence.RegisterActivity(orderAppleActivity)
-	cadence.RegisterActivity(orderBananaActivity)
-	cadence.RegisterActivity(orderCherryActivity)
-	cadence.RegisterActivity(orderOrangeActivity)
+	workflow.Register(ExclusiveChoiceWorkflow)
+	activity.Register(getOrderActivity)
+	activity.Register(orderAppleActivity)
+	activity.Register(orderBananaActivity)
+	activity.Register(orderCherryActivity)
+	activity.Register(orderOrangeActivity)
 }
 
 // ExclusiveChoiceWorkflow Workflow Decider.
-func ExclusiveChoiceWorkflow(ctx cadence.Context) error {
+func ExclusiveChoiceWorkflow(ctx workflow.Context) error {
 	// Get order.
-	ao := cadence.ActivityOptions{
+	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
 		HeartbeatTimeout:       time.Second * 20,
 	}
-	ctx = cadence.WithActivityOptions(ctx, ao)
+	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	var orderChoice string
-	err := cadence.ExecuteActivity(ctx, getOrderActivity).Get(ctx, &orderChoice)
+	err := workflow.ExecuteActivity(ctx, getOrderActivity).Get(ctx, &orderChoice)
 	if err != nil {
 		return err
 	}
 
-	logger := cadence.GetLogger(ctx)
+	logger := workflow.GetLogger(ctx)
 
 	// choose next activity based on order result
 	switch orderChoice {
 	case orderChoiceApple:
-		cadence.ExecuteActivity(ctx, orderAppleActivity, orderChoice)
+		workflow.ExecuteActivity(ctx, orderAppleActivity, orderChoice)
 	case orderChoiceBanana:
-		cadence.ExecuteActivity(ctx, orderBananaActivity, orderChoice)
+		workflow.ExecuteActivity(ctx, orderBananaActivity, orderChoice)
 	case orderChoiceCherry:
-		cadence.ExecuteActivity(ctx, orderCherryActivity, orderChoice)
+		workflow.ExecuteActivity(ctx, orderCherryActivity, orderChoice)
 	case orderChoiceOrange:
-		cadence.ExecuteActivity(ctx, orderOrangeActivity, orderChoice)
+		workflow.ExecuteActivity(ctx, orderOrangeActivity, orderChoice)
 	default:
 		logger.Error("Unexpected order", zap.String("Choice", orderChoice))
 	}

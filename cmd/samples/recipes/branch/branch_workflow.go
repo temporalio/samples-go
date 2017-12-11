@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/activity"
+	"go.uber.org/cadence/workflow"
 )
 
 /**
@@ -21,24 +22,24 @@ const (
 // This is registration process where you register all your workflows
 // and activity function handlers.
 func init() {
-	cadence.RegisterWorkflow(SampleBranchWorkflow)
-	cadence.RegisterActivity(sampleActivity)
+	workflow.Register(SampleBranchWorkflow)
+	activity.Register(sampleActivity)
 }
 
 // SampleBranchWorkflow workflow decider
-func SampleBranchWorkflow(ctx cadence.Context) error {
-	var futures []cadence.Future
+func SampleBranchWorkflow(ctx workflow.Context) error {
+	var futures []workflow.Future
 	// starts activities in parallel
-	ao := cadence.ActivityOptions{
+	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
 		HeartbeatTimeout:       time.Second * 20,
 	}
-	ctx = cadence.WithActivityOptions(ctx, ao)
+	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	for i := 1; i <= totalBranches; i++ {
 		activityInput := fmt.Sprintf("branch %d of %d.", i, totalBranches)
-		future := cadence.ExecuteActivity(ctx, sampleActivity, activityInput)
+		future := workflow.ExecuteActivity(ctx, sampleActivity, activityInput)
 		futures = append(futures, future)
 	}
 
@@ -47,7 +48,7 @@ func SampleBranchWorkflow(ctx cadence.Context) error {
 		future.Get(ctx, nil)
 	}
 
-	cadence.GetLogger(ctx).Info("Workflow completed.")
+	workflow.GetLogger(ctx).Info("Workflow completed.")
 
 	return nil
 }

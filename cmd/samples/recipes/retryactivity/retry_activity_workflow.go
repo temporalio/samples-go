@@ -6,7 +6,8 @@ import (
 	"math/rand"
 	"time"
 
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/activity"
+	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 )
 
@@ -22,31 +23,31 @@ const ApplicationName = "retryactivityGroup"
 // This is registration process where you register all your workflows
 // and activity function handlers.
 func init() {
-	cadence.RegisterWorkflow(RetryWorkflow)
-	cadence.RegisterActivity(sampleActivity)
+	workflow.Register(RetryWorkflow)
+	activity.Register(sampleActivity)
 }
 
 // RetryWorkflow workflow decider
-func RetryWorkflow(ctx cadence.Context, maxRetries int) error {
-	ao := cadence.ActivityOptions{
+func RetryWorkflow(ctx workflow.Context, maxRetries int) error {
+	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
 		HeartbeatTimeout:       time.Second * 20,
 	}
-	ctx = cadence.WithActivityOptions(ctx, ao)
+	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	// User retry policy.
 	backOff := newBackOff(maxRetries)
 
 	err := backOff.Retry(ctx,
 		func() (interface{}, error) {
-			return nil, cadence.ExecuteActivity(ctx, sampleActivity).Get(ctx, nil)
+			return nil, workflow.ExecuteActivity(ctx, sampleActivity).Get(ctx, nil)
 		})
 	if err != nil {
-		cadence.GetLogger(ctx).Info("Workflow completed with error.", zap.Error(err))
+		workflow.GetLogger(ctx).Info("Workflow completed with error.", zap.Error(err))
 		return err
 	}
-	cadence.GetLogger(ctx).Info("Workflow completed.")
+	workflow.GetLogger(ctx).Info("Workflow completed.")
 	return nil
 }
 
@@ -62,7 +63,7 @@ func newBackOff(maxRetries int) *backOff {
 	return &backOff{maxRetries: maxRetries}
 }
 
-func (b *backOff) Retry(ctx cadence.Context, op func() (interface{}, error)) error {
+func (b *backOff) Retry(ctx workflow.Context, op func() (interface{}, error)) error {
 	for retryCount := 1; retryCount <= b.maxRetries; retryCount++ {
 		_, err := op()
 
@@ -77,7 +78,7 @@ func (b *backOff) Retry(ctx cadence.Context, op func() (interface{}, error)) err
 		}
 
 		// optional back off
-		cadence.Sleep(ctx, b.backoffDuration(retryCount))
+		workflow.Sleep(ctx, b.backoffDuration(retryCount))
 	}
 	return errors.New("Exceeded max retry attempts")
 }
@@ -98,7 +99,7 @@ func (b *backOff) shouldRetry(err error) bool {
  * Unreliable activity that fails randomly
  */
 func sampleActivity(ctx context.Context) error {
-	logger := cadence.GetActivityLogger(ctx)
+	logger := activity.GetLogger(ctx)
 	if rand.Float32() < 0.7 {
 		logger.Info("Activity failed, please retry.")
 		// Activity could return different error types for different failures so workflow could handle them differently.

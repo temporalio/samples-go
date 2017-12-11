@@ -1,16 +1,17 @@
 package common
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 
-	"go.uber.org/cadence"
-	m "go.uber.org/cadence/.gen/go/cadence"
 	s "go.uber.org/cadence/.gen/go/shared"
-	"go.uber.org/cadence/common"
+	"go.uber.org/cadence/worker"
 	"go.uber.org/zap"
 
 	"github.com/uber-go/tally"
+	"go.uber.org/cadence/.gen/go/cadence/workflowserviceclient"
+	"go.uber.org/cadence/client"
 	"gopkg.in/yaml.v2"
 )
 
@@ -21,7 +22,7 @@ const (
 type (
 	// SampleHelper class for workflow sample helper.
 	SampleHelper struct {
-		Service m.TChanWorkflowService
+		Service workflowserviceclient.Interface
 		Scope   tally.Scope
 		Logger  *zap.Logger
 		Config  Configuration
@@ -77,11 +78,14 @@ func (h *SampleHelper) SetupServiceConfig() {
 		return
 	}
 	domainClient, _ := h.Builder.BuildCadenceDomainClient()
+	description := "domain for cadence sample code"
+	var retention int32 = 3
 	request := &s.RegisterDomainRequest{
-		Name:                                   common.StringPtr(h.Config.DomainName),
-		Description:                            common.StringPtr("domain for cadence sample code"),
-		WorkflowExecutionRetentionPeriodInDays: common.Int32Ptr(3)}
-	err = domainClient.Register(request)
+		Name:                                   &h.Config.DomainName,
+		Description:                            &description,
+		WorkflowExecutionRetentionPeriodInDays: &retention}
+
+	err = domainClient.Register(context.Background(), request)
 	if err != nil {
 		if _, ok := err.(*s.DomainAlreadyExistsError); !ok {
 			panic(err)
@@ -94,14 +98,14 @@ func (h *SampleHelper) SetupServiceConfig() {
 }
 
 // StartWorkflow starts a workflow
-func (h *SampleHelper) StartWorkflow(options cadence.StartWorkflowOptions, workflow interface{}, args ...interface{}) {
+func (h *SampleHelper) StartWorkflow(options client.StartWorkflowOptions, workflow interface{}, args ...interface{}) {
 	workflowClient, err := h.Builder.BuildCadenceClient()
 	if err != nil {
 		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
 		panic(err)
 	}
 
-	we, err := workflowClient.StartWorkflow(options, workflow, args...)
+	we, err := workflowClient.StartWorkflow(context.Background(), options, workflow, args...)
 	if err != nil {
 		h.Logger.Error("Failed to create workflow", zap.Error(err))
 		panic("Failed to create workflow.")
@@ -112,8 +116,8 @@ func (h *SampleHelper) StartWorkflow(options cadence.StartWorkflowOptions, workf
 }
 
 // StartWorkers starts workflow worker and activity worker based on configured options.
-func (h *SampleHelper) StartWorkers(domainName, groupName string, options cadence.WorkerOptions) {
-	worker := cadence.NewWorker(h.Service, domainName, groupName, options)
+func (h *SampleHelper) StartWorkers(domainName, groupName string, options worker.Options) {
+	worker := worker.NewWorker(h.Service, domainName, groupName, options)
 	err := worker.Start()
 	if err != nil {
 		h.Logger.Error("Failed to start workers.", zap.Error(err))

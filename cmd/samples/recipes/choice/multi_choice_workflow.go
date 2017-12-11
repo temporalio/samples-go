@@ -6,7 +6,9 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"go.uber.org/cadence"
+
+	"go.uber.org/cadence/activity"
+	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 )
 
@@ -17,40 +19,40 @@ import (
 // This is registration process where you register all your workflows
 // and activity function handlers.
 func init() {
-	cadence.RegisterWorkflow(MultiChoiceWorkflow)
-	cadence.RegisterActivity(getBasketOrderActivity)
+	workflow.Register(MultiChoiceWorkflow)
+	activity.Register(getBasketOrderActivity)
 }
 
 // MultiChoiceWorkflow Workflow Decider.
-func MultiChoiceWorkflow(ctx cadence.Context) error {
+func MultiChoiceWorkflow(ctx workflow.Context) error {
 	// Get basket order.
-	ao := cadence.ActivityOptions{
+	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
 		HeartbeatTimeout:       time.Second * 20,
 	}
-	ctx = cadence.WithActivityOptions(ctx, ao)
+	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	var choices []string
-	err := cadence.ExecuteActivity(ctx, getBasketOrderActivity).Get(ctx, &choices)
+	err := workflow.ExecuteActivity(ctx, getBasketOrderActivity).Get(ctx, &choices)
 	if err != nil {
 		return err
 	}
-	logger := cadence.GetLogger(ctx)
+	logger := workflow.GetLogger(ctx)
 
-	var futures []cadence.Future
+	var futures []workflow.Future
 	for _, item := range choices {
 		// choose next activity based on order result
-		var f cadence.Future
+		var f workflow.Future
 		switch item {
 		case orderChoiceApple:
-			f = cadence.ExecuteActivity(ctx, orderAppleActivity, item)
+			f = workflow.ExecuteActivity(ctx, orderAppleActivity, item)
 		case orderChoiceBanana:
-			f = cadence.ExecuteActivity(ctx, orderBananaActivity, item)
+			f = workflow.ExecuteActivity(ctx, orderBananaActivity, item)
 		case orderChoiceCherry:
-			f = cadence.ExecuteActivity(ctx, orderCherryActivity, item)
+			f = workflow.ExecuteActivity(ctx, orderCherryActivity, item)
 		case orderChoiceOrange:
-			f = cadence.ExecuteActivity(ctx, orderOrangeActivity, item)
+			f = workflow.ExecuteActivity(ctx, orderOrangeActivity, item)
 		default:
 			logger.Error("Unexpected order.", zap.String("Order", item))
 			return errors.New("Invalid Choice")
@@ -80,6 +82,6 @@ func getBasketOrderActivity(ctx context.Context) ([]string, error) {
 		basket = append(basket, _orderChoices[rand.Intn(len(_orderChoices))])
 	}
 
-	cadence.GetActivityLogger(ctx).Info("Get basket order.", zap.Strings("Orders", basket))
+	activity.GetLogger(ctx).Info("Get basket order.", zap.Strings("Orders", basket))
 	return basket, nil
 }

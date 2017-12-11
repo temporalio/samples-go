@@ -4,7 +4,8 @@ import (
 	"context"
 	"time"
 
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/activity"
+	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 )
 
@@ -52,49 +53,49 @@ func (s *ScheduleSpec) getDelayBeforeNextRun() time.Duration {
 // and activity function handlers.
 //
 func init() {
-	cadence.RegisterWorkflow(SampleCronWorkflow)
-	cadence.RegisterActivity(sampleCronActivity)
+	workflow.Register(SampleCronWorkflow)
+	activity.Register(sampleCronActivity)
 }
 
 //
 // Cron sample job activity.
 //
 func sampleCronActivity(ctx context.Context, pendingJobCount uint) error {
-	cadence.GetActivityLogger(ctx).Info("Cron job running.",
+	activity.GetLogger(ctx).Info("Cron job running.",
 		zap.Uint("PendingJobCount", pendingJobCount))
 	// ...
 	return nil
 }
 
 // SampleCronWorkflow workflow decider
-func SampleCronWorkflow(ctx cadence.Context, scheduleSpec ScheduleSpec) (err error) {
+func SampleCronWorkflow(ctx workflow.Context, scheduleSpec ScheduleSpec) (err error) {
 	if scheduleSpec.JobCount == 0 {
 		// should not happen... but if it does, there is nothing to do, since we are done here.
-		cadence.GetLogger(ctx).Info("Cron workflow started with 0 JobCount.")
+		workflow.GetLogger(ctx).Info("Cron workflow started with 0 JobCount.")
 		return nil
 	}
 
-	cadence.GetLogger(ctx).Info("Cron workflow started.",
+	workflow.GetLogger(ctx).Info("Cron workflow started.",
 		zap.Duration("IntervalInterval", scheduleSpec.ScheduleInterval),
 		zap.Uint("ScheduledCount", scheduleSpec.JobCount))
 
-	ao := cadence.ActivityOptions{
+	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: scheduleToStartTimeout,
 		StartToCloseTimeout:    startToCloseTimeout,
 		HeartbeatTimeout:       heartbeatTimeout,
 	}
-	ctx1 := cadence.WithActivityOptions(ctx, ao)
+	ctx1 := workflow.WithActivityOptions(ctx, ao)
 
 	for i := 0; i < loopCountBeforeContinueAsNew && scheduleSpec.JobCount > 0; i++ {
 		scheduleSpec.JobCount--
 
 		sleepDuration := scheduleSpec.getDelayBeforeNextRun()
-		cadence.Sleep(ctx, sleepDuration)
+		workflow.Sleep(ctx, sleepDuration)
 
-		err = cadence.ExecuteActivity(ctx1, sampleCronActivity, scheduleSpec.JobCount).Get(ctx, nil)
+		err = workflow.ExecuteActivity(ctx1, sampleCronActivity, scheduleSpec.JobCount).Get(ctx, nil)
 		if err != nil {
 			// Appropriate retries needed for the workflow business logic.
-			// - The activity can be retired on multiple failures look at cadence.ExecuteActivity documentation to
+			// - The activity can be retired on multiple failures look at workflow.ExecuteActivity documentation to
 			// see what possible errors it can return.
 			// - look at our sample recipes/retryActivity.
 			return err
@@ -103,13 +104,13 @@ func SampleCronWorkflow(ctx cadence.Context, scheduleSpec ScheduleSpec) (err err
 
 	if scheduleSpec.JobCount == 0 {
 		// done with this cron workflow
-		cadence.GetLogger(ctx).Info("Cron workflow completed.")
+		workflow.GetLogger(ctx).Info("Cron workflow completed.")
 		return nil
 	}
 
 	// schedule next cron job
-	ctx = cadence.WithExecutionStartToCloseTimeout(ctx, workflowTimeout)
-	ctx = cadence.WithWorkflowTaskStartToCloseTimeout(ctx, decisionTimeout)
+	ctx = workflow.WithExecutionStartToCloseTimeout(ctx, workflowTimeout)
+	ctx = workflow.WithWorkflowTaskStartToCloseTimeout(ctx, decisionTimeout)
 
-	return cadence.NewContinueAsNewError(ctx, SampleCronWorkflow, scheduleSpec)
+	return workflow.NewContinueAsNewError(ctx, SampleCronWorkflow, scheduleSpec)
 }

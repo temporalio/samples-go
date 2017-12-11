@@ -8,15 +8,15 @@ import (
 	"net/http"
 	"net/url"
 
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/activity"
 	"go.uber.org/zap"
 )
 
 // This is registration process where you register all your activity handlers.
 func init() {
-	cadence.RegisterActivity(createExpenseActivity)
-	cadence.RegisterActivity(waitForDecisionActivity)
-	cadence.RegisterActivity(paymentActivity)
+	activity.Register(createExpenseActivity)
+	activity.Register(waitForDecisionActivity)
+	activity.Register(paymentActivity)
 }
 
 func createExpenseActivity(ctx context.Context, expenseID string) error {
@@ -35,7 +35,7 @@ func createExpenseActivity(ctx context.Context, expenseID string) error {
 	}
 
 	if string(body) == "SUCCEED" {
-		cadence.GetActivityLogger(ctx).Info("Expense created.", zap.String("ExpenseID", expenseID))
+		activity.GetLogger(ctx).Info("Expense created.", zap.String("ExpenseID", expenseID))
 		return nil
 	}
 
@@ -43,7 +43,7 @@ func createExpenseActivity(ctx context.Context, expenseID string) error {
 }
 
 // waitForDecisionActivity waits for the expense decision. This activity will complete asynchronously. When this method
-// returns error cadence.ErrActivityResultPending, the cadence client recognize this error, and won't mark this activity
+// returns error activity.ErrResultPending, the cadence client recognize this error, and won't mark this activity
 // as failed or completed. The cadence server will wait until Client.CompleteActivity() is called or timeout happened
 // whichever happen first. In this sample case, the CompleteActivity() method is called by our dummy expense server when
 // the expense is approved.
@@ -52,10 +52,10 @@ func waitForDecisionActivity(ctx context.Context, expenseID string) (string, err
 		return "", errors.New("expense id is empty")
 	}
 
-	logger := cadence.GetActivityLogger(ctx)
+	logger := activity.GetLogger(ctx)
 
 	// save current activity info so it can be completed asynchronously when expense is approved/rejected
-	activityInfo := cadence.GetActivityInfo(ctx)
+	activityInfo := activity.GetInfo(ctx)
 	formData := url.Values{}
 	formData.Add("task_token", string(activityInfo.TaskToken))
 
@@ -78,11 +78,11 @@ func waitForDecisionActivity(ctx context.Context, expenseID string) (string, err
 
 		// ErrActivityResultPending is returned from activity's execution to indicate the activity is not completed when it returns.
 		// activity will be completed asynchronously when Client.CompleteActivity() is called.
-		return "", cadence.ErrActivityResultPending
+		return "", activity.ErrResultPending
 	}
 
 	logger.Warn("Register callback failed.", zap.String("ExpenseStatus", status))
-	return "", cadence.NewErrorWithDetails(fmt.Sprintf("register callback failed status:%s", status), nil)
+	return "", fmt.Errorf("register callback failed status:%s", status)
 }
 
 func paymentActivity(ctx context.Context, expenseID string) error {
@@ -101,7 +101,7 @@ func paymentActivity(ctx context.Context, expenseID string) error {
 	}
 
 	if string(body) == "SUCCEED" {
-		cadence.GetActivityLogger(ctx).Info("paymentActivity succeed", zap.String("ExpenseID", expenseID))
+		activity.GetLogger(ctx).Info("paymentActivity succeed", zap.String("ExpenseID", expenseID))
 		return nil
 	}
 

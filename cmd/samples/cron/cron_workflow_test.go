@@ -6,12 +6,13 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/testsuite"
+	"go.uber.org/cadence/workflow"
 )
 
 type UnitTestSuite struct {
 	suite.Suite
-	cadence.WorkflowTestSuite
+	testsuite.WorkflowTestSuite
 }
 
 func TestUnitTestSuite(t *testing.T) {
@@ -35,7 +36,7 @@ func (s *UnitTestSuite) Test_CronWorkflow_LargeCount() {
 
 	s.True(env.IsWorkflowCompleted())
 	s.NotNil(env.GetWorkflowError())
-	_, ok := env.GetWorkflowError().(cadence.ContinueAsNewError)
+	_, ok := env.GetWorkflowError().(*workflow.ContinueAsNewError)
 	s.True(ok)
 	env.AssertExpectations(s.T())
 }

@@ -1,12 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"sort"
 
 	"github.com/samarabbas/cadence-samples/cmd/samples/common"
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/client"
 )
 
 /**
@@ -27,7 +28,7 @@ var allExpense = make(map[string]expenseState)
 
 var tokenMap = make(map[string][]byte)
 
-var workflowClient cadence.Client
+var workflowClient client.Client
 
 func main() {
 	var h common.SampleHelper
@@ -165,7 +166,7 @@ func notifyExpenseStateChange(id, state string) {
 		fmt.Printf("Invalid id:%s\n", id)
 		return
 	}
-	err := workflowClient.CompleteActivity(token, state, nil)
+	err := workflowClient.CompleteActivity(context.Background(), token, state, nil)
 	if err != nil {
 		fmt.Printf("Failed to complete activity with error: %+v\n", err)
 	} else {

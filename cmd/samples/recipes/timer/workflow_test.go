@@ -8,12 +8,12 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/testsuite"
 )
 
 type UnitTestSuite struct {
 	suite.Suite
-	cadence.WorkflowTestSuite
+	testsuite.WorkflowTestSuite
 }
 
 func TestUnitTestSuite(t *testing.T) {
@@ -25,7 +25,7 @@ func (s *UnitTestSuite) Test_Workflow_FastProcessing() {
 
 	// mock to return immediately to simulate fast processing case
 	env.OnActivity(orderProcessingActivity, mock.Anything).Return(nil)
-	env.OverrideActivity(sendEmailActivity, func(ctx context.Context) error {
+	env.OnActivity(sendEmailActivity, mock.Anything).Return(func(ctx context.Context) error {
 		// in fast processing case, this method should not get called
 		s.FailNow("sendEmailActivity should not get called")
 		return nil
@@ -42,12 +42,12 @@ func (s *UnitTestSuite) Test_Workflow_SlowProcessing() {
 
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
-	env.OverrideActivity(orderProcessingActivity, func(ctx context.Context) error {
+	env.OnActivity(orderProcessingActivity, mock.Anything).Return(func(ctx context.Context) error {
 		// simulate slow processing, will complete this activity only after the sendEmailActivity is called.
 		wg.Wait()
 		return nil
 	})
-	env.OverrideActivity(sendEmailActivity, func(ctx context.Context) error {
+	env.OnActivity(sendEmailActivity, mock.Anything).Return(func(ctx context.Context) error {
 		wg.Done()
 		return nil
 	})

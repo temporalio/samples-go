@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"go.uber.org/cadence"
+	"go.uber.org/cadence/activity"
+	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 )
 
@@ -19,25 +20,25 @@ const ApplicationName = "greetingsGroup"
 // This is registration process where you register all your workflows
 // and activity function handlers.
 func init() {
-	cadence.RegisterWorkflow(SampleGreetingsWorkflow)
-	cadence.RegisterActivity(getGreetingActivity)
-	cadence.RegisterActivity(getNameActivity)
-	cadence.RegisterActivity(sayGreetingActivity)
+	workflow.Register(SampleGreetingsWorkflow)
+	activity.Register(getGreetingActivity)
+	activity.Register(getNameActivity)
+	activity.Register(sayGreetingActivity)
 }
 
 // SampleGreetingsWorkflow Workflow Decider.
-func SampleGreetingsWorkflow(ctx cadence.Context) error {
+func SampleGreetingsWorkflow(ctx workflow.Context) error {
 	// Get Greeting.
-	ao := cadence.ActivityOptions{
+	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
 		HeartbeatTimeout:       time.Second * 20,
 	}
-	ctx = cadence.WithActivityOptions(ctx, ao)
+	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	logger := cadence.GetLogger(ctx)
+	logger := workflow.GetLogger(ctx)
 	var greetResult string
-	err := cadence.ExecuteActivity(ctx, getGreetingActivity).Get(ctx, &greetResult)
+	err := workflow.ExecuteActivity(ctx, getGreetingActivity).Get(ctx, &greetResult)
 	if err != nil {
 		logger.Error("Get greeting failed.", zap.Error(err))
 		return err
@@ -45,7 +46,7 @@ func SampleGreetingsWorkflow(ctx cadence.Context) error {
 
 	// Get Name.
 	var nameResult string
-	err = cadence.ExecuteActivity(ctx, getNameActivity).Get(ctx, &nameResult)
+	err = workflow.ExecuteActivity(ctx, getNameActivity).Get(ctx, &nameResult)
 	if err != nil {
 		logger.Error("Get name failed.", zap.Error(err))
 		return err
@@ -53,7 +54,7 @@ func SampleGreetingsWorkflow(ctx cadence.Context) error {
 
 	// Say Greeting.
 	var sayResult string
-	err = cadence.ExecuteActivity(ctx, sayGreetingActivity, greetResult, nameResult).Get(ctx, &sayResult)
+	err = workflow.ExecuteActivity(ctx, sayGreetingActivity, greetResult, nameResult).Get(ctx, &sayResult)
 	if err != nil {
 		logger.Error("Marshalling failed with error.", zap.Error(err))
 		return err
