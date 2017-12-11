@@ -27,8 +27,10 @@ type WorkflowClientBuilder struct {
 }
 
 // NewBuilder creates a new WorkflowClientBuilder
-func NewBuilder() *WorkflowClientBuilder {
-	return &WorkflowClientBuilder{}
+func NewBuilder(logger *zap.Logger) *WorkflowClientBuilder {
+	return &WorkflowClientBuilder{
+		Logger: logger,
+	}
 }
 
 // SetHostPort sets the hostport for the builder
