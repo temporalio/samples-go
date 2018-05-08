@@ -117,7 +117,7 @@ func (h *SampleHelper) StartWorkflow(options client.StartWorkflowOptions, workfl
 
 // StartWorkers starts workflow worker and activity worker based on configured options.
 func (h *SampleHelper) StartWorkers(domainName, groupName string, options worker.Options) {
-	worker := worker.NewWorker(h.Service, domainName, groupName, options)
+	worker := worker.New(h.Service, domainName, groupName, options)
 	err := worker.Start()
 	if err != nil {
 		h.Logger.Error("Failed to start workers.", zap.Error(err))

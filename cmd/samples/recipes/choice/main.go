@@ -20,7 +20,7 @@ func startWorkers(h *common.SampleHelper) {
 	}
 
 	// Start Worker.
-	worker := worker.NewWorker(
+	worker := worker.New(
 		h.Service,
 		h.Config.DomainName,
 		ApplicationName,
