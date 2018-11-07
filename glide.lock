@@ -93,7 +93,7 @@ imports:
 - name: go.uber.org/atomic
   version: 4e336646b2ef9fc6e47be8e21594178f98e5ebcf
 - name: go.uber.org/cadence
-  version: 68918c465b67fd47a97c61a0374831d00466896f
+  version: 97e1a8920de44d82bcc940471986f6e44f524c08
   subpackages:
   - .gen/go/cadence
   - .gen/go/cadence/workflowserviceclient

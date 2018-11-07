@@ -44,53 +44,52 @@ TEST_DIRS=./cmd/samples/cron \
 	./cmd/samples/recipes/splitmerge \
 	./cmd/samples/recipes/timer \
 
-vendor/glide.updated: glide.lock glide.yaml
-	glide install
-	touch vendor/glide.updated
+dep-ensured:
+	dep ensure
 
-helloworld: vendor/glide.updated $(ALL_SRC)
+helloworld: dep-ensured $(ALL_SRC)
 	go build -i -o bin/helloworld cmd/samples/recipes/helloworld/*.go
 
-branch: vendor/glide.updated $(ALL_SRC)
+branch: dep-ensured $(ALL_SRC)
 	go build -i -o bin/branch cmd/samples/recipes/branch/*.go
 
-childworkflow: vendor/glide.updated $(ALL_SRC)
+childworkflow: dep-ensured $(ALL_SRC)
 	go build -i -o bin/childworkflow cmd/samples/recipes/childworkflow/*.go
 
-choice: vendor/glide.updated $(ALL_SRC)
+choice: dep-ensured $(ALL_SRC)
 	go build -i -o bin/choice cmd/samples/recipes/choice/*.go
 
-dynamic: vendor/glide.updated $(ALL_SRC)
+dynamic: dep-ensured $(ALL_SRC)
 	go build -i -o bin/dynamic cmd/samples/recipes/dynamic/*.go
 
-greetings: vendor/glide.updated $(ALL_SRC)
+greetings: dep-ensured $(ALL_SRC)
 	go build -i -o bin/greetings cmd/samples/recipes/greetings/*.go
 
-pickfirst: vendor/glide.updated $(ALL_SRC)
+pickfirst: dep-ensured $(ALL_SRC)
 	go build -i -o bin/pickfirst cmd/samples/recipes/pickfirst/*.go
 
-retryactivity: vendor/glide.updated $(ALL_SRC)
+retryactivity: dep-ensured $(ALL_SRC)
 	go build -i -o bin/retryactivity cmd/samples/recipes/retryactivity/*.go
 
-splitmerge: vendor/glide.updated $(ALL_SRC)
+splitmerge: dep-ensured $(ALL_SRC)
 	go build -i -o bin/splitmerge cmd/samples/recipes/splitmerge/*.go
 
-timer: vendor/glide.updated $(ALL_SRC)
+timer: dep-ensured $(ALL_SRC)
 	go build -i -o bin/timer cmd/samples/recipes/timer/*.go
 
-cron: vendor/glide.updated $(ALL_SRC)
+cron: dep-ensured $(ALL_SRC)
 	go build -i -o bin/cron cmd/samples/cron/*.go
 
-dsl: vendor/glide.updated $(ALL_SRC)
+dsl: dep-ensured $(ALL_SRC)
 	go build -i -o bin/dsl cmd/samples/dsl/*.go
 
-fileprocessing: vendor/glide.updated $(ALL_SRC)
+fileprocessing: dep-ensured $(ALL_SRC)
 	go build -i -o bin/fileprocessing cmd/samples/fileprocessing/*.go
 
-dummy: vendor/glide.updated $(ALL_SRC)
+dummy: dep-ensured $(ALL_SRC)
 	go build -i -o bin/dummy cmd/samples/expense/server/*.go
 
-expense: vendor/glide.updated $(ALL_SRC)
+expense: dep-ensured $(ALL_SRC)
 	go build -i -o bin/expense cmd/samples/expense/*.go
 
 bins: helloworld \
