@@ -42,6 +42,7 @@ TEST_DIRS=./cmd/samples/cron \
 	./cmd/samples/recipes/choice \
 	./cmd/samples/recipes/greetings \
 	./cmd/samples/recipes/helloworld \
+	./cmd/samples/recipes/cancel \
 	./cmd/samples/recipes/pickfirst \
 	./cmd/samples/recipes/retryactivity \
 	./cmd/samples/recipes/splitmerge \
