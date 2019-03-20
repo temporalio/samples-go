@@ -43,7 +43,7 @@ func Workflow(ctx workflow.Context) error {
 		return err
 	}
 
-	err = workflow.ExecuteActivity(ctx, cancelActivity, "operationToCancel---cancel it after start", 240).Get(ctx, nil)
+	err = workflow.ExecuteActivity(ctx, cancelActivity, "operationToCancel---cancel workflow after start. Using command 'cadence --do samples-domain wf cancel -w <WorkflowID>' ", 240).Get(ctx, nil)
 	if err != nil {
 		if cadence.IsCanceledError(err) {
 			// here, we need to get a new ctx to perform cleanup
