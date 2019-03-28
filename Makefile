@@ -16,11 +16,14 @@ PROGS = helloworld \
 	retryactivity \
 	splitmerge \
 	timer \
+	localactivity \
+	query \
 	cron \
 	dsl \
 	fileprocessing \
 	dummy \
 	expense \
+	recovery \
 TEST_ARG ?= -race -v -timeout 5m
 BUILD := ./build
 SAMPLES_DIR=./cmd/samples
@@ -43,6 +46,9 @@ TEST_DIRS=./cmd/samples/cron \
 	./cmd/samples/recipes/retryactivity \
 	./cmd/samples/recipes/splitmerge \
 	./cmd/samples/recipes/timer \
+	./cmd/samples/recipes/localactivity \
+	./cmd/samples/recipes/query \
+	./cmd/samples/recovery \
 
 dep-ensured:
 	dep ensure
@@ -77,6 +83,12 @@ splitmerge: dep-ensured $(ALL_SRC)
 timer: dep-ensured $(ALL_SRC)
 	go build -i -o bin/timer cmd/samples/recipes/timer/*.go
 
+localactivity: dep-ensured $(ALL_SRC)
+	go build -i -o bin/localactivity cmd/samples/recipes/localactivity/*.go
+
+query: dep-ensured $(ALL_SRC)
+	go build -i -o bin/query cmd/samples/recipes/query/*.go
+
 cron: dep-ensured $(ALL_SRC)
 	go build -i -o bin/cron cmd/samples/cron/*.go
 
@@ -91,6 +103,9 @@ dummy: dep-ensured $(ALL_SRC)
 
 expense: dep-ensured $(ALL_SRC)
 	go build -i -o bin/expense cmd/samples/expense/*.go
+
+recovery: dep-ensured $(ALL_SRC)
+	go build -i -o bin/recovery cmd/samples/recovery/*.go
 
 bins: helloworld \
 	branch \
@@ -107,6 +122,9 @@ bins: helloworld \
 	fileprocessing \
 	dummy \
 	expense \
+	localactivity \
+	query \
+	recovery \
 
 test: bins
 	@rm -f test

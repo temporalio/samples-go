@@ -32,7 +32,7 @@ make
 ```
 Start workflow with interval of 3s and schedule 5 times for the cron job.
 ```
-./bin/cron -m trigger -i 3 -c 5
+./bin/cron -m trigger -cron "* * * * *"
 ```
 
 #### dsl
@@ -136,3 +136,12 @@ Run the multi choice workflow
 ```
 ./bin/dynamic -m trigger
 ```
+
+#### localactivity
+See more details in https://github.com/samarabbas/cadence-samples/blob/master/cmd/samples/recipes/localactivity/README.md
+
+#### query
+See more details in https://github.com/samarabbas/cadence-samples/blob/master/cmd/samples/recipes/query/README.md
+
+#### recovery
+See more details in https://github.com/samarabbas/cadence-samples/blob/master/cmd/samples/recovery/README.md

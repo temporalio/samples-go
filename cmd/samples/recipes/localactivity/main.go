@@ -2,17 +2,11 @@ package main
 
 import (
 	"flag"
-	"time"
-
 	"github.com/pborman/uuid"
 	"github.com/samarabbas/cadence-samples/cmd/samples/common"
 	"go.uber.org/cadence/client"
 	"go.uber.org/cadence/worker"
-)
-
-const (
-	// ApplicationName is the task list for this sample
-	ApplicationName = "cronGroup"
+	"time"
 )
 
 // This needs to be done as part of a bootstrap step when the process starts.
@@ -26,27 +20,22 @@ func startWorkers(h *common.SampleHelper) {
 	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
 }
 
-//
-// To start instance of the workflow.
-//
-func startWorkflow(h *common.SampleHelper, cron string) {
-	// This workflow ID can be user business logic identifier as well.
-	workflowID := "cron_" + uuid.New()
+func startWorkflow(h *common.SampleHelper) {
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              workflowID,
+		ID:                              "localactivity_" + uuid.New(),
 		TaskList:                        ApplicationName,
-		ExecutionStartToCloseTimeout:    time.Minute,
+		ExecutionStartToCloseTimeout:    time.Minute * 3,
 		DecisionTaskStartToCloseTimeout: time.Minute,
-		CronSchedule:                    cron,
+		WorkflowIDReusePolicy:           client.WorkflowIDReusePolicyAllowDuplicate,
 	}
-	h.StartWorkflow(workflowOptions, SampleCronWorkflow)
+	h.StartWorkflow(workflowOptions, SignalHandlingWorkflow)
 }
 
 func main() {
-	var mode string
-	var cron string
-	flag.StringVar(&mode, "m", "trigger", "Mode is worker or trigger.")
-	flag.StringVar(&cron, "cron", "* * * * *", "Crontab schedule. Default \"* * * * *\"")
+	var mode, workflowID, signal string
+	flag.StringVar(&mode, "m", "trigger", "Mode is worker, trigger or query.")
+	flag.StringVar(&workflowID, "w", "", "WorkflowID")
+	flag.StringVar(&signal, "s", "signal_data", "SignalData")
 	flag.Parse()
 
 	var h common.SampleHelper
@@ -60,6 +49,8 @@ func main() {
 		// Use select{} to block indefinitely for samples, you can quit by CMD+C.
 		select {}
 	case "trigger":
-		startWorkflow(&h, cron)
+		startWorkflow(&h)
+	case "signal":
+		h.SignalWorkflow(workflowID, SignalName, signal)
 	}
 }

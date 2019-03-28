@@ -12,7 +12,7 @@ const (
 	ApplicationName = "expenseGroup"
 )
 
-var expenseServerHostPort = "http://localhost:8080"
+var expenseServerHostPort = "http://localhost:8099"
 
 // This is registration process where you register all your workflow handlers.
 func init() {
