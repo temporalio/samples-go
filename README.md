@@ -30,7 +30,7 @@ make
 ```
 ./bin/cron -m worker
 ```
-Start workflow with interval of 3s and schedule 5 times for the cron job.
+Start workflow with cron expression scheduled to run every minute.
 ```
 ./bin/cron -m trigger -cron "* * * * *"
 ```
