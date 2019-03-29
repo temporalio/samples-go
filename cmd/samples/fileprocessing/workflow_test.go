@@ -22,9 +22,9 @@ func TestUnitTestSuite(t *testing.T) {
 func (s *UnitTestSuite) Test_SampleFileProcessingWorkflow() {
 	fileID := "test-file-id"
 	expectedCall := []string{
-		"github.com/samarabbas/cadence-samples/cmd/samples/fileprocessing.downloadFileActivity",
-		"github.com/samarabbas/cadence-samples/cmd/samples/fileprocessing.processFileActivity",
-		"github.com/samarabbas/cadence-samples/cmd/samples/fileprocessing.uploadFileActivity",
+		"downloadFileActivity",
+		"processFileActivity",
+		"uploadFileActivity",
 	}
 
 	var activityCalled []string
@@ -46,7 +46,7 @@ func (s *UnitTestSuite) Test_SampleFileProcessingWorkflow() {
 			s.NoError(args.Get(&input))
 			s.Equal(input.HostID, HostID)
 		default:
-			panic("unexpected activity call: " + activityType)
+			panic("unexpected activity call")
 		}
 	})
 	env.ExecuteWorkflow(SampleFileProcessingWorkflow, fileID)

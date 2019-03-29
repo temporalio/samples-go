@@ -2,19 +2,17 @@ package main
 
 import (
 	"context"
-	"errors"
-	"math/rand"
-	"time"
-
+	"go.uber.org/cadence"
 	"go.uber.org/cadence/activity"
 	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
+	"time"
 )
 
 /**
- * This sample workflow executes unreliable activity and would retry until it reaches a set maximum retry count.
- * It supports custom logic to determine if a retry is needed based on the error. It also support custom back off logic
- * to wait before a retry is issued.
+ * This sample workflow executes unreliable activity with retry policy. If activity execution failed, server will
+ * schedule retry based on retry policy configuration. The activity also heartbeat progress so it could resume from
+ * reported progress in retry attempt.
  */
 
 // ApplicationName is the task list for this sample
@@ -24,25 +22,27 @@ const ApplicationName = "retryactivityGroup"
 // and activity function handlers.
 func init() {
 	workflow.Register(RetryWorkflow)
-	activity.Register(sampleActivity)
+	activity.Register(batchProcessingActivity)
 }
 
 // RetryWorkflow workflow decider
-func RetryWorkflow(ctx workflow.Context, maxRetries int) error {
+func RetryWorkflow(ctx workflow.Context) error {
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Minute,
-		HeartbeatTimeout:       time.Second * 20,
+		StartToCloseTimeout:    time.Minute * 10,
+		HeartbeatTimeout:       time.Second * 10,
+		RetryPolicy: &cadence.RetryPolicy{
+			InitialInterval:          time.Second,
+			BackoffCoefficient:       2.0,
+			MaximumInterval:          time.Minute,
+			ExpirationInterval:       time.Minute * 5,
+			MaximumAttempts:          5,
+			NonRetriableErrorReasons: []string{"bad-error"},
+		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	// User retry policy.
-	backOff := newBackOff(maxRetries)
-
-	err := backOff.Retry(ctx,
-		func() (interface{}, error) {
-			return nil, workflow.ExecuteActivity(ctx, sampleActivity).Get(ctx, nil)
-		})
+	err := workflow.ExecuteActivity(ctx, batchProcessingActivity, 0, 20, time.Second).Get(ctx, nil)
 	if err != nil {
 		workflow.GetLogger(ctx).Info("Workflow completed with error.", zap.Error(err))
 		return err
@@ -51,60 +51,36 @@ func RetryWorkflow(ctx workflow.Context, maxRetries int) error {
 	return nil
 }
 
-type backOff struct {
-	// ...
-	// User custom retry policy.
-	// This is a simple one.
-	// ...
-	maxRetries int
-}
-
-func newBackOff(maxRetries int) *backOff {
-	return &backOff{maxRetries: maxRetries}
-}
-
-func (b *backOff) Retry(ctx workflow.Context, op func() (interface{}, error)) error {
-	for retryCount := 1; retryCount <= b.maxRetries; retryCount++ {
-		_, err := op()
-
-		if err == nil {
-			// activity succeed.
-			return nil
-		}
-
-		// check if we should retry or give up
-		if !b.shouldRetry(err) {
-			return err
-		}
-
-		// optional back off
-		workflow.Sleep(ctx, b.backoffDuration(retryCount))
-	}
-	return errors.New("Exceeded max retry attempts")
-}
-
-func (b *backOff) backoffDuration(retryCount int) time.Duration {
-	// add custom logic to decide how long to wait before retry, for example exponentially backoff.
-	return 0 // 0 indicate to retry immediately
-}
-
-func (b *backOff) shouldRetry(err error) bool {
-	// add custom logic to decide if we should retry
-	switch err.(type) {
-	}
-	return true
-}
-
-/**
- * Unreliable activity that fails randomly
- */
-func sampleActivity(ctx context.Context) error {
+// batchProcessingActivity process batchSize of jobs starting from firstTaskID. This activity will heartbeat to report
+// progress, and it could fail sometimes. Use retry policy to retry when it failed, and resume from reported progress.
+func batchProcessingActivity(ctx context.Context, firstTaskID, batchSize int, processDelay time.Duration) error {
 	logger := activity.GetLogger(ctx)
-	if rand.Float32() < 0.7 {
-		logger.Info("Activity failed, please retry.")
-		// Activity could return different error types for different failures so workflow could handle them differently.
-		// For example, decide to retry or not based on error type.
-		return errors.New("failed")
+
+	i := firstTaskID
+	if activity.HasHeartbeatDetails(ctx) {
+		// we are retry from a failed attempt, and there is reported progress that we should resume from.
+		var completedIdx int
+		if err := activity.GetHeartbeatDetails(ctx, &completedIdx); err == nil {
+			i = completedIdx + 1
+			logger.Info("Resuming from failed attempt", zap.Int("ReportedProgress", completedIdx))
+		}
+	}
+
+	taskProcessedInThisAttempt := 0 // used to determine when to fail (simulate failure)
+	for ; i < firstTaskID+batchSize; i++ {
+		// process task i
+		logger.Info("processing task", zap.Int("TaskID", i))
+		time.Sleep(processDelay) // simulate time spend on processing each task
+		activity.RecordHeartbeat(ctx, i)
+		taskProcessedInThisAttempt++
+
+		// simulate failure after process 1/3 of the tasks
+		if taskProcessedInThisAttempt >= batchSize/3 && i < firstTaskID+batchSize-1 {
+			logger.Info("Activity failed, will retry...")
+			// Activity could return different error types for different failures so workflow could handle them differently.
+			// For example, decide to retry or not based on error reasons.
+			return cadence.NewCustomError("some-retryable-error")
+		}
 	}
 
 	logger.Info("Activity succeed.")

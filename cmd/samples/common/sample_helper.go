@@ -124,3 +124,36 @@ func (h *SampleHelper) StartWorkers(domainName, groupName string, options worker
 		panic("Failed to start workers")
 	}
 }
+
+func (h *SampleHelper) QueryWorkflow(workflowID, runID, queryType string, args ...interface{}) {
+	workflowClient, err := h.Builder.BuildCadenceClient()
+	if err != nil {
+		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
+		panic(err)
+	}
+
+	resp, err := workflowClient.QueryWorkflow(context.Background(), workflowID, runID, queryType, args...)
+	if err != nil {
+		h.Logger.Error("Failed to query workflow", zap.Error(err))
+		panic("Failed to query workflow.")
+	}
+	var result interface{}
+	if err := resp.Get(&result); err != nil {
+		h.Logger.Error("Failed to decode query result", zap.Error(err))
+	}
+	h.Logger.Info("Received query result", zap.Any("Result", result))
+}
+
+func (h *SampleHelper) SignalWorkflow(workflowID, signal string, data interface{}) {
+	workflowClient, err := h.Builder.BuildCadenceClient()
+	if err != nil {
+		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
+		panic(err)
+	}
+
+	err = workflowClient.SignalWorkflow(context.Background(), workflowID, "", signal, data)
+	if err != nil {
+		h.Logger.Error("Failed to signal workflow", zap.Error(err))
+		panic("Failed to signal workflow.")
+	}
+}

@@ -4,7 +4,13 @@ The workflow first starts an activity to download a requested resource file from
 
 Steps to run this sample: 
 1) You need a cadence service running. See details in cmd/samples/README.md
-2) Run "./bin/fileprocessing -m worker" multiple times on different console window. This is to simulate running workers on multiple different machines.
-3) Run "./bin/fileprocessing -m trigger" to submit a start request for this fileprocessing workflow.
+2) Run the following command multiple times on different console window. This is to simulate running workers on multiple different machines.
+```
+./bin/fileprocessing -m worker
+```
+3) Run the following command to submit a start request for this fileprocessing workflow.
+```
+./bin/fileprocessing -m trigger
+```
 
 You should see that all activities for one particular workflow execution are scheduled to run on one console window.

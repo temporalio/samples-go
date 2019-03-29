@@ -28,7 +28,7 @@ func startWorkflow(h *common.SampleHelper) {
 		ExecutionStartToCloseTimeout:    time.Minute,
 		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
-	h.StartWorkflow(workflowOptions, RetryWorkflow, 5)
+	h.StartWorkflow(workflowOptions, RetryWorkflow)
 }
 
 func main() {

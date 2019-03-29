@@ -1,10 +1,10 @@
 package main
 
 import (
+	"go.uber.org/cadence"
 	"time"
 
 	"github.com/pborman/uuid"
-
 	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 )
@@ -31,56 +31,61 @@ func init() {
 //SampleFileProcessingWorkflow workflow decider
 func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err error) {
 	// step 1: download resource file
+	// step 1: download resource file
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
+		ScheduleToStartTimeout: time.Second * 5,
 		StartToCloseTimeout:    time.Minute,
-		HeartbeatTimeout:       time.Second * 20,
+		HeartbeatTimeout:       time.Second * 2, // such a short timeout to make sample fail over very fast
+		RetryPolicy:            &cadence.RetryPolicy{
+			InitialInterval:          time.Second,
+			BackoffCoefficient:       2.0,
+			MaximumInterval:          time.Minute,
+			ExpirationInterval:       time.Minute * 10,
+			NonRetriableErrorReasons: []string{"bad-error"},
+		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	var fInfo *fileInfo
-	err = workflow.ExecuteActivity(ctx, downloadFileActivity, fileID).Get(ctx, &fInfo)
+	// Retry the whole sequence from the first activity on any error
+	// to retry it on a different host. In a real application it might be reasonable to
+	// retry individual activities and the whole sequence discriminating between different types of errors.
+	// See the retryactivity sample for a more sophisticated retry implementation.
+	for i := 1; i < 5; i++ {
+		err = processFile(ctx, fileID)
+		if err == nil {
+			break
+		}
+	}
 	if err != nil {
 		workflow.GetLogger(ctx).Error("Workflow failed.", zap.String("Error", err.Error()))
-		return err
+	} else {
+		workflow.GetLogger(ctx).Info("Workflow completed.")
 	}
-
-	// following activities needs to be run on the same host as first activity, through this host specific tasklist.
-	// HostSpecificGroupList and with a shorter queue timeout.
-	hCtx := workflow.WithTaskList(ctx, fInfo.HostID)
-	hCtx = workflow.WithScheduleToStartTimeout(ctx, time.Second*10)
-
-	// step 2: process file. We use simple retry strategy to retry on queue timeout error
-	var fInfoProcessed *fileInfo
-	err = retryOnQueueTimeout(hCtx, &fInfoProcessed, processFileActivity, *fInfo)
-	if err != nil {
-		workflow.GetLogger(ctx).Error("Workflow failed.", zap.String("Error", err.Error()))
-		return err
-	}
-
-	// step 3: upload processed file.
-	err = retryOnQueueTimeout(hCtx, nil, uploadFileActivity, *fInfoProcessed)
-	if err != nil {
-		workflow.GetLogger(ctx).Error("Workflow failed.", zap.String("Error", err.Error()))
-		return err
-	}
-
-	workflow.GetLogger(ctx).Info("Workflow completed.")
-	return nil
+	return err
 }
 
-func retryOnQueueTimeout(ctx workflow.Context, result interface{}, fn interface{}, args ...interface{}) (err error) {
-	for i := 1; i < 5; i++ {
-		future := workflow.ExecuteActivity(ctx, fn, args...)
-		// wait until it is done, but we don't care about the result yet.
-		err = future.Get(ctx, result)
-		if err != nil {
-			// try again
-			continue
-		}
-		return nil
+func processFile(ctx workflow.Context, fileID string) (err error) {
+	var fInfo *fileInfo
+	err = workflow.ExecuteActivity(ctx, downloadFileActivityName, fileID).Get(ctx, &fInfo)
+	if err != nil {
+		return err
 	}
 
-	// we are not able to make it with all retries, so give up
+	// The following activities needs to be run on the same host as the first activity.
+	// This is achieved by scheduling them through this host specific task-list.
+	hCtx := workflow.WithTaskList(ctx, fInfo.HostID)
+	// The short schedule to start timeout is needed to ensure that if host is down an activity doesn't
+	// get stuck in a host specific task list.
+	// Note that this timeout is so short to make sample more vivid. In production applications it
+	// is usually higher.
+	hCtx = workflow.WithScheduleToStartTimeout(hCtx, time.Second*2)
+
+	var fInfoProcessed *fileInfo
+	err = workflow.ExecuteActivity(hCtx, processFileActivityName, *fInfo).Get(ctx, &fInfoProcessed)
+	if err != nil {
+		return err
+	}
+
+	err = workflow.ExecuteActivity(hCtx, uploadFileActivityName, *fInfoProcessed).Get(ctx, nil)
 	return err
 }

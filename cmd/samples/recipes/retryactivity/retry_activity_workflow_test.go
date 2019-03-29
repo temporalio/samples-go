@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
+	"go.uber.org/cadence/activity"
 	"testing"
+	"time"
 
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/cadence/testsuite"
@@ -21,20 +22,24 @@ func TestUnitTestSuite(t *testing.T) {
 
 func (s *UnitTestSuite) Test_Workflow() {
 	env := s.NewTestWorkflowEnvironment()
-	maxRetry := 5
-	retryCount := 0
-	env.OnActivity(sampleActivity, mock.Anything).
-		Return(func(ctx context.Context) error {
-			retryCount++
-			if retryCount < maxRetry {
-				return errors.New("failed, please retry")
+	var startedIDs []int
+	env.OnActivity(batchProcessingActivity, mock.Anything, mock.Anything, mock.Anything, mock.Anything).
+		Return(func(ctx context.Context, firstTaskID, batchSize int, processDelay time.Duration) error {
+			i := firstTaskID
+			if activity.HasHeartbeatDetails(ctx) {
+				var completedIdx int
+				if err := activity.GetHeartbeatDetails(ctx, &completedIdx); err == nil {
+					i = completedIdx + 1
+				}
 			}
-			return nil
+			startedIDs = append(startedIDs, i)
+
+			return batchProcessingActivity(ctx, firstTaskID, batchSize, time.Nanosecond /* override for test */)
 		})
-	env.ExecuteWorkflow(RetryWorkflow, maxRetry)
+	env.ExecuteWorkflow(RetryWorkflow)
 
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())
-	s.Equal(maxRetry, retryCount)
+	s.Equal([]int{0, 6, 12, 18}, startedIDs)
 	env.AssertExpectations(s.T())
 }

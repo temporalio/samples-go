@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"time"
 
 	"go.uber.org/cadence/activity"
 	"go.uber.org/zap"
@@ -14,12 +15,26 @@ import (
 /**
  * Sample activities used by file processing sample workflow.
  */
+const (
+	downloadFileActivityName = "downloadFileActivity"
+	processFileActivityName  = "processFileActivity"
+	uploadFileActivityName   = "uploadFileActivity"
+)
 
 // This is registration process where you register all your activity handlers.
 func init() {
-	activity.Register(downloadFileActivity)
-	activity.Register(processFileActivity)
-	activity.Register(uploadFileActivity)
+	activity.RegisterWithOptions(
+		downloadFileActivity,
+		activity.RegisterOptions{Name: downloadFileActivityName},
+	)
+	activity.RegisterWithOptions(
+		processFileActivity,
+		activity.RegisterOptions{Name: processFileActivityName},
+	)
+	activity.RegisterWithOptions(
+		uploadFileActivity,
+		activity.RegisterOptions{Name: uploadFileActivityName},
+	)
 }
 
 func downloadFileActivity(ctx context.Context, fileID string) (*fileInfo, error) {
@@ -40,6 +55,7 @@ func downloadFileActivity(ctx context.Context, fileID string) (*fileInfo, error)
 
 func processFileActivity(ctx context.Context, fInfo fileInfo) (*fileInfo, error) {
 	logger := activity.GetLogger(ctx).With(zap.String("HostID", HostID))
+	logger.Info("processFileActivity started.", zap.String("FileName", fInfo.FileName))
 	// assert that we are running on the same host as the file was downloaded
 	// this check is not necessary, just to demo the host specific tasklist is working
 	if fInfo.HostID != HostID {
@@ -59,7 +75,7 @@ func processFileActivity(ctx context.Context, fInfo fileInfo) (*fileInfo, error)
 	}
 
 	// process the file
-	transData := transcodeData(data)
+	transData := transcodeData(ctx, data)
 	tmpFile, err := saveToTmpFile(transData)
 	if err != nil {
 		logger.Error("processFileActivity failed to save tmp file.", zap.Error(err))
@@ -73,6 +89,8 @@ func processFileActivity(ctx context.Context, fInfo fileInfo) (*fileInfo, error)
 
 func uploadFileActivity(ctx context.Context, fInfo fileInfo) error {
 	logger := activity.GetLogger(ctx).With(zap.String("HostID", HostID))
+	logger.Info("uploadFileActivity begin.", zap.String("UploadedFileName", fInfo.FileName))
+
 	// assert that we are running on the same host as the file was downloaded
 	// this check is not necessary, just to demo the host specific tasklist is working
 	if fInfo.HostID != HostID {
@@ -84,7 +102,7 @@ func uploadFileActivity(ctx context.Context, fInfo fileInfo) error {
 
 	defer os.Remove(fInfo.FileName) // clean up tmp file
 
-	err := uploadFile(fInfo.FileName)
+	err := uploadFile(ctx, fInfo.FileName)
 	if err != nil {
 		logger.Error("uploadFileActivity uploading failed.", zap.Error(err))
 		return err
@@ -99,18 +117,30 @@ func downloadFile(fileID string) []byte {
 	return []byte(dummyContent)
 }
 
-func uploadFile(filename string) error {
+func uploadFile(ctx context.Context, filename string) error {
 	// dummy uploader
 	_, err := ioutil.ReadFile(filename)
+	for i := 0; i < 5; i++ {
+		time.Sleep(1 * time.Second)
+		// Demonstrates that heartbeat accepts progress data.
+		// In case of a heartbeat timeout it is included into the error.
+		activity.RecordHeartbeat(ctx, i)
+	}
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func transcodeData(data []byte) []byte {
+func transcodeData(ctx context.Context, data []byte) []byte {
 	// dummy file processor, just do upper case for the data.
 	// in real world case, you would want to avoid load entire file content into memory at once.
+	for i := 0; i < 5; i++ {
+		time.Sleep(1 * time.Second)
+		// Demonstrates that heartbeat accepts progress data.
+		// In case of a heartbeat timeout it is included into the error.
+		activity.RecordHeartbeat(ctx, i)
+	}
 	return []byte(strings.ToUpper(string(data)))
 }
 

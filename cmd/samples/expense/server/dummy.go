@@ -39,6 +39,7 @@ func main() {
 		panic(err)
 	}
 
+
 	fmt.Println("Starting dummy server...")
 	http.HandleFunc("/", listHandler)
 	http.HandleFunc("/list", listHandler)
@@ -46,7 +47,7 @@ func main() {
 	http.HandleFunc("/action", actionHandler)
 	http.HandleFunc("/status", statusHandler)
 	http.HandleFunc("/registerCallback", callbackHandler)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8099", nil)
 }
 
 func listHandler(w http.ResponseWriter, r *http.Request) {
