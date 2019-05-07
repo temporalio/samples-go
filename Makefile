@@ -24,6 +24,7 @@ PROGS = helloworld \
 	dummy \
 	expense \
 	recovery \
+	pso \
 TEST_ARG ?= -race -v -timeout 5m
 BUILD := ./build
 SAMPLES_DIR=./cmd/samples
@@ -107,6 +108,9 @@ expense: dep-ensured $(ALL_SRC)
 recovery: dep-ensured $(ALL_SRC)
 	go build -i -o bin/recovery cmd/samples/recovery/*.go
 
+pso: dep-ensured $(ALL_SRC)
+	go build -i -o bin/pso cmd/samples/pso/*.go
+
 bins: helloworld \
 	branch \
 	childworkflow \
@@ -125,6 +129,7 @@ bins: helloworld \
 	localactivity \
 	query \
 	recovery \
+	pso \
 
 test: bins
 	@rm -f test
