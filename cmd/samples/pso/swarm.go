@@ -27,7 +27,7 @@ func NewSwarm(ctx workflow.Context, settings *SwarmSettings) *Swarm {
 	swarm.Gbest = NewPosition(settings)
 	swarm.Gbest.Fitness = 1e20
 	// initialize particles
-	swarm.particles = make([]*Particle, settings.Function.dim)
+	swarm.particles = make([]*Particle, settings.Size)
 	for i := 0; i < swarm.settings.Size; i++ {
 		swarm.particles[i] = NewParticle(settings)
 
