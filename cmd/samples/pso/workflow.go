@@ -69,6 +69,10 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 		if result.Position.Fitness < settings.Function.Goal {
 			fmt.Printf("Yay! Goal was reached @ step %d (fitness=%.2e) :-)",
 				result.Step, result.Position.Fitness)
+			workflow.GetLogger(ctx).Info("optimization was successful ")
+			// zap.int("WorkflowID", result.Step),
+			// zap.float64("RunID", result.Position.Fitness))
+
 			err = nil
 		} else {
 			fmt.Printf("Goal was not reached after %d steps (fitness=%.2e) :-)",

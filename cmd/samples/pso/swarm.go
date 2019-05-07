@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	"go.uber.org/cadence/workflow"
+	"go.uber.org/zap"
 )
 
 type Result struct {
@@ -50,17 +52,20 @@ func (swarm *Swarm) Run() Result {
 	// the algorithm goes here
 	var step int
 	for step = 0; step < swarm.settings.Steps; step++ {
+		workflow.GetLogger(swarm.ctx).Info("Iteration ", zap.String("step", strconv.Itoa(step)))
 		for _, particle := range swarm.particles {
 			particle.UpdateLocation(swarm.Gbest)
 			particle.UpdateFitness(swarm.ctx)
 		}
 
+		workflow.GetLogger(swarm.ctx).Debug("Iteration Update Swarm Best", zap.String("step", strconv.Itoa(step)))
 		// TODO (ali): we may need to put fitness updating of all particles in a separate
 		// work flow to be able to evaluate fitness particles in parallel
 		swarm.updateBest()
 
 		// Check if the goal has reached then stop early
 		if swarm.Gbest.Fitness < swarm.settings.Function.Goal {
+			workflow.GetLogger(swarm.ctx).Debug("Iteration New Swarm Best", zap.String("step", strconv.Itoa(step)))
 			return Result{
 				Position: *swarm.Gbest,
 				Step:     step,
