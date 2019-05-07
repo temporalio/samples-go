@@ -1,6 +1,6 @@
 package main
 
-import "go.uber.org/cadence/workflow"
+//import "go.uber.org/cadence/workflow"
 
 type Vector []float64
 

@@ -44,8 +44,9 @@ func (particle *Particle) UpdateLocation(gbest *Position) {
 	}
 }
 
-func (particle *Particle) UpdateFitness(ctx workflow.Context) {
-	err := workflow.ExecuteActivity(ctx, EvaluateFitnessActivityName,
+func (particle *Particle) UpdateFitness(ctx workflow.Context) (err error) {
+	err = workflow.ExecuteActivity(ctx, EvaluateFitnessActivityName,
 		particle.position.settings.Function.Evaluate,
 		particle.position.Location).Get(ctx, &particle.position.Fitness)
+	return err
 }
