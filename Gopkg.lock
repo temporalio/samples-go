@@ -18,7 +18,7 @@
   revision = "648efa622239a2f6ff949fed78ee37b48d499ba4"
 
 [[projects]]
-  digest = "1:1383ba5d501d282dba709a17fa3bb3512f91abac8b6f631511129ba05f7c89f2"
+  digest = "1:192761dc572881e884e4d3288df1e0c276bc59fc810e432b60007cc35ee271a9"
   name = "github.com/apache/thrift"
   packages = ["lib/go/thrift"]
   pruneopts = "UT"
@@ -235,6 +235,17 @@
   pruneopts = "UT"
   revision = "b41be1df696709bb6395fe435af20370037c0b4c"
   version = "v1.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:36c7ac565b8caf9c2bc786b7cf5ef1acf233be5ff1046bcd7b12c9a33f76296f"
+  name = "github.com/samarabbas/cadence-samples"
+  packages = [
+    "cmd/samples/common",
+    "cmd/samples/recovery/cache",
+  ]
+  pruneopts = "UT"
+  revision = "23c2703663637f228ff8700dd91072d806741774"
 
 [[projects]]
   branch = "master"
@@ -564,6 +575,8 @@
   input-imports = [
     "github.com/pborman/uuid",
     "github.com/pkg/errors",
+    "github.com/samarabbas/cadence-samples/cmd/samples/common",
+    "github.com/samarabbas/cadence-samples/cmd/samples/recovery/cache",
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/mock",
     "github.com/stretchr/testify/require",
