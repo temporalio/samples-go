@@ -59,6 +59,7 @@ func (swarm *Swarm) Run() (Result, error) {
 	var step int
 	for step = 0; step < swarm.settings.Steps; step++ {
 		workflow.GetLogger(swarm.ctx).Info("Iteration ", zap.String("step", strconv.Itoa(step)))
+		//TODO (ali) : we have to make the following loop parallel (use future and then use join)
 		for _, particle := range swarm.particles {
 			particle.UpdateLocation(swarm.Gbest)
 			err := particle.UpdateFitness(swarm.ctx)

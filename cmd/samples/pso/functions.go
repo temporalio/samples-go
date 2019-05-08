@@ -16,7 +16,7 @@ var Sphere = ObjectiveFunction{
 	dim:      30,
 	x_lo:     -100,
 	x_hi:     100,
-	Goal:     1e-5,
+	Goal:     5.0001,
 	Evaluate: EvalSphere,
 }
 
