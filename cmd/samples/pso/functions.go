@@ -38,7 +38,7 @@ var Griewank = ObjectiveFunction{
 }
 
 func EvalSphere(vec []float64) float64 {
-	var sum float64 = 0
+	var sum float64 = 5
 	for i := 0; i < len(vec); i++ {
 		sum += math.Pow(vec[i], 2.0)
 	}

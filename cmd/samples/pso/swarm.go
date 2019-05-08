@@ -34,6 +34,12 @@ func NewSwarm(ctx workflow.Context, settings *SwarmSettings) *Swarm {
 		swarm.particles[i] = NewParticle(settings)
 
 		swarm.particles[i].UpdateFitness(swarm.ctx)
+		// if err != nil {
+		// 	return Result{
+		// 		Position: *swarm.Gbest,
+		// 		Step:     step,
+		// 	}, err
+		// }
 	}
 	swarm.updateBest()
 
@@ -48,14 +54,20 @@ func (swarm *Swarm) updateBest() {
 	}
 }
 
-func (swarm *Swarm) Run() Result {
+func (swarm *Swarm) Run() (Result, error) {
 	// the algorithm goes here
 	var step int
 	for step = 0; step < swarm.settings.Steps; step++ {
 		workflow.GetLogger(swarm.ctx).Info("Iteration ", zap.String("step", strconv.Itoa(step)))
 		for _, particle := range swarm.particles {
 			particle.UpdateLocation(swarm.Gbest)
-			particle.UpdateFitness(swarm.ctx)
+			err := particle.UpdateFitness(swarm.ctx)
+			if err != nil {
+				return Result{
+					Position: *swarm.Gbest,
+					Step:     step,
+				}, err
+			}
 		}
 
 		workflow.GetLogger(swarm.ctx).Debug("Iteration Update Swarm Best", zap.String("step", strconv.Itoa(step)))
@@ -69,16 +81,16 @@ func (swarm *Swarm) Run() Result {
 			return Result{
 				Position: *swarm.Gbest,
 				Step:     step,
-			}
+			}, nil
 		}
 
 		if step%swarm.settings.PrintEvery == 0 {
-			fmt.Printf("Step %d :: min err=%.5e\n", step, swarm.Gbest.Fitness)
+			msg := fmt.Sprintf("Step %d :: min err=%.5e\n", step, swarm.Gbest.Fitness)
+			workflow.GetLogger(swarm.ctx).Info(msg)
 		}
 	}
 	return Result{
 		Position: *swarm.Gbest,
 		Step:     step,
-	}
-
+	}, nil
 }

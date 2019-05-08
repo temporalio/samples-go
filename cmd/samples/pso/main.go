@@ -38,7 +38,9 @@ func startWorkflow(h *common.SampleHelper, functionName string) {
 
 func main() {
 	var mode string
+	var functionName string
 	flag.StringVar(&mode, "m", "trigger", "Mode is worker or trigger.")
+	flag.StringVar(&functionName, "f", "sphere", "One of [sphere, rosenbrock, griewank]")
 	flag.Parse()
 
 	var h common.SampleHelper
@@ -52,6 +54,6 @@ func main() {
 		// Use select{} to block indefinitely for samples, you can quit by CMD+C.
 		select {}
 	case "trigger":
-		startWorkflow(&h, uuid.New())
+		startWorkflow(&h, functionName)
 	}
 }

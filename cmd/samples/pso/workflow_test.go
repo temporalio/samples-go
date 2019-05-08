@@ -20,11 +20,8 @@ func TestUnitTestSuite(t *testing.T) {
 }
 
 func (s *UnitTestSuite) Test_SampleFileProcessingWorkflow() {
-	fileID := "test-file-id"
 	expectedCall := []string{
-		"downloadFileActivity",
-		"processFileActivity",
-		"uploadFileActivity",
+		"evaluateFitnessActivity",
 	}
 
 	var activityCalled []string
@@ -34,24 +31,16 @@ func (s *UnitTestSuite) Test_SampleFileProcessingWorkflow() {
 		activityCalled = append(activityCalled, activityType)
 		switch activityType {
 		case expectedCall[0]:
-			var input string
-			s.NoError(args.Get(&input))
-			s.Equal(fileID, input)
-		case expectedCall[1]:
-			var input fileInfo
-			s.NoError(args.Get(&input))
-			s.Equal(input.HostID, HostID)
-		case expectedCall[2]:
-			var input fileInfo
-			s.NoError(args.Get(&input))
-			s.Equal(input.HostID, HostID)
+			// var input string
+			// s.NoError(args.Get(&input))
+			// s.Equal(fileID, input)
 		default:
 			panic("unexpected activity call")
 		}
 	})
-	env.ExecuteWorkflow(SampleFileProcessingWorkflow, fileID)
+	env.ExecuteWorkflow(PSOWorkflow, "sphere")
 
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())
-	s.Equal(expectedCall, activityCalled)
+	//s.Equal(expectedCall, activityCalled) //activityCalled is a vector with many activities called
 }

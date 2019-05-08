@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"go.uber.org/cadence"
+	"go.uber.org/zap"
 
 	"github.com/pborman/uuid"
 	"go.uber.org/cadence/workflow"
@@ -29,12 +30,10 @@ var HostID = ApplicationName + "_" + uuid.New()
 func init() {
 	//workflow.Register(FitnessEvaluationWorkflow)
 	workflow.Register(PSOWorkflow)
-
 }
 
+//PSOWorkflow workflow decider
 func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
-	// step 1: download resource file
-	// step 1: download resource file
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Second * 5,
 		StartToCloseTimeout:    time.Minute,
@@ -44,79 +43,65 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 			BackoffCoefficient:       2.0,
 			MaximumInterval:          time.Minute,
 			ExpirationInterval:       time.Minute * 10,
+			MaximumAttempts:          5,
 			NonRetriableErrorReasons: []string{"bad-error"},
 		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	// fmt.Printf("Optimizing function %s\n", *function)
-	settings := PSODefaultSettings()
-	// settings.PrintEvery = *printEvery
-	switch functionName {
-	case "sphere":
-		settings.Function = Sphere
-	case "rosenbrock":
-		settings.Function = Rosenbrock
-	case "griewank":
-		settings.Function = Griewank
-	}
+	workflow.GetLogger(ctx).Info(fmt.Sprintf("Optimizing function %s", functionName))
+	settings := PSODefaultSettings(functionName)
 
 	// Retry
 	for i := 1; i < 5; i++ {
-		//		err = processFile(ctx, fileID)
 		swarm := NewSwarm(ctx, settings)
-		result := swarm.Run()
-		if result.Position.Fitness < settings.Function.Goal {
-			fmt.Printf("Yay! Goal was reached @ step %d (fitness=%.2e) :-)",
-				result.Step, result.Position.Fitness)
-			workflow.GetLogger(ctx).Info("optimization was successful ")
-			// zap.int("WorkflowID", result.Step),
-			// zap.float64("RunID", result.Position.Fitness))
-
-			err = nil
-		} else {
-			fmt.Printf("Goal was not reached after %d steps (fitness=%.2e) :-)",
-				result.Step, result.Position.Fitness)
-
-		}
-
-		if err == nil {
+		result, err := swarm.Run()
+		if err != nil {
 			break
 		}
+		if result.Position.Fitness < settings.Function.Goal {
+			msg := fmt.Sprintf("Yay! Goal was reached @ step %d (fitness=%.2e) :-)", result.Step, result.Position.Fitness)
+			workflow.GetLogger(ctx).Info(msg)
+			break
+		} else {
+			msg := fmt.Sprintf("Goal was not reached after %d steps (fitness=%.2e) :-)", result.Step, result.Position.Fitness)
+			workflow.GetLogger(ctx).Info(msg)
+		}
 	}
+
 	if err != nil {
-		workflow.GetLogger(ctx).Error("optimzation failed.")
+		workflow.GetLogger(ctx).Error("Optimzation failed. ", zap.Error(err))
 	} else {
-		workflow.GetLogger(ctx).Info("optimization was successful.")
+		workflow.GetLogger(ctx).Info("Optimization was successful")
 	}
 	return err
 }
 
-//FitnessEvaluation workflow decider
-func FitnessEvaluationWorkflow(ctx workflow.Context, function string) (err error) {
-	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Second * 5,
-		StartToCloseTimeout:    time.Minute,
-		HeartbeatTimeout:       time.Second * 2, // such a short timeout to make sample fail over very fast
-		RetryPolicy: &cadence.RetryPolicy{
-			InitialInterval:          time.Second,
-			BackoffCoefficient:       2.0,
-			MaximumInterval:          time.Minute,
-			ExpirationInterval:       time.Minute * 10,
-			NonRetriableErrorReasons: []string{"bad-error"},
-		},
-	}
-	ctx = workflow.WithActivityOptions(ctx, ao)
+//FitnessEvaluationWorkflow workflow decider
+// func FitnessEvaluationWorkflow(ctx workflow.Context, function string) (err error) {
+// 	ao := workflow.ActivityOptions{
+// 		ScheduleToStartTimeout: time.Second * 5,
+// 		StartToCloseTimeout:    time.Minute,
+// 		HeartbeatTimeout:       time.Second * 2, // such a short timeout to make sample fail over very fast
+// 		RetryPolicy: &cadence.RetryPolicy{
+// 			InitialInterval:          time.Second,
+// 			BackoffCoefficient:       2.0,
+// 			MaximumInterval:          time.Minute,
+// 			ExpirationInterval:       time.Minute * 10,
+// 			NonRetriableErrorReasons: []string{"bad-error"},
+// 		},
+// 	}
+// 	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	return err
-}
+// 	return err
+// }
 
 // func EvaluateFitness(ctx workflow.Context, ind individual) (err error) {
 // 	// Evaluate fitness of the individual
 // 	// For the first try, let's evaluate a hard-coded function
 
 // 	var fInfo *fileInfo
-// 	err = workflow.ExecuteActivity(ctx, EvaluateFitnessActivityName, fileID).Get(ctx, &fInfo)
+// 	err = workflow.ExecuteActivity(ctx, evaluateFitnessActivityName, fileID).Get(ctx, &fInfo)
 // 	if err != nil {
 // 		return err
 // 	}
