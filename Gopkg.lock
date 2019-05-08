@@ -18,7 +18,7 @@
   revision = "648efa622239a2f6ff949fed78ee37b48d499ba4"
 
 [[projects]]
-  digest = "1:192761dc572881e884e4d3288df1e0c276bc59fc810e432b60007cc35ee271a9"
+  digest = "1:1383ba5d501d282dba709a17fa3bb3512f91abac8b6f631511129ba05f7c89f2"
   name = "github.com/apache/thrift"
   packages = ["lib/go/thrift"]
   pruneopts = "UT"

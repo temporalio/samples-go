@@ -30,8 +30,8 @@ func startWorkflow(h *common.SampleHelper, functionName string) {
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                              "PSO_" + uuid.New(),
 		TaskList:                        ApplicationName,
-		ExecutionStartToCloseTimeout:    time.Minute * 10,
-		DecisionTaskStartToCloseTimeout: time.Minute * 10,
+		ExecutionStartToCloseTimeout:    time.Minute * 60,
+		DecisionTaskStartToCloseTimeout: time.Minute, // measure of responsiveness of the worker to various server signals apart from start workflow
 	}
 	h.StartWorkflow(workflowOptions, PSOWorkflow, functionName)
 }

@@ -13,7 +13,7 @@ type ObjectiveFunction struct {
 
 var Sphere = ObjectiveFunction{
 	name:     "sphere",
-	dim:      30,
+	dim:      3,
 	x_lo:     -100,
 	x_hi:     100,
 	Goal:     5.0001,
