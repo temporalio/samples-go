@@ -15,6 +15,7 @@ func NewParticle(settings *SwarmSettings) *Particle {
 	particle.position = RandomPosition(settings)
 
 	particle.pbest = particle.position.Copy()
+	particle.pbest.Fitness = 1e20
 
 	particle.velocity = make([]float64, settings.Function.dim)
 	x_lo := settings.Function.x_lo
@@ -45,8 +46,12 @@ func (particle *Particle) UpdateLocation(gbest *Position) {
 }
 
 func (particle *Particle) UpdateFitness(ctx workflow.Context) (err error) {
-	err = workflow.ExecuteActivity(ctx, EvaluateFitnessActivityName,
-		particle.position.settings.Function.Evaluate,
-		particle.position.Location).Get(ctx, &particle.position.Fitness)
+	err = workflow.ExecuteActivity(ctx, evaluateFitnessActivityName, particle.position.settings.FunctionName, particle.position.Location).Get(ctx, &particle.position.Fitness)
+
+	if err == nil {
+		if particle.position.IsBetterThan(particle.pbest) {
+			particle.pbest = particle.position.Copy()
+		}
+	}
 	return err
 }

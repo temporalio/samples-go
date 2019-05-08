@@ -34,7 +34,7 @@ func RandomPosition(settings *SwarmSettings) *Position {
 
 // 	//position.Fitness = EvaluateFunction(position.settings.Function.Evaluate, position.Location)
 // 	//Call/Execute activity
-// 	err = workflow.ExecuteActivity(hCtx, EvaluateFitnessActivityName, position.settings.Function.Evaluate, position.Location).Get(ctx, &position.Fitness)
+// 	err = workflow.ExecuteActivity(hCtx, evaluateFitnessActivityName, position.settings.Function.Evaluate, position.Location).Get(ctx, &position.Fitness)
 // 	if err != nil {
 // 		return err
 // 	}
@@ -43,7 +43,7 @@ func RandomPosition(settings *SwarmSettings) *Position {
 
 // func EvaluateFunction(ctx workflow.Context, f func(vec []float64) float64, location Vector) float64 {
 // 	fitness float64
-// 	err = workflow.ExecuteActivity(ctx, EvaluateFitnessActivityName, f, location).Get(ctx, &fitness
+// 	err = workflow.ExecuteActivity(ctx, evaluateFitnessActivityName, f, location).Get(ctx, &fitness
 // 	if err != nil {
 // 		return fitness, err
 // 	}

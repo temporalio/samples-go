@@ -238,6 +238,17 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:36c7ac565b8caf9c2bc786b7cf5ef1acf233be5ff1046bcd7b12c9a33f76296f"
+  name = "github.com/samarabbas/cadence-samples"
+  packages = [
+    "cmd/samples/common",
+    "cmd/samples/recovery/cache",
+  ]
+  pruneopts = "UT"
+  revision = "23c2703663637f228ff8700dd91072d806741774"
+
+[[projects]]
+  branch = "master"
   digest = "1:03d938ce55b7f7754700749135669a1cfe65acca866d1cdb7dc3e7ff166e3e28"
   name = "github.com/samuel/go-thrift"
   packages = ["parser"]
@@ -564,6 +575,8 @@
   input-imports = [
     "github.com/pborman/uuid",
     "github.com/pkg/errors",
+    "github.com/samarabbas/cadence-samples/cmd/samples/common",
+    "github.com/samarabbas/cadence-samples/cmd/samples/recovery/cache",
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/mock",
     "github.com/stretchr/testify/require",

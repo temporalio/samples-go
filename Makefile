@@ -25,6 +25,7 @@ PROGS = helloworld \
 	expense \
 	recovery \
 	pso \
+
 TEST_ARG ?= -race -v -timeout 5m
 BUILD := ./build
 SAMPLES_DIR=./cmd/samples
@@ -50,6 +51,7 @@ TEST_DIRS=./cmd/samples/cron \
 	./cmd/samples/recipes/localactivity \
 	./cmd/samples/recipes/query \
 	./cmd/samples/recovery \
+	./cmd/samples/pso \
 
 dep-ensured:
 	dep ensure

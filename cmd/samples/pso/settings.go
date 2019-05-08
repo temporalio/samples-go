@@ -9,7 +9,8 @@ const pso_max_size int = 100
 const pso_inertia float64 = 0.7298 // default value of w (see clerc02)
 
 type SwarmSettings struct {
-	Function ObjectiveFunction
+	Function     ObjectiveFunction
+	FunctionName string
 	// swarm size (number of particles)
 	Size int
 	// ... N steps (set to 0 for no output)
@@ -34,13 +35,21 @@ type SwarmSettings struct {
 	rng *rand.Rand // the random number generator
 }
 
-func PSODefaultSettings() *SwarmSettings {
+func PSODefaultSettings(functionName string) *SwarmSettings {
 	settings := new(SwarmSettings)
 
-	settings.Function = Sphere
+	settings.FunctionName = functionName
+	switch settings.FunctionName {
+	case "sphere":
+		settings.Function = Sphere
+	case "rosenbrock":
+		settings.Function = Rosenbrock
+	case "griewank":
+		settings.Function = Griewank
+	}
 
 	settings.Size = CalculateSwarmSize(settings.Function.dim, pso_max_size)
-	settings.PrintEvery = 100
+	settings.PrintEvery = 1
 	settings.Steps = 100000
 	settings.C1 = 1.496
 	settings.C2 = 1.496
