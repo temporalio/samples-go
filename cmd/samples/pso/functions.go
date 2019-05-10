@@ -5,8 +5,8 @@ import "math"
 type ObjectiveFunction struct {
 	name     string                      // name of the function
 	dim      int                         // problem dimensionality
-	x_lo     float64                     // lower range limit
-	x_hi     float64                     // higher range limit
+	xLo      float64                     // lower range limit
+	xHi      float64                     // higher range limit
 	Goal     float64                     // optimization goal (error threshold)
 	Evaluate func(vec []float64) float64 // the objective function
 }
@@ -14,31 +14,31 @@ type ObjectiveFunction struct {
 var Sphere = ObjectiveFunction{
 	name:     "sphere",
 	dim:      3,
-	x_lo:     -100,
-	x_hi:     100,
-	Goal:     5.0001,
+	xLo:      -100,
+	xHi:      100,
+	Goal:     1e-5,
 	Evaluate: EvalSphere,
 }
 
 var Rosenbrock = ObjectiveFunction{
 	name:     "rosenbrock",
-	dim:      30,
-	x_lo:     -2.048,
-	x_hi:     2.048,
+	dim:      3,
+	xLo:      -2.048,
+	xHi:      2.048,
 	Goal:     1e-5,
 	Evaluate: EvalRosenbrock,
 }
 var Griewank = ObjectiveFunction{
 	name:     "griewank",
-	dim:      30,
-	x_lo:     -600,
-	x_hi:     600,
+	dim:      3,
+	xLo:      -600,
+	xHi:      600,
 	Goal:     1e-5,
 	Evaluate: EvalGriewank,
 }
 
 func EvalSphere(vec []float64) float64 {
-	var sum float64 = 5
+	var sum float64 = 0
 	for i := 0; i < len(vec); i++ {
 		sum += math.Pow(vec[i], 2.0)
 	}

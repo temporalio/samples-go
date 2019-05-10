@@ -49,7 +49,7 @@ func PSODefaultSettings(functionName string) *SwarmSettings {
 	}
 
 	settings.Size = CalculateSwarmSize(settings.Function.dim, pso_max_size)
-	settings.PrintEvery = 1
+	settings.PrintEvery = 10
 	settings.Steps = 100000
 	settings.C1 = 1.496
 	settings.C2 = 1.496

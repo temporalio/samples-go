@@ -20,7 +20,7 @@ type Swarm struct {
 	particles []*Particle
 }
 
-func NewSwarm(ctx workflow.Context, settings *SwarmSettings) *Swarm {
+func NewSwarm(ctx workflow.Context, settings *SwarmSettings) (*Swarm, error) {
 	var swarm Swarm
 	swarm.ctx = ctx
 	// store settings
@@ -28,22 +28,34 @@ func NewSwarm(ctx workflow.Context, settings *SwarmSettings) *Swarm {
 	// initialize gbest
 	swarm.Gbest = NewPosition(settings)
 	swarm.Gbest.Fitness = 1e20
-	// initialize particles
+
+	// initialize particles in parallel
+	chunkResultChannel := workflow.NewChannel(swarm.ctx)
 	swarm.particles = make([]*Particle, settings.Size)
 	for i := 0; i < swarm.settings.Size; i++ {
-		swarm.particles[i] = NewParticle(settings)
-
-		swarm.particles[i].UpdateFitness(swarm.ctx)
-		// if err != nil {
-		// 	return Result{
-		// 		Position: *swarm.Gbest,
-		// 		Step:     step,
-		// 	}, err
-		// }
+		particleIdx := i
+		workflow.Go(swarm.ctx, func(ctx workflow.Context) {
+			swarm.particles[particleIdx] = NewParticle(settings)
+			err := swarm.particles[particleIdx].UpdateFitness(ctx)
+			chunkResultChannel.Send(ctx, err)
+		})
 	}
+
+	// wait for all particles to be initialized
+	for i := 0; i < swarm.settings.Size; i++ {
+		var v interface{}
+		chunkResultChannel.Receive(swarm.ctx, &v)
+		switch r := v.(type) {
+		case error:
+			if r != nil {
+				return &swarm, r
+			}
+		}
+	}
+
 	swarm.updateBest()
 
-	return &swarm
+	return &swarm, nil
 }
 
 func (swarm *Swarm) updateBest() {
@@ -56,24 +68,37 @@ func (swarm *Swarm) updateBest() {
 
 func (swarm *Swarm) Run() (Result, error) {
 	// the algorithm goes here
+	chunkResultChannel := workflow.NewChannel(swarm.ctx)
 	var step int
 	for step = 0; step < swarm.settings.Steps; step++ {
 		workflow.GetLogger(swarm.ctx).Info("Iteration ", zap.String("step", strconv.Itoa(step)))
-		//TODO (ali) : we have to make the following loop parallel (use future and then use join)
-		for _, particle := range swarm.particles {
-			particle.UpdateLocation(swarm.Gbest)
-			err := particle.UpdateFitness(swarm.ctx)
-			if err != nil {
-				return Result{
-					Position: *swarm.Gbest,
-					Step:     step,
-				}, err
+		// Update particles in parallel
+		for i := 0; i < swarm.settings.Size; i++ {
+			particleIdx := i
+			workflow.Go(swarm.ctx, func(ctx workflow.Context) {
+				swarm.particles[particleIdx].UpdateLocation(swarm.Gbest)
+				err := swarm.particles[particleIdx].UpdateFitness(ctx)
+				chunkResultChannel.Send(ctx, err)
+			})
+		}
+
+		// Wait for all particles to be updated
+		for i := 0; i < swarm.settings.Size; i++ {
+			var v interface{}
+			chunkResultChannel.Receive(swarm.ctx, &v)
+			switch r := v.(type) {
+			case error:
+				if r != nil {
+					return Result{
+						Position: *swarm.Gbest,
+						Step:     step,
+					}, r
+				}
 			}
 		}
 
 		workflow.GetLogger(swarm.ctx).Debug("Iteration Update Swarm Best", zap.String("step", strconv.Itoa(step)))
-		// TODO (ali): we may need to put fitness updating of all particles in a separate
-		// work flow to be able to evaluate fitness particles in parallel
+
 		swarm.updateBest()
 
 		// Check if the goal has reached then stop early

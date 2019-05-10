@@ -54,7 +54,10 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 
 	// Retry
 	for i := 1; i < 5; i++ {
-		swarm := NewSwarm(ctx, settings)
+		swarm, err := NewSwarm(ctx, settings)
+		if err != nil {
+			break
+		}
 		result, err := swarm.Run()
 		if err != nil {
 			break
@@ -76,35 +79,3 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 	}
 	return err
 }
-
-//FitnessEvaluationWorkflow workflow decider
-// func FitnessEvaluationWorkflow(ctx workflow.Context, function string) (err error) {
-// 	ao := workflow.ActivityOptions{
-// 		ScheduleToStartTimeout: time.Second * 5,
-// 		StartToCloseTimeout:    time.Minute,
-// 		HeartbeatTimeout:       time.Second * 2, // such a short timeout to make sample fail over very fast
-// 		RetryPolicy: &cadence.RetryPolicy{
-// 			InitialInterval:          time.Second,
-// 			BackoffCoefficient:       2.0,
-// 			MaximumInterval:          time.Minute,
-// 			ExpirationInterval:       time.Minute * 10,
-// 			NonRetriableErrorReasons: []string{"bad-error"},
-// 		},
-// 	}
-// 	ctx = workflow.WithActivityOptions(ctx, ao)
-
-// 	return err
-// }
-
-// func EvaluateFitness(ctx workflow.Context, ind individual) (err error) {
-// 	// Evaluate fitness of the individual
-// 	// For the first try, let's evaluate a hard-coded function
-
-// 	var fInfo *fileInfo
-// 	err = workflow.ExecuteActivity(ctx, evaluateFitnessActivityName, fileID).Get(ctx, &fInfo)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	// return err
-// }

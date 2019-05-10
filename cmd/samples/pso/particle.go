@@ -18,11 +18,11 @@ func NewParticle(settings *SwarmSettings) *Particle {
 	particle.pbest.Fitness = 1e20
 
 	particle.velocity = make([]float64, settings.Function.dim)
-	x_lo := settings.Function.x_lo
-	x_hi := settings.Function.x_hi
+	xLo := settings.Function.xLo
+	xHi := settings.Function.xHi
 	for i := 0; i < settings.Function.dim; i++ {
-		a := x_lo + (x_hi-x_lo)*settings.rng.Float64()
-		b := x_lo + (x_hi-x_lo)*settings.rng.Float64()
+		a := xLo + (xHi-xLo)*settings.rng.Float64()
+		b := xLo + (xHi-xLo)*settings.rng.Float64()
 		particle.velocity[i] = (a - b) / 2.0
 	}
 	return particle
