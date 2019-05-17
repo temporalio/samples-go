@@ -318,7 +318,7 @@
   version = "v1.3.2"
 
 [[projects]]
-  digest = "1:540d93b44335c39a84cf46942740c595582568c890613bb0cf3b064a548f1ea4"
+  digest = "1:4c2d6eebe24ba6a9c4685c2e24e2a8a295d7a06ab8728d949d1ad4cc85560648"
   name = "go.uber.org/cadence"
   packages = [
     ".",
@@ -340,8 +340,8 @@
     "workflow",
   ]
   pruneopts = "UT"
-  revision = "4accc5e4c435c0697b74ff62e5209ae604e18da8"
-  version = "v0.8.1"
+  revision = "d48199573d1abaacb7abd1b124111e0ac9099c5b"
+  version = "v0.8.2"
 
 [[projects]]
   digest = "1:60bf2a5e347af463c42ed31a493d817f8a72f102543060ed992754e689805d1a"
@@ -562,6 +562,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/golang/mock/gomock",
     "github.com/pborman/uuid",
     "github.com/pkg/errors",
     "github.com/stretchr/testify/assert",
@@ -571,6 +572,7 @@
     "github.com/uber-go/tally",
     "go.uber.org/cadence",
     "go.uber.org/cadence/.gen/go/cadence/workflowserviceclient",
+    "go.uber.org/cadence/.gen/go/cadence/workflowservicetest",
     "go.uber.org/cadence/.gen/go/shared",
     "go.uber.org/cadence/activity",
     "go.uber.org/cadence/client",
