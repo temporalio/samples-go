@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 
 	"go.uber.org/cadence/worker"
+	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 
 	"github.com/uber-go/tally"
@@ -21,11 +22,12 @@ const (
 type (
 	// SampleHelper class for workflow sample helper.
 	SampleHelper struct {
-		Service workflowserviceclient.Interface
-		Scope   tally.Scope
-		Logger  *zap.Logger
-		Config  Configuration
-		Builder *WorkflowClientBuilder
+		Service        workflowserviceclient.Interface
+		Scope          tally.Scope
+		Logger         *zap.Logger
+		Config         Configuration
+		Builder        *WorkflowClientBuilder
+		CtxPropagators []workflow.ContextPropagator
 	}
 
 	// Configuration for running samples.
@@ -64,7 +66,8 @@ func (h *SampleHelper) SetupServiceConfig() {
 	h.Builder = NewBuilder(logger).
 		SetHostPort(h.Config.HostNameAndPort).
 		SetDomain(h.Config.DomainName).
-		SetMetricsScope(h.Scope)
+		SetMetricsScope(h.Scope).
+		SetContextPropagators(h.CtxPropagators)
 	service, err := h.Builder.BuildServiceClient()
 	if err != nil {
 		panic(err)
@@ -82,13 +85,18 @@ func (h *SampleHelper) SetupServiceConfig() {
 
 // StartWorkflow starts a workflow
 func (h *SampleHelper) StartWorkflow(options client.StartWorkflowOptions, workflow interface{}, args ...interface{}) {
+	h.StartWorkflowWithCtx(context.Background(), options, workflow, args...)
+}
+
+// StartWorkflowWithCtx starts a workflow with the provided context
+func (h *SampleHelper) StartWorkflowWithCtx(ctx context.Context, options client.StartWorkflowOptions, workflow interface{}, args ...interface{}) {
 	workflowClient, err := h.Builder.BuildCadenceClient()
 	if err != nil {
 		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
 		panic(err)
 	}
 
-	we, err := workflowClient.StartWorkflow(context.Background(), options, workflow, args...)
+	we, err := workflowClient.StartWorkflow(ctx, options, workflow, args...)
 	if err != nil {
 		h.Logger.Error("Failed to create workflow", zap.Error(err))
 		panic("Failed to create workflow.")
