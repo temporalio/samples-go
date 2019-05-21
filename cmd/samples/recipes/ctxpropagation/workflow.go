@@ -41,8 +41,10 @@ func CtxPropWorkflow(ctx workflow.Context) (err error) {
 			workflow.GetLogger(ctx).Info("context propagated to workflow", zap.String(key, val))
 		}
 	}
-	vals := ctx.Value(propagateKey).(Values)
-	workflow.GetLogger(ctx).Info("custom context propagated to workflow", zap.String(vals.Key, vals.Value))
+	if val := ctx.Value(propagateKey); val != nil {
+		vals := val.(Values)
+		workflow.GetLogger(ctx).Info("custom context propagated to workflow", zap.String(vals.Key, vals.Value))
+	}
 
 	var values map[string]string
 	if err = workflow.ExecuteActivity(ctx, sampleActivity).Get(ctx, &values); err != nil {
