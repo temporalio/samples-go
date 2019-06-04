@@ -2,7 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"math/rand"
+	"time"
 
 	"go.uber.org/cadence/activity"
 	"go.uber.org/zap"
@@ -12,59 +13,45 @@ import (
  * Sample activities used by file processing sample workflow.
  */
 const (
-	evaluateFitnessActivityName = "evaluateFitnessActivity"
+	initParticleActivityName   = "initParticleActivityName"
+	updateParticleActivityName = "updateParticleActivityName"
 )
+
+var rng *rand.Rand
 
 // This is registration process where you register all your activity handlers.
 func init() {
+	// initialize the RNG
+	// WARNING: the randomness of activity scheduling with multiple workers makes random number generation truly random and not repeatable in debugging
+	rng = rand.New(rand.NewSource(time.Now().UnixNano()))
+
 	activity.RegisterWithOptions(
-		evaluateFitnessActivity,
-		activity.RegisterOptions{Name: evaluateFitnessActivityName},
+		initParticleActivity,
+		activity.RegisterOptions{Name: initParticleActivityName},
+	)
+	activity.RegisterWithOptions(
+		updateParticleActivity,
+		activity.RegisterOptions{Name: updateParticleActivityName},
 	)
 }
 
-func evaluateFitnessActivity(ctx context.Context, functionName string, location []float64) (float64, error) {
+func initParticleActivity(ctx context.Context, swarm Swarm) (Particle, error) {
 	logger := activity.GetLogger(ctx).With(zap.String("HostID", HostID))
-	logger.Info("EvaluateFitnessActivity started.")
+	logger.Info("initParticleActivity started.")
 
-	// i := 0
-	// if activity.HasHeartbeatDetails(ctx) {
-	// 	// we are retry from a failed attempt, and there is reported progress that we should resume from.
-	// 	var completedIdx int
-	// 	if err := activity.GetHeartbeatDetails(ctx, &completedIdx); err == nil {
-	// 		i = completedIdx + 1
-	// 		logger.Info("Resuming from failed attempt", zap.Int("ReportedProgress", completedIdx))
-	// 	}
-	// }
+	particle := NewParticle(&swarm, rng)
+	particle.UpdateFitness(&swarm)
 
-	// for ; i < 10; i++ {
-	// 	// process task i
-	// 	logger.Info("processing task", zap.Int("TaskID", i))
-	// 	activity.RecordHeartbeat(ctx, i)
+	return *particle, nil
+}
 
-	// 	// simulate failure after process 1/3 of the tasks
-	// 	if failed {
-	// 		logger.Info("Activity failed, will retry...")
-	// 		// Activity could return different error types for different failures so workflow could handle them differently.
-	// 		// For example, decide to retry or not based on error reasons.
-	// 		return cadence.NewCustomError("some-retryable-error")
-	// 	}
-	// }
+func updateParticleActivity(ctx context.Context, swarm Swarm, particleIdx int) (Particle, error) {
+	logger := activity.GetLogger(ctx).With(zap.String("HostID", HostID))
+	logger.Info("updateParticleActivity started.")
 
-	var function ObjectiveFunction
+	particle := swarm.Particles[particleIdx]
+	particle.UpdateLocation(&swarm, rng)
+	particle.UpdateFitness(&swarm)
 
-	switch functionName {
-	case "sphere":
-		function = Sphere
-	case "rosenbrock":
-		function = Rosenbrock
-	case "griewank":
-		function = Griewank
-	}
-
-	value := function.Evaluate(location)
-
-	logger.Info(fmt.Sprintf("Activity succeed, fitness=%f", value))
-
-	return value, nil
+	return *particle, nil
 }

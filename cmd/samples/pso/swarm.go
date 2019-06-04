@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -14,37 +15,40 @@ type Result struct {
 }
 
 type Swarm struct {
-	ctx       workflow.Context
+	Settings  *SwarmSettings
 	Gbest     *Position
-	settings  *SwarmSettings
-	particles []*Particle
+	Particles []*Particle
 }
 
 func NewSwarm(ctx workflow.Context, settings *SwarmSettings) (*Swarm, error) {
 	var swarm Swarm
-	swarm.ctx = ctx
 	// store settings
-	swarm.settings = settings
+	swarm.Settings = settings
 	// initialize gbest
-	swarm.Gbest = NewPosition(settings)
+	swarm.Gbest = NewPosition(swarm.Settings.Function.dim)
 	swarm.Gbest.Fitness = 1e20
 
 	// initialize particles in parallel
-	chunkResultChannel := workflow.NewChannel(swarm.ctx)
-	swarm.particles = make([]*Particle, settings.Size)
-	for i := 0; i < swarm.settings.Size; i++ {
+	chunkResultChannel := workflow.NewChannel(ctx)
+	swarm.Particles = make([]*Particle, settings.Size)
+	for i := 0; i < swarm.Settings.Size; i++ {
 		particleIdx := i
-		workflow.Go(swarm.ctx, func(ctx workflow.Context) {
-			swarm.particles[particleIdx] = NewParticle(settings)
-			err := swarm.particles[particleIdx].UpdateFitness(ctx)
+		workflow.Go(ctx, func(ctx workflow.Context) {
+			var particle Particle
+			err := workflow.ExecuteActivity(ctx, initParticleActivityName, swarm).Get(ctx, &particle)
+			if err == nil {
+				swarm.Particles[particleIdx] = &particle
+			} else {
+				//FATAL ERROR
+			}
 			chunkResultChannel.Send(ctx, err)
 		})
 	}
 
 	// wait for all particles to be initialized
-	for i := 0; i < swarm.settings.Size; i++ {
+	for i := 0; i < swarm.Settings.Size; i++ {
 		var v interface{}
-		chunkResultChannel.Receive(swarm.ctx, &v)
+		chunkResultChannel.Receive(ctx, &v)
 		switch r := v.(type) {
 		case error:
 			if r != nil {
@@ -59,33 +63,39 @@ func NewSwarm(ctx workflow.Context, settings *SwarmSettings) (*Swarm, error) {
 }
 
 func (swarm *Swarm) updateBest() {
-	for i := 0; i < swarm.settings.Size; i++ {
-		if swarm.particles[i].pbest.IsBetterThan(swarm.Gbest) {
-			swarm.Gbest = swarm.particles[i].pbest.Copy()
+	for i := 0; i < swarm.Settings.Size; i++ {
+		if swarm.Particles[i].Pbest.IsBetterThan(swarm.Gbest) {
+			swarm.Gbest = swarm.Particles[i].Pbest.Copy()
 		}
 	}
 }
 
-func (swarm *Swarm) Run() (Result, error) {
+func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
+	logger := workflow.GetLogger(ctx)
+
 	// the algorithm goes here
-	chunkResultChannel := workflow.NewChannel(swarm.ctx)
-	var step int
-	for step = 0; step < swarm.settings.Steps; step++ {
-		workflow.GetLogger(swarm.ctx).Info("Iteration ", zap.String("step", strconv.Itoa(step)))
+	chunkResultChannel := workflow.NewChannel(ctx)
+	for step <= swarm.Settings.Steps {
+		logger.Info("Iteration ", zap.String("step", strconv.Itoa(step)))
 		// Update particles in parallel
-		for i := 0; i < swarm.settings.Size; i++ {
+		for i := 0; i < swarm.Settings.Size; i++ {
 			particleIdx := i
-			workflow.Go(swarm.ctx, func(ctx workflow.Context) {
-				swarm.particles[particleIdx].UpdateLocation(swarm.Gbest)
-				err := swarm.particles[particleIdx].UpdateFitness(ctx)
+			workflow.Go(ctx, func(ctx workflow.Context) { // Use an activity for this whole block
+				var particle Particle
+				err := workflow.ExecuteActivity(ctx, updateParticleActivityName, *swarm, particleIdx).Get(ctx, &particle)
+				if err == nil {
+					swarm.Particles[particleIdx] = &particle
+				} else {
+					//FATAL ERROR
+				}
 				chunkResultChannel.Send(ctx, err)
 			})
 		}
 
 		// Wait for all particles to be updated
-		for i := 0; i < swarm.settings.Size; i++ {
+		for i := 0; i < swarm.Settings.Size; i++ {
 			var v interface{}
-			chunkResultChannel.Receive(swarm.ctx, &v)
+			chunkResultChannel.Receive(ctx, &v)
 			switch r := v.(type) {
 			case error:
 				if r != nil {
@@ -97,24 +107,40 @@ func (swarm *Swarm) Run() (Result, error) {
 			}
 		}
 
-		workflow.GetLogger(swarm.ctx).Debug("Iteration Update Swarm Best", zap.String("step", strconv.Itoa(step)))
+		logger.Debug("Iteration Update Swarm Best", zap.String("step", strconv.Itoa(step)))
 
 		swarm.updateBest()
 
 		// Check if the goal has reached then stop early
-		if swarm.Gbest.Fitness < swarm.settings.Function.Goal {
-			workflow.GetLogger(swarm.ctx).Debug("Iteration New Swarm Best", zap.String("step", strconv.Itoa(step)))
+		if swarm.Gbest.Fitness < swarm.Settings.Function.Goal {
+			logger.Debug("Iteration New Swarm Best", zap.String("step", strconv.Itoa(step)))
 			return Result{
 				Position: *swarm.Gbest,
 				Step:     step,
 			}, nil
 		}
 
-		if step%swarm.settings.PrintEvery == 0 {
+		if step%swarm.Settings.PrintEvery == 0 {
 			msg := fmt.Sprintf("Step %d :: min err=%.5e\n", step, swarm.Gbest.Fitness)
-			workflow.GetLogger(swarm.ctx).Info(msg)
+			logger.Info(msg)
 		}
+
+		// Finished all iterations
+		if step == swarm.Settings.Steps {
+			break
+		}
+
+		// Not finished yet, just continue as new to reduce history size
+		if step%swarm.Settings.ContinueAsNewEvery == 0 {
+			return Result{
+				Position: *swarm.Gbest,
+				Step:     step,
+			}, errors.New("CONTINUEASNEW")
+		}
+
+		step++
 	}
+
 	return Result{
 		Position: *swarm.Gbest,
 		Step:     step,

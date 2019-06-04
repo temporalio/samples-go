@@ -1,5 +1,7 @@
 package main
 
+import "math/rand"
+
 //import "go.uber.org/cadence/workflow"
 
 type Vector []float64
@@ -7,31 +9,29 @@ type Vector []float64
 type Position struct {
 	Location Vector
 	Fitness  float64
-	settings *SwarmSettings
 }
 
-func NewPosition(settings *SwarmSettings) *Position {
-	loc := make([]float64, settings.Function.dim)
+func NewPosition(dim int) *Position {
+	loc := make([]float64, dim)
 	return &Position{
 		Location: loc,
 		// Fitness:  EvaluateFunction(settings.Function.Evaluate, loc),
-		settings: settings,
 	}
 }
 
-func RandomPosition(settings *SwarmSettings) *Position {
-	pos := NewPosition(settings)
-	xLo := settings.Function.xLo
-	xHi := settings.Function.xHi
+func RandomPosition(function ObjectiveFunction, rng *rand.Rand) *Position {
+	pos := NewPosition(function.dim)
+	xLo := function.xLo
+	xHi := function.xHi
 	for i := 0; i < len(pos.Location); i++ {
-		pos.Location[i] = xLo + (xHi-xLo)*settings.rng.Float64()
+		pos.Location[i] = xLo + (xHi-xLo)*rng.Float64()
 	}
 	// pos.Fitness = EvaluateFunction(settings.Function.Evaluate, pos.Location)
 	return pos
 }
 
 func (position *Position) Copy() *Position {
-	newPosition := NewPosition(position.settings)
+	newPosition := NewPosition(len(position.Location))
 	copy(newPosition.Location, position.Location)
 	newPosition.Fitness = position.Fitness
 	return newPosition

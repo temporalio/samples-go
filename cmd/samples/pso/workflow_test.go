@@ -22,7 +22,11 @@ func Test_Workflow(t *testing.T) {
 		activityType := activityInfo.ActivityType.Name
 		activityCalled = append(activityCalled, activityType)
 		switch activityType {
-		case "evaluateFitnessActivity":
+		case "initParticleActivityName":
+			// var input string
+			// s.NoError(args.Get(&input))
+			// s.Equal(fileID, input)
+		case "updateParticleActivityName":
 			// var input string
 			// s.NoError(args.Get(&input))
 			// s.Equal(fileID, input)

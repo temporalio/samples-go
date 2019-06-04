@@ -1,57 +1,52 @@
 package main
 
-import "go.uber.org/cadence/workflow"
+import "math/rand"
 
 type Particle struct {
-	position *Position
-	pbest    *Position
-	velocity Vector
-	settings *SwarmSettings
+	Position *Position
+	Pbest    *Position
+	Velocity Vector
 }
 
-func NewParticle(settings *SwarmSettings) *Particle {
+func NewParticle(swarm *Swarm, rng *rand.Rand) *Particle {
 	particle := new(Particle)
-	particle.settings = settings
-	particle.position = RandomPosition(settings)
+	particle.Position = RandomPosition(swarm.Settings.Function, rng)
 
-	particle.pbest = particle.position.Copy()
-	particle.pbest.Fitness = 1e20
+	particle.Pbest = particle.Position.Copy()
+	particle.Pbest.Fitness = 1e20
 
-	particle.velocity = make([]float64, settings.Function.dim)
-	xLo := settings.Function.xLo
-	xHi := settings.Function.xHi
-	for i := 0; i < settings.Function.dim; i++ {
-		a := xLo + (xHi-xLo)*settings.rng.Float64()
-		b := xLo + (xHi-xLo)*settings.rng.Float64()
-		particle.velocity[i] = (a - b) / 2.0
+	particle.Velocity = make([]float64, swarm.Settings.Function.dim)
+	xLo := swarm.Settings.Function.xLo
+	xHi := swarm.Settings.Function.xHi
+	for i := 0; i < swarm.Settings.Function.dim; i++ {
+		a := xLo + (xHi-xLo)*rng.Float64()
+		b := xLo + (xHi-xLo)*rng.Float64()
+		particle.Velocity[i] = (a - b) / 2.0
 	}
 	return particle
 }
 
-func (particle *Particle) UpdateLocation(gbest *Position) {
-	settings := particle.settings
-	for i := 0; i < settings.Function.dim; i++ {
+func (particle *Particle) UpdateLocation(swarm *Swarm, rng *rand.Rand) {
+	for i := 0; i < swarm.Settings.Function.dim; i++ {
 		// calculate stochastic coefficients
-		rho1 := settings.C1 * settings.rng.Float64()
-		rho2 := settings.C2 * settings.rng.Float64()
+		rho1 := swarm.Settings.C1 * rng.Float64()
+		rho2 := swarm.Settings.C2 * rng.Float64()
 		// update velocity
-		particle.velocity[i] =
-			settings.inertia*particle.velocity[i] +
-				rho1*(particle.pbest.Location[i]-particle.position.Location[i]) +
-				rho2*(gbest.Location[i]-particle.position.Location[i])
+		particle.Velocity[i] =
+			swarm.Settings.Inertia*particle.Velocity[i] +
+				rho1*(particle.Pbest.Location[i]-particle.Position.Location[i]) +
+				rho2*(swarm.Gbest.Location[i]-particle.Position.Location[i])
 
-		particle.position.Location[i] += particle.velocity[i]
-
+		particle.Position.Location[i] += particle.Velocity[i]
 	}
 }
 
-func (particle *Particle) UpdateFitness(ctx workflow.Context) (err error) {
-	err = workflow.ExecuteActivity(ctx, evaluateFitnessActivityName, particle.position.settings.FunctionName, particle.position.Location).Get(ctx, &particle.position.Fitness)
+func (particle *Particle) UpdateFitness(swarm *Swarm) {
+	particle.Position.Fitness = swarm.Settings.Function.Evaluate(particle.Position.Location)
 
-	if err == nil {
-		if particle.position.IsBetterThan(particle.pbest) {
-			particle.pbest = particle.position.Copy()
-		}
+	//logger.Info(fmt.Sprintf("Particle fitness=%f", particle.position.Fitness))
+
+	if particle.Position.IsBetterThan(particle.Pbest) {
+		particle.Pbest = particle.Position.Copy()
 	}
-	return err
 }

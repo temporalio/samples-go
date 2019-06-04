@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"go.uber.org/cadence/encoded"
+
 	s "go.uber.org/cadence/.gen/go/shared"
 	"go.uber.org/cadence/worker"
 	"go.uber.org/zap"
@@ -22,11 +24,12 @@ const (
 type (
 	// SampleHelper class for workflow sample helper.
 	SampleHelper struct {
-		Service workflowserviceclient.Interface
-		Scope   tally.Scope
-		Logger  *zap.Logger
-		Config  Configuration
-		Builder *WorkflowClientBuilder
+		Service       workflowserviceclient.Interface
+		Scope         tally.Scope
+		Logger        *zap.Logger
+		Config        Configuration
+		Builder       *WorkflowClientBuilder
+		DataConverter encoded.DataConverter
 	}
 
 	// Configuration for running samples.
@@ -67,7 +70,8 @@ func (h *SampleHelper) SetupServiceConfig() {
 	h.Builder = NewBuilder(logger).
 		SetHostPort(h.Config.HostNameAndPort).
 		SetDomain(h.Config.DomainName).
-		SetMetricsScope(h.Scope)
+		SetMetricsScope(h.Scope).
+		SetDataConverter(h.DataConverter)
 	service, err := h.Builder.BuildServiceClient()
 	if err != nil {
 		panic(err)
