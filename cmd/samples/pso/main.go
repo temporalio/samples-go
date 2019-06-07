@@ -126,7 +126,7 @@ func main() {
 	gob.Register(Swarm{})
 
 	var h common.SampleHelper
-	h.DataConverter = &myDataConverter{}
+	h.DataConverter = newMyDataConverter()
 	h.SetupServiceConfig() // This configures DataConverter
 
 	switch mode {

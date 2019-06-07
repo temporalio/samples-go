@@ -58,7 +58,7 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 	// Set child workflow options
 	execution := workflow.GetInfo(ctx).WorkflowExecution
 	// Parent workflow can choose to specify it's own ID for child execution.  Make sure they are unique for each execution.
-	childID := fmt.Sprintf("child_workflow:%v", execution.RunID)
+	childID := fmt.Sprintf("PSO_child_workflow:%v", execution.RunID)
 	cwo := workflow.ChildWorkflowOptions{
 		// Do not specify WorkflowID if you want cadence to generate a unique ID for child execution
 		WorkflowID:                   childID,
@@ -71,8 +71,8 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 	settings := PSODefaultSettings(functionName)
 
 	// Retry with different random seed
-	const NumberOfAttemps = 5
-	for i := 1; i < NumberOfAttemps; i++ {
+	const NumberOfAttempts = 5
+	for i := 1; i < NumberOfAttempts; i++ {
 		swarm, err := NewSwarm(ctx, settings)
 		if err != nil {
 			logger.Error("Optimization failed. ", zap.Error(err))
@@ -91,7 +91,7 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 		}
 	}
 
-	logger.Info("Unable to reach goal after " + string(NumberOfAttemps) + " attempts")
+	logger.Info("Unable to reach goal after " + string(NumberOfAttempts) + " attempts")
 	return nil
 }
 

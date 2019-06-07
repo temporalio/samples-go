@@ -9,6 +9,7 @@ import (
 	"go.uber.org/cadence/activity"
 	"go.uber.org/cadence/encoded"
 	"go.uber.org/cadence/testsuite"
+	"go.uber.org/cadence/worker"
 )
 
 func Test_Workflow(t *testing.T) {
@@ -16,6 +17,15 @@ func Test_Workflow(t *testing.T) {
 	env := testSuite.NewTestWorkflowEnvironment()
 
 	var activityCalled []string
+
+	var dataConverter = newMyDataConverter()
+	workerOptions := worker.Options{
+		DataConverter: dataConverter,
+	}
+	env.SetWorkerOptions(workerOptions)
+
+	// env.SetWorkflowTimeout(time.Minute * 5)
+	// env.SetTestTimeout(time.Minute * 5)
 
 	//env.OnActivity(evaluateFitnessActivity, mock.Anything, "sphere", []float64{1.0, 2.0, 3.0}).Return(14.0, nil)
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {

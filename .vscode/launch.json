@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "test",
-            "program": "${workspaceFolder}"
+            "program": "${file}"//"${workspaceFolder}"
         },
         {
             "name": "Launch worker",
