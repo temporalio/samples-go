@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	s "go.uber.org/cadence/.gen/go/shared"
 	"go.uber.org/cadence/worker"
 	"go.uber.org/zap"
 
@@ -36,8 +35,6 @@ type (
 		HostNameAndPort string `yaml:"host"`
 	}
 )
-
-var domainCreated bool
 
 // SetupServiceConfig setup the config for the sample code run
 func (h *SampleHelper) SetupServiceConfig() {
@@ -74,27 +71,13 @@ func (h *SampleHelper) SetupServiceConfig() {
 	}
 	h.Service = service
 
-	if domainCreated {
-		return
-	}
 	domainClient, _ := h.Builder.BuildCadenceDomainClient()
-	description := "domain for cadence sample code"
-	var retention int32 = 3
-	request := &s.RegisterDomainRequest{
-		Name:                                   &h.Config.DomainName,
-		Description:                            &description,
-		WorkflowExecutionRetentionPeriodInDays: &retention}
-
-	err = domainClient.Register(context.Background(), request)
+	_, err = domainClient.Describe(context.Background(), h.Config.DomainName)
 	if err != nil {
-		if _, ok := err.(*s.DomainAlreadyExistsError); !ok {
-			panic(err)
-		}
-		logger.Info("Domain already registered.", zap.String("Domain", h.Config.DomainName))
+		logger.Info("Domain doesn't exist", zap.String("Domain", h.Config.DomainName), zap.Error(err))
 	} else {
 		logger.Info("Domain succeesfully registered.", zap.String("Domain", h.Config.DomainName))
 	}
-	domainCreated = true
 }
 
 // StartWorkflow starts a workflow
