@@ -8,6 +8,10 @@ Run Cadence Server
 
 See instructions for running the Cadence Server: https://github.com/uber/cadence/blob/master/README.md
 
+See instructions for using CLI to register a domain(name as "samples-domain"): https://cadenceworkflow.io/docs/08_cli
+ or https://github.com/uber/cadence/blob/master/tools/cli/README.md 
+ 
+ 
 ## Steps to run samples
 ### Build Samples
 ```
