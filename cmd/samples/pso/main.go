@@ -15,13 +15,13 @@ import (
 	"go.uber.org/cadence/worker"
 )
 
-// myDataConverter implements encoded.DataConverter using gob for Swarm and Particle
+// gobDataConverter implements encoded.DataConverter using gob for Swarm and Particle
 // WARGNING: Make sure all struct members are public (Capital letter) otherwise serialization does not work!
-// TODO: consider storing blobs in external DB or Forge
-type myDataConverter struct {
+// TODO: consider storing blobs in external DB or S3
+type gobDataConverter struct {
 }
 
-func (dc *myDataConverter) ToData(value ...interface{}) ([]byte, error) {
+func (dc *gobDataConverter) ToData(value ...interface{}) ([]byte, error) {
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)
 	var err error
@@ -47,12 +47,12 @@ func (dc *myDataConverter) ToData(value ...interface{}) ([]byte, error) {
 		}
 	}
 	return buf.Bytes(), nil
-	// TODO: store buf.Bytes() in DB/Forge and get key
+	// TODO: store buf.Bytes() in DB/S3 and get key
 	// return key, nil
 }
 
-func (dc *myDataConverter) FromData(input []byte, valuePtr ...interface{}) error {
-	// TODO: convert input into key in DB/Forge and retrieve bytes
+func (dc *gobDataConverter) FromData(input []byte, valuePtr ...interface{}) error {
+	// TODO: convert input into key in DB/S3 and retrieve bytes
 	//dec := gob.NewDecoder(bytes)
 	dec := gob.NewDecoder(bytes.NewBuffer(input))
 	var err error
@@ -80,8 +80,8 @@ func (dc *myDataConverter) FromData(input []byte, valuePtr ...interface{}) error
 	return nil
 }
 
-func newMyDataConverter() encoded.DataConverter {
-	return &myDataConverter{}
+func newGobDataConverter() encoded.DataConverter {
+	return &gobDataConverter{}
 }
 
 // This needs to be done as part of a bootstrap step when the process starts.
@@ -112,10 +112,12 @@ func startWorkflow(h *common.SampleHelper, functionName string) {
 }
 
 func main() {
-	var mode string
-	var functionName string
-	flag.StringVar(&mode, "m", "trigger", "Mode is worker or trigger.")
+	var mode, functionName, workflowID, runID, queryType string
+	flag.StringVar(&mode, "m", "trigger", "Mode is worker or trigger")
 	flag.StringVar(&functionName, "f", "sphere", "One of [sphere, rosenbrock, griewank]")
+	flag.StringVar(&workflowID, "w", "", "WorkflowID")
+	flag.StringVar(&runID, "r", "", "RunID")
+	flag.StringVar(&queryType, "t", "__stack_trace", "Query type is __stack_trace or state")
 	flag.Parse()
 
 	gob.Register(Vector{})
@@ -126,7 +128,7 @@ func main() {
 	gob.Register(Swarm{})
 
 	var h common.SampleHelper
-	h.DataConverter = newMyDataConverter()
+	h.DataConverter = newGobDataConverter()
 	h.SetupServiceConfig() // This configures DataConverter
 
 	switch mode {
@@ -138,5 +140,7 @@ func main() {
 		select {}
 	case "trigger":
 		startWorkflow(&h, functionName)
+	case "query":
+		h.QueryWorkflow(workflowID, runID, queryType)
 	}
 }

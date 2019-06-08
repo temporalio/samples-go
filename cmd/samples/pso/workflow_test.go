@@ -18,7 +18,7 @@ func Test_Workflow(t *testing.T) {
 
 	var activityCalled []string
 
-	var dataConverter = newMyDataConverter()
+	var dataConverter = newGobDataConverter()
 	workerOptions := worker.Options{
 		DataConverter: dataConverter,
 	}
@@ -27,19 +27,12 @@ func Test_Workflow(t *testing.T) {
 	// env.SetWorkflowTimeout(time.Minute * 5)
 	// env.SetTestTimeout(time.Minute * 5)
 
-	//env.OnActivity(evaluateFitnessActivity, mock.Anything, "sphere", []float64{1.0, 2.0, 3.0}).Return(14.0, nil)
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {
 		activityType := activityInfo.ActivityType.Name
 		activityCalled = append(activityCalled, activityType)
 		switch activityType {
 		case "initParticleActivityName":
-			// var input string
-			// s.NoError(args.Get(&input))
-			// s.Equal(fileID, input)
 		case "updateParticleActivityName":
-			// var input string
-			// s.NoError(args.Get(&input))
-			// s.Equal(fileID, input)
 		default:
 			panic("unexpected activity call")
 		}
@@ -49,6 +42,17 @@ func Test_Workflow(t *testing.T) {
 
 	//env.AssertExpectations(t) // assert any OnActivity and Return
 	require.True(t, env.IsWorkflowCompleted())
-	require.NoError(t, env.GetWorkflowError())
+	//require.NoError(t, env.GetWorkflowError())
+	require.Equal(t, env.GetWorkflowError().Error(), "ContinueAsNew") // consider recreating a new test env on every iteration and calling execute workflow with the arguments from the previous iteration (contained in ContinueAsNewError)
 	//require.Equal(t, "evaluateFitnessActivity", activityCalled) //activityCalled is a vector with many activities called
+	queryAndVerify(t, env, "ContinueAsNew issued")
+}
+
+func queryAndVerify(t *testing.T, env *testsuite.TestWorkflowEnvironment, expectedState string) {
+	result, err := env.QueryWorkflow("state")
+	require.NoError(t, err)
+	var state string
+	err = result.Get(&state)
+	require.NoError(t, err)
+	require.Equal(t, expectedState, state)
 }

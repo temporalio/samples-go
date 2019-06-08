@@ -38,8 +38,6 @@ func NewSwarm(ctx workflow.Context, settings *SwarmSettings) (*Swarm, error) {
 			err := workflow.ExecuteActivity(ctx, initParticleActivityName, swarm).Get(ctx, &particle)
 			if err == nil {
 				swarm.Particles[particleIdx] = &particle
-			} else {
-				//FATAL ERROR
 			}
 			chunkResultChannel.Send(ctx, err)
 		})
@@ -77,16 +75,15 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
 	chunkResultChannel := workflow.NewChannel(ctx)
 	for step <= swarm.Settings.Steps {
 		logger.Info("Iteration ", zap.String("step", strconv.Itoa(step)))
+		QueryResult = "initialized"
 		// Update particles in parallel
 		for i := 0; i < swarm.Settings.Size; i++ {
 			particleIdx := i
-			workflow.Go(ctx, func(ctx workflow.Context) { // Use an activity for this whole block
+			workflow.Go(ctx, func(ctx workflow.Context) {
 				var particle Particle
 				err := workflow.ExecuteActivity(ctx, updateParticleActivityName, *swarm, particleIdx).Get(ctx, &particle)
 				if err == nil {
 					swarm.Particles[particleIdx] = &particle
-				} else {
-					//FATAL ERROR
 				}
 				chunkResultChannel.Send(ctx, err)
 			})
@@ -120,8 +117,9 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
 			}, nil
 		}
 
+		msg := fmt.Sprintf("Step %d :: min err=%.5e\n", step, swarm.Gbest.Fitness)
+		QueryResult = msg
 		if step%swarm.Settings.PrintEvery == 0 {
-			msg := fmt.Sprintf("Step %d :: min err=%.5e\n", step, swarm.Gbest.Fitness)
 			logger.Info(msg)
 		}
 

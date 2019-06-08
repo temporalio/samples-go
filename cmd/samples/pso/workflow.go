@@ -41,6 +41,8 @@ var ActivityOptions = workflow.ActivityOptions{
 	},
 }
 
+var QueryResult string
+
 // This is registration process where you register all your workflow handlers.
 func init() {
 	//workflow.Register(FitnessEvaluationWorkflow)
@@ -66,6 +68,16 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 	}
 	ctx = workflow.WithChildOptions(ctx, cwo)
 
+	// setup query handler for query type "state"
+	QueryResult = "started"
+	err = workflow.SetQueryHandler(ctx, "state", func(input []byte) (string, error) {
+		return QueryResult, nil
+	})
+	if err != nil {
+		logger.Info("SetQueryHandler failed: " + err.Error())
+		return err
+	}
+
 	logger.Info(fmt.Sprintf("Optimizing function %s", functionName))
 
 	settings := PSODefaultSettings(functionName)
@@ -78,6 +90,8 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 			logger.Error("Optimization failed. ", zap.Error(err))
 			return err
 		}
+
+		QueryResult = "initialized"
 
 		var goalReached bool
 		err = workflow.ExecuteChildWorkflow(ctx, PSOChildWorkflow, *swarm, 1).Get(ctx, &goalReached)
@@ -106,6 +120,7 @@ func PSOChildWorkflow(ctx workflow.Context, swarm Swarm, startingStep int) (bool
 	result, err := swarm.Run(ctx, startingStep)
 	if err != nil {
 		if err.Error() == "CONTINUEASNEW" {
+			QueryResult = "ContinueAsNew issued"
 			return false, workflow.NewContinueAsNewError(ctx, PSOChildWorkflow, swarm, result.Step+1)
 		}
 
