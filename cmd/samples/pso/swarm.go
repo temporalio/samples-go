@@ -75,7 +75,6 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
 	chunkResultChannel := workflow.NewChannel(ctx)
 	for step <= swarm.Settings.Steps {
 		logger.Info("Iteration ", zap.String("step", strconv.Itoa(step)))
-		QueryResult = "initialized"
 		// Update particles in parallel
 		for i := 0; i < swarm.Settings.Size; i++ {
 			particleIdx := i
@@ -118,7 +117,7 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
 		}
 
 		msg := fmt.Sprintf("Step %d :: min err=%.5e\n", step, swarm.Gbest.Fitness)
-		QueryResult = msg
+		ctx = workflow.WithValue(ctx, QueryResultName, msg)
 		if step%swarm.Settings.PrintEvery == 0 {
 			logger.Info(msg)
 		}
@@ -133,7 +132,7 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
 			return Result{
 				Position: *swarm.Gbest,
 				Step:     step,
-			}, errors.New("CONTINUEASNEW")
+			}, errors.New(ContinueAsNewStr)
 		}
 
 		step++

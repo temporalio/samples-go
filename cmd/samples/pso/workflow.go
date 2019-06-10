@@ -8,7 +8,6 @@ import (
 	"go.uber.org/cadence"
 	"go.uber.org/zap"
 
-	"github.com/pborman/uuid"
 	"go.uber.org/cadence/workflow"
 )
 
@@ -22,10 +21,6 @@ type (
 
 // ApplicationName is the task list for this sample
 const ApplicationName = "PSO"
-
-// HostID - Use a new uuid just for demo so we can run 2 host specific activity workers on same machine.
-// In real world case, you would use a hostname or ip address as HostID.
-var HostID = ApplicationName + "_" + uuid.New()
 
 var ActivityOptions = workflow.ActivityOptions{
 	ScheduleToStartTimeout: time.Second * 5,
@@ -41,7 +36,9 @@ var ActivityOptions = workflow.ActivityOptions{
 	},
 }
 
-var QueryResult string
+const ContinueAsNewStr = "CONTINUEASNEW"
+
+const QueryResultName = "QueryResult"
 
 // This is registration process where you register all your workflow handlers.
 func init() {
@@ -53,6 +50,7 @@ func init() {
 //PSOWorkflow workflow decider
 func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 	logger := workflow.GetLogger(ctx)
+	logger.Info(fmt.Sprintf("Optimizing function %s", functionName))
 
 	// Set activity options
 	ctx = workflow.WithActivityOptions(ctx, ActivityOptions)
@@ -68,33 +66,34 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 	}
 	ctx = workflow.WithChildOptions(ctx, cwo)
 
-	// setup query handler for query type "state"
-	QueryResult = "started"
-	err = workflow.SetQueryHandler(ctx, "state", func(input []byte) (string, error) {
-		return QueryResult, nil
+	// Setup query handler for query type "stage"
+	ctx = workflow.WithValue(ctx, QueryResultName, childID)
+	err = workflow.SetQueryHandler(ctx, "child", func(input []byte) (string, error) {
+		return ctx.Value(QueryResultName).(string), nil
 	})
 	if err != nil {
 		logger.Info("SetQueryHandler failed: " + err.Error())
 		return err
 	}
 
-	logger.Info(fmt.Sprintf("Optimizing function %s", functionName))
-
-	settings := PSODefaultSettings(functionName)
-
 	// Retry with different random seed
+	settings := PSODefaultSettings(functionName)
 	const NumberOfAttempts = 5
 	for i := 1; i < NumberOfAttempts; i++ {
+		logger.Info(fmt.Sprintf("Attempt #%d", i))
+
 		swarm, err := NewSwarm(ctx, settings)
 		if err != nil {
 			logger.Error("Optimization failed. ", zap.Error(err))
 			return err
 		}
 
-		QueryResult = "initialized"
-
 		var goalReached bool
-		err = workflow.ExecuteChildWorkflow(ctx, PSOChildWorkflow, *swarm, 1).Get(ctx, &goalReached)
+		childFuture := workflow.ExecuteChildWorkflow(ctx, PSOChildWorkflow, *swarm, 1)
+		//var childWE WorkflowExecution
+		//childFuture.GetChildWorkflowExecution().Get(&childWE)
+		err = childFuture.Get(ctx, &goalReached)
+		//ctx = workflow.WithValue(ctx, QueryResultName, childWE.RunID)
 		if err != nil {
 			logger.Error("Parent execution received child execution failure.", zap.Error(err))
 			return err
@@ -110,6 +109,7 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 }
 
 // PSOChildWorkflow workflow decider
+// Returns true if the optimization has converged
 func PSOChildWorkflow(ctx workflow.Context, swarm Swarm, startingStep int) (bool, error) {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Child workflow execution started.")
@@ -117,10 +117,21 @@ func PSOChildWorkflow(ctx workflow.Context, swarm Swarm, startingStep int) (bool
 	// Set activity options
 	ctx = workflow.WithActivityOptions(ctx, ActivityOptions)
 
+	// Setup query handler for query type "iteration"
+	ctx = workflow.WithValue(ctx, QueryResultName, "started")
+	err := workflow.SetQueryHandler(ctx, "iteration", func(input []byte) (string, error) {
+		return ctx.Value(QueryResultName).(string), nil
+	})
+	if err != nil {
+		logger.Info("SetQueryHandler failed: " + err.Error())
+		return false, err
+	}
+
+	// Run real optimization loop
 	result, err := swarm.Run(ctx, startingStep)
 	if err != nil {
-		if err.Error() == "CONTINUEASNEW" {
-			QueryResult = "ContinueAsNew issued"
+		if err.Error() == ContinueAsNewStr {
+			ctx = workflow.WithValue(ctx, QueryResultName, "ContinueAsNew issued")
 			return false, workflow.NewContinueAsNewError(ctx, PSOChildWorkflow, swarm, result.Step+1)
 		}
 

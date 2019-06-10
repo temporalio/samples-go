@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"go.uber.org/cadence/activity"
-	"go.uber.org/zap"
 )
 
 /**
@@ -23,6 +22,7 @@ var rng *rand.Rand
 func init() {
 	// initialize the RNG
 	// WARNING: the randomness of activity scheduling with multiple workers makes random number generation truly random and not repeatable in debugging
+	// worker.ReplayWorkflowHistoryFromJSONFile should be used to troubleshoot a specific workflow failure.
 	rng = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	activity.RegisterWithOptions(
@@ -36,7 +36,7 @@ func init() {
 }
 
 func initParticleActivity(ctx context.Context, swarm Swarm) (Particle, error) {
-	logger := activity.GetLogger(ctx).With(zap.String("HostID", HostID))
+	logger := activity.GetLogger(ctx)
 	logger.Info("initParticleActivity started.")
 
 	particle := NewParticle(&swarm, rng)
@@ -46,7 +46,7 @@ func initParticleActivity(ctx context.Context, swarm Swarm) (Particle, error) {
 }
 
 func updateParticleActivity(ctx context.Context, swarm Swarm, particleIdx int) (Particle, error) {
-	logger := activity.GetLogger(ctx).With(zap.String("HostID", HostID))
+	logger := activity.GetLogger(ctx)
 	logger.Info("updateParticleActivity started.")
 
 	particle := swarm.Particles[particleIdx]

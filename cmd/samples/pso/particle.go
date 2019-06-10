@@ -44,8 +44,6 @@ func (particle *Particle) UpdateLocation(swarm *Swarm, rng *rand.Rand) {
 func (particle *Particle) UpdateFitness(swarm *Swarm) {
 	particle.Position.Fitness = swarm.Settings.Function.Evaluate(particle.Position.Location)
 
-	//logger.Info(fmt.Sprintf("Particle fitness=%f", particle.position.Fitness))
-
 	if particle.Position.IsBetterThan(particle.Pbest) {
 		particle.Pbest = particle.Position.Copy()
 	}

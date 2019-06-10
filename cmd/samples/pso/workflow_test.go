@@ -18,7 +18,7 @@ func Test_Workflow(t *testing.T) {
 
 	var activityCalled []string
 
-	var dataConverter = newGobDataConverter()
+	var dataConverter = NewGobDataConverter()
 	workerOptions := worker.Options{
 		DataConverter: dataConverter,
 	}
@@ -40,16 +40,12 @@ func Test_Workflow(t *testing.T) {
 
 	env.ExecuteWorkflow(PSOWorkflow, "sphere")
 
-	//env.AssertExpectations(t) // assert any OnActivity and Return
 	require.True(t, env.IsWorkflowCompleted())
-	//require.NoError(t, env.GetWorkflowError())
 	require.Equal(t, env.GetWorkflowError().Error(), "ContinueAsNew") // consider recreating a new test env on every iteration and calling execute workflow with the arguments from the previous iteration (contained in ContinueAsNewError)
-	//require.Equal(t, "evaluateFitnessActivity", activityCalled) //activityCalled is a vector with many activities called
-	queryAndVerify(t, env, "ContinueAsNew issued")
 }
 
-func queryAndVerify(t *testing.T, env *testsuite.TestWorkflowEnvironment, expectedState string) {
-	result, err := env.QueryWorkflow("state")
+func queryAndVerify(t *testing.T, env *testsuite.TestWorkflowEnvironment, query string, expectedState string) {
+	result, err := env.QueryWorkflow(query)
 	require.NoError(t, err)
 	var state string
 	err = result.Get(&state)
