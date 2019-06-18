@@ -66,7 +66,7 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 	}
 	ctx = workflow.WithChildOptions(ctx, cwo)
 
-	// Setup query handler for query type "stage"
+	// Setup query handler for query type "child"
 	ctx = workflow.WithValue(ctx, QueryResultName, childID)
 	err = workflow.SetQueryHandler(ctx, "child", func(input []byte) (string, error) {
 		return ctx.Value(QueryResultName).(string), nil
@@ -89,11 +89,11 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 		}
 
 		var goalReached bool
-		childFuture := workflow.ExecuteChildWorkflow(ctx, PSOChildWorkflow, *swarm, 1)
-		//var childWE WorkflowExecution
-		//childFuture.GetChildWorkflowExecution().Get(&childWE)
-		err = childFuture.Get(ctx, &goalReached)
-		//ctx = workflow.WithValue(ctx, QueryResultName, childWE.RunID)
+		childWorkflowFuture := workflow.ExecuteChildWorkflow(ctx, PSOChildWorkflow, *swarm, 1)
+		var childWE workflow.Execution
+		childWorkflowFuture.GetChildWorkflowExecution().Get(ctx, &childWE)
+		ctx = workflow.WithValue(ctx, QueryResultName, childWE.RunID)
+		err = childWorkflowFuture.Get(ctx, &goalReached) // This blocking until the child workflow has finished
 		if err != nil {
 			logger.Error("Parent execution received child execution failure.", zap.Error(err))
 			return err
