@@ -58,16 +58,16 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 	// Set child workflow options
 	execution := workflow.GetInfo(ctx).WorkflowExecution
 	// Parent workflow can choose to specify it's own ID for child execution.  Make sure they are unique for each execution.
-	childID := fmt.Sprintf("PSO_child_workflow:%v", execution.RunID)
+	childWorkflowID := fmt.Sprintf("PSO_child_workflow:%v", execution.RunID)
 	cwo := workflow.ChildWorkflowOptions{
 		// Do not specify WorkflowID if you want cadence to generate a unique ID for child execution
-		WorkflowID:                   childID,
+		WorkflowID:                   childWorkflowID,
 		ExecutionStartToCloseTimeout: time.Minute,
 	}
 	ctx = workflow.WithChildOptions(ctx, cwo)
 
 	// Setup query handler for query type "child"
-	ctx = workflow.WithValue(ctx, QueryResultName, childID)
+	ctx = workflow.WithValue(ctx, QueryResultName, childWorkflowID) // Don't need the runID when querying. Use only workflowID and it is going to query the latest one
 	err = workflow.SetQueryHandler(ctx, "child", func(input []byte) (string, error) {
 		return ctx.Value(QueryResultName).(string), nil
 	})
@@ -90,9 +90,9 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 
 		var goalReached bool
 		childWorkflowFuture := workflow.ExecuteChildWorkflow(ctx, PSOChildWorkflow, *swarm, 1)
-		var childWE workflow.Execution
-		childWorkflowFuture.GetChildWorkflowExecution().Get(ctx, &childWE)
-		ctx = workflow.WithValue(ctx, QueryResultName, childWE.RunID)
+		// var childWE workflow.Execution
+		// childWorkflowFuture.GetChildWorkflowExecution().Get(ctx, &childWE)
+		// ctx = workflow.WithValue(ctx, QueryResultName, childWE.RunID)
 		err = childWorkflowFuture.Get(ctx, &goalReached) // This blocking until the child workflow has finished
 		if err != nil {
 			logger.Error("Parent execution received child execution failure.", zap.Error(err))
