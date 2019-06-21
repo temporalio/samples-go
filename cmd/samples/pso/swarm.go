@@ -71,6 +71,16 @@ func (swarm *Swarm) updateBest() {
 func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
 	logger := workflow.GetLogger(ctx)
 
+	// Setup query handler for query type "iteration"
+	var iterationMessage string
+	err := workflow.SetQueryHandler(ctx, "iteration", func(input []byte) (string, error) {
+		return iterationMessage, nil
+	})
+	if err != nil {
+		logger.Info("SetQueryHandler failed: " + err.Error())
+		return Result{}, err
+	}
+
 	// the algorithm goes here
 	chunkResultChannel := workflow.NewChannel(ctx)
 	for step <= swarm.Settings.Steps {
@@ -116,10 +126,9 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
 			}, nil
 		}
 
-		msg := fmt.Sprintf("Step %d :: min err=%.5e\n", step, swarm.Gbest.Fitness)
-		ctx = workflow.WithValue(ctx, QueryResultName, msg)
+		iterationMessage = fmt.Sprintf("Step %d :: min err=%.5e\n", step, swarm.Gbest.Fitness)
 		if step%swarm.Settings.PrintEvery == 0 {
-			logger.Info(msg)
+			logger.Info(iterationMessage)
 		}
 
 		// Finished all iterations

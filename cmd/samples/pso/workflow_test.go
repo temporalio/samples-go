@@ -39,14 +39,16 @@ func Test_Workflow(t *testing.T) {
 			panic("unexpected activity call")
 		}
 	})
+
+	var childWorkflowID string
 	env.SetOnChildWorkflowStartedListener(func(workflowInfo *workflow.Info, ctx workflow.Context, args encoded.Values) {
-		queryAndVerify(t, env, "child", "PSO_child_workflow:default-test-run-id") // Child WorkflowID
+		childWorkflowID = workflowInfo.WorkflowExecution.ID
 	})
 
 	env.ExecuteWorkflow(PSOWorkflow, "sphere")
 
 	require.True(t, env.IsWorkflowCompleted())
-	//queryAndVerify(t, env, "child", "PSO_child_workflow:default-test-run-id_RunID") // Child WorkflowID+RunID
+	queryAndVerify(t, env, "child", childWorkflowID)
 	require.Equal(t, env.GetWorkflowError().Error(), "ContinueAsNew") // consider recreating a new test env on every iteration and calling execute workflow with the arguments from the previous iteration (contained in ContinueAsNewError)
 }
 
