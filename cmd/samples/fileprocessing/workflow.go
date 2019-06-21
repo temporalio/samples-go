@@ -1,8 +1,9 @@
 package main
 
 import (
-	"go.uber.org/cadence"
 	"time"
+
+	"go.uber.org/cadence"
 
 	"github.com/pborman/uuid"
 	"go.uber.org/cadence/workflow"
@@ -36,7 +37,7 @@ func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err erro
 		ScheduleToStartTimeout: time.Second * 5,
 		StartToCloseTimeout:    time.Minute,
 		HeartbeatTimeout:       time.Second * 2, // such a short timeout to make sample fail over very fast
-		RetryPolicy:            &cadence.RetryPolicy{
+		RetryPolicy: &cadence.RetryPolicy{
 			InitialInterval:          time.Second,
 			BackoffCoefficient:       2.0,
 			MaximumInterval:          time.Minute,
@@ -66,26 +67,34 @@ func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err erro
 
 func processFile(ctx workflow.Context, fileID string) (err error) {
 	var fInfo *fileInfo
-	err = workflow.ExecuteActivity(ctx, downloadFileActivityName, fileID).Get(ctx, &fInfo)
+	so := &workflow.SessionOptions{
+		CreationTimeout:  time.Minute,
+		ExecutionTimeout: time.Minute,
+	}
+
+	sessionCtx, err := workflow.CreateSession(ctx, so)
+	if err != nil {
+		return err
+	}
+	defer workflow.CompleteSession(sessionCtx)
+
+	err = workflow.ExecuteActivity(sessionCtx, downloadFileActivityName, fileID).Get(sessionCtx, &fInfo)
 	if err != nil {
 		return err
 	}
 
-	// The following activities needs to be run on the same host as the first activity.
-	// This is achieved by scheduling them through this host specific task-list.
-	hCtx := workflow.WithTaskList(ctx, fInfo.HostID)
 	// The short schedule to start timeout is needed to ensure that if host is down an activity doesn't
 	// get stuck in a host specific task list.
 	// Note that this timeout is so short to make sample more vivid. In production applications it
 	// is usually higher.
-	hCtx = workflow.WithScheduleToStartTimeout(hCtx, time.Second*2)
+	sessionCtx = workflow.WithScheduleToStartTimeout(sessionCtx, time.Second*2)
 
 	var fInfoProcessed *fileInfo
-	err = workflow.ExecuteActivity(hCtx, processFileActivityName, *fInfo).Get(ctx, &fInfoProcessed)
+	err = workflow.ExecuteActivity(sessionCtx, processFileActivityName, *fInfo).Get(ctx, &fInfoProcessed)
 	if err != nil {
 		return err
 	}
 
-	err = workflow.ExecuteActivity(hCtx, uploadFileActivityName, *fInfoProcessed).Get(ctx, nil)
+	err = workflow.ExecuteActivity(sessionCtx, uploadFileActivityName, *fInfoProcessed).Get(ctx, nil)
 	return err
 }

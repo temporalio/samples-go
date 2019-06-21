@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -31,6 +32,9 @@ func (s *UnitTestSuite) Test_SampleFileProcessingWorkflow() {
 	env := s.NewTestWorkflowEnvironment()
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {
 		activityType := activityInfo.ActivityType.Name
+		if strings.HasPrefix(activityType, "internalSession") {
+			return
+		}
 		activityCalled = append(activityCalled, activityType)
 		switch activityType {
 		case expectedCall[0]:
