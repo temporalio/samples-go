@@ -3,9 +3,8 @@ package main
 import (
 	"time"
 
-	"go.uber.org/cadence"
-
 	"github.com/pborman/uuid"
+	"go.uber.org/cadence"
 	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 )
