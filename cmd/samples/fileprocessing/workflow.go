@@ -31,7 +31,6 @@ func init() {
 //SampleFileProcessingWorkflow workflow decider
 func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err error) {
 	// step 1: download resource file
-	// step 1: download resource file
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Second * 5,
 		StartToCloseTimeout:    time.Minute,
@@ -81,12 +80,6 @@ func processFile(ctx workflow.Context, fileID string) (err error) {
 	if err != nil {
 		return err
 	}
-
-	// The short schedule to start timeout is needed to ensure that if host is down an activity doesn't
-	// get stuck in a host specific task list.
-	// Note that this timeout is so short to make sample more vivid. In production applications it
-	// is usually higher.
-	sessionCtx = workflow.WithScheduleToStartTimeout(sessionCtx, time.Second*2)
 
 	var fInfoProcessed *fileInfo
 	err = workflow.ExecuteActivity(sessionCtx, processFileActivityName, *fInfo).Get(ctx, &fInfoProcessed)
