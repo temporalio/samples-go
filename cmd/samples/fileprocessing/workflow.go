@@ -82,11 +82,11 @@ func processFile(ctx workflow.Context, fileID string) (err error) {
 	}
 
 	var fInfoProcessed *fileInfo
-	err = workflow.ExecuteActivity(sessionCtx, processFileActivityName, *fInfo).Get(ctx, &fInfoProcessed)
+	err = workflow.ExecuteActivity(sessionCtx, processFileActivityName, *fInfo).Get(sessionCtx, &fInfoProcessed)
 	if err != nil {
 		return err
 	}
 
-	err = workflow.ExecuteActivity(sessionCtx, uploadFileActivityName, *fInfoProcessed).Get(ctx, nil)
+	err = workflow.ExecuteActivity(sessionCtx, uploadFileActivityName, *fInfoProcessed).Get(sessionCtx, nil)
 	return err
 }
