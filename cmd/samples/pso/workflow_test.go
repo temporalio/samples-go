@@ -20,7 +20,8 @@ func Test_Workflow(t *testing.T) {
 
 	var activityCalled []string
 
-	var dataConverter = NewGobDataConverter()
+	//var dataConverter = NewGobDataConverter()
+	var dataConverter = NewJSONDataConverter()
 	workerOptions := worker.Options{
 		DataConverter: dataConverter,
 	}
@@ -49,6 +50,7 @@ func Test_Workflow(t *testing.T) {
 
 	require.True(t, env.IsWorkflowCompleted())
 	queryAndVerify(t, env, "child", childWorkflowID)
+	//queryAndVerify(t, env, "iteration", "???")
 	require.Equal(t, env.GetWorkflowError().Error(), "ContinueAsNew") // consider recreating a new test env on every iteration and calling execute workflow with the arguments from the previous iteration (contained in ContinueAsNewError)
 }
 

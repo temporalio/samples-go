@@ -5,7 +5,7 @@ const pso_inertia float64 = 0.7298 // default value of w (see clerc02)
 
 type SwarmSettings struct {
 	FunctionName string
-	Function     ObjectiveFunction
+	function     ObjectiveFunction // lower case to avoid data converter export
 	// swarm size (number of particles)
 	Size int
 	// ... N steps (set to 0 for no output)
@@ -46,9 +46,9 @@ func PSODefaultSettings(functionName string) *SwarmSettings {
 	settings := new(SwarmSettings)
 
 	settings.FunctionName = functionName
-	settings.Function = FunctionFactory(functionName)
+	settings.function = FunctionFactory(functionName)
 
-	settings.Size = CalculateSwarmSize(settings.Function.dim, pso_max_size)
+	settings.Size = CalculateSwarmSize(settings.function.dim, pso_max_size)
 	settings.PrintEvery = 10
 	settings.ContinueAsNewEvery = 10
 	settings.Steps = 100000

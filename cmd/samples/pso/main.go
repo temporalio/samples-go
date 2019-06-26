@@ -8,6 +8,7 @@ import (
 	"github.com/pborman/uuid"
 	"github.com/uber/cadence-samples/cmd/samples/common"
 	"go.uber.org/cadence/client"
+	"go.uber.org/cadence/encoded"
 	"go.uber.org/cadence/worker"
 )
 
@@ -43,15 +44,24 @@ func main() {
 	flag.StringVar(&queryType, "t", "__stack_trace", "Query type is one of [__stack_trace, child, iteration]")
 	flag.Parse()
 
-	gob.Register(Vector{})
-	gob.Register(Position{})
-	gob.Register(Particle{})
-	gob.Register(ObjectiveFunction{})
-	gob.Register(SwarmSettings{})
-	gob.Register(Swarm{})
+	// If Gob is used to serialize data, then need to register types into gob as well???
+	// TOVERIFY: the test works even without type registation!
+	const useGob = false
+	var dataConverter encoded.DataConverter
+	if useGob {
+		dataConverter = NewGobDataConverter()
+		gob.Register(Vector{})
+		gob.Register(Position{})
+		gob.Register(Particle{})
+		gob.Register(ObjectiveFunction{})
+		gob.Register(SwarmSettings{})
+		gob.Register(Swarm{})
+	} else {
+		dataConverter = NewJSONDataConverter()
+	}
 
 	var h common.SampleHelper
-	h.DataConverter = NewGobDataConverter()
+	h.DataConverter = dataConverter
 	h.SetupServiceConfig() // This configures DataConverter
 
 	switch mode {

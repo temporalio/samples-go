@@ -25,7 +25,7 @@ func NewSwarm(ctx workflow.Context, settings *SwarmSettings) (*Swarm, error) {
 	// store settings
 	swarm.Settings = settings
 	// initialize gbest
-	swarm.Gbest = NewPosition(swarm.Settings.Function.dim)
+	swarm.Gbest = NewPosition(swarm.Settings.function.dim)
 	swarm.Gbest.Fitness = 1e20
 
 	// initialize particles in parallel
@@ -118,7 +118,7 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
 		swarm.updateBest()
 
 		// Check if the goal has reached then stop early
-		if swarm.Gbest.Fitness < swarm.Settings.Function.Goal {
+		if swarm.Gbest.Fitness < swarm.Settings.function.Goal {
 			logger.Debug("Iteration New Swarm Best", zap.String("step", strconv.Itoa(step)))
 			return Result{
 				Position: *swarm.Gbest,

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/pborman/uuid"
 	"go.uber.org/cadence"
 	"go.uber.org/zap"
 
@@ -53,13 +54,6 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 	// Set activity options
 	ctx = workflow.WithActivityOptions(ctx, ActivityOptions)
 
-	// Set child workflow options
-	// Parent workflow can choose to specify it's own ID for child execution.  Make sure they are unique for each execution.
-	cwo := workflow.ChildWorkflowOptions{
-		ExecutionStartToCloseTimeout: time.Minute,
-	}
-	ctx = workflow.WithChildOptions(ctx, cwo)
-
 	// Setup query handler for query type "child"
 	var childWorkflowID string
 	err = workflow.SetQueryHandler(ctx, "child", func(input []byte) (string, error) {
@@ -81,6 +75,14 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (err error) {
 			logger.Error("Optimization failed. ", zap.Error(err))
 			return err
 		}
+
+		// Set child workflow options
+		// Parent workflow can choose to specify it's own ID for child execution.  Make sure they are unique for each execution.
+		cwo := workflow.ChildWorkflowOptions{
+			WorkflowID:                   "PSO_Child_" + uuid.New(),
+			ExecutionStartToCloseTimeout: time.Minute,
+		}
+		ctx = workflow.WithChildOptions(ctx, cwo)
 
 		var goalReached bool
 		childWorkflowFuture := workflow.ExecuteChildWorkflow(ctx, PSOChildWorkflow, *swarm, 1)
@@ -121,7 +123,7 @@ func PSOChildWorkflow(ctx workflow.Context, swarm Swarm, startingStep int) (bool
 		logger.Error("Error in swarm loop: ", zap.Error(err))
 		return false, errors.New("Error in swarm loop")
 	}
-	if result.Position.Fitness < swarm.Settings.Function.Goal {
+	if result.Position.Fitness < swarm.Settings.function.Goal {
 		msg := fmt.Sprintf("Yay! Goal was reached @ step %d (fitness=%.2e) :-)", result.Step, result.Position.Fitness)
 		logger.Info(msg)
 		return true, nil
