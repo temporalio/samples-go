@@ -120,6 +120,9 @@ func (dc *jsonDataConverter) ToData(value ...interface{}) ([]byte, error) {
 					}
 				}
 			}
+		case WorkflowResult:
+			err = enc.Encode(t.Msg)
+			err = enc.Encode(t.Success)
 		default:
 			err = enc.Encode(obj)
 		}
@@ -151,6 +154,9 @@ func (dc *jsonDataConverter) FromData(input []byte, valuePtr ...interface{}) err
 				t.Particles[index] = new(Particle)
 				err = dec.Decode(t.Particles[index])
 			}
+		case *WorkflowResult:
+			err = dec.Decode(&t.Msg)
+			err = dec.Decode(&t.Success)
 		default:
 			err = dec.Decode(obj)
 		}

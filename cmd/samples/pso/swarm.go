@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type Result struct {
+type ParticleResult struct {
 	Position
 	Step int
 }
@@ -68,7 +68,7 @@ func (swarm *Swarm) updateBest() {
 	}
 }
 
-func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
+func (swarm *Swarm) Run(ctx workflow.Context, step int) (ParticleResult, error) {
 	logger := workflow.GetLogger(ctx)
 
 	// Setup query handler for query type "iteration"
@@ -78,7 +78,7 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
 	})
 	if err != nil {
 		logger.Info("SetQueryHandler failed: " + err.Error())
-		return Result{}, err
+		return ParticleResult{}, err
 	}
 
 	// the algorithm goes here
@@ -105,7 +105,7 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
 			switch r := v.(type) {
 			case error:
 				if r != nil {
-					return Result{
+					return ParticleResult{
 						Position: *swarm.Gbest,
 						Step:     step,
 					}, r
@@ -120,7 +120,7 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
 		// Check if the goal has reached then stop early
 		if swarm.Gbest.Fitness < swarm.Settings.function.Goal {
 			logger.Debug("Iteration New Swarm Best", zap.String("step", strconv.Itoa(step)))
-			return Result{
+			return ParticleResult{
 				Position: *swarm.Gbest,
 				Step:     step,
 			}, nil
@@ -138,7 +138,7 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
 
 		// Not finished yet, just continue as new to reduce history size
 		if step%swarm.Settings.ContinueAsNewEvery == 0 {
-			return Result{
+			return ParticleResult{
 				Position: *swarm.Gbest,
 				Step:     step,
 			}, errors.New(ContinueAsNewStr)
@@ -147,7 +147,7 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (Result, error) {
 		step++
 	}
 
-	return Result{
+	return ParticleResult{
 		Position: *swarm.Gbest,
 		Step:     step,
 	}, nil
