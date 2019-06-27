@@ -318,7 +318,7 @@
   version = "v1.3.2"
 
 [[projects]]
-  digest = "1:4c2d6eebe24ba6a9c4685c2e24e2a8a295d7a06ab8728d949d1ad4cc85560648"
+  digest = "1:a61c3c32d3416dfae7e1222dd3a7dfbd0ca11f40cdc176b64b51ca74cfda3c7a"
   name = "go.uber.org/cadence"
   packages = [
     ".",
@@ -340,8 +340,8 @@
     "workflow",
   ]
   pruneopts = "UT"
-  revision = "d48199573d1abaacb7abd1b124111e0ac9099c5b"
-  version = "v0.8.2"
+  revision = "ed50efa070ce618de80d78bf20dd30b5a4b432a5"
+  version = "v0.8.6"
 
 [[projects]]
   digest = "1:60bf2a5e347af463c42ed31a493d817f8a72f102543060ed992754e689805d1a"
@@ -408,7 +408,7 @@
   revision = "ce2550dad7144b81ae2f67dc5e55597643f6902b"
 
 [[projects]]
-  digest = "1:b3945dae2c398bac56399aa289fd6dad0c2dce4aa6ffd4be0a31a0d4fc388ecb"
+  digest = "1:9e7d2b3bb099cd32c8bce51662a2d948d3d6a08a3537f48fe079859382a10e55"
   name = "go.uber.org/yarpc"
   packages = [
     ".",
@@ -446,8 +446,8 @@
     "yarpcerrors",
   ]
   pruneopts = "UT"
-  revision = "fd9e2c3be1a5c526226bb61bbc1cf5bee05314b6"
-  version = "v1.37.1"
+  revision = "515ae026b5555b1fa00a77ffa650ab4dc32c72ed"
+  version = "v1.38.0"
 
 [[projects]]
   digest = "1:c52caf7bd44f92e54627a31b85baf06a68333a196b3d8d241480a774733dcf8b"

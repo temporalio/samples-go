@@ -18,6 +18,7 @@ func startWorkers(h *common.SampleHelper) {
 		MetricsScope:          h.Scope,
 		Logger:                h.Logger,
 		EnableLoggingInReplay: true,
+		EnableSessionWorker:   true,
 	}
 	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
 
