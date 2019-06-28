@@ -37,13 +37,8 @@ func Workflow(ctx workflow.Context) error {
 
 	logger := workflow.GetLogger(ctx)
 	logger.Info("cancel workflow started")
-	err := workflow.ExecuteActivity(ctx, cancelActivity, "dirtyOperation", 1).Get(ctx, nil)
-	if err != nil {
-		logger.Error("Activity failed, not expected", zap.Error(err))
-		return err
-	}
 
-	err = workflow.ExecuteActivity(ctx, cancelActivity, "operationToCancel---cancel workflow after start. Using command 'cadence --do samples-domain wf cancel -w <WorkflowID>' ", 240).Get(ctx, nil)
+	err := workflow.ExecuteActivity(ctx, cancelActivity).Get(ctx, nil)
 	if err != nil {
 		if cadence.IsCanceledError(err) {
 			// here, we need to get a new ctx to perform cleanup
@@ -74,6 +69,7 @@ func Workflow(ctx workflow.Context) error {
 }
 
 func cancelActivity(ctx context.Context, name string, waitSecs int) error {
+	//"operationToCancel---cancel workflow after start. Using command 'cadence --do samples-domain wf cancel -w <WorkflowID>' ", 240
 	fmt.Println("first line in cancelActivity " + name)
 	logger := activity.GetLogger(ctx)
 	logger.Info("activity started")
