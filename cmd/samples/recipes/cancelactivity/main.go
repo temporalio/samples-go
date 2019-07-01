@@ -31,9 +31,14 @@ func startWorkflow(h *common.SampleHelper) {
 	h.StartWorkflow(workflowOptions, Workflow)
 }
 
+func cancelWorkflow(h *common.SampleHelper, wid string) {
+	h.CancelWorkflow(wid)
+}
+
 func main() {
-	var mode string
+	var mode, wid string
 	flag.StringVar(&mode, "m", "trigger", "Mode is worker or trigger.")
+	flag.StringVar(&wid, "w", "<workflowID>", "w is the workflowID of the workflow to be canceled.")
 	flag.Parse()
 
 	var h common.SampleHelper
@@ -48,5 +53,7 @@ func main() {
 		select {}
 	case "trigger":
 		startWorkflow(&h)
+	case "cancel":
+		cancelWorkflow(&h, wid)
 	}
 }
