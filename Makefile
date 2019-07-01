@@ -24,6 +24,7 @@ PROGS = helloworld \
 	dummy \
 	expense \
 	recovery \
+	cancelactivity \
 TEST_ARG ?= -race -v -timeout 5m
 BUILD := ./build
 SAMPLES_DIR=./cmd/samples
@@ -53,6 +54,9 @@ TEST_DIRS=./cmd/samples/cron \
 
 dep-ensured:
 	dep ensure
+
+cancelactivity: dep-ensured $(ALL_SRC)
+	go build -i -o bin/cancelactivity cmd/samples/recipes/cancelactivity/*.go
 
 helloworld: dep-ensured $(ALL_SRC)
 	go build -i -o bin/helloworld cmd/samples/recipes/helloworld/*.go
