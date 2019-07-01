@@ -21,7 +21,7 @@ const ApplicationName = "cancelGroup"
 // and activity function handlers.
 func init() {
 	workflow.Register(Workflow)
-	activity.Register(activityToBeCacneled)
+	activity.Register(activityToBeCanceled)
 	activity.Register(activityToBeSkipped)
 	activity.Register(cleanupActivity)
 }
@@ -47,8 +47,8 @@ func Workflow(ctx workflow.Context) error {
 	}()
 
 	var result string
-	err := workflow.ExecuteActivity(ctx, activityToBeCacneled).Get(ctx, &result)
-	logger.Info(fmt.Sprintf("activityToBeCacneled returns %v, %v", result, err))
+	err := workflow.ExecuteActivity(ctx, activityToBeCanceled).Get(ctx, &result)
+	logger.Info(fmt.Sprintf("activityToBeCanceled returns %v, %v", result, err))
 
 	_ = workflow.ExecuteActivity(ctx, activityToBeSkipped).Get(ctx, nil)
 
@@ -57,7 +57,7 @@ func Workflow(ctx workflow.Context) error {
 	return nil
 }
 
-func activityToBeCacneled(ctx context.Context) (string, error) {
+func activityToBeCanceled(ctx context.Context) (string, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("activity started, you can use ./cancelactivity -m cancel -w <WorkflowID> or CLI: 'cadence --do samples-domain wf cancel -w <WorkflowID>' to cancel")
 	for {
