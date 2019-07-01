@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"go.uber.org/cadence"
+
 	"go.uber.org/cadence/activity"
 	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
@@ -31,6 +33,8 @@ func Workflow(ctx workflow.Context) error {
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute * 30,
+		HeartbeatTimeout:       time.Minute,
+		//WaitForCancellation:    true,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 	logger := workflow.GetLogger(ctx)
@@ -56,21 +60,25 @@ func Workflow(ctx workflow.Context) error {
 }
 
 func activityToBeCacneled(ctx context.Context) (string, error) {
-	//"operationToCancel---cancel workflow after start. Using command 'cadence --do samples-domain wf cancel -w <WorkflowID>' ", 240
 	logger := activity.GetLogger(ctx)
 	logger.Info("activity started, you can use ./cancelactivity -m cancel <WorkflowID> or CLI: 'cadence --do samples-domain wf cancel -w <WorkflowID>' to cancel")
+Outer:
 	for {
 		select {
 		case <-time.After(1 * time.Second):
 			logger.Info("heartbeating...")
 			activity.RecordHeartbeat(ctx, "")
+			if cadence.IsCanceledError(ctx.Err()) {
+				break Outer
+			}
 		case <-ctx.Done():
 			logger.Info("context is cancelled")
-			return "I am canceled", nil
+			//TODO
+			return "I am canceled by Done(this won't work due to a bug)", nil
 		}
 	}
 
-	return "I am done", nil
+	return "I am canceled by error", nil
 }
 
 func cleanupActivity(ctx context.Context) error {
