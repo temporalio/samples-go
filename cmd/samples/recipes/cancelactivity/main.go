@@ -37,7 +37,7 @@ func cancelWorkflow(h *common.SampleHelper, wid string) {
 
 func main() {
 	var mode, wid string
-	flag.StringVar(&mode, "m", "trigger", "Mode is worker or trigger.")
+	flag.StringVar(&mode, "m", "trigger", "Mode is worker, trigger or cancel.")
 	flag.StringVar(&wid, "w", "<workflowID>", "w is the workflowID of the workflow to be canceled.")
 	flag.Parse()
 

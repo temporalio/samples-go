@@ -39,6 +39,7 @@ func Workflow(ctx workflow.Context) error {
 	logger.Info("cancel workflow started")
 
 	defer func() {
+		// When workflow is canceled, it has to get a new disconnected context to execute any activities
 		newCtx, _ := workflow.NewDisconnectedContext(ctx)
 		err := workflow.ExecuteActivity(newCtx, cleanupActivity).Get(ctx, nil)
 		if err != nil {
@@ -50,7 +51,8 @@ func Workflow(ctx workflow.Context) error {
 	err := workflow.ExecuteActivity(ctx, activityToBeCanceled).Get(ctx, &result)
 	logger.Info(fmt.Sprintf("activityToBeCanceled returns %v, %v", result, err))
 
-	_ = workflow.ExecuteActivity(ctx, activityToBeSkipped).Get(ctx, nil)
+	err = workflow.ExecuteActivity(ctx, activityToBeSkipped).Get(ctx, nil)
+	logger.Error("Error from activityToBeSkipped", zap.Error(err))
 
 	logger.Info("Workflow completed.")
 
@@ -59,7 +61,7 @@ func Workflow(ctx workflow.Context) error {
 
 func activityToBeCanceled(ctx context.Context) (string, error) {
 	logger := activity.GetLogger(ctx)
-	logger.Info("activity started, you can use ./cancelactivity -m cancel -w <WorkflowID> or CLI: 'cadence --do samples-domain wf cancel -w <WorkflowID>' to cancel")
+	logger.Info("activity started, to cancel workflow, use ./cancelactivity -m cancel -w <WorkflowID> or CLI: 'cadence --do samples-domain wf cancel -w <WorkflowID>' to cancel")
 	for {
 		select {
 		case <-time.After(1 * time.Second):
