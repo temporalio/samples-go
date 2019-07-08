@@ -36,11 +36,6 @@ func CtxPropWorkflow(ctx workflow.Context) (err error) {
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	for _, key := range propagatedKeys {
-		if val, ok := ctx.Value(workflow.ContextKey(key)).(string); ok {
-			workflow.GetLogger(ctx).Info("context propagated to workflow", zap.String(key, val))
-		}
-	}
 	if val := ctx.Value(propagateKey); val != nil {
 		vals := val.(Values)
 		workflow.GetLogger(ctx).Info("custom context propagated to workflow", zap.String(vals.Key, vals.Value))

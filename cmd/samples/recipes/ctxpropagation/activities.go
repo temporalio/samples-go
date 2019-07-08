@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"go.uber.org/cadence/activity"
-	"go.uber.org/cadence/workflow"
 )
 
 const (
@@ -19,12 +19,10 @@ func init() {
 	)
 }
 
-func sampleActivity(ctx context.Context) (map[string]string, error) {
-	values := make(map[string]string, len(propagatedKeys))
-	for _, key := range propagatedKeys {
-		if val, ok := ctx.Value(workflow.ContextKey(key)).(string); ok {
-			values[key] = val
-		}
+func sampleActivity(ctx context.Context) error {
+	if val := ctx.Value(propagateKey); val != nil {
+		vals := val.(Values)
+		fmt.Printf("custom context propagated to activity %v\n", vals)
 	}
-	return values, nil
+	return nil
 }

@@ -35,7 +35,7 @@
 
 [[constraint]]
   name = "go.uber.org/cadence"
-  version = "0.8.5"
+  version = "0.8.8"
 
 [[constraint]]
   name = "go.uber.org/yarpc"
@@ -49,10 +49,6 @@
   name = "github.com/apache/thrift"
   #packages = ["lib/go/thrift"]
   revision = "9549b25c77587b29be4e0b5c258221a4ed85d37a"
-
-[[override]]
-  name = "go.uber.org/cadence"
-  revision = "85614efc4237bcdc73a36f0c7bcb85f6cb3bfd2a"
 
 [prune]
   go-tests = true

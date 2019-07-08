@@ -12,19 +12,6 @@ import (
 	"go.uber.org/cadence/workflow"
 )
 
-var (
-	ctxVals = map[string]string{
-		"key1": "abc",
-		"key2": "def",
-		"key3": "ghi",
-	}
-	propagatedVals = map[string]string{
-		"key1": "abc",
-		"key2": "def",
-	}
-	propagatedKeys = []string{"key1", "key2"}
-)
-
 // This needs to be done as part of a bootstrap step when the process starts.
 // The workers are supposed to be long running.
 func startWorkers(h *common.SampleHelper) {
@@ -35,7 +22,6 @@ func startWorkers(h *common.SampleHelper) {
 		Logger:                h.Logger,
 		EnableLoggingInReplay: true,
 		ContextPropagators: []workflow.ContextPropagator{
-			workflow.NewStringMapPropagator(propagatedKeys),
 			NewContextPropagator(),
 		},
 	}
@@ -54,9 +40,6 @@ func startWorkflow(h *common.SampleHelper) {
 		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 	ctx := context.Background()
-	for key, val := range ctxVals {
-		ctx = context.WithValue(ctx, workflow.ContextKey(key), val)
-	}
 	ctx = context.WithValue(ctx, propagateKey, &Values{Key: "test", Value: "tested"})
 	h.StartWorkflowWithCtx(ctx, workflowOptions, CtxPropWorkflow)
 }
@@ -69,7 +52,6 @@ func main() {
 	var h common.SampleHelper
 	// Setup two context propagators - one string and one custom context.
 	h.CtxPropagators = []workflow.ContextPropagator{
-		workflow.NewStringMapPropagator(propagatedKeys),
 		NewContextPropagator(),
 	}
 	h.SetupServiceConfig()
