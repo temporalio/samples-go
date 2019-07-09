@@ -6,6 +6,7 @@ import (
 	"github.com/uber-go/tally"
 	"go.uber.org/cadence/.gen/go/cadence/workflowserviceclient"
 	"go.uber.org/cadence/client"
+	"go.uber.org/cadence/encoded"
 	"go.uber.org/yarpc"
 	"go.uber.org/yarpc/transport/tchannel"
 	"go.uber.org/zap"
@@ -24,6 +25,7 @@ type WorkflowClientBuilder struct {
 	clientIdentity string
 	metricsScope   tally.Scope
 	Logger         *zap.Logger
+	dataConverter  encoded.DataConverter
 }
 
 // NewBuilder creates a new WorkflowClientBuilder
@@ -63,6 +65,12 @@ func (b *WorkflowClientBuilder) SetDispatcher(dispatcher *yarpc.Dispatcher) *Wor
 	return b
 }
 
+// SetDataConverter sets the data converter for the builder
+func (b *WorkflowClientBuilder) SetDataConverter(dataConverter encoded.DataConverter) *WorkflowClientBuilder {
+	b.dataConverter = dataConverter
+	return b
+}
+
 // BuildCadenceClient builds a client to cadence service
 func (b *WorkflowClientBuilder) BuildCadenceClient() (client.Client, error) {
 	service, err := b.BuildServiceClient()
@@ -71,7 +79,7 @@ func (b *WorkflowClientBuilder) BuildCadenceClient() (client.Client, error) {
 	}
 
 	return client.NewClient(
-		service, b.domain, &client.Options{Identity: b.clientIdentity, MetricsScope: b.metricsScope}), nil
+		service, b.domain, &client.Options{Identity: b.clientIdentity, MetricsScope: b.metricsScope, DataConverter: b.dataConverter}), nil
 }
 
 // BuildCadenceDomainClient builds a domain client to cadence service
