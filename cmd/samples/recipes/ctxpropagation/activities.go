@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	"go.uber.org/cadence/activity"
 )
@@ -19,10 +18,10 @@ func init() {
 	)
 }
 
-func sampleActivity(ctx context.Context) error {
+func sampleActivity(ctx context.Context) (*Values, error) {
 	if val := ctx.Value(propagateKey); val != nil {
 		vals := val.(Values)
-		fmt.Printf("custom context propagated to activity %v\n", vals)
+		return &vals, nil
 	}
-	return nil
+	return nil, nil
 }

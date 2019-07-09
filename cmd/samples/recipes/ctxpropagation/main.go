@@ -15,8 +15,7 @@ import (
 // This needs to be done as part of a bootstrap step when the process starts.
 // The workers are supposed to be long running.
 func startWorkers(h *common.SampleHelper) {
-	// Configure worker options. Setup two context propagators - one string and
-	// one custom context.
+	// Configure worker options. Setup a custom context propagator.
 	workerOptions := worker.Options{
 		MetricsScope:          h.Scope,
 		Logger:                h.Logger,
@@ -26,10 +25,6 @@ func startWorkers(h *common.SampleHelper) {
 		},
 	}
 	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
-
-	// Host Specific activities processing case
-	workerOptions.DisableWorkflowWorker = true
-	h.StartWorkers(h.Config.DomainName, ProcessID, workerOptions)
 }
 
 func startWorkflow(h *common.SampleHelper) {

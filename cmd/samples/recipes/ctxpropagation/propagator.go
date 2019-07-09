@@ -8,8 +8,11 @@ import (
 )
 
 type (
+	// contextKey is an unexported type used as key for items stored in the
+	// Context object
 	contextKey struct{}
 
+	// propagator implements the custom context propagator
 	propagator struct{}
 
 	// Values is a struct holding values
@@ -19,8 +22,11 @@ type (
 	}
 )
 
+// propagateKey is the key used to store the value in the Context object
 var propagateKey = contextKey{}
 
+// propagationKey is the key used by the propagator to pass values through the
+// cadence server headers
 const propagationKey = "_prop"
 
 // NewContextPropagator returns a context propagator that propagates a set of

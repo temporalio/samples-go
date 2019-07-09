@@ -3,16 +3,12 @@ package main
 import (
 	"time"
 
-	"github.com/pborman/uuid"
 	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 )
 
 // ApplicationName is the task list for this sample
 const ApplicationName = "CtxPropagatorGroup"
-
-// ProcessID - Use a new uuid just for demo so we can run 2 host specific activity workers on same machine.
-var ProcessID = ApplicationName + "_" + uuid.New()
 
 // This is registration process where you register all your workflow handlers.
 func init() {
@@ -33,14 +29,12 @@ func CtxPropWorkflow(ctx workflow.Context) (err error) {
 		workflow.GetLogger(ctx).Info("custom context propagated to workflow", zap.String(vals.Key, vals.Value))
 	}
 
-	var values map[string]string
+	var values Values
 	if err = workflow.ExecuteActivity(ctx, sampleActivity).Get(ctx, &values); err != nil {
 		workflow.GetLogger(ctx).Error("Workflow failed.", zap.Error(err))
 		return err
 	}
-	for key, val := range values {
-		workflow.GetLogger(ctx).Info("context propagated to activity", zap.String(key, val))
-	}
+	workflow.GetLogger(ctx).Info("context propagated to activity", zap.String(values.Key, values.Value))
 	workflow.GetLogger(ctx).Info("Workflow completed.")
 	return nil
 }
