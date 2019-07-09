@@ -35,7 +35,7 @@
 
 [[constraint]]
   name = "go.uber.org/cadence"
-  version = "0.8.5"
+  version = "0.8.8"
 
 [[constraint]]
   name = "go.uber.org/yarpc"

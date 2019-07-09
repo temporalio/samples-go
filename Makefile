@@ -25,6 +25,7 @@ PROGS = helloworld \
 	expense \
 	recovery \
 	cancelactivity \
+	ctxpropagation \
 	pso \
 
 TEST_ARG ?= -race -v -timeout 5m
@@ -52,6 +53,7 @@ TEST_DIRS=./cmd/samples/cron \
 	./cmd/samples/recipes/timer \
 	./cmd/samples/recipes/localactivity \
 	./cmd/samples/recipes/query \
+	./cmd/samples/recipes/ctxpropagation \
 	./cmd/samples/recovery \
 	./cmd/samples/pso \
 
@@ -97,6 +99,9 @@ localactivity: dep-ensured $(ALL_SRC)
 query: dep-ensured $(ALL_SRC)
 	go build -i -o bin/query cmd/samples/recipes/query/*.go
 
+ctxpropagation: dep-ensured $(ALL_SRC)
+	go build -i -o bin/ctxpropagation cmd/samples/recipes/ctxpropagation/*.go
+
 cron: dep-ensured $(ALL_SRC)
 	go build -i -o bin/cron cmd/samples/cron/*.go
 
@@ -136,6 +141,7 @@ bins: helloworld \
 	localactivity \
 	query \
 	recovery \
+	ctxpropagation \
 	pso \
 
 test: bins
