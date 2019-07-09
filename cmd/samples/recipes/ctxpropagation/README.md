@@ -1,7 +1,10 @@
-This sample workflow demos context propagation through a workflow.
+This sample workflow demos context propagation through a workflow. Details about context propagation are
+available [here](https://cadenceworkflow.io/docs/03_goclient/16_tracing).
 
-The workflow initializes the client with a context propagator which propagates
-across the workflow - available to use in workflow and activities.
+The sample workflow initializes the client with a context propagator which propagates
+specific information in the `context.Context` object across the workflow. The `context.Context` object is populated
+with the information prior to calling `StartWorkflow`. The workflow demonstrates that the information is available
+in the workflow and any activities executed.
 
 Steps to run this sample:
 1) You need a cadence service running. See details in cmd/samples/README.md
