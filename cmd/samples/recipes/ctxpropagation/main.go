@@ -29,7 +29,7 @@ func startWorkers(h *common.SampleHelper) {
 
 	// Host Specific activities processing case
 	workerOptions.DisableWorkflowWorker = true
-	h.StartWorkers(h.Config.DomainName, HostID, workerOptions)
+	h.StartWorkers(h.Config.DomainName, ProcessID, workerOptions)
 }
 
 func startWorkflow(h *common.SampleHelper) {

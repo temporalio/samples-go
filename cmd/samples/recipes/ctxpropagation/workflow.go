@@ -8,19 +8,11 @@ import (
 	"go.uber.org/zap"
 )
 
-type (
-	fileInfo struct {
-		FileName string
-		HostID   string
-	}
-)
-
 // ApplicationName is the task list for this sample
 const ApplicationName = "CtxPropagatorGroup"
 
-// HostID - Use a new uuid just for demo so we can run 2 host specific activity workers on same machine.
-// In real world case, you would use a hostname or ip address as HostID.
-var HostID = ApplicationName + "_" + uuid.New()
+// ProcessID - Use a new uuid just for demo so we can run 2 host specific activity workers on same machine.
+var ProcessID = ApplicationName + "_" + uuid.New()
 
 // This is registration process where you register all your workflow handlers.
 func init() {
