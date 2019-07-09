@@ -19,6 +19,6 @@ Steps to run this sample:
 ```
 ./bin/pso -m query -w <workflow_id from step 3> -r <run_id from step 3> -t state
 ```
-Replace -t state to -t __stack_trace to dump the call stack for the workflow.
+Replace -t state with -t \_\_stack_trace to dump the call stack for the workflow.
 
 You should see that all activities for one particular workflow execution are scheduled to run on one console window.
