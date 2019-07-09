@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"go.uber.org/cadence/encoded"
 	"go.uber.org/cadence/worker"
 	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
@@ -27,6 +28,7 @@ type (
 		Logger         *zap.Logger
 		Config         Configuration
 		Builder        *WorkflowClientBuilder
+		DataConverter  encoded.DataConverter
 		CtxPropagators []workflow.ContextPropagator
 	}
 
@@ -67,6 +69,7 @@ func (h *SampleHelper) SetupServiceConfig() {
 		SetHostPort(h.Config.HostNameAndPort).
 		SetDomain(h.Config.DomainName).
 		SetMetricsScope(h.Scope).
+		SetDataConverter(h.DataConverter).
 		SetContextPropagators(h.CtxPropagators)
 	service, err := h.Builder.BuildServiceClient()
 	if err != nil {

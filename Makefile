@@ -26,6 +26,8 @@ PROGS = helloworld \
 	recovery \
 	cancelactivity \
 	ctxpropagation \
+	pso \
+
 TEST_ARG ?= -race -v -timeout 5m
 BUILD := ./build
 SAMPLES_DIR=./cmd/samples
@@ -53,6 +55,7 @@ TEST_DIRS=./cmd/samples/cron \
 	./cmd/samples/recipes/query \
 	./cmd/samples/recipes/ctxpropagation \
 	./cmd/samples/recovery \
+	./cmd/samples/pso \
 
 dep-ensured:
 	dep ensure
@@ -117,6 +120,9 @@ expense: dep-ensured $(ALL_SRC)
 recovery: dep-ensured $(ALL_SRC)
 	go build -i -o bin/recovery cmd/samples/recovery/*.go
 
+pso: dep-ensured $(ALL_SRC)
+	go build -i -o bin/pso cmd/samples/pso/*.go
+
 bins: helloworld \
 	branch \
 	childworkflow \
@@ -136,6 +142,7 @@ bins: helloworld \
 	query \
 	recovery \
 	ctxpropagation \
+	pso \
 
 test: bins
 	@rm -f test
