@@ -143,3 +143,17 @@ func (h *SampleHelper) SignalWorkflow(workflowID, signal string, data interface{
 		panic("Failed to signal workflow.")
 	}
 }
+
+func (h *SampleHelper) CancelWorkflow(workflowID string) {
+	workflowClient, err := h.Builder.BuildCadenceClient()
+	if err != nil {
+		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
+		panic(err)
+	}
+
+	err = workflowClient.CancelWorkflow(context.Background(), workflowID, "")
+	if err != nil {
+		h.Logger.Error("Failed to cancel workflow", zap.Error(err))
+		panic("Failed to cancel workflow.")
+	}
+}
