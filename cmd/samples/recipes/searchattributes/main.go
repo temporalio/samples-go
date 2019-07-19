@@ -3,40 +3,50 @@ package main
 import (
 	"context"
 	"flag"
+	"go.uber.org/zap"
 	"time"
 
 	"github.com/pborman/uuid"
 	"github.com/uber-common/cadence-samples/cmd/samples/common"
 	"go.uber.org/cadence/client"
 	"go.uber.org/cadence/worker"
-	"go.uber.org/cadence/workflow"
 )
 
 // This needs to be done as part of a bootstrap step when the process starts.
 // The workers are supposed to be long running.
 func startWorkers(h *common.SampleHelper) {
-	// Configure worker options. Setup a custom context propagator.
-	workerOptions := worker.Options{
-		MetricsScope:          h.Scope,
-		Logger:                h.Logger,
-		EnableLoggingInReplay: true,
-		ContextPropagators: []workflow.ContextPropagator{
-			NewContextPropagator(),
-		},
+	workflowClient, err := h.Builder.BuildCadenceClient()
+	if err != nil {
+		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
+		panic(err)
 	}
+	ctx := context.WithValue(context.Background(), CadenceClientKey, workflowClient)
+
+	// Configure worker options.
+	workerOptions := worker.Options{
+		MetricsScope:              h.Scope,
+		Logger:                    h.Logger,
+		BackgroundActivityContext: ctx,
+	}
+
 	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
 }
 
 func startWorkflow(h *common.SampleHelper) {
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              "ctxprop_" + uuid.New(),
+		ID:                              "searchAttributes_" + uuid.New(),
 		TaskList:                        ApplicationName,
 		ExecutionStartToCloseTimeout:    time.Minute,
 		DecisionTaskStartToCloseTimeout: time.Minute,
+		SearchAttributes:                getSearchAttributesForStart(), // optional search attributes when start workflow
 	}
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, propagateKey, &Values{Key: "test", Value: "tested"})
-	h.StartWorkflowWithCtx(ctx, workflowOptions, CtxPropWorkflow)
+	h.StartWorkflow(workflowOptions, SearchAttributesWorkflow)
+}
+
+func getSearchAttributesForStart() map[string]interface{} {
+	return map[string]interface{}{
+		"CustomIntField": 1,
+	}
 }
 
 func main() {
@@ -45,10 +55,6 @@ func main() {
 	flag.Parse()
 
 	var h common.SampleHelper
-	// Setup two context propagators - one string and one custom context.
-	h.CtxPropagators = []workflow.ContextPropagator{
-		NewContextPropagator(),
-	}
 	h.SetupServiceConfig()
 
 	switch mode {

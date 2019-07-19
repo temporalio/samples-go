@@ -45,7 +45,7 @@ Start workflow with interval of 3s and schedule 5 times for the cron job.
 ```
 
 #### expense
-See more details in https://github.com/samarabbas/cadence-samples/blob/master/cmd/samples/expense/README.md
+See more details in https://github.com/uber-common/cadence-samples/blob/master/cmd/samples/expense/README.md
 
 #### fileprocessing
 ```

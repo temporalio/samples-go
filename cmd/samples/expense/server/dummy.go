@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/samarabbas/cadence-samples/cmd/samples/common"
+	"github.com/uber-common/cadence-samples/cmd/samples/common"
 	"go.uber.org/cadence/client"
 )
 

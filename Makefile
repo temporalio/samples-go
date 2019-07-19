@@ -1,5 +1,5 @@
 .PHONY: test bins clean
-PROJECT_ROOT = github.com/samarabbas/cadence-samples
+PROJECT_ROOT = github.com/uber-common/cadence-samples
 
 export PATH := $(GOPATH)/bin:$(PATH)
 
@@ -46,7 +46,7 @@ TEST_DIRS=./cmd/samples/cron \
 	./cmd/samples/recipes/choice \
 	./cmd/samples/recipes/greetings \
 	./cmd/samples/recipes/helloworld \
-	./cmd/samples/recipes/cancel \
+	./cmd/samples/recipes/cancelactivity \
 	./cmd/samples/recipes/pickfirst \
 	./cmd/samples/recipes/retryactivity \
 	./cmd/samples/recipes/splitmerge \
@@ -54,6 +54,7 @@ TEST_DIRS=./cmd/samples/cron \
 	./cmd/samples/recipes/localactivity \
 	./cmd/samples/recipes/query \
 	./cmd/samples/recipes/ctxpropagation \
+	./cmd/samples/recipes/searchattributes \
 	./cmd/samples/recovery \
 	./cmd/samples/pso \
 
@@ -89,6 +90,9 @@ retryactivity: dep-ensured $(ALL_SRC)
 
 splitmerge: dep-ensured $(ALL_SRC)
 	go build -i -o bin/splitmerge cmd/samples/recipes/splitmerge/*.go
+
+searchattributes: dep-ensured $(ALL_SRC)
+	go build -i -o bin/searchattributes cmd/samples/recipes/searchattributes/*.go
 
 timer: dep-ensured $(ALL_SRC)
 	go build -i -o bin/timer cmd/samples/recipes/timer/*.go
@@ -132,6 +136,7 @@ bins: helloworld \
 	pickfirst \
 	retryactivity \
 	splitmerge \
+	searchattributes \
 	timer \
 	cron \
 	dsl \

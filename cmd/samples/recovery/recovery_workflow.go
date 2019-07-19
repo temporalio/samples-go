@@ -4,7 +4,8 @@ import (
 	"context"
 	"errors"
 	"github.com/pborman/uuid"
-	"github.com/samarabbas/cadence-samples/cmd/samples/recovery/cache"
+	"github.com/uber-common/cadence-samples/cmd/samples/common"
+	"github.com/uber-common/cadence-samples/cmd/samples/recovery/cache"
 	"go.uber.org/cadence"
 	"go.uber.org/cadence/.gen/go/shared"
 	"go.uber.org/cadence/activity"
@@ -231,7 +232,7 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 	}
 
 	execution := &shared.WorkflowExecution{
-		WorkflowId: StringPtr(workflowID),
+		WorkflowId: common.StringPtr(workflowID),
 	}
 	history, err := getHistory(ctx, execution)
 	if err != nil {
@@ -350,15 +351,15 @@ func getAllExecutionsOfType(ctx context.Context, cadenceClient client.Client,
 	var nextPageToken []byte
 	for hasMore := true; hasMore; hasMore = len(nextPageToken) > 0 {
 		resp, err := cadenceClient.ListOpenWorkflow(ctx, &shared.ListOpenWorkflowExecutionsRequest{
-			Domain:          StringPtr(DomainName),
-			MaximumPageSize: Int32Ptr(10),
+			Domain:          common.StringPtr(DomainName),
+			MaximumPageSize: common.Int32Ptr(10),
 			NextPageToken:   nextPageToken,
 			StartTimeFilter: &shared.StartTimeFilter{
-				EarliestTime: Int64Ptr(0),
-				LatestTime:   Int64Ptr(time.Now().UnixNano()),
+				EarliestTime: common.Int64Ptr(0),
+				LatestTime:   common.Int64Ptr(time.Now().UnixNano()),
 			},
 			TypeFilter: &shared.WorkflowTypeFilter{
-				Name: StringPtr(workflowType),
+				Name: common.StringPtr(workflowType),
 			},
 		})
 		if err != nil {
@@ -406,19 +407,4 @@ func getCadenceClientFromContext(ctx context.Context) (client.Client, error) {
 	}
 
 	return cadenceClient, nil
-}
-
-// StringPtr returns pointer to a string
-func StringPtr(v string) *string {
-	return &v
-}
-
-// Int32Ptr returns pointer to a int32
-func Int32Ptr(v int32) *int32 {
-	return &v
-}
-
-// Int64Ptr returns pointer to a int64
-func Int64Ptr(v int64) *int64 {
-	return &v
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/pborman/uuid"
-	"github.com/samarabbas/cadence-samples/cmd/samples/common"
+	"github.com/uber-common/cadence-samples/cmd/samples/common"
 	"go.uber.org/cadence/client"
 	"go.uber.org/cadence/worker"
 	"time"

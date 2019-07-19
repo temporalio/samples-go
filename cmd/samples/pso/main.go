@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
-	"github.com/uber/cadence-samples/cmd/samples/common"
+	"github.com/uber-common/cadence-samples/cmd/samples/common"
 	"go.uber.org/cadence/client"
 	"go.uber.org/cadence/encoded"
 	"go.uber.org/cadence/worker"

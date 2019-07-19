@@ -20,7 +20,7 @@ func TestUnitTestSuite(t *testing.T) {
 }
 
 func (s *UnitTestSuite) Test_SampleGreetingsWorkflow() {
-	sayGreetingActivityName := "github.com/samarabbas/cadence-samples/cmd/samples/recipes/greetings.sayGreetingActivity"
+	sayGreetingActivityName := "github.com/uber-common/cadence-samples/cmd/samples/recipes/greetings.sayGreetingActivity"
 	env := s.NewTestWorkflowEnvironment()
 	var startCalled, endCalled bool
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {
