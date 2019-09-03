@@ -82,7 +82,7 @@ func (h *SampleHelper) SetupServiceConfig() {
 	if err != nil {
 		logger.Info("Domain doesn't exist", zap.String("Domain", h.Config.DomainName), zap.Error(err))
 	} else {
-		logger.Info("Domain succeesfully registered.", zap.String("Domain", h.Config.DomainName))
+		logger.Info("Domain successfully registered.", zap.String("Domain", h.Config.DomainName))
 	}
 }
 
