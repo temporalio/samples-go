@@ -101,6 +101,14 @@ Run the multi choice workflow
 ./bin/pickfirst -m trigger
 ```
 
+#### mutex
+```
+./bin/mutex -m worker
+```
+```
+./bin/mutex -m trigger
+```
+
 #### retryactivity
 ```
 ./bin/retryactivity -m worker

@@ -109,6 +109,26 @@ func (h *SampleHelper) StartWorkflowWithCtx(ctx context.Context, options client.
 	}
 }
 
+// SignalWithStartWorkflowWithCtx signals workflow and starts it if it's not yet started
+func (h *SampleHelper) SignalWithStartWorkflowWithCtx(ctx context.Context, workflowID string, signalName string, signalArg interface{},
+	options client.StartWorkflowOptions, workflow interface{}, workflowArgs ...interface{}) *workflow.Execution {
+	workflowClient, err := h.Builder.BuildCadenceClient()
+	if err != nil {
+		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
+		panic(err)
+	}
+
+	we, err := workflowClient.SignalWithStartWorkflow(ctx, workflowID, signalName, signalArg, options, workflow, workflowArgs...)
+	if err != nil {
+		h.Logger.Error("Failed to signal with start workflow", zap.Error(err))
+		panic("Failed to signal with start workflow.")
+
+	} else {
+		h.Logger.Info("Signaled and started Workflow", zap.String("WorkflowID", we.ID), zap.String("RunID", we.RunID))
+	}
+	return we
+}
+
 // StartWorkers starts workflow worker and activity worker based on configured options.
 func (h *SampleHelper) StartWorkers(domainName, groupName string, options worker.Options) {
 	worker := worker.New(h.Service, domainName, groupName, options)

@@ -48,6 +48,7 @@ TEST_DIRS=./cmd/samples/cron \
 	./cmd/samples/recipes/helloworld \
 	./cmd/samples/recipes/cancelactivity \
 	./cmd/samples/recipes/pickfirst \
+	./cmd/samples/recipes/mutex \
 	./cmd/samples/recipes/retryactivity \
 	./cmd/samples/recipes/splitmerge \
 	./cmd/samples/recipes/timer \
@@ -84,6 +85,9 @@ greetings: dep-ensured $(ALL_SRC)
 
 pickfirst: dep-ensured $(ALL_SRC)
 	go build -i -o bin/pickfirst cmd/samples/recipes/pickfirst/*.go
+
+mutex: dep-ensured $(ALL_SRC)
+	go build -i -o bin/mutex cmd/samples/recipes/mutex/*.go
 
 retryactivity: dep-ensured $(ALL_SRC)
 	go build -i -o bin/retryactivity cmd/samples/recipes/retryactivity/*.go
@@ -134,6 +138,7 @@ bins: helloworld \
 	dynamic \
 	greetings \
 	pickfirst \
+	mutex \
 	retryactivity \
 	splitmerge \
 	searchattributes \
