@@ -59,76 +59,74 @@ TEST_DIRS=./cmd/samples/cron \
 	./cmd/samples/recovery \
 	./cmd/samples/pso \
 
-dep-ensured:
-	dep ensure
 
-cancelactivity: dep-ensured $(ALL_SRC)
+cancelactivity:
 	go build -i -o bin/cancelactivity cmd/samples/recipes/cancelactivity/*.go
 
-helloworld: dep-ensured $(ALL_SRC)
+helloworld:
 	go build -i -o bin/helloworld cmd/samples/recipes/helloworld/*.go
 
-branch: dep-ensured $(ALL_SRC)
+branch:
 	go build -i -o bin/branch cmd/samples/recipes/branch/*.go
 
-childworkflow: dep-ensured $(ALL_SRC)
+childworkflow:
 	go build -i -o bin/childworkflow cmd/samples/recipes/childworkflow/*.go
 
-choice: dep-ensured $(ALL_SRC)
+choice:
 	go build -i -o bin/choice cmd/samples/recipes/choice/*.go
 
-dynamic: dep-ensured $(ALL_SRC)
+dynamic:
 	go build -i -o bin/dynamic cmd/samples/recipes/dynamic/*.go
 
-greetings: dep-ensured $(ALL_SRC)
+greetings:
 	go build -i -o bin/greetings cmd/samples/recipes/greetings/*.go
 
-pickfirst: dep-ensured $(ALL_SRC)
+pickfirst:
 	go build -i -o bin/pickfirst cmd/samples/recipes/pickfirst/*.go
 
-mutex: dep-ensured $(ALL_SRC)
+mutex:
 	go build -i -o bin/mutex cmd/samples/recipes/mutex/*.go
 
-retryactivity: dep-ensured $(ALL_SRC)
+retryactivity:
 	go build -i -o bin/retryactivity cmd/samples/recipes/retryactivity/*.go
 
-splitmerge: dep-ensured $(ALL_SRC)
+splitmerge:
 	go build -i -o bin/splitmerge cmd/samples/recipes/splitmerge/*.go
 
-searchattributes: dep-ensured $(ALL_SRC)
+searchattributes:
 	go build -i -o bin/searchattributes cmd/samples/recipes/searchattributes/*.go
 
-timer: dep-ensured $(ALL_SRC)
+timer:
 	go build -i -o bin/timer cmd/samples/recipes/timer/*.go
 
-localactivity: dep-ensured $(ALL_SRC)
+localactivity:
 	go build -i -o bin/localactivity cmd/samples/recipes/localactivity/*.go
 
-query: dep-ensured $(ALL_SRC)
+query:
 	go build -i -o bin/query cmd/samples/recipes/query/*.go
 
-ctxpropagation: dep-ensured $(ALL_SRC)
+ctxpropagation:
 	go build -i -o bin/ctxpropagation cmd/samples/recipes/ctxpropagation/*.go
 
-cron: dep-ensured $(ALL_SRC)
+cron:
 	go build -i -o bin/cron cmd/samples/cron/*.go
 
-dsl: dep-ensured $(ALL_SRC)
+dsl:
 	go build -i -o bin/dsl cmd/samples/dsl/*.go
 
-fileprocessing: dep-ensured $(ALL_SRC)
+fileprocessing:
 	go build -i -o bin/fileprocessing cmd/samples/fileprocessing/*.go
 
-dummy: dep-ensured $(ALL_SRC)
+dummy:
 	go build -i -o bin/dummy cmd/samples/expense/server/*.go
 
-expense: dep-ensured $(ALL_SRC)
+expense:
 	go build -i -o bin/expense cmd/samples/expense/*.go
 
-recovery: dep-ensured $(ALL_SRC)
+recovery:
 	go build -i -o bin/recovery cmd/samples/recovery/*.go
 
-pso: dep-ensured $(ALL_SRC)
+pso:
 	go build -i -o bin/pso cmd/samples/pso/*.go
 
 bins: helloworld \
