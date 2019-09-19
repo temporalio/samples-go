@@ -24,6 +24,6 @@ If dummy is not found, run make to build it.
 ```
 ./bin/expense -m trigger
 ```
-* When you see the console print out the expense is created, go to [localhost](http://localhost:8080/list) to approve the expense.
+* When you see the console print out the expense is created, go to [localhost:8099/list](http://localhost:8099/list) to approve the expense.
 * You should see the workflow complete after you approve the expense. You can also reject the expense.
 * If you see the workflow failed, try to change to a different port number in dummy.go and workflow.go. Then rebuild everything.
