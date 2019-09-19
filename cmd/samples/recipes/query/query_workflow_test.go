@@ -11,13 +11,16 @@ func Test_QueryWorkflow(t *testing.T) {
 	ts := &testsuite.WorkflowTestSuite{}
 	env := ts.NewTestWorkflowEnvironment()
 
+	w := false
 	env.RegisterDelayedCallback(func() {
 		queryAndVerify(t, env, "waiting on timer")
-	}, time.Minute*5)
+		w = true
+	}, time.Minute*1)
 
 	env.ExecuteWorkflow(QueryWorkflow)
 	require.True(t, env.IsWorkflowCompleted())
 	require.NoError(t, env.GetWorkflowError())
+	require.True(t, w, "state at timer not verified")
 	queryAndVerify(t, env, "done")
 }
 
