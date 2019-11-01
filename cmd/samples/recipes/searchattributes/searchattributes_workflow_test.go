@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/cadence/.gen/go/shared"
-	"go.uber.org/cadence/testsuite"
+	"go.temporal.io/temporal/.gen/go/shared"
+	"go.temporal.io/temporal/testsuite"
 	"testing"
 	"time"
 )

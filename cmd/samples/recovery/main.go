@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
-	"github.com/uber-common/cadence-samples/cmd/samples/common"
-	"github.com/uber-common/cadence-samples/cmd/samples/recovery/cache"
-	"go.uber.org/cadence/client"
-	"go.uber.org/cadence/worker"
+	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
+	"github.com/temporalio/temporal-go-samples/cmd/samples/recovery/cache"
+	"go.temporal.io/temporal/client"
+	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
 	"time"
 )
@@ -20,7 +20,7 @@ func startWorkers(h *common.SampleHelper) {
 		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
 		panic(err)
 	}
-	ctx := context.WithValue(context.Background(), CadenceClientKey, workflowClient)
+	ctx := context.WithValue(context.Background(), TemporalClientKey, workflowClient)
 	ctx = context.WithValue(ctx, WorkflowExecutionCacheKey, cache.NewLRU(10))
 
 	// Configure worker options.

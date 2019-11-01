@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
-	"github.com/uber-common/cadence-samples/cmd/samples/common"
-	"go.uber.org/cadence/client"
-	"go.uber.org/cadence/worker"
+	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
+	"go.temporal.io/temporal/client"
+	"go.temporal.io/temporal/worker"
 )
 
 // This needs to be done as part of a bootstrap step when the process starts.

@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
-	"go.uber.org/cadence"
-	"go.uber.org/cadence/workflow"
+	"go.temporal.io/temporal"
+	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
 
@@ -35,7 +35,7 @@ func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err erro
 		ScheduleToStartTimeout: time.Second * 5,
 		StartToCloseTimeout:    time.Minute,
 		HeartbeatTimeout:       time.Second * 2, // such a short timeout to make sample fail over very fast
-		RetryPolicy: &cadence.RetryPolicy{
+		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:          time.Second,
 			BackoffCoefficient:       2.0,
 			MaximumInterval:          time.Minute,

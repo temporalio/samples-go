@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"go.uber.org/cadence/activity"
+	"go.temporal.io/temporal/activity"
 )
 
 /**

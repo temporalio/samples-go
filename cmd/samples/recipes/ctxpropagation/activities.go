@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	"go.uber.org/cadence/activity"
+	"go.temporal.io/temporal/activity"
 )
 
 const (

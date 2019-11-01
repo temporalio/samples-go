@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/cadence/testsuite"
+	"go.temporal.io/temporal/testsuite"
 	"testing"
 )
 

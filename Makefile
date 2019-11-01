@@ -1,5 +1,5 @@
 .PHONY: test bins clean
-PROJECT_ROOT = github.com/uber-common/cadence-samples
+PROJECT_ROOT = github.com/temporalio/temporal-go-samples
 
 export PATH := $(GOPATH)/bin:$(PATH)
 

@@ -1,15 +1,15 @@
-# Cadence Samples
-These are some samples to demostrate various capabilities of Cadence client and server.  You can learn more about cadence at:
-* Cadence: https://github.com/uber/cadence
-* Cadence Client: https://github.com/uber-go/cadence-client
+# Temporal Samples
+These are some samples to demostrate various capabilities of Temporal client and server.  You can learn more about Temporal at:
+* Temporal: https://github.com/temporalio/temporal
+* Temporal Client: https://github.com/temporalio/temporal-go-client
 
 ## Prerequisite
-Run Cadence Server
+Run Temporal Server
 
-See instructions for running the Cadence Server: https://github.com/uber/cadence/blob/master/README.md
+See instructions for running the Temporal Server: https://github.com/temporalio/temporal/blob/master/README.md
 
 See instructions for using CLI to register a domain(name as "samples-domain"): https://cadenceworkflow.io/docs/08_cli
- or https://github.com/uber/cadence/blob/master/tools/cli/README.md 
+ or https://github.com/temporalio/temporal/blob/master/tools/cli/README.md 
  
  
 ## Steps to run samples
@@ -49,7 +49,7 @@ Start workflow with cron expression scheduled to run every minute.
 ```
 
 #### expense
-See more details in https://github.com/uber-common/cadence-samples/blob/master/cmd/samples/expense/README.md
+See more details in https://github.com/temporalio/temporal-go-samples/blob/master/cmd/samples/expense/README.md
 
 #### fileprocessing
 ```
@@ -150,10 +150,10 @@ Run the multi choice workflow
 ```
 
 #### localactivity
-See more details in https://github.com/uber-common/cadence-samples/blob/master/cmd/samples/recipes/localactivity/README.md
+See more details in https://github.com/temporalio/temporal-go-samples/blob/master/cmd/samples/recipes/localactivity/README.md
 
 #### query
-See more details in https://github.com/uber-common/cadence-samples/blob/master/cmd/samples/recipes/query/README.md
+See more details in https://github.com/temporalio/temporal-go-samples/blob/master/cmd/samples/recipes/query/README.md
 
 #### recovery
-See more details in https://github.com/uber-common/cadence-samples/blob/master/cmd/samples/recovery/README.md
+See more details in https://github.com/temporalio/temporal-go-samples/blob/master/cmd/samples/recovery/README.md

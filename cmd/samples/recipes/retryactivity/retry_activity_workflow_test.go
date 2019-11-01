@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
-	"go.uber.org/cadence/activity"
+	"go.temporal.io/temporal/activity"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"go.uber.org/cadence/testsuite"
+	"go.temporal.io/temporal/testsuite"
 )
 
 type UnitTestSuite struct {

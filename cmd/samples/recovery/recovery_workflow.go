@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"github.com/pborman/uuid"
-	"github.com/uber-common/cadence-samples/cmd/samples/common"
-	"github.com/uber-common/cadence-samples/cmd/samples/recovery/cache"
-	"go.uber.org/cadence"
-	"go.uber.org/cadence/.gen/go/shared"
-	"go.uber.org/cadence/activity"
-	"go.uber.org/cadence/client"
-	"go.uber.org/cadence/workflow"
+	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
+	"github.com/temporalio/temporal-go-samples/cmd/samples/recovery/cache"
+	"go.temporal.io/temporal"
+	"go.temporal.io/temporal/.gen/go/shared"
+	"go.temporal.io/temporal/activity"
+	"go.temporal.io/temporal/client"
+	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 	"time"
 )
@@ -50,8 +50,8 @@ const (
 	// DomainName used for this sample
 	DomainName = "samples-domain"
 
-	// CadenceClientKey for retrieving cadence client from context
-	CadenceClientKey ClientKey = iota
+	// TemporalClientKey for retrieving cadence client from context
+	TemporalClientKey ClientKey = iota
 	// WorkflowExecutionCacheKey for retrieving executions cache from context
 	WorkflowExecutionCacheKey
 )
@@ -111,7 +111,7 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 	// Setup retry policy for recovery activity
 	info := workflow.GetInfo(ctx)
 	expiration := time.Duration(info.ExecutionStartToCloseTimeoutSeconds) * time.Second
-	retryPolicy := &cadence.RetryPolicy{
+	retryPolicy := &temporal.RetryPolicy{
 		InitialInterval:    time.Second,
 		BackoffCoefficient: 2,
 		MaximumInterval:    10 * time.Second,
@@ -400,11 +400,11 @@ func getHistory(ctx context.Context, execution *shared.WorkflowExecution) ([]*sh
 
 func getCadenceClientFromContext(ctx context.Context) (client.Client, error) {
 	logger := activity.GetLogger(ctx)
-	cadenceClient := ctx.Value(CadenceClientKey).(client.Client)
-	if cadenceClient == nil {
-		logger.Error("Could not retrieve cadence client from context.")
+	temporalClient := ctx.Value(TemporalClientKey).(client.Client)
+	if temporalClient == nil {
+		logger.Error("Could not retrieve temporal client from context.")
 		return nil, ErrCadenceClientNotFound
 	}
 
-	return cadenceClient, nil
+	return temporalClient, nil
 }

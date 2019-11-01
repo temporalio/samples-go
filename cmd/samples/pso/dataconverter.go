@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"go.uber.org/cadence/encoded"
+	"go.temporal.io/temporal/encoded"
 )
 
 // gobDataConverter implements encoded.DataConverter using gob for Swarm and Particle

@@ -7,7 +7,7 @@
     "taskId":33554432,
     "workflowExecutionStartedEventAttributes":{
       "workflowType":{
-        "name":"github.com/uber-common/cadence-samples/cmd/samples/recipes/helloworld.Workflow"
+        "name":"github.com/temporalio/temporal-go-samples/cmd/samples/recipes/helloworld.Workflow"
       },
       "taskList":{
         "name":"helloWorldGroup"
