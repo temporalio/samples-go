@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"go.uber.org/cadence/workflow"
+	"go.temporal.io/temporal/workflow"
 )
 
 type (

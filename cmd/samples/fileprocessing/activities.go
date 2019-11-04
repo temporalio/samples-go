@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"go.uber.org/cadence/activity"
+	"go.temporal.io/temporal/activity"
 	"go.uber.org/zap"
 )
 

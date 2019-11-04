@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go.uber.org/cadence/workflow"
+	"go.temporal.io/temporal/workflow"
 	"time"
 )
 

@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"go.uber.org/cadence"
-	"go.uber.org/cadence/activity"
-	"go.uber.org/cadence/workflow"
+	"go.temporal.io/temporal/activity"
+	"go.temporal.io/temporal/workflow"
+	"go.temporal.io/temporal"
 	"go.uber.org/zap"
 	"strings"
 	"time"
@@ -107,7 +107,7 @@ func SignalHandlingWorkflow(ctx workflow.Context) error {
 		var signal string
 		if more := ch.Receive(ctx, &signal); !more {
 			logger.Info("Signal channel closed")
-			return cadence.NewCustomError("signal_channel_closed")
+			return temporal.NewCustomError("signal_channel_closed")
 		}
 
 		logger.Info("Signal received.", zap.String("signal", signal))

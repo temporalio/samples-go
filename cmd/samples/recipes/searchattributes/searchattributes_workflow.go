@@ -5,14 +5,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"go.uber.org/cadence/activity"
+	"go.temporal.io/temporal/activity"
 	"strconv"
 	"time"
 
-	"github.com/uber-common/cadence-samples/cmd/samples/common"
-	"go.uber.org/cadence/.gen/go/shared"
-	"go.uber.org/cadence/client"
-	"go.uber.org/cadence/workflow"
+	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
+	"go.temporal.io/temporal/.gen/go/shared"
+	"go.temporal.io/temporal/client"
+	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
 

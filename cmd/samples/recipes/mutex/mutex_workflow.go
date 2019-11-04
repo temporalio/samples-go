@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/mock"
-	"github.com/uber-common/cadence-samples/cmd/samples/common"
-	"go.uber.org/cadence"
-	"go.uber.org/cadence/activity"
-	"go.uber.org/cadence/client"
-	"go.uber.org/cadence/testsuite"
-	"go.uber.org/cadence/workflow"
+	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
+	"go.temporal.io/temporal"
+	"go.temporal.io/temporal/activity"
+	"go.temporal.io/temporal/client"
+	"go.temporal.io/temporal/testsuite"
+	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
 
@@ -51,7 +51,7 @@ func (s *Mutex) Lock(ctx workflow.Context,
 
 	activityCtx := workflow.WithLocalActivityOptions(ctx, workflow.LocalActivityOptions{
 		ScheduleToCloseTimeout: time.Minute * 1,
-		RetryPolicy: &cadence.RetryPolicy{
+		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:    time.Second,
 			BackoffCoefficient: 2.0,
 			MaximumInterval:    time.Minute,
@@ -153,7 +153,7 @@ func SignalWithStartMutexWorkflowActivity(
 		TaskList:                        ApplicationName,
 		ExecutionStartToCloseTimeout:    time.Hour,
 		DecisionTaskStartToCloseTimeout: time.Hour,
-		RetryPolicy: &cadence.RetryPolicy{
+		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:    time.Second,
 			BackoffCoefficient: 2.0,
 			MaximumInterval:    time.Minute,

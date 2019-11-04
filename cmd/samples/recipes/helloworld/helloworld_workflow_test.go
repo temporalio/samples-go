@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.uber.org/cadence/activity"
-	"go.uber.org/cadence/encoded"
-	"go.uber.org/cadence/testsuite"
+	"go.temporal.io/temporal/activity"
+	"go.temporal.io/temporal/encoded"
+	"go.temporal.io/temporal/testsuite"
 )
 
 func Test_Workflow(t *testing.T) {

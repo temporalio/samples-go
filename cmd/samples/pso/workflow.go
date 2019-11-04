@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
-	"go.uber.org/cadence"
+	"go.temporal.io/temporal"
 
-	"go.uber.org/cadence/workflow"
+	"go.temporal.io/temporal/workflow"
 )
 
 type WorkflowResult struct {
@@ -24,7 +24,7 @@ var ActivityOptions = workflow.ActivityOptions{
 	ScheduleToStartTimeout: time.Second * 5,
 	StartToCloseTimeout:    time.Minute * 10,
 	HeartbeatTimeout:       time.Second * 2, // such a short timeout to make sample fail over very fast
-	RetryPolicy: &cadence.RetryPolicy{
+	RetryPolicy: &temporal.RetryPolicy{
 		InitialInterval:          time.Second,
 		BackoffCoefficient:       2.0,
 		MaximumInterval:          time.Minute,

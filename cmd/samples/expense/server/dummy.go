@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/uber-common/cadence-samples/cmd/samples/common"
-	"go.uber.org/cadence/client"
+	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
+	"go.temporal.io/temporal/client"
 )
 
 /**

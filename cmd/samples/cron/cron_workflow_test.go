@@ -2,15 +2,15 @@ package main
 
 import (
 	"context"
-	"go.uber.org/cadence/activity"
-	"go.uber.org/cadence/encoded"
+	"go.temporal.io/temporal/activity"
+	"go.temporal.io/temporal/encoded"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"go.uber.org/cadence/testsuite"
-	"go.uber.org/cadence/workflow"
+	"go.temporal.io/temporal/testsuite"
+	"go.temporal.io/temporal/workflow"
 )
 
 type UnitTestSuite struct {

@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"go.uber.org/cadence"
-	"go.uber.org/cadence/activity"
-	"go.uber.org/cadence/workflow"
+	"go.temporal.io/temporal"
+	"go.temporal.io/temporal/activity"
+	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 	"time"
 )
@@ -31,7 +31,7 @@ func RetryWorkflow(ctx workflow.Context) error {
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute * 10,
 		HeartbeatTimeout:       time.Second * 10,
-		RetryPolicy: &cadence.RetryPolicy{
+		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:          time.Second,
 			BackoffCoefficient:       2.0,
 			MaximumInterval:          time.Minute,
@@ -79,7 +79,7 @@ func batchProcessingActivity(ctx context.Context, firstTaskID, batchSize int, pr
 			logger.Info("Activity failed, will retry...")
 			// Activity could return different error types for different failures so workflow could handle them differently.
 			// For example, decide to retry or not based on error reasons.
-			return cadence.NewCustomError("some-retryable-error")
+			return temporal.NewCustomError("some-retryable-error")
 		}
 	}
 

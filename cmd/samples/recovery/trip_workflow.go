@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"go.uber.org/cadence/workflow"
+	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
 

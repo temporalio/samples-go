@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"go.uber.org/cadence/encoded"
-	"go.uber.org/cadence/worker"
-	"go.uber.org/cadence/workflow"
+	"go.temporal.io/temporal/encoded"
+	"go.temporal.io/temporal/worker"
+	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 
 	"github.com/uber-go/tally"
-	"go.uber.org/cadence/.gen/go/cadence/workflowserviceclient"
-	"go.uber.org/cadence/client"
+	"go.temporal.io/temporal/.gen/go/temporal/workflowserviceclient"
+	"go.temporal.io/temporal/client"
 	"gopkg.in/yaml.v2"
 )
 

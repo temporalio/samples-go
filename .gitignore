@@ -11,5 +11,5 @@
 test
 test.log
 vendor/
-# Executables produced by cadence-samples repo
+# Executables produced by temporal-go-samples repo
 bin/

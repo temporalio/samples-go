@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"go.uber.org/cadence/activity"
-	"go.uber.org/cadence/encoded"
-	"go.uber.org/cadence/testsuite"
+	"go.temporal.io/temporal/activity"
+	"go.temporal.io/temporal/encoded"
+	"go.temporal.io/temporal/testsuite"
 )
 
 type UnitTestSuite struct {
@@ -20,7 +20,7 @@ func TestUnitTestSuite(t *testing.T) {
 }
 
 func (s *UnitTestSuite) Test_SampleGreetingsWorkflow() {
-	sayGreetingActivityName := "github.com/uber-common/cadence-samples/cmd/samples/recipes/greetings.sayGreetingActivity"
+	sayGreetingActivityName := "github.com/temporalio/temporal-go-samples/cmd/samples/recipes/greetings.sayGreetingActivity"
 	env := s.NewTestWorkflowEnvironment()
 	var startCalled, endCalled bool
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {

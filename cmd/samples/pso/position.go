@@ -2,8 +2,6 @@ package main
 
 import "math/rand"
 
-//import "go.uber.org/cadence/workflow"
-
 type Vector []float64
 
 type Position struct {
