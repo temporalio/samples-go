@@ -10,8 +10,8 @@ import (
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 
+	"github.com/temporalio/temporal-proto-go/workflowservice"
 	"github.com/uber-go/tally"
-	"go.temporal.io/temporal/.gen/go/temporal/workflowserviceclient"
 	"go.temporal.io/temporal/client"
 	"gopkg.in/yaml.v2"
 )
@@ -23,7 +23,7 @@ const (
 type (
 	// SampleHelper class for workflow sample helper.
 	SampleHelper struct {
-		Service        workflowserviceclient.Interface
+		Service        workflowservice.WorkflowServiceClient
 		Scope          tally.Scope
 		Logger         *zap.Logger
 		Config         Configuration

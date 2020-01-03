@@ -9,13 +9,13 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/temporal/.gen/go/temporal/workflowservicetest"
+	"github.com/temporalio/temporal-proto-go/workflowservicemock"
 )
 
 type replayTestSuite struct {
 	suite.Suite
 	mockCtrl *gomock.Controller
-	service  *workflowservicetest.MockClient
+	service  *workflowservicemock.MockWorkflowServiceClient
 }
 
 func TestReplayTestSuite(t *testing.T) {
@@ -25,7 +25,7 @@ func TestReplayTestSuite(t *testing.T) {
 
 func (s *replayTestSuite) SetupTest() {
 	s.mockCtrl = gomock.NewController(s.T())
-	s.service = workflowservicetest.NewMockClient(s.mockCtrl)
+	s.service = workflowservicemock.NewMockWorkflowServiceClient(s.mockCtrl)
 }
 
 func (s *replayTestSuite) TearDownTest() {

@@ -6,13 +6,14 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/mock"
-	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
 	"go.temporal.io/temporal"
 	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/testsuite"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
+
+	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
 )
 
 func init() {

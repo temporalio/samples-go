@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
 	"go.temporal.io/temporal/client"
+
+	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
 )
 
 /**

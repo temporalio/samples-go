@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-	"go.temporal.io/temporal/.gen/go/shared"
-	"go.temporal.io/temporal/testsuite"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+	"github.com/temporalio/temporal-proto-go/common"
+	"go.temporal.io/temporal/testsuite"
 )
 
 func Test_Workflow(t *testing.T) {
@@ -14,7 +15,7 @@ func Test_Workflow(t *testing.T) {
 	env := testSuite.NewTestWorkflowEnvironment()
 
 	// mock search attributes on start
-	env.SetSearchAttributesOnStart(getSearchAttributesForStart())
+	_ = env.SetSearchAttributesOnStart(getSearchAttributesForStart())
 
 	// mock upsert operations
 	attributes := map[string]interface{}{
@@ -33,7 +34,7 @@ func Test_Workflow(t *testing.T) {
 	env.OnUpsertSearchAttributes(attributes).Return(nil).Once()
 
 	// mock activity
-	env.OnActivity(listExecutions, mock.Anything, mock.Anything).Return([]*shared.WorkflowExecutionInfo{{}}, nil).Once()
+	env.OnActivity(listExecutions, mock.Anything, mock.Anything).Return([]*common.WorkflowExecutionInfo{{}}, nil).Once()
 
 	env.ExecuteWorkflow(SearchAttributesWorkflow)
 	require.True(t, env.IsWorkflowCompleted())

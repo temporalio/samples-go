@@ -1,11 +1,12 @@
 package main
 
 import (
+	"testing"
+	"time"
+
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.temporal.io/temporal/testsuite"
-	"testing"
-	"time"
 )
 
 func Test_ProcessingWorkflow_SingleAction(t *testing.T) {

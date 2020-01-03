@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
-	"go.temporal.io/temporal/activity"
 	"testing"
 	"time"
+
+	"go.temporal.io/temporal/activity"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"

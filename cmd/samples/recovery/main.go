@@ -4,12 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
-	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
-	"github.com/temporalio/temporal-go-samples/cmd/samples/recovery/cache"
+	"time"
+
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
-	"time"
+
+	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
+	"github.com/temporalio/temporal-go-samples/cmd/samples/recovery/cache"
 )
 
 // This needs to be done as part of a bootstrap step when the process starts.

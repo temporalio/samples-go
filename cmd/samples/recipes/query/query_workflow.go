@@ -1,8 +1,9 @@
 package main
 
 import (
-	"go.temporal.io/temporal/workflow"
 	"time"
+
+	"go.temporal.io/temporal/workflow"
 )
 
 // ApplicationName is the task list for this sample
