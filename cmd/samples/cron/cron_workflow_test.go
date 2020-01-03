@@ -33,7 +33,7 @@ func (s *UnitTestSuite) Test_CronWorkflow() {
 		cronFuture := workflow.ExecuteChildWorkflow(ctx1, SampleCronWorkflow) // cron never stop so this future won't return
 
 		// wait 2 hours for the cron (cron will execute 3 times)
-		workflow.Sleep(ctx, time.Hour*2)
+		_ = workflow.Sleep(ctx, time.Hour*2)
 		s.False(cronFuture.IsReady())
 		return nil
 	}

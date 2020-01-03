@@ -62,7 +62,7 @@ func MultiChoiceWorkflow(ctx workflow.Context) error {
 
 	// wait until all items in the basket order are processed
 	for _, future := range futures {
-		future.Get(ctx, nil)
+		_ = future.Get(ctx, nil)
 	}
 
 	logger.Info("Workflow completed.")

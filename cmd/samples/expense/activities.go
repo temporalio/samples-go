@@ -29,7 +29,7 @@ func createExpenseActivity(ctx context.Context, expenseID string) error {
 		return err
 	}
 	body, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
+	_ = resp.Body.Close()
 	if err != nil {
 		return err
 	}
@@ -66,7 +66,7 @@ func waitForDecisionActivity(ctx context.Context, expenseID string) (string, err
 		return "", err
 	}
 	body, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
+	_ = resp.Body.Close()
 	if err != nil {
 		return "", err
 	}
@@ -95,7 +95,7 @@ func paymentActivity(ctx context.Context, expenseID string) error {
 		return err
 	}
 	body, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
+	_ = resp.Body.Close()
 	if err != nil {
 		return err
 	}

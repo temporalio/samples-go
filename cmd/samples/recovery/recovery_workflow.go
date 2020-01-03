@@ -242,7 +242,7 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 		return err
 	}
 
-	if history == nil || len(history) == 0 {
+	if len(history) == 0 {
 		// Nothing to recover
 		return nil
 	}
@@ -385,7 +385,7 @@ func getHistory(ctx context.Context, execution *common.WorkflowExecution) ([]*co
 		return nil, err
 	}
 
-	iter := cadenceClient.GetWorkflowHistory(ctx, execution.GetWorkflowId(), execution.GetRunId(), false,	enums.HistoryEventFilterTypeAllEvent)
+	iter := cadenceClient.GetWorkflowHistory(ctx, execution.GetWorkflowId(), execution.GetRunId(), false, enums.HistoryEventFilterTypeAllEvent)
 	var events []*common.HistoryEvent
 	for iter.HasNext() {
 		event, err := iter.Next()

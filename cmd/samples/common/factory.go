@@ -57,8 +57,9 @@ func (b *WorkflowClientBuilder) SetMetricsScope(metricsScope tally.Scope) *Workf
 // SetContextPropagators sets the context propagators for the builder
 func (b *WorkflowClientBuilder) SetContextPropagators(ctxProps []workflow.ContextPropagator) *WorkflowClientBuilder {
 	b.ctxProps = ctxProps
-  return b
+	return b
 }
+
 // SetDataConverter sets the data converter for the builder
 func (b *WorkflowClientBuilder) SetDataConverter(dataConverter encoded.DataConverter) *WorkflowClientBuilder {
 	b.dataConverter = dataConverter

@@ -65,7 +65,7 @@ func processFileActivity(ctx context.Context, fInfo fileInfo) (*fileInfo, error)
 		return nil, errors.New("processFileActivity running on wrong host")
 	}
 
-	defer os.Remove(fInfo.FileName) // cleanup temp file
+	defer func() { _ = os.Remove(fInfo.FileName) }() // cleanup temp file
 
 	// read downloaded file
 	data, err := ioutil.ReadFile(fInfo.FileName)
@@ -100,7 +100,7 @@ func uploadFileActivity(ctx context.Context, fInfo fileInfo) error {
 		return errors.New("uploadFileActivity running on wrong host")
 	}
 
-	defer os.Remove(fInfo.FileName) // clean up tmp file
+	defer func() { _ = os.Remove(fInfo.FileName) }() // cleanup temp file
 
 	err := uploadFile(ctx, fInfo.FileName)
 	if err != nil {
@@ -151,7 +151,7 @@ func saveToTmpFile(data []byte) (f *os.File, err error) {
 	}
 	_, err = tmpFile.Write(data)
 	if err != nil {
-		os.Remove(tmpFile.Name())
+		_ = os.Remove(tmpFile.Name())
 		return nil, err
 	}
 

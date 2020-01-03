@@ -153,9 +153,7 @@ func listExecutions(ctx context.Context, query string) ([]*common.WorkflowExecut
 			return nil, err
 		}
 
-		for _, r := range resp.Executions {
-			executions = append(executions, r)
-		}
+		executions = append(executions, resp.Executions...)
 
 		nextPageToken = resp.NextPageToken
 		activity.RecordHeartbeat(ctx, nextPageToken)

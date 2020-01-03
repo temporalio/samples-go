@@ -84,7 +84,7 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (string, error) {
 
 		childWorkflowFuture := workflow.ExecuteChildWorkflow(ctx, PSOChildWorkflow, *swarm, 1)
 		var childWE workflow.Execution
-		childWorkflowFuture.GetChildWorkflowExecution().Get(ctx, &childWE)
+		_ = childWorkflowFuture.GetChildWorkflowExecution().Get(ctx, &childWE)
 		childWorkflowID = childWE.ID
 		var result WorkflowResult
 		err = childWorkflowFuture.Get(ctx, &result) // This blocking until the child workflow has finished
@@ -123,7 +123,7 @@ func PSOChildWorkflow(ctx workflow.Context, swarm Swarm, startingStep int) (Work
 
 		msg := fmt.Sprintf("Error in swarm loop: " + err.Error())
 		logger.Error(msg)
-		return WorkflowResult{msg, false}, errors.New("Error in swarm loop")
+		return WorkflowResult{msg, false}, errors.New("error in swarm loop")
 	}
 	if result.Position.Fitness < swarm.Settings.function.Goal {
 		msg := fmt.Sprintf("Yay! Goal was reached @ step %d (fitness=%.2e) :-)", result.Step, result.Position.Fitness)

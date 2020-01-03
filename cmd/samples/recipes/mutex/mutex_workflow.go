@@ -89,7 +89,7 @@ func MutexWorkflow(
 	currentWorkflowID := workflow.GetInfo(ctx).WorkflowExecution.ID
 	if currentWorkflowID == "default-test-workflow-id" {
 		// unit testing hack, see https://github.com/uber-go/cadence-client/issues/663
-		workflow.Sleep(ctx, 10*time.Millisecond)
+		_ = workflow.Sleep(ctx, 10*time.Millisecond)
 	}
 	logger := workflow.GetLogger(ctx).With(zap.String("currentWorkflowID", currentWorkflowID))
 	logger.Info("started")
@@ -208,10 +208,10 @@ func SampleWorkflowWithMutex(
 
 	// emulate long running process
 	logger.Info("critical operation started")
-	workflow.Sleep(ctx, 10*time.Second)
+	_ = workflow.Sleep(ctx, 10*time.Second)
 	logger.Info("critical operation finished")
 
-	unlockFunc()
+	_ = unlockFunc()
 
 	logger.Info("finished")
 	return nil

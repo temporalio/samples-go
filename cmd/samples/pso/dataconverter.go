@@ -77,7 +77,7 @@ func (dc *gobDataConverter) FromData(input []byte, valuePtr ...interface{}) erro
 		switch t := obj.(type) {
 		case *Swarm:
 			t.Settings = new(SwarmSettings)
-			err = dec.Decode(t.Settings)
+			_ = dec.Decode(t.Settings)
 			t.Settings.function = FunctionFactory(t.Settings.FunctionName)
 			t.Gbest = NewPosition(t.Settings.function.dim)
 			err = dec.Decode(t.Gbest)
@@ -121,7 +121,7 @@ func (dc *jsonDataConverter) ToData(value ...interface{}) ([]byte, error) {
 				}
 			}
 		case WorkflowResult:
-			err = enc.Encode(t.Msg)
+			_ = enc.Encode(t.Msg)
 			err = enc.Encode(t.Success)
 		default:
 			err = enc.Encode(obj)
@@ -145,7 +145,7 @@ func (dc *jsonDataConverter) FromData(input []byte, valuePtr ...interface{}) err
 		switch t := obj.(type) {
 		case *Swarm:
 			t.Settings = new(SwarmSettings)
-			err = dec.Decode(t.Settings)
+			_ = dec.Decode(t.Settings)
 			t.Settings.function = FunctionFactory(t.Settings.FunctionName)
 			t.Gbest = NewPosition(t.Settings.function.dim)
 			err = dec.Decode(t.Gbest)
@@ -155,7 +155,7 @@ func (dc *jsonDataConverter) FromData(input []byte, valuePtr ...interface{}) err
 				err = dec.Decode(t.Particles[index])
 			}
 		case *WorkflowResult:
-			err = dec.Decode(&t.Msg)
+			_ = dec.Decode(&t.Msg)
 			err = dec.Decode(&t.Success)
 		default:
 			err = dec.Decode(obj)

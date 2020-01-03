@@ -16,8 +16,8 @@ import (
 func startWorkers(h *common.SampleHelper) {
 	// Configure worker options.
 	workerOptions := worker.Options{
-		MetricsScope: h.Scope,
-		Logger:       h.Logger,
+		MetricsScope:                       h.Scope,
+		Logger:                             h.Logger,
 		MaxConcurrentActivityExecutionSize: 3,
 	}
 

@@ -50,11 +50,11 @@ func (s *UnitTestSuite) Test_WorkflowWithMockServer() {
 			taskToken := []byte(r.PostFormValue("task_token"))
 			// simulate the expense is approved one hour later.
 			env.RegisterDelayedCallback(func() {
-				env.CompleteActivity(taskToken, "APPROVED", nil)
+				_ = env.CompleteActivity(taskToken, "APPROVED", nil)
 			}, time.Hour)
 		case "/action":
 		}
-		io.WriteString(w, "SUCCEED")
+		_, _ = io.WriteString(w, "SUCCEED")
 	}
 	server := httptest.NewServer(http.HandlerFunc(handler))
 	defer server.Close()
