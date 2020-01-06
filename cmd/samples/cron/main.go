@@ -5,9 +5,10 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
-	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
+
+	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
 )
 
 const (

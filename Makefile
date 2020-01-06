@@ -1,41 +1,7 @@
 .PHONY: test bins clean
-PROJECT_ROOT = github.com/temporalio/temporal-go-samples
-
-export PATH := $(GOPATH)/bin:$(PATH)
 
 # default target
 default: test
-
-PROGS = helloworld \
-	branch \
-	childworkflow \
-	choice \
-	dynamic \
-	greetings \
-	pickfirst \
-	retryactivity \
-	splitmerge \
-	timer \
-	localactivity \
-	query \
-	cron \
-	dsl \
-	fileprocessing \
-	dummy \
-	expense \
-	recovery \
-	cancelactivity \
-	ctxpropagation \
-	pso \
-
-TEST_ARG ?= -race -v -timeout 5m
-BUILD := ./build
-SAMPLES_DIR=./cmd/samples
-
-export PATH := $(GOPATH)/bin:$(PATH)
-
-# Automatically gather all srcs
-ALL_SRC := $(shell find ./cmd/samples/common -name "*.go")
 
 # all directories with *_test.go files in them
 TEST_DIRS=./cmd/samples/cron \
@@ -58,7 +24,6 @@ TEST_DIRS=./cmd/samples/cron \
 	./cmd/samples/recipes/searchattributes \
 	./cmd/samples/recovery \
 	./cmd/samples/pso \
-
 
 cancelactivity:
 	go build -i -o bin/cancelactivity cmd/samples/recipes/cancelactivity/*.go
@@ -160,6 +125,14 @@ test: bins
 		go test -coverprofile=$@ "$$dir" | tee -a test.log; \
 	done;
 
+gobin:
+	GO111MODULE=off go get -u github.com/myitcv/gobin
+
+staticcheck: gobin $(ALL_SRC)
+	gobin -mod=readonly -run honnef.co/go/tools/cmd/staticcheck ./...
+
+errcheck: gobin $(ALL_SRC)
+	gobin -mod=readonly -run github.com/kisielk/errcheck ./...
+
 clean:
 	rm -rf bin
-	rm -Rf $(BUILD)

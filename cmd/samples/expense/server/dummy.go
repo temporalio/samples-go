@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
 	"go.temporal.io/temporal/client"
+
+	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
 )
 
 /**
@@ -18,9 +19,9 @@ type expenseState string
 
 const (
 	created   expenseState = "CREATED"
-	approved               = "APPROVED"
-	rejected               = "REJECTED"
-	completed              = "COMPLETED"
+	approved  expenseState = "APPROVED"
+	rejected  expenseState = "REJECTED"
+	completed expenseState = "COMPLETED"
 )
 
 // use memory store for this dummy server
@@ -39,7 +40,6 @@ func main() {
 		panic(err)
 	}
 
-
 	fmt.Println("Starting dummy server...")
 	http.HandleFunc("/", listHandler)
 	http.HandleFunc("/list", listHandler)
@@ -47,11 +47,11 @@ func main() {
 	http.HandleFunc("/action", actionHandler)
 	http.HandleFunc("/status", statusHandler)
 	http.HandleFunc("/registerCallback", callbackHandler)
-	http.ListenAndServe(":8099", nil)
+	_ = http.ListenAndServe(":8099", nil)
 }
 
 func listHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "<h1>DUMMY EXPENSE SYSTEM</h1>"+"<a href=\"/list\">HOME</a>"+
+	_, _ = fmt.Fprint(w, "<h1>DUMMY EXPENSE SYSTEM</h1>"+"<a href=\"/list\">HOME</a>"+
 		"<h3>All expense requests:</h3><table border=1><tr><th>Expense ID</th><th>Status</th><th>Action</th>")
 	keys := []string{}
 	for k := range allExpense {
@@ -67,9 +67,9 @@ func listHandler(w http.ResponseWriter, r *http.Request) {
 				"&nbsp;&nbsp;<a href=\"/action?type=reject&id=%s\">"+
 				"<button style=\"background-color:#f44336;\">REJECT</button></a>", id, id)
 		}
-		fmt.Fprintf(w, "<tr><td>%s</td><td>%s</td><td>%s</td></tr>", id, state, actionLink)
+		_, _ = fmt.Fprintf(w, "<tr><td>%s</td><td>%s</td><td>%s</td></tr>", id, state, actionLink)
 	}
-	fmt.Fprint(w, "</table>")
+	_, _ = fmt.Fprint(w, "</table>")
 }
 
 func actionHandler(w http.ResponseWriter, r *http.Request) {
@@ -77,7 +77,7 @@ func actionHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	oldState, ok := allExpense[id]
 	if !ok {
-		fmt.Fprint(w, "ERROR:INVALID_ID")
+		_, _ = fmt.Fprint(w, "ERROR:INVALID_ID")
 		return
 	}
 	actionType := r.URL.Query().Get("type")
@@ -90,7 +90,7 @@ func actionHandler(w http.ResponseWriter, r *http.Request) {
 		allExpense[id] = completed
 	}
 	if isAPICall {
-		fmt.Fprint(w, "SUCCEED")
+		_, _ = fmt.Fprint(w, "SUCCEED")
 	} else {
 		listHandler(w, r)
 	}
@@ -101,7 +101,6 @@ func actionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("Set state for %s from %s to %s.\n", id, oldState, allExpense[id])
-	return
 }
 
 func createHandler(w http.ResponseWriter, r *http.Request) {
@@ -109,56 +108,54 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	_, ok := allExpense[id]
 	if ok {
-		fmt.Fprint(w, "ERROR:ID_ALREADY_EXISTS")
+		_, _ = fmt.Fprint(w, "ERROR:ID_ALREADY_EXISTS")
 		return
 	}
 
 	allExpense[id] = created
 	if isAPICall {
-		fmt.Fprint(w, "SUCCEED")
+		_, _ = fmt.Fprint(w, "SUCCEED")
 	} else {
 		listHandler(w, r)
 	}
 	fmt.Printf("Created new expense id:%s.\n", id)
-	return
 }
 
 func statusHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	state, ok := allExpense[id]
 	if !ok {
-		fmt.Fprint(w, "ERROR:INVALID_ID")
+		_, _ = fmt.Fprint(w, "ERROR:INVALID_ID")
 		return
 	}
 
-	fmt.Fprint(w, state)
+	_, _ = fmt.Fprint(w, state)
 	fmt.Printf("Checking status for %s: %s\n", id, state)
-	return
 }
 
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	currState, ok := allExpense[id]
 	if !ok {
-		fmt.Fprint(w, "ERROR:INVALID_ID")
+		_, _ = fmt.Fprint(w, "ERROR:INVALID_ID")
 		return
 	}
 	if currState != created {
-		fmt.Fprint(w, "ERROR:INVALID_STATE")
+		_, _ = fmt.Fprint(w, "ERROR:INVALID_STATE")
 		return
 	}
 
 	err := r.ParseForm()
 	if err != nil {
 		// Handle error here via logging and then return
-		fmt.Fprint(w, "ERROR:INVALID_FORM_DATA")
+		_, _ = fmt.Fprint(w, "ERROR:INVALID_FORM_DATA")
 		return
 	}
 
 	taskToken := r.PostFormValue("task_token")
 	fmt.Printf("Registered callback for ID=%s, token=%s\n", id, taskToken)
 	tokenMap[id] = []byte(taskToken)
-	fmt.Fprint(w, "SUCCEED")
+	_, _ = fmt.Fprint(w, "SUCCEED")
 }
 
 func notifyExpenseStateChange(id, state string) {

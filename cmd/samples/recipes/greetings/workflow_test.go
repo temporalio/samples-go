@@ -26,7 +26,7 @@ func (s *UnitTestSuite) Test_SampleGreetingsWorkflow() {
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {
 		if sayGreetingActivityName == activityInfo.ActivityType.Name {
 			var greeting, name string
-			args.Get(&greeting, &name)
+			_ = args.Get(&greeting, &name)
 			s.Equal("Hello", greeting)
 			s.Equal("Cadence", name)
 			startCalled = true
@@ -35,7 +35,7 @@ func (s *UnitTestSuite) Test_SampleGreetingsWorkflow() {
 	env.SetOnActivityCompletedListener(func(activityInfo *activity.Info, result encoded.Value, err error) {
 		if sayGreetingActivityName == activityInfo.ActivityType.Name {
 			var sayResult string
-			result.Get(&sayResult)
+			_ = result.Get(&sayResult)
 			s.Equal("Greeting: Hello Cadence!\n", sayResult)
 			endCalled = true
 		}

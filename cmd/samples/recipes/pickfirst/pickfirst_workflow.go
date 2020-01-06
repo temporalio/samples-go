@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/workflow"
-	"time"
 )
 
 /**
@@ -46,9 +47,9 @@ func SamplePickFirstWorkflow(ctx workflow.Context) error {
 	f2 := workflow.ExecuteActivity(childCtx, sampleActivity, 1, time.Second*10)
 	pendingFutures := []workflow.Future{f1, f2}
 	selector.AddFuture(f1, func(f workflow.Future) {
-		f.Get(ctx, &firstResponse)
+		_ = f.Get(ctx, &firstResponse)
 	}).AddFuture(f2, func(f workflow.Future) {
-		f.Get(ctx, &firstResponse)
+		_ = f.Get(ctx, &firstResponse)
 	})
 
 	// wait for any of the future to complete
@@ -62,7 +63,7 @@ func SamplePickFirstWorkflow(ctx workflow.Context) error {
 	// - if you don't want to wait for completion of pending activities cancellation then you can choose to
 	// set WaitForCancellation to false through WithWaitForCancellation(false)
 	for _, f := range pendingFutures {
-		f.Get(ctx, nil)
+		_ = f.Get(ctx, nil)
 	}
 	workflow.GetLogger(ctx).Info("Workflow completed.")
 	return nil

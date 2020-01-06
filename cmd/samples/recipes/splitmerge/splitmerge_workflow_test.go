@@ -25,7 +25,7 @@ func (s *UnitTestSuite) Test_Workflow() {
 	s.NoError(env.GetWorkflowError())
 
 	var result ChunkResult
-	env.GetWorkflowResult(&result)
+	_ = env.GetWorkflowResult(&result)
 
 	totalItem, totalSum := 0, 0
 	for i := 1; i <= workerCount; i++ {

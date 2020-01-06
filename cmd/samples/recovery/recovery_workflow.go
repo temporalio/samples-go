@@ -3,16 +3,19 @@ package main
 import (
 	"context"
 	"errors"
+	"time"
+
 	"github.com/pborman/uuid"
-	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
-	"github.com/temporalio/temporal-go-samples/cmd/samples/recovery/cache"
+	"github.com/temporalio/temporal-proto-go/common"
+	"github.com/temporalio/temporal-proto-go/enums"
+	"github.com/temporalio/temporal-proto-go/workflowservice"
 	"go.temporal.io/temporal"
-	"go.temporal.io/temporal/.gen/go/shared"
 	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
-	"time"
+
+	"github.com/temporalio/temporal-go-samples/cmd/samples/recovery/cache"
 )
 
 type (
@@ -196,7 +199,7 @@ func recoverExecutions(ctx context.Context, key string, startIndex, batchSize in
 		return ErrExecutionCacheNotFound
 	}
 
-	openExecutions := executionsCache.Get(key).([]*shared.WorkflowExecution)
+	openExecutions := executionsCache.Get(key).([]*common.WorkflowExecution)
 	endIndex := startIndex + batchSize
 
 	// Check if this activity has previous heartbeat to retrieve progress from it
@@ -231,15 +234,15 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 		return err
 	}
 
-	execution := &shared.WorkflowExecution{
-		WorkflowId: common.StringPtr(workflowID),
+	execution := &common.WorkflowExecution{
+		WorkflowId: workflowID,
 	}
 	history, err := getHistory(ctx, execution)
 	if err != nil {
 		return err
 	}
 
-	if history == nil || len(history) == 0 {
+	if len(history) == 0 {
 		// Nothing to recover
 		return nil
 	}
@@ -275,7 +278,7 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 
 	// re-inject all signals to new run
 	for _, s := range signals {
-		cadenceClient.SignalWorkflow(ctx, execution.GetWorkflowId(), newRun.RunID, s.Name, s.Data)
+		_ = cadenceClient.SignalWorkflow(ctx, execution.GetWorkflowId(), newRun.RunID, s.Name, s.Data)
 	}
 
 	logger.Info("Successfully restarted workflow.",
@@ -285,10 +288,10 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 	return nil
 }
 
-func extractStateFromEvent(workflowID string, event *shared.HistoryEvent) (*RestartParams, error) {
+func extractStateFromEvent(workflowID string, event *common.HistoryEvent) (*RestartParams, error) {
 	switch event.GetEventType() {
-	case shared.EventTypeWorkflowExecutionStarted:
-		attr := event.WorkflowExecutionStartedEventAttributes
+	case enums.EventTypeWorkflowExecutionStarted:
+		attr := event.GetWorkflowExecutionStartedEventAttributes()
 		state, err := deserializeUserState(attr.Input)
 		if err != nil {
 			// Corrupted Workflow Execution State
@@ -306,15 +309,15 @@ func extractStateFromEvent(workflowID string, event *shared.HistoryEvent) (*Rest
 			State: state,
 		}, nil
 	default:
-		return nil, errors.New("Unknown event type")
+		return nil, errors.New("unknown event type")
 	}
 }
 
-func extractSignals(events []*shared.HistoryEvent) ([]*SignalParams, error) {
+func extractSignals(events []*common.HistoryEvent) ([]*SignalParams, error) {
 	var signals []*SignalParams
 	for _, event := range events {
-		if event.GetEventType() == shared.EventTypeWorkflowExecutionSignaled {
-			attr := event.WorkflowExecutionSignaledEventAttributes
+		if event.GetEventType() == enums.EventTypeWorkflowExecutionSignaled {
+			attr := event.GetWorkflowExecutionSignaledEventAttributes()
 			if attr.GetSignalName() == TripSignalName && attr.Input != nil && len(attr.Input) > 0 {
 				signalData, err := deserializeTripEvent(attr.Input)
 				if err != nil {
@@ -334,33 +337,32 @@ func extractSignals(events []*shared.HistoryEvent) ([]*SignalParams, error) {
 	return signals, nil
 }
 
-func isExecutionCompleted(event *shared.HistoryEvent) bool {
+func isExecutionCompleted(event *common.HistoryEvent) bool {
 	switch event.GetEventType() {
-	case shared.EventTypeWorkflowExecutionCompleted, shared.EventTypeWorkflowExecutionTerminated,
-		shared.EventTypeWorkflowExecutionCanceled, shared.EventTypeWorkflowExecutionFailed,
-		shared.EventTypeWorkflowExecutionTimedOut:
+	case enums.EventTypeWorkflowExecutionCompleted, enums.EventTypeWorkflowExecutionTerminated,
+		enums.EventTypeWorkflowExecutionCanceled, enums.EventTypeWorkflowExecutionFailed,
+		enums.EventTypeWorkflowExecutionTimedOut:
 		return true
 	default:
 		return false
 	}
 }
 
-func getAllExecutionsOfType(ctx context.Context, cadenceClient client.Client,
-	workflowType string) ([]*shared.WorkflowExecution, error) {
-	var openExecutions []*shared.WorkflowExecution
+func getAllExecutionsOfType(ctx context.Context, cadenceClient client.Client, workflowType string) ([]*common.WorkflowExecution, error) {
+	var openExecutions []*common.WorkflowExecution
 	var nextPageToken []byte
 	for hasMore := true; hasMore; hasMore = len(nextPageToken) > 0 {
-		resp, err := cadenceClient.ListOpenWorkflow(ctx, &shared.ListOpenWorkflowExecutionsRequest{
-			Domain:          common.StringPtr(DomainName),
-			MaximumPageSize: common.Int32Ptr(10),
+		resp, err := cadenceClient.ListOpenWorkflow(ctx, &workflowservice.ListOpenWorkflowExecutionsRequest{
+			Domain:          DomainName,
+			MaximumPageSize: 10,
 			NextPageToken:   nextPageToken,
-			StartTimeFilter: &shared.StartTimeFilter{
-				EarliestTime: common.Int64Ptr(0),
-				LatestTime:   common.Int64Ptr(time.Now().UnixNano()),
+			StartTimeFilter: &common.StartTimeFilter{
+				EarliestTime: 0,
+				LatestTime:   time.Now().UnixNano(),
 			},
-			TypeFilter: &shared.WorkflowTypeFilter{
-				Name: common.StringPtr(workflowType),
-			},
+			Filters: &workflowservice.ListOpenWorkflowExecutionsRequest_TypeFilter{TypeFilter: &common.WorkflowTypeFilter{
+				Name: workflowType,
+			}},
 		})
 		if err != nil {
 			return nil, err
@@ -377,15 +379,14 @@ func getAllExecutionsOfType(ctx context.Context, cadenceClient client.Client,
 	return openExecutions, nil
 }
 
-func getHistory(ctx context.Context, execution *shared.WorkflowExecution) ([]*shared.HistoryEvent, error) {
+func getHistory(ctx context.Context, execution *common.WorkflowExecution) ([]*common.HistoryEvent, error) {
 	cadenceClient, err := getCadenceClientFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	iter := cadenceClient.GetWorkflowHistory(ctx, execution.GetWorkflowId(), execution.GetRunId(), false,
-		shared.HistoryEventFilterTypeAllEvent)
-	var events []*shared.HistoryEvent
+	iter := cadenceClient.GetWorkflowHistory(ctx, execution.GetWorkflowId(), execution.GetRunId(), false, enums.HistoryEventFilterTypeAllEvent)
+	var events []*common.HistoryEvent
 	for iter.HasNext() {
 		event, err := iter.Next()
 		if err != nil {

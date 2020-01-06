@@ -19,11 +19,6 @@ const (
 	activityScheduleToStartTimeout = time.Second * 10
 	// timeout for activity from start to complete
 	activityStartToCloseTimeout = time.Minute
-
-	// WorkflowStartToCloseTimeout (from workflow start to workflow close)
-	WorkflowStartToCloseTimeout = time.Minute * 20
-	// DecisionTaskStartToCloseTimeout (from decision task started to decision task completed, usually very short)
-	DecisionTaskStartToCloseTimeout = time.Second * 10
 )
 
 //

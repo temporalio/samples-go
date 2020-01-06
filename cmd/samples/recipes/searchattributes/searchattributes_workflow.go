@@ -5,12 +5,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"go.temporal.io/temporal/activity"
 	"strconv"
 	"time"
 
-	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
-	"go.temporal.io/temporal/.gen/go/shared"
+	"go.temporal.io/temporal/activity"
+
+	"github.com/temporalio/temporal-proto-go/common"
+	"github.com/temporalio/temporal-proto-go/workflowservice"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
@@ -70,7 +71,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 		"CustomDatetimeField": time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local),
 		"CustomStringField":   "String field is for text. When query, it will be tokenized for partial match. StringTypeField cannot be used in Order By",
 	}
-	workflow.UpsertSearchAttributes(ctx, attributes)
+	_ = workflow.UpsertSearchAttributes(ctx, attributes)
 
 	// print current search attributes
 	info = workflow.GetInfo(ctx)
@@ -83,7 +84,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	attributes = map[string]interface{}{
 		"CustomKeywordField": "Update2",
 	}
-	workflow.UpsertSearchAttributes(ctx, attributes)
+	_ = workflow.UpsertSearchAttributes(ctx, attributes)
 
 	// print current search attributes
 	info = workflow.GetInfo(ctx)
@@ -92,7 +93,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 		return err
 	}
 
-	workflow.Sleep(ctx, 2*time.Second) // wait update reflected on ElasticSearch
+	_ = workflow.Sleep(ctx, 2*time.Second) // wait update reflected on ElasticSearch
 
 	// list workflow
 	ao := workflow.ActivityOptions{
@@ -102,7 +103,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 	query := "CustomIntField=2 and CustomKeywordField='Update2' order by CustomDatetimeField DESC"
-	var listResults []*shared.WorkflowExecutionInfo
+	var listResults []*common.WorkflowExecutionInfo
 	err = workflow.ExecuteActivity(ctx, listExecutions, query).Get(ctx, &listResults)
 	if err != nil {
 		logger.Error("Failed to list workflow executions.", zap.Error(err))
@@ -114,7 +115,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	return nil
 }
 
-func printSearchAttributes(searchAttributes *shared.SearchAttributes, logger *zap.Logger) error {
+func printSearchAttributes(searchAttributes *common.SearchAttributes, logger *zap.Logger) error {
 	buf := new(bytes.Buffer)
 	for k, v := range searchAttributes.IndexedFields {
 		var currentVal interface{}
@@ -123,13 +124,13 @@ func printSearchAttributes(searchAttributes *shared.SearchAttributes, logger *za
 			logger.Error(fmt.Sprintf("Get search attribute for key %s failed", k), zap.Error(err))
 			return err
 		}
-		fmt.Fprintf(buf, "%s=%v\n", k, currentVal)
+		_, _ = fmt.Fprintf(buf, "%s=%v\n", k, currentVal)
 	}
 	logger.Info(fmt.Sprintf("Current Search Attributes: \n%s", buf.String()))
 	return nil
 }
 
-func listExecutions(ctx context.Context, query string) ([]*shared.WorkflowExecutionInfo, error) {
+func listExecutions(ctx context.Context, query string) ([]*common.WorkflowExecutionInfo, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("List executions.", zap.String("Query", query))
 
@@ -139,22 +140,20 @@ func listExecutions(ctx context.Context, query string) ([]*shared.WorkflowExecut
 		return nil, err
 	}
 
-	var executions []*shared.WorkflowExecutionInfo
+	var executions []*common.WorkflowExecutionInfo
 	var nextPageToken []byte
 	for hasMore := true; hasMore; hasMore = len(nextPageToken) > 0 {
-		resp, err := cadenceClient.ListWorkflow(ctx, &shared.ListWorkflowExecutionsRequest{
-			Domain:        common.StringPtr(DomainName),
-			PageSize:      common.Int32Ptr(10),
+		resp, err := cadenceClient.ListWorkflow(ctx, &workflowservice.ListWorkflowExecutionsRequest{
+			Domain:        DomainName,
+			PageSize:      10,
 			NextPageToken: nextPageToken,
-			Query:         common.StringPtr(query),
+			Query:         query,
 		})
 		if err != nil {
 			return nil, err
 		}
 
-		for _, r := range resp.Executions {
-			executions = append(executions, r)
-		}
+		executions = append(executions, resp.Executions...)
 
 		nextPageToken = resp.NextPageToken
 		activity.RecordHeartbeat(ctx, nextPageToken)

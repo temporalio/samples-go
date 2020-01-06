@@ -50,7 +50,7 @@ func SampleTimerWorkflow(ctx workflow.Context, processingTimeThreshold time.Dura
 	selector.AddFuture(timerFuture, func(f workflow.Future) {
 		if !processingDone {
 			// processing is not done yet when timer fires, send notification email
-			workflow.ExecuteActivity(ctx, sendEmailActivity).Get(ctx, nil)
+			_ = workflow.ExecuteActivity(ctx, sendEmailActivity).Get(ctx, nil)
 		}
 	})
 

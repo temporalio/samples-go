@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/stretchr/testify/require"
-	"go.temporal.io/temporal/testsuite"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
+	"go.temporal.io/temporal/testsuite"
 )
 
 func Test_QueryWorkflow(t *testing.T) {

@@ -1,9 +1,10 @@
 package main
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"go.temporal.io/temporal/testsuite"
-	"testing"
 )
 
 func TestDynamicWorkflow(t *testing.T) {

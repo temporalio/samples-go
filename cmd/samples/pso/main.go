@@ -6,10 +6,11 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
-	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/encoded"
 	"go.temporal.io/temporal/worker"
+
+	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
 )
 
 // This needs to be done as part of a bootstrap step when the process starts.

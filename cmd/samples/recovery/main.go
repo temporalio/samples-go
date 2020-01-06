@@ -4,12 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
-	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
-	"github.com/temporalio/temporal-go-samples/cmd/samples/recovery/cache"
+	"time"
+
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
-	"time"
+
+	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
+	"github.com/temporalio/temporal-go-samples/cmd/samples/recovery/cache"
 )
 
 // This needs to be done as part of a bootstrap step when the process starts.
@@ -25,8 +27,8 @@ func startWorkers(h *common.SampleHelper) {
 
 	// Configure worker options.
 	workerOptions := worker.Options{
-		MetricsScope: h.Scope,
-		Logger:       h.Logger,
+		MetricsScope:              h.Scope,
+		Logger:                    h.Logger,
 		BackgroundActivityContext: ctx,
 	}
 
@@ -34,10 +36,10 @@ func startWorkers(h *common.SampleHelper) {
 
 	// Configure worker options.
 	hostSpecificWorkerOptions := worker.Options{
-		MetricsScope: h.Scope,
-		Logger:       h.Logger,
+		MetricsScope:              h.Scope,
+		Logger:                    h.Logger,
 		BackgroundActivityContext: ctx,
-		DisableWorkflowWorker: true,
+		DisableWorkflowWorker:     true,
 	}
 
 	h.StartWorkers(h.Config.DomainName, HostID, hostSpecificWorkerOptions)
@@ -64,7 +66,7 @@ func startRecoveryWorkflow(h *common.SampleHelper, workflowID string, params Par
 }
 
 func main() {
-	var mode, workflowID,signal, input, workflowType string
+	var mode, workflowID, signal, input, workflowType string
 	flag.StringVar(&mode, "m", "trigger", "Mode is worker or trigger.")
 	flag.StringVar(&workflowID, "w", "workflow_A", "WorkflowID")
 	flag.StringVar(&signal, "s", "signal_data", "SignalData")

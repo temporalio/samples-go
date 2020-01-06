@@ -1,8 +1,9 @@
 package main
 
 import (
-	"go.temporal.io/temporal/workflow"
 	"time"
+
+	"go.temporal.io/temporal/workflow"
 )
 
 // ApplicationName is the task list for this sample
@@ -30,7 +31,7 @@ func QueryWorkflow(ctx workflow.Context) error {
 
 	queryResult = "waiting on timer"
 	// to simulate workflow been blocked on something, in reality, workflow could wait on anything like activity, signal or timer
-	workflow.NewTimer(ctx, time.Minute*2).Get(ctx, nil)
+	_ = workflow.NewTimer(ctx, time.Minute*2).Get(ctx, nil)
 	logger.Info("Timer fired")
 
 	queryResult = "done"

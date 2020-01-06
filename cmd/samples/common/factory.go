@@ -3,25 +3,18 @@ package common
 import (
 	"errors"
 
+	"github.com/temporalio/temporal-proto-go/workflowservice"
 	"github.com/uber-go/tally"
-	"go.temporal.io/temporal/.gen/go/temporal/workflowserviceclient"
 	"go.temporal.io/temporal/client"
-	"go.temporal.io/temporal/workflow"
 	"go.temporal.io/temporal/encoded"
-	"go.uber.org/yarpc"
-	"go.uber.org/yarpc/transport/tchannel"
+	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
-)
-
-const (
-	_cadenceClientName      = "cadence-client"
-	_cadenceFrontendService = "cadence-frontend"
+	"google.golang.org/grpc"
 )
 
 // WorkflowClientBuilder build client to cadence service
 type WorkflowClientBuilder struct {
 	hostPort       string
-	dispatcher     *yarpc.Dispatcher
 	domain         string
 	clientIdentity string
 	metricsScope   tally.Scope
@@ -61,17 +54,12 @@ func (b *WorkflowClientBuilder) SetMetricsScope(metricsScope tally.Scope) *Workf
 	return b
 }
 
-// SetDispatcher sets the dispatcher for the builder
-func (b *WorkflowClientBuilder) SetDispatcher(dispatcher *yarpc.Dispatcher) *WorkflowClientBuilder {
-	b.dispatcher = dispatcher
-	return b
-}
-
 // SetContextPropagators sets the context propagators for the builder
 func (b *WorkflowClientBuilder) SetContextPropagators(ctxProps []workflow.ContextPropagator) *WorkflowClientBuilder {
 	b.ctxProps = ctxProps
-  return b
+	return b
 }
+
 // SetDataConverter sets the data converter for the builder
 func (b *WorkflowClientBuilder) SetDataConverter(dataConverter encoded.DataConverter) *WorkflowClientBuilder {
 	b.dataConverter = dataConverter
@@ -101,49 +89,16 @@ func (b *WorkflowClientBuilder) BuildCadenceDomainClient() (client.DomainClient,
 }
 
 // BuildServiceClient builds a rpc service client to cadence service
-func (b *WorkflowClientBuilder) BuildServiceClient() (workflowserviceclient.Interface, error) {
-	if err := b.build(); err != nil {
+func (b *WorkflowClientBuilder) BuildServiceClient() (workflowservice.WorkflowServiceClient, error) {
+	if len(b.hostPort) == 0 {
+		return nil, errors.New("HostPort is empty")
+	}
+
+	connection, err := grpc.Dial(b.hostPort, grpc.WithInsecure())
+	if err != nil {
 		return nil, err
 	}
 
-	if b.dispatcher == nil {
-		b.Logger.Fatal("No RPC dispatcher provided to create a connection to Cadence Service")
-	}
-
-	return workflowserviceclient.New(b.dispatcher.ClientConfig(_cadenceFrontendService)), nil
-}
-
-func (b *WorkflowClientBuilder) build() error {
-	if b.dispatcher != nil {
-		return nil
-	}
-
-	if len(b.hostPort) == 0 {
-		return errors.New("HostPort is empty")
-	}
-
-	ch, err := tchannel.NewChannelTransport(
-		tchannel.ServiceName(_cadenceClientName))
-	if err != nil {
-		b.Logger.Fatal("Failed to create transport channel", zap.Error(err))
-	}
-
-	b.Logger.Debug("Creating RPC dispatcher outbound",
-		zap.String("ServiceName", _cadenceFrontendService),
-		zap.String("HostPort", b.hostPort))
-
-	b.dispatcher = yarpc.NewDispatcher(yarpc.Config{
-		Name: _cadenceClientName,
-		Outbounds: yarpc.Outbounds{
-			_cadenceFrontendService: {Unary: ch.NewSingleOutbound(b.hostPort)},
-		},
-	})
-
-	if b.dispatcher != nil {
-		if err := b.dispatcher.Start(); err != nil {
-			b.Logger.Fatal("Failed to create outbound transport channel: %v", zap.Error(err))
-		}
-	}
-
-	return nil
+	// TODO: close connection somewhere
+	return workflowservice.NewWorkflowServiceClient(connection), nil
 }
