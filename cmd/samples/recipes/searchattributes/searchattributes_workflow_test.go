@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"github.com/temporalio/temporal-proto-go/common"
+	"go.temporal.io/temporal-proto/common"
 	"go.temporal.io/temporal/testsuite"
 )
 

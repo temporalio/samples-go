@@ -130,8 +130,6 @@ github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXf
 github.com/stretchr/testify v1.3.0 h1:TivCn/peBQ7UY8ooIcPgZFpTNSz0Q2U6UrFlUfqbe0Q=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
-github.com/temporalio/temporal-proto-go v0.0.0-20200103184242-06c5b2472e15 h1:CRdB+axODpCGSPShGUETU3Tcx/GGYnDpxJ0K6UVwYxs=
-github.com/temporalio/temporal-proto-go v0.0.0-20200103184242-06c5b2472e15/go.mod h1:P197dHJeYi4bMf0n/7CAbhK4VlzCfK7KlsyP44biIdI=
 github.com/uber-go/atomic v1.4.0 h1:yOuPqEq4ovnhEjpHmfFwsqBXDYbQeT6Nb0bwD6XnD5o=
 github.com/uber-go/atomic v1.4.0/go.mod h1:/Ct5t2lcmbJ4OSe/waGBoaVvVqtO0bmtfVNex1PFV8g=
 github.com/uber-go/mapdecode v1.0.0 h1:euUEFM9KnuCa1OBixz1xM+FIXmpixyay5DLymceOVrU=
@@ -143,8 +141,10 @@ github.com/uber/jaeger-lib v1.5.0 h1:OHbgr8l656Ub3Fw5k9SWnBfIEwvoHQ+W2y+Aa9D1Uyo
 github.com/uber/jaeger-lib v1.5.0/go.mod h1:ComeNDZlWwrWnDv8aPp0Ba6+uUTzImX/AauajbLI56U=
 github.com/uber/tchannel-go v1.16.0 h1:B7dirDs15/vJJYDeoHpv3xaEUjuRZ38Rvt1qq9g7pSo=
 github.com/uber/tchannel-go v1.16.0/go.mod h1:Rrgz1eL8kMjW/nEzZos0t+Heq0O4LhnUJVA32OvWKHo=
-go.temporal.io/temporal v0.10.2 h1:AvYEBm0E/IJmMe5F52emfT/cGHKwtXgyDGhpcbmUqOE=
-go.temporal.io/temporal v0.10.2/go.mod h1:/qEvi9RT0p+50DqXa15UiRauNSxfx38HMxev3sfaZFY=
+go.temporal.io/temporal v0.10.3 h1:uuZA/tbv7IIFl9rgR9aMJEiAmSp/pnspR8MWRNjsSkU=
+go.temporal.io/temporal v0.10.3/go.mod h1:dC56oH+e6QhhlGUU0u7eQpLRZ7TWr9Rgv1Z7ZLThbMs=
+go.temporal.io/temporal-proto v0.0.0-20200104005919-6abdf3300ac7 h1:NdZxGjp9KcmERWIW4dbQPSCCWIthkV003/0l/J3fncQ=
+go.temporal.io/temporal-proto v0.0.0-20200104005919-6abdf3300ac7/go.mod h1:Hcd8jaNNn/g6w3+8vHvTz1QIuodcT1skcUYD6gYoA80=
 go.uber.org/atomic v1.5.0/go.mod h1:sABNBOSYdrvTF6hTgEIbc7YasKWGhgEQZyfxyTvoXHQ=
 go.uber.org/dig v1.8.0/go.mod h1:X34SnWGr8Fyla9zQNO2GSO2D+TIuqB14OS8JhYocIyw=
 go.uber.org/fx v1.10.0/go.mod h1:vLRicqpG/qQEzno4SYU86iCwfT95EZza+Eba0ItuxqY=

@@ -8,10 +8,9 @@ import (
 	"strconv"
 	"time"
 
+	"go.temporal.io/temporal-proto/common"
+	"go.temporal.io/temporal-proto/workflowservice"
 	"go.temporal.io/temporal/activity"
-
-	"github.com/temporalio/temporal-proto-go/common"
-	"github.com/temporalio/temporal-proto-go/workflowservice"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
