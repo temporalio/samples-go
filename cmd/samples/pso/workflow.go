@@ -7,7 +7,6 @@ import (
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal"
-
 	"go.temporal.io/temporal/workflow"
 )
 

@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/uber-go/tally"
+	"go.temporal.io/temporal-proto/workflowservice"
+	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/encoded"
 	"go.temporal.io/temporal/worker"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
-
-	"github.com/temporalio/temporal-proto-go/workflowservice"
-	"github.com/uber-go/tally"
-	"go.temporal.io/temporal/client"
 	"gopkg.in/yaml.v2"
 )
 

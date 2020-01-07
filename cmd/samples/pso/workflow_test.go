@@ -4,14 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"go.temporal.io/temporal/workflow"
-
 	"github.com/stretchr/testify/require"
-
 	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/encoded"
 	"go.temporal.io/temporal/testsuite"
 	"go.temporal.io/temporal/worker"
+	"go.temporal.io/temporal/workflow"
 )
 
 func Test_Workflow(t *testing.T) {

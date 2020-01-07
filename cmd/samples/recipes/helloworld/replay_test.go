@@ -3,13 +3,12 @@ package main
 import (
 	"testing"
 
-	"go.temporal.io/temporal/worker"
-	"go.uber.org/zap"
-
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"github.com/temporalio/temporal-proto-go/workflowservicemock"
+	"go.temporal.io/temporal-proto/workflowservicemock"
+	"go.temporal.io/temporal/worker"
+	"go.uber.org/zap"
 )
 
 type replayTestSuite struct {

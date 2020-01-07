@@ -5,10 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"go.temporal.io/temporal/activity"
-
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/testsuite"
 )
 

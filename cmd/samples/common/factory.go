@@ -3,8 +3,8 @@ package common
 import (
 	"errors"
 
-	"github.com/temporalio/temporal-proto-go/workflowservice"
 	"github.com/uber-go/tally"
+	"go.temporal.io/temporal-proto/workflowservice"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/encoded"
 	"go.temporal.io/temporal/workflow"

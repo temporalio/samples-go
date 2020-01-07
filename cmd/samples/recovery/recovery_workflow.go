@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
-	"github.com/temporalio/temporal-proto-go/common"
-	"github.com/temporalio/temporal-proto-go/enums"
-	"github.com/temporalio/temporal-proto-go/workflowservice"
 	"go.temporal.io/temporal"
+	"go.temporal.io/temporal-proto/common"
+	"go.temporal.io/temporal-proto/enums"
+	"go.temporal.io/temporal-proto/workflowservice"
 	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/workflow"

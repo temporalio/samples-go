@@ -5,11 +5,10 @@ import (
 	"flag"
 	"time"
 
-	"go.uber.org/zap"
-
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
+	"go.uber.org/zap"
 
 	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
 )
