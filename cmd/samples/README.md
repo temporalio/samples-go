@@ -1,7 +1,7 @@
 # Temporal Samples
-These are some samples to demostrate various capabilities of Temporal client and server.  You can learn more about Temporal at:
+These are some samples to demonstrate various capabilities of Temporal client and server.  You can learn more about Temporal at:
 * Temporal: https://github.com/temporalio/temporal
-* Temporal Client: https://github.com/uber-go/temporal-client
+* Temporal Client: https://github.com/temporalio/temporal-go-client
 
 ## Prerequisite
 Run Temporal Server
@@ -30,9 +30,9 @@ make
 ```
 ./bin/cron -m worker
 ```
-Start workflow with interval of 3s and schedule 5 times for the cron job.
+Start workflow every minute using cron.
 ```
-./bin/cron -m trigger -i 3 -c 5
+./bin/cron -m trigger -cron "* * * * *"
 ```
 
 #### dsl
@@ -135,4 +135,14 @@ Run the multi choice workflow
 ```
 ```
 ./bin/dynamic -m trigger
+```
+
+#### search attributes  
+Before running this, Temporal Server need to run with advanced visibility store. 
+See https://github.com/temporalio/temporal/blob/master/docs/visibility-on-elasticsearch.md
+```
+./bin/searchattributes -m worker
+```
+```
+./bin/searchattributes -m trigger
 ```
