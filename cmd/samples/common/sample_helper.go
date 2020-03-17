@@ -31,9 +31,8 @@ type (
 
 	// Configuration for running samples.
 	Configuration struct {
-		DomainName  string `yaml:"domain"`
-		ServiceName string `yaml:"service"`
-		HostPort    string `yaml:"host"`
+		DomainName string `yaml:"domain"`
+		HostPort   string `yaml:"host"`
 	}
 )
 
