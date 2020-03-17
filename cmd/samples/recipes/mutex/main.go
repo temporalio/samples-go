@@ -24,21 +24,29 @@ const (
 func startWorkers(h *common.SampleHelper) {
 	// Configure worker options.
 	workerOptions := worker.Options{
+		HostPort:                  h.Config.HostPort,
 		MetricsScope:              h.Scope,
 		Logger:                    h.Logger,
 		BackgroundActivityContext: context.WithValue(context.Background(), _sampleHelperContextKey, h),
 	}
 
 	// Start Worker.
-	worker := worker.New(
-		h.Service,
+	worker, err := worker.New(
 		h.Config.DomainName,
 		ApplicationName,
 		workerOptions)
-	err := worker.Start()
 	if err != nil {
-		panic("Failed to start workers")
+		panic("Failed to create worker")
 	}
+	err = worker.Start()
+	if err != nil {
+		panic("Failed to start worker")
+	}
+
+	worker.RegisterActivity(SignalWithStartMutexWorkflowActivity)
+	worker.RegisterWorkflow(MutexWorkflow)
+	worker.RegisterWorkflow(SampleWorkflowWithMutex)
+
 }
 
 // startTwoWorkflows starts two workflows that operate on the same recourceID

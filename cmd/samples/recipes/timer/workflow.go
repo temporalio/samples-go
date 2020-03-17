@@ -13,14 +13,6 @@ import (
 // ApplicationName is the task list for this sample
 const ApplicationName = "timerGroup"
 
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(SampleTimerWorkflow)
-	activity.Register(orderProcessingActivity)
-	activity.Register(sendEmailActivity)
-}
-
 // SampleTimerWorkflow workflow decider
 func SampleTimerWorkflow(ctx workflow.Context, processingTimeThreshold time.Duration) error {
 	ao := workflow.ActivityOptions{

@@ -37,9 +37,12 @@ func (s *UnitTestSuite) Test_CronWorkflow() {
 		return nil
 	}
 
-	workflow.Register(testWorkflow)
-
 	env := s.NewTestWorkflowEnvironment()
+
+	env.RegisterWorkflow(testWorkflow)
+	env.RegisterWorkflow(SampleCronWorkflow)
+	env.RegisterActivity(sampleCronActivity)
+
 	env.OnActivity(sampleCronActivity, mock.Anything, mock.Anything, mock.Anything).Return(nil).Times(3)
 
 	var startTimeList, endTimeList []time.Time

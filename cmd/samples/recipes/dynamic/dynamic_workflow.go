@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
@@ -18,21 +17,12 @@ import (
 const ApplicationName = "dynamicGroup"
 
 // GreetingsWorkflowName name used when workflow function is registered during init.  We use the fully qualified name to function
-const GreetingsWorkflowName = "main.SampleGreetingsWorkflow"
+const GreetingsWorkflowName = "SampleGreetingsWorkflow"
 
 // Activity names used when activity function is registered during init.  We use the fully qualified name to function
-const getNameActivityName = "main.getNameActivity"
-const getGreetingActivityName = "main.getGreetingActivity"
-const sayGreetingActivityName = "main.sayGreetingActivity"
-
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(SampleGreetingsWorkflow)
-	activity.Register(getGreetingActivity)
-	activity.Register(getNameActivity)
-	activity.Register(sayGreetingActivity)
-}
+const getNameActivityName = "getNameActivity"
+const getGreetingActivityName = "getGreetingActivity"
+const sayGreetingActivityName = "sayGreetingActivity"
 
 // SampleGreetingsWorkflow Workflow Decider.
 func SampleGreetingsWorkflow(ctx workflow.Context) error {

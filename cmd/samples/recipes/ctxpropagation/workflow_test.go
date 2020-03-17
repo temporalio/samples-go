@@ -26,6 +26,11 @@ func (s *UnitTestSuite) Test_CtxPropWorkflow() {
 
 	var activityCalled []string
 	env := s.NewTestWorkflowEnvironment()
+	env.RegisterActivityWithOptions(
+		sampleActivity,
+		activity.RegisterOptions{Name: sampleActivityName},
+	)
+
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {
 		activityType := activityInfo.ActivityType.Name
 		activityCalled = append(activityCalled, activityType)

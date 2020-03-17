@@ -22,7 +22,13 @@ func startWorkers(h *common.SampleHelper) {
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	worker := h.StartWorker(h.Config.DomainName, ApplicationName, workerOptions)
+	worker.RegisterWorkflow(SimpleDSLWorkflow)
+	worker.RegisterActivity(sampleActivity1)
+	worker.RegisterActivity(sampleActivity2)
+	worker.RegisterActivity(sampleActivity3)
+	worker.RegisterActivity(sampleActivity4)
+	worker.RegisterActivity(sampleActivity5)
 }
 
 func startWorkflow(h *common.SampleHelper, w Workflow) {

@@ -11,12 +11,6 @@ import (
  * This sample workflow executes multiple branches in parallel using workflow.Go() method.
  */
 
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(SampleParallelWorkflow)
-}
-
 // SampleParallelWorkflow workflow decider
 func SampleParallelWorkflow(ctx workflow.Context) error {
 	waitChannel := workflow.NewChannel(ctx)

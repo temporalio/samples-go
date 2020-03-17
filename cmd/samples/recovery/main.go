@@ -8,6 +8,7 @@ import (
 
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
+	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 
 	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
@@ -32,7 +33,9 @@ func startWorkers(h *common.SampleHelper) {
 		BackgroundActivityContext: ctx,
 	}
 
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	workflowWorker := h.StartWorker(h.Config.DomainName, ApplicationName, workerOptions)
+	workflowWorker.RegisterWorkflowWithOptions(RecoverWorkflow, workflow.RegisterOptions{Name: "RecoverWorkflow"})
+	workflowWorker.RegisterWorkflowWithOptions(TripWorkflow, workflow.RegisterOptions{Name: "TripWorkflow"})
 
 	// Configure worker options.
 	hostSpecificWorkerOptions := worker.Options{
@@ -42,7 +45,10 @@ func startWorkers(h *common.SampleHelper) {
 		DisableWorkflowWorker:     true,
 	}
 
-	h.StartWorkers(h.Config.DomainName, HostID, hostSpecificWorkerOptions)
+	worker := h.StartWorker(h.Config.DomainName, HostID, hostSpecificWorkerOptions)
+
+	worker.RegisterActivity(listOpenExecutions)
+	worker.RegisterActivity(recoverExecutions)
 }
 
 func startTripWorkflow(h *common.SampleHelper, workflowID string, user UserState) {

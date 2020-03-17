@@ -13,6 +13,7 @@ func Test_ProcessingWorkflow_SingleAction(t *testing.T) {
 	signalData := "_1_"
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
+	env.RegisterActivity(activityForCondition1)
 	// mock activityForCondition1 so it won't wait on real clock
 	env.OnActivity(activityForCondition1, mock.Anything, signalData).Return("processed_1", nil)
 	env.ExecuteWorkflow(ProcessingWorkflow, signalData)
@@ -28,6 +29,8 @@ func Test_ProcessingWorkflow_MultiAction(t *testing.T) {
 	signalData := "_1_, _3_"
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
+	env.RegisterActivity(activityForCondition1)
+	env.RegisterActivity(activityForCondition3)
 	// mock activityForCondition1 so it won't wait on real clock
 	env.OnActivity(activityForCondition1, mock.Anything, signalData).Return("processed_1", nil)
 	env.OnActivity(activityForCondition3, mock.Anything, signalData).Return("processed_3", nil)
@@ -43,6 +46,8 @@ func Test_ProcessingWorkflow_MultiAction(t *testing.T) {
 func Test_SignalHandlingWorkflow(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
+	env.RegisterActivity(activityForCondition1)
+	env.RegisterWorkflow(ProcessingWorkflow)
 
 	env.OnActivity(activityForCondition1, mock.Anything, "_1_").Return("processed_1", nil)
 

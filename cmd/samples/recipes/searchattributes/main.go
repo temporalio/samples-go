@@ -30,7 +30,9 @@ func startWorkers(h *common.SampleHelper) {
 		BackgroundActivityContext: ctx,
 	}
 
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	worker := h.StartWorker(h.Config.DomainName, ApplicationName, workerOptions)
+	worker.RegisterWorkflow(SearchAttributesWorkflow)
+	worker.RegisterActivity(listExecutions)
 }
 
 func startWorkflow(h *common.SampleHelper) {

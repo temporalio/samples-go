@@ -70,14 +70,6 @@ var (
 	ErrExecutionCacheNotFound = errors.New("failed to retrieve cache from context")
 )
 
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.RegisterWithOptions(RecoverWorkflow, workflow.RegisterOptions{Name: "RecoverWorkflow"})
-	activity.Register(listOpenExecutions)
-	activity.Register(recoverExecutions)
-}
-
 // RecoverWorkflow is the workflow implementation to recover TripWorkflow executions
 func RecoverWorkflow(ctx workflow.Context, params Params) error {
 	logger := workflow.GetLogger(ctx)
@@ -271,19 +263,19 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 	}
 
 	// Start new execution run
-	newRun, err := cadenceClient.StartWorkflow(ctx, params.Options, "TripWorkflow", params.State)
+	newRun, err := cadenceClient.ExecuteWorkflow(ctx, params.Options, "TripWorkflow", params.State)
 	if err != nil {
 		return err
 	}
 
 	// re-inject all signals to new run
 	for _, s := range signals {
-		_ = cadenceClient.SignalWorkflow(ctx, execution.GetWorkflowId(), newRun.RunID, s.Name, s.Data)
+		_ = cadenceClient.SignalWorkflow(ctx, execution.GetWorkflowId(), newRun.GetRunID(), s.Name, s.Data)
 	}
 
 	logger.Info("Successfully restarted workflow.",
 		zap.String("WorkflowID", execution.GetWorkflowId()),
-		zap.String("NewRunID", newRun.RunID))
+		zap.String("NewRunID", newRun.GetRunID()))
 
 	return nil
 }

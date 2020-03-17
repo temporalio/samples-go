@@ -21,10 +21,14 @@ const (
 func startWorkers(h *common.SampleHelper) {
 	// Configure worker options.
 	workerOptions := worker.Options{
+		HostPort:     h.Config.HostPort,
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	worker := h.StartWorker(h.Config.DomainName, ApplicationName, workerOptions)
+
+	worker.RegisterWorkflow(SampleCronWorkflow)
+	worker.RegisterActivity(sampleCronActivity)
 }
 
 //

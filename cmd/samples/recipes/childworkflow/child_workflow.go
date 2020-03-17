@@ -13,12 +13,6 @@ import (
  * workflow execution is starting a new run and parent execution is notified only after the completion of last run.
  */
 
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(SampleChildWorkflow)
-}
-
 // SampleChildWorkflow workflow decider
 func SampleChildWorkflow(ctx workflow.Context, totalCount, runCount int) (string, error) {
 	logger := workflow.GetLogger(ctx)

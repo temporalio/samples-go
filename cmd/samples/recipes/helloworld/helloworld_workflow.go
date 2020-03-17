@@ -16,15 +16,8 @@ import (
 // ApplicationName is the task list for this sample
 const ApplicationName = "helloWorldGroup"
 
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(Workflow)
-	activity.Register(helloworldActivity)
-}
-
-// Workflow workflow decider
-func Workflow(ctx workflow.Context, name string) error {
+// HelloworldWorkflow workflow decider
+func HelloworldWorkflow(ctx workflow.Context, name string) error {
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
@@ -41,7 +34,7 @@ func Workflow(ctx workflow.Context, name string) error {
 		return err
 	}
 
-	logger.Info("Workflow completed.", zap.String("Result", helloworldResult))
+	logger.Info("HelloworldWorkflow completed.", zap.String("Result", helloworldResult))
 
 	return nil
 }

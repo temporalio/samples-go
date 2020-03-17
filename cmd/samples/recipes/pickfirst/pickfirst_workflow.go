@@ -17,12 +17,6 @@ import (
 // ApplicationName is the task list for this sample
 const ApplicationName = "pickfirstGroup"
 
-// This is registration process where you register all your workflows and activities
-func init() {
-	workflow.Register(SamplePickFirstWorkflow)
-	activity.Register(sampleActivity)
-}
-
 // SamplePickFirstWorkflow workflow decider
 func SamplePickFirstWorkflow(ctx workflow.Context) error {
 	selector := workflow.NewSelector(ctx)

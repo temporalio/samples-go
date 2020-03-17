@@ -37,6 +37,10 @@ func (s *replayTestSuite) TearDownTest() {
 // Or from Cadence Web UI. And you may need to change workflowType in the first event.
 func (s *replayTestSuite) TestReplayWorkflowHistoryFromFile() {
 	logger, _ := zap.NewDevelopment()
-	err := worker.ReplayWorkflowHistoryFromJSONFile(logger, "helloworld.json")
+	replayer := worker.NewWorkflowReplayer()
+
+	replayer.RegisterWorkflow(HelloworldWorkflow)
+
+	err := replayer.ReplayWorkflowHistoryFromJSONFile(logger, "helloworld.json")
 	require.NoError(s.T(), err)
 }

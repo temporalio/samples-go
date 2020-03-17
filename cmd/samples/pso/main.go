@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
+	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/encoded"
 	"go.temporal.io/temporal/worker"
@@ -23,7 +24,19 @@ func startWorkers(h *common.SampleHelper) {
 		MaxConcurrentActivityExecutionSize: 1, // Activities are supposed to be CPU intensive, so better limit the concurrency
 		DataConverter:                      h.DataConverter,
 	}
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	worker := h.StartWorker(h.Config.DomainName, ApplicationName, workerOptions)
+
+	worker.RegisterWorkflow(PSOWorkflow)
+	worker.RegisterWorkflow(PSOChildWorkflow)
+
+	worker.RegisterActivityWithOptions(
+		initParticleActivity,
+		activity.RegisterOptions{Name: initParticleActivityName},
+	)
+	worker.RegisterActivityWithOptions(
+		updateParticleActivity,
+		activity.RegisterOptions{Name: updateParticleActivityName},
+	)
 }
 
 func startWorkflow(h *common.SampleHelper, functionName string) {

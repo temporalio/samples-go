@@ -23,11 +23,6 @@ const ApplicationName = "FileProcessorGroup"
 // In real world case, you would use a hostname or ip address as HostID.
 var HostID = ApplicationName + "_" + uuid.New()
 
-// This is registration process where you register all your workflow handlers.
-func init() {
-	workflow.Register(SampleFileProcessingWorkflow)
-}
-
 //SampleFileProcessingWorkflow workflow decider
 func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err error) {
 	// step 1: download resource file

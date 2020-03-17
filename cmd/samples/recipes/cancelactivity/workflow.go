@@ -17,15 +17,6 @@ import (
 // ApplicationName is the task list for this sample
 const ApplicationName = "cancelGroup"
 
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(Workflow)
-	activity.Register(activityToBeCanceled)
-	activity.Register(activityToBeSkipped)
-	activity.Register(cleanupActivity)
-}
-
 // Workflow workflow decider
 func Workflow(ctx workflow.Context) error {
 	ao := workflow.ActivityOptions{

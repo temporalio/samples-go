@@ -16,20 +16,32 @@ import (
 func startWorkers(h *common.SampleHelper) {
 	// Configure worker options.
 	workerOptions := worker.Options{
+		HostPort:     h.Config.HostPort,
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
 
 	// Start Worker.
-	worker := worker.New(
-		h.Service,
+	worker, err := worker.New(
 		h.Config.DomainName,
 		ApplicationName,
 		workerOptions)
-	err := worker.Start()
+	if err != nil {
+		panic("Failed to create workers")
+	}
+	err = worker.Start()
 	if err != nil {
 		panic("Failed to start workers")
 	}
+
+	worker.RegisterWorkflow(ExclusiveChoiceWorkflow)
+	worker.RegisterActivity(getOrderActivity)
+	worker.RegisterActivity(orderAppleActivity)
+	worker.RegisterActivity(orderBananaActivity)
+	worker.RegisterActivity(orderCherryActivity)
+	worker.RegisterActivity(orderOrangeActivity)
+	worker.RegisterWorkflow(MultiChoiceWorkflow)
+	worker.RegisterActivity(getBasketOrderActivity)
 }
 
 func startWorkflowMultiChoice(h *common.SampleHelper) {

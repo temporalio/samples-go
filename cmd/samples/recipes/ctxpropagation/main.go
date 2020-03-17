@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
+	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
 	"go.temporal.io/temporal/workflow"
@@ -25,7 +26,14 @@ func startWorkers(h *common.SampleHelper) {
 			NewContextPropagator(),
 		},
 	}
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	worker := h.StartWorker(h.Config.DomainName, ApplicationName, workerOptions)
+
+	worker.RegisterWorkflow(CtxPropWorkflow)
+
+	worker.RegisterActivityWithOptions(
+		sampleActivity,
+		activity.RegisterOptions{Name: sampleActivityName},
+	)
 }
 
 func startWorkflow(h *common.SampleHelper) {

@@ -7,7 +7,6 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"go.temporal.io/temporal"
-	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/testsuite"
 	"go.temporal.io/temporal/workflow"
@@ -15,12 +14,6 @@ import (
 
 	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
 )
-
-func init() {
-	activity.Register(SignalWithStartMutexWorkflowActivity)
-	workflow.Register(MutexWorkflow)
-	workflow.Register(SampleWorkflowWithMutex)
-}
 
 const (
 	// AcquireLockSignalName signal channel name for lock acquisition

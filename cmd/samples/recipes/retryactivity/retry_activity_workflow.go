@@ -19,13 +19,6 @@ import (
 // ApplicationName is the task list for this sample
 const ApplicationName = "retryactivityGroup"
 
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(RetryWorkflow)
-	activity.Register(batchProcessingActivity)
-}
-
 // RetryWorkflow workflow decider
 func RetryWorkflow(ctx workflow.Context) error {
 	ao := workflow.ActivityOptions{

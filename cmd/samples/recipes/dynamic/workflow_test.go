@@ -11,6 +11,9 @@ func TestDynamicWorkflow(t *testing.T) {
 	a := assert.New(t)
 	s := testsuite.WorkflowTestSuite{}
 	env := s.NewTestWorkflowEnvironment()
+	env.RegisterActivity(getGreetingActivity)
+	env.RegisterActivity(getNameActivity)
+	env.RegisterActivity(sayGreetingActivity)
 
 	env.OnActivity(getGreetingActivity).Return("Greet", nil).Times(1)
 	env.OnActivity(getNameActivity).Return("Name", nil).Times(1)

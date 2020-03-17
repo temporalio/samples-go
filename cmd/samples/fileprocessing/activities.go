@@ -21,22 +21,6 @@ const (
 	uploadFileActivityName   = "uploadFileActivity"
 )
 
-// This is registration process where you register all your activity handlers.
-func init() {
-	activity.RegisterWithOptions(
-		downloadFileActivity,
-		activity.RegisterOptions{Name: downloadFileActivityName},
-	)
-	activity.RegisterWithOptions(
-		processFileActivity,
-		activity.RegisterOptions{Name: processFileActivityName},
-	)
-	activity.RegisterWithOptions(
-		uploadFileActivity,
-		activity.RegisterOptions{Name: uploadFileActivityName},
-	)
-}
-
 func downloadFileActivity(ctx context.Context, fileID string) (*fileInfo, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Downloading file...", zap.String("FileID", fileID))

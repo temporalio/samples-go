@@ -22,15 +22,6 @@ const (
 )
 
 //
-// This is registration process where you register all your workflows
-// and activity function handlers.
-//
-func init() {
-	workflow.Register(SampleCronWorkflow)
-	activity.Register(sampleCronActivity)
-}
-
-//
 // Cron sample job activity.
 //
 func sampleCronActivity(ctx context.Context, beginTime, endTime time.Time) error {

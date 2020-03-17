@@ -9,8 +9,8 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/stretchr/testify v1.4.0
 	github.com/uber-go/tally v3.3.13+incompatible
-	go.temporal.io/temporal v0.10.7
-	go.temporal.io/temporal-proto v0.0.0-20200225194333-1f486e8c9e9c
+	go.temporal.io/temporal v0.10.13
+	go.temporal.io/temporal-proto v0.0.0-20200313230351-15ab29fd00f3
 	go.uber.org/zap v1.13.0
 	google.golang.org/grpc v1.27.1
 	gopkg.in/yaml.v2 v2.2.2

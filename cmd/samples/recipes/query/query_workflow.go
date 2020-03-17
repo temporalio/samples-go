@@ -9,12 +9,6 @@ import (
 // ApplicationName is the task list for this sample
 const ApplicationName = "queryGroup"
 
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(QueryWorkflow)
-}
-
 // Workflow is an implementation of cadence workflow to demo how to setup query handler
 func QueryWorkflow(ctx workflow.Context) error {
 	queryResult := "started"
