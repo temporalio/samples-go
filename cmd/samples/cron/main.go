@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"flag"
+	"os"
+	"os/signal"
 	"time"
 
 	"github.com/pborman/uuid"
@@ -12,9 +14,6 @@ import (
 )
 
 const (
-	// DomainName is the name of domain where workflow will be created.
-	DomainName = "samples-domain"
-
 	// TaskListName is the task list for this sample.
 	TaskListName = "cron-task-list"
 )
@@ -32,44 +31,61 @@ func main() {
 
 	var mode string
 	var cron string
-	flag.StringVar(&mode, "m", "trigger", "Mode is worker or trigger.")
-	flag.StringVar(&cron, "cron", "* * * * *", "Crontab schedule. Default \"* * * * *\"")
+	flag.StringVar(&mode, "m", "", "Mode is worker or trigger.")
+	flag.StringVar(&cron, "cron", "* * * * *", "Crontab schedule.")
 	flag.Parse()
 
 	switch mode {
 	case "worker":
-		startWorker()
+		w := startWorker()
 		// The workers are supposed to be long running process that should not exit.
-		// Use select{} to block indefinitely for samples, you can quit by Ctrl+C.
-		select {}
+		// Use channel to wait for Ctrl+C.
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, os.Interrupt)
+		<-c
+		// Stop worker, close connection, clean up resources.
+		w.Stop()
 	case "trigger":
 		startWorkflow(cron)
+	default:
+		flag.PrintDefaults()
 	}
 }
 
 // This needs to be done as part of a bootstrap step when the process starts.
 // The workers are supposed to be long running.
-func startWorker() {
+func startWorker() worker.Worker {
 	workerOptions := worker.Options{
-		Logger: logger,
+		HostPort: client.DefaultHostPort,
+		Logger:   logger,
 	}
 
-	worker, err := worker.New(DomainName, TaskListName, workerOptions)
+	w, err := worker.New(TaskListName, workerOptions)
 	if err != nil {
 		logger.Fatal("Unable to create worker", zap.Error(err))
 	}
 
-	worker.RegisterWorkflow(SampleCronWorkflow)
-	worker.RegisterActivity(sampleCronActivity)
+	w.RegisterWorkflow(SampleCronWorkflow)
+	w.RegisterActivity(sampleCronActivity)
 
-	err = worker.Start()
+	err = w.Start()
 	if err != nil {
-		logger.Error("Unable to start worker", zap.Error(err))
+		logger.Fatal("Unable to start worker", zap.Error(err))
 	}
+
+	return w
 }
 
 // Start instance of the workflow.
 func startWorkflow(cron string) {
+	c, err := client.NewClient(client.Options{
+		HostPort: client.DefaultHostPort,
+	})
+	if err != nil {
+		logger.Fatal("Unable to create client", zap.Error(err))
+		panic(err)
+	}
+
 	// This workflow ID can be user business logic identifier as well.
 	workflowID := "cron_" + uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
@@ -80,16 +96,13 @@ func startWorkflow(cron string) {
 		CronSchedule:                    cron,
 	}
 
-	client, err := client.NewClient(DomainName, client.Options{})
-	if err != nil {
-		logger.Fatal("Unable to build client", zap.Error(err))
-		panic(err)
-	}
-
-	we, err := client.ExecuteWorkflow(context.Background(), workflowOptions, SampleCronWorkflow)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, SampleCronWorkflow)
 	if err != nil {
 		logger.Error("Unable to execute workflow", zap.Error(err))
 	} else {
 		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
 	}
+
+	// Close connection, clean up resources.
+	_ = c.CloseConnection()
 }
