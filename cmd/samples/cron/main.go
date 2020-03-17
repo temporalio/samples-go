@@ -6,8 +6,6 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
-	"go.temporal.io/temporal-proto/serviceerror"
-	"go.temporal.io/temporal-proto/workflowservice"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
@@ -24,6 +22,30 @@ const (
 var (
 	logger *zap.Logger
 )
+
+func main() {
+	var err error
+	logger, err = zap.NewDevelopment()
+	if err != nil {
+		panic(err)
+	}
+
+	var mode string
+	var cron string
+	flag.StringVar(&mode, "m", "trigger", "Mode is worker or trigger.")
+	flag.StringVar(&cron, "cron", "* * * * *", "Crontab schedule. Default \"* * * * *\"")
+	flag.Parse()
+
+	switch mode {
+	case "worker":
+		startWorker()
+		// The workers are supposed to be long running process that should not exit.
+		// Use select{} to block indefinitely for samples, you can quit by Ctrl+C.
+		select {}
+	case "trigger":
+		startWorkflow(cron)
+	}
+}
 
 // This needs to be done as part of a bootstrap step when the process starts.
 // The workers are supposed to be long running.
@@ -69,57 +91,5 @@ func startWorkflow(cron string) {
 		logger.Error("Unable to execute workflow", zap.Error(err))
 	} else {
 		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
-	}
-}
-
-func main() {
-	createLogger()
-	createDomain()
-
-	var mode string
-	var cron string
-	flag.StringVar(&mode, "m", "trigger", "Mode is worker or trigger.")
-	flag.StringVar(&cron, "cron", "* * * * *", "Crontab schedule. Default \"* * * * *\"")
-	flag.Parse()
-
-	switch mode {
-	case "worker":
-		startWorker()
-		// The workers are supposed to be long running process that should not exit.
-		// Use select{} to block indefinitely for samples, you can quit by Ctrl+C.
-		select {}
-	case "trigger":
-		startWorkflow(cron)
-	}
-}
-
-func createLogger() {
-	var err error
-	logger, err = zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
-}
-
-func createDomain() {
-	domainClient, err := client.NewDomainClient(client.Options{})
-
-	if err != nil {
-		logger.Fatal("Unable to create domain client", zap.Error(err))
-	}
-
-	err = domainClient.Register(context.Background(), &workflowservice.RegisterDomainRequest{
-		Name: DomainName,
-	})
-
-	if err == nil {
-		logger.Info("Domain successfully registered", zap.String("Domain", DomainName))
-		return
-	}
-
-	if _, ok := err.(*serviceerror.DomainAlreadyExists); ok {
-		logger.Info("Domain already exist", zap.String("Domain", DomainName))
-	} else {
-		logger.Fatal("Unable to create domain", zap.String("Domain", DomainName), zap.Error(err))
 	}
 }
