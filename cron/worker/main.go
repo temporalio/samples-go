@@ -31,7 +31,6 @@ func main() {
 }
 
 // This needs to be done as part of a bootstrap step when the process starts.
-// The workers are supposed to be long running.
 func startWorker() (client.Client, worker.Worker) {
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
