@@ -21,9 +21,7 @@ const (
 	activityStartToCloseTimeout = time.Minute
 )
 
-//
 // Cron sample job activity.
-//
 func SampleCronActivity(ctx context.Context, beginTime, endTime time.Time) error {
 	activity.GetLogger(ctx).Info("Cron job running.", zap.Time("beginTime_exclude", beginTime), zap.Time("endTime_include", endTime))
 	// ...
@@ -35,7 +33,7 @@ type SampleCronResult struct {
 	EndTime time.Time
 }
 
-// SampleCronWorkflow workflow decider
+// SampleCronWorkflow is the sample cron workflow.
 func SampleCronWorkflow(ctx workflow.Context) (*SampleCronResult, error) {
 	workflow.GetLogger(ctx).Info("Cron workflow started.", zap.Time("StartTime", workflow.Now(ctx)))
 

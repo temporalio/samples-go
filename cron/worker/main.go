@@ -8,7 +8,7 @@ import (
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
 
-	"github.com/temporalio/temporal-go-samples/cmd/samples/cron"
+	"github.com/temporalio/temporal-go-samples/cron"
 )
 
 var (
@@ -36,6 +36,7 @@ func main() {
 // This needs to be done as part of a bootstrap step when the process starts.
 // The workers are supposed to be long running.
 func startWorker() (client.Client, worker.Worker) {
+	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
 	})

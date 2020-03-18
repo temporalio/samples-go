@@ -8,7 +8,7 @@ import (
 	"go.temporal.io/temporal/client"
 	"go.uber.org/zap"
 
-	"github.com/temporalio/temporal-go-samples/cmd/samples/cron"
+	"github.com/temporalio/temporal-go-samples/cron"
 )
 
 var (
@@ -25,7 +25,8 @@ func main() {
 	startWorkflow()
 }
 
-func startWorkflow(cronSchedule string) {
+func startWorkflow() {
+	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
 	})

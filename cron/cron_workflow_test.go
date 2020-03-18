@@ -65,13 +65,13 @@ func (s *UnitTestSuite) Test_CronWorkflow() {
 	s.NoError(err)
 	env.AssertExpectations(s.T())
 
-	s.Equal(3, len(startTimeList))
-	s.True(startTimeList[0].Equal(time.Time{}))
-	s.True(endTimeList[0].Equal(startTime))
+	s.Len(startTimeList, 3)
+	s.Equal(time.Time{}, startTimeList[0])
+	s.Equal(startTime, endTimeList[0])
 
-	s.True(startTimeList[1].Equal(startTime))
-	s.True(endTimeList[1].Equal(startTime.Add(time.Minute * 30)))
+	s.Equal(startTime, startTimeList[1])
+	s.Equal(startTime.Add(time.Minute*30), endTimeList[1])
 
-	s.True(startTimeList[2].Equal(startTime.Add(time.Minute * 30)))
-	s.True(endTimeList[2].Equal(startTime.Add(time.Minute * 90)))
+	s.Equal(startTime.Add(time.Minute*30), startTimeList[2])
+	s.Equal(startTime.Add(time.Minute*90), endTimeList[2])
 }
