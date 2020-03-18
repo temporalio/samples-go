@@ -22,12 +22,9 @@ func main() {
 		panic(err)
 	}
 
-	c, w := startWorker()
 	// The workers are supposed to be long running process that should not exit.
-	// Use channel to wait for Ctrl+C.
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, os.Interrupt)
-	<-ch
+	c, w := startWorker()
+	waitCtrlC()
 	// Stop worker, close connection, clean up resources.
 	w.Stop()
 	_ = c.CloseConnection()
@@ -59,4 +56,10 @@ func startWorker() (client.Client, worker.Worker) {
 	}
 
 	return c, w
+}
+
+func waitCtrlC() {
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, os.Interrupt)
+	<-ch
 }
