@@ -55,23 +55,24 @@ func (s *UnitTestSuite) Test_CronWorkflow() {
 		endTimeList = append(endTimeList, endTime)
 	})
 
-	startTime, _ := time.Parse(time.RFC3339, "2018-12-20T16:30:00-80:00")
+	startTime, err := time.Parse(time.RFC3339, "2018-08-22T16:30:00Z")
+	s.NoError(err)
 	env.SetStartTime(startTime)
 
 	env.ExecuteWorkflow(testWorkflow)
 
 	s.True(env.IsWorkflowCompleted())
-	err := env.GetWorkflowError()
+	err = env.GetWorkflowError()
 	s.NoError(err)
 	env.AssertExpectations(s.T())
 
 	s.Len(startTimeList, 3)
-	s.Equal(time.Time{}, startTimeList[0])
-	s.Equal(startTime, endTimeList[0])
+	s.Equal(time.Time{}, startTimeList[0].UTC())
+	s.Equal(startTime, endTimeList[0].UTC())
 
-	s.Equal(startTime, startTimeList[1])
-	s.Equal(startTime.Add(time.Minute*30), endTimeList[1])
+	s.Equal(startTime, startTimeList[1].UTC())
+	s.Equal(startTime.Add(time.Minute*30), endTimeList[1].UTC())
 
-	s.Equal(startTime.Add(time.Minute*30), startTimeList[2])
-	s.Equal(startTime.Add(time.Minute*90), endTimeList[2])
+	s.Equal(startTime.Add(time.Minute*30), startTimeList[2].UTC())
+	s.Equal(startTime.Add(time.Minute*90), endTimeList[2].UTC())
 }
