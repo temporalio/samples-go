@@ -1,4 +1,4 @@
-package main
+package cron
 
 import (
 	"context"
@@ -41,9 +41,9 @@ func (s *UnitTestSuite) Test_CronWorkflow() {
 
 	env.RegisterWorkflow(testWorkflow)
 	env.RegisterWorkflow(SampleCronWorkflow)
-	env.RegisterActivity(sampleCronActivity)
+	env.RegisterActivity(SampleCronActivity)
 
-	env.OnActivity(sampleCronActivity, mock.Anything, mock.Anything, mock.Anything).Return(nil).Times(3)
+	env.OnActivity(SampleCronActivity, mock.Anything, mock.Anything, mock.Anything).Return(nil).Times(3)
 
 	var startTimeList, endTimeList []time.Time
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {

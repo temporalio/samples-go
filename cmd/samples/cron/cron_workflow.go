@@ -1,4 +1,4 @@
-package main
+package cron
 
 import (
 	"context"
@@ -24,7 +24,7 @@ const (
 //
 // Cron sample job activity.
 //
-func sampleCronActivity(ctx context.Context, beginTime, endTime time.Time) error {
+func SampleCronActivity(ctx context.Context, beginTime, endTime time.Time) error {
 	activity.GetLogger(ctx).Info("Cron job running.", zap.Time("beginTime_exclude", beginTime), zap.Time("endTime_include", endTime))
 	// ...
 	return nil
@@ -55,7 +55,7 @@ func SampleCronWorkflow(ctx workflow.Context) (*SampleCronResult, error) {
 
 	endTime := workflow.Now(ctx)
 
-	err := workflow.ExecuteActivity(ctx1, sampleCronActivity, startTime, endTime).Get(ctx, nil)
+	err := workflow.ExecuteActivity(ctx1, SampleCronActivity, startTime, endTime).Get(ctx, nil)
 
 	if err != nil {
 		// cron job failed. but next cron should continue to be scheduled by Cadence server

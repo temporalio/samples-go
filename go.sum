@@ -101,6 +101,8 @@ github.com/uber/jaeger-lib v2.2.0+incompatible/go.mod h1:ComeNDZlWwrWnDv8aPp0Ba6
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 go.temporal.io/temporal v0.10.14 h1:ytAyMiXzS3rOoLyCBxZqC+HudXsOf24HgA72ttHrn8Q=
 go.temporal.io/temporal v0.10.14/go.mod h1:UIQ8X3m1Ncm2OEU5ABHUrqwdPRcCtbpuH5WoIo+Iqwg=
+go.temporal.io/temporal v0.10.15 h1:JqvChtLgYsDcNeJBfvgheCeoeSjzlLB25e1GE+iXzOc=
+go.temporal.io/temporal v0.10.15/go.mod h1:UIQ8X3m1Ncm2OEU5ABHUrqwdPRcCtbpuH5WoIo+Iqwg=
 go.temporal.io/temporal-proto v0.0.0-20200316214407-583dbd3e3b32 h1:4otOD3el3H50v1/WEDnKZMsYSOcRvxDWDvmFIPGT13Q=
 go.temporal.io/temporal-proto v0.0.0-20200316214407-583dbd3e3b32/go.mod h1:SszgPhzKZvtDenZxaN68OKKj1RD1uVmDOHUn1RnTctk=
 go.uber.org/atomic v1.6.0 h1:Ezj3JGmsOnG1MoRWQkPBsKLe9DwWD9QeXzTRzzldNVk=
