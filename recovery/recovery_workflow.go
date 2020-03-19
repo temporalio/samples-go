@@ -1,4 +1,4 @@
-package main
+package recovery
 
 import (
 	"context"
@@ -15,7 +15,7 @@ import (
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 
-	"github.com/temporalio/temporal-go-samples/cmd/samples/recovery/cache"
+	"github.com/temporalio/temporal-go-samples/recovery/cache"
 )
 
 type (
@@ -61,7 +61,7 @@ const (
 
 // HostID - Use a new uuid just for demo so we can run 2 host specific activity workers on same machine.
 // In real world case, you would use a hostname or ip address as HostID.
-var HostID = uuid.New()
+var HostID = "recovery_" + uuid.New()
 
 var (
 	// ErrCadenceClientNotFound when cadence client is not found on context
@@ -83,7 +83,7 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	var result ListOpenExecutionsResult
-	err := workflow.ExecuteActivity(ctx, listOpenExecutions, params.Type).Get(ctx, &result)
+	err := workflow.ExecuteActivity(ctx, ListOpenExecutions, params.Type).Get(ctx, &result)
 	if err != nil {
 		logger.Error("Failed to list open workflow executions.", zap.Error(err))
 		return err
@@ -126,7 +126,7 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 		startIndex := i * batchSize
 
 		workflow.Go(ctx, func(ctx workflow.Context) {
-			err = workflow.ExecuteActivity(ctx, recoverExecutions, result.ID, startIndex, batchSize).Get(ctx, nil)
+			err = workflow.ExecuteActivity(ctx, RecoverExecutions, result.ID, startIndex, batchSize).Get(ctx, nil)
 			if err != nil {
 				logger.Error("Recover executions failed.", zap.Int("StartIndex", startIndex), zap.Error(err))
 			} else {
@@ -146,7 +146,7 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 	return nil
 }
 
-func listOpenExecutions(ctx context.Context, workflowType string) (*ListOpenExecutionsResult, error) {
+func ListOpenExecutions(ctx context.Context, workflowType string) (*ListOpenExecutionsResult, error) {
 	key := uuid.New()
 	logger := activity.GetLogger(ctx)
 	logger.Info("List all open executions of type.",
@@ -177,7 +177,7 @@ func listOpenExecutions(ctx context.Context, workflowType string) (*ListOpenExec
 	}, nil
 }
 
-func recoverExecutions(ctx context.Context, key string, startIndex, batchSize int) error {
+func RecoverExecutions(ctx context.Context, key string, startIndex, batchSize int) error {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Starting execution recovery.",
 		zap.String("HostID", HostID),
@@ -296,7 +296,7 @@ func extractStateFromEvent(workflowID string, event *common.HistoryEvent) (*Rest
 				ExecutionStartToCloseTimeout:    time.Second * time.Duration(attr.GetExecutionStartToCloseTimeoutSeconds()),
 				DecisionTaskStartToCloseTimeout: time.Second * time.Duration(attr.GetTaskStartToCloseTimeoutSeconds()),
 				WorkflowIDReusePolicy:           client.WorkflowIDReusePolicyAllowDuplicate,
-				//RetryPolicy: attr.RetryPolicy,
+				// RetryPolicy: attr.RetryPolicy,
 			},
 			State: state,
 		}, nil

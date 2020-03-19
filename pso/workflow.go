@@ -15,9 +15,6 @@ type WorkflowResult struct {
 	Success bool
 }
 
-// ApplicationName is the task list for this sample
-const ApplicationName = "PSO"
-
 // ActivityOptions can be reused
 var ActivityOptions = workflow.ActivityOptions{
 	ScheduleToStartTimeout: time.Second * 5,

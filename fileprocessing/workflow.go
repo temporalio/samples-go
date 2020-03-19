@@ -20,7 +20,7 @@ type (
 // In real world case, you would use a hostname or ip address as HostID.
 var HostID = "fileprocessing_" + uuid.New()
 
-//SampleFileProcessingWorkflow workflow decider
+// SampleFileProcessingWorkflow workflow decider
 func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err error) {
 	// step 1: download resource file
 	ao := workflow.ActivityOptions{
