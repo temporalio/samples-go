@@ -38,6 +38,7 @@ func main() {
 
 	workflowWorker.RegisterWorkflowWithOptions(recovery.RecoverWorkflow, workflow.RegisterOptions{Name: "RecoverWorkflow"})
 	workflowWorker.RegisterWorkflowWithOptions(recovery.TripWorkflow, workflow.RegisterOptions{Name: "TripWorkflow"})
+	workflowWorker.RegisterActivity(recovery.ListOpenExecutions)
 
 	err = workflowWorker.Start()
 	if err != nil {
@@ -50,7 +51,6 @@ func main() {
 		DisableWorkflowWorker:     true,
 	})
 
-	hostWorker.RegisterActivity(recovery.ListOpenExecutions)
 	hostWorker.RegisterActivity(recovery.RecoverExecutions)
 
 	err = hostWorker.Start()

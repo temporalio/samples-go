@@ -24,9 +24,6 @@ const (
 	// TripSignalName is the signal name for trip completion event
 	TripSignalName = "trip_event"
 
-	// ApplicationName is the task list for this sample
-	ApplicationName = "recoveryGroup"
-
 	// QueryName is the query type name
 	QueryName = "counter"
 )
