@@ -13,21 +13,21 @@ Steps for using Session API:
   sessionCtx, err := workflow.CreateSession(ctx, so)
 ```
 3) Use the returned `sessionCtx` or its child context to execute activities. These activities will be to scheduled on the same host.
-4) After all activites are executed, call `CompleteSession()`.
+4) After all activities are executed, call `CompleteSession()`.
 ```
   workflow.CompleteSession(sessionCtx)
 ```
-5) Check the inline document in workflow/session.go of the go-client repo for more advanced usage.
+5) Check the inline document in workflow/session.go of the Go SDK repo for more advanced usage.
 
 Steps to run this sample:
-1) You need a cadence service running. See details in cmd/samples/README.md
+1) You need a Temporal service running. See details in README.md
 2) Run the following command multiple times on different console window. This is to simulate running workers on multiple different machines.
 ```
-./bin/fileprocessing -m worker
+go run fileprocessing/worker/main.go
 ```
 3) Run the following command to submit a start request for this fileprocessing workflow.
 ```
-./bin/fileprocessing -m trigger
+go run fileprocessing/starter/main.go
 ```
 
 You should see that all activities for one particular workflow execution are scheduled to run on one console window.

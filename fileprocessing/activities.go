@@ -1,4 +1,4 @@
-package main
+package fileprocessing
 
 import (
 	"context"
@@ -16,12 +16,12 @@ import (
  * Sample activities used by file processing sample workflow.
  */
 const (
-	downloadFileActivityName = "downloadFileActivity"
-	processFileActivityName  = "processFileActivity"
-	uploadFileActivityName   = "uploadFileActivity"
+	DownloadFileActivityName = "downloadFileActivity"
+	ProcessFileActivityName  = "processFileActivity"
+	UploadFileActivityName   = "uploadFileActivity"
 )
 
-func downloadFileActivity(ctx context.Context, fileID string) (*fileInfo, error) {
+func DownloadFileActivity(ctx context.Context, fileID string) (*fileInfo, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Downloading file...", zap.String("FileID", fileID))
 	data := downloadFile(fileID)
@@ -37,7 +37,7 @@ func downloadFileActivity(ctx context.Context, fileID string) (*fileInfo, error)
 	return fileInfo, nil
 }
 
-func processFileActivity(ctx context.Context, fInfo fileInfo) (*fileInfo, error) {
+func ProcessFileActivity(ctx context.Context, fInfo fileInfo) (*fileInfo, error) {
 	logger := activity.GetLogger(ctx).With(zap.String("HostID", HostID))
 	logger.Info("processFileActivity started.", zap.String("FileName", fInfo.FileName))
 	// assert that we are running on the same host as the file was downloaded
@@ -71,7 +71,7 @@ func processFileActivity(ctx context.Context, fInfo fileInfo) (*fileInfo, error)
 	return processedInfo, nil
 }
 
-func uploadFileActivity(ctx context.Context, fInfo fileInfo) error {
+func UploadFileActivity(ctx context.Context, fInfo fileInfo) error {
 	logger := activity.GetLogger(ctx).With(zap.String("HostID", HostID))
 	logger.Info("uploadFileActivity begin.", zap.String("UploadedFileName", fInfo.FileName))
 

@@ -1,4 +1,4 @@
-package main
+package fileprocessing
 
 import (
 	"time"
@@ -16,12 +16,9 @@ type (
 	}
 )
 
-// ApplicationName is the task list for this sample
-const ApplicationName = "FileProcessorGroup"
-
 // HostID - Use a new uuid just for demo so we can run 2 host specific activity workers on same machine.
 // In real world case, you would use a hostname or ip address as HostID.
-var HostID = ApplicationName + "_" + uuid.New()
+var HostID = "fileprocessing_" + uuid.New()
 
 //SampleFileProcessingWorkflow workflow decider
 func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err error) {
@@ -71,17 +68,17 @@ func processFile(ctx workflow.Context, fileID string) (err error) {
 	}
 	defer workflow.CompleteSession(sessionCtx)
 
-	err = workflow.ExecuteActivity(sessionCtx, downloadFileActivityName, fileID).Get(sessionCtx, &fInfo)
+	err = workflow.ExecuteActivity(sessionCtx, DownloadFileActivityName, fileID).Get(sessionCtx, &fInfo)
 	if err != nil {
 		return err
 	}
 
 	var fInfoProcessed *fileInfo
-	err = workflow.ExecuteActivity(sessionCtx, processFileActivityName, *fInfo).Get(sessionCtx, &fInfoProcessed)
+	err = workflow.ExecuteActivity(sessionCtx, ProcessFileActivityName, *fInfo).Get(sessionCtx, &fInfoProcessed)
 	if err != nil {
 		return err
 	}
 
-	err = workflow.ExecuteActivity(sessionCtx, uploadFileActivityName, *fInfoProcessed).Get(sessionCtx, nil)
+	err = workflow.ExecuteActivity(sessionCtx, UploadFileActivityName, *fInfoProcessed).Get(sessionCtx, nil)
 	return err
 }

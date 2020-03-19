@@ -1,4 +1,4 @@
-package main
+package fileprocessing
 
 import (
 	"context"
@@ -32,16 +32,16 @@ func (s *UnitTestSuite) Test_SampleFileProcessingWorkflow() {
 	env := s.NewTestWorkflowEnvironment()
 
 	env.RegisterActivityWithOptions(
-		downloadFileActivity,
-		activity.RegisterOptions{Name: downloadFileActivityName},
+		DownloadFileActivity,
+		activity.RegisterOptions{Name: DownloadFileActivityName},
 	)
 	env.RegisterActivityWithOptions(
-		processFileActivity,
-		activity.RegisterOptions{Name: processFileActivityName},
+		ProcessFileActivity,
+		activity.RegisterOptions{Name: ProcessFileActivityName},
 	)
 	env.RegisterActivityWithOptions(
-		uploadFileActivity,
-		activity.RegisterOptions{Name: uploadFileActivityName},
+		UploadFileActivity,
+		activity.RegisterOptions{Name: UploadFileActivityName},
 	)
 
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {
