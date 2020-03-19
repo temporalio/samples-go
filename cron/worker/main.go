@@ -40,11 +40,9 @@ func startWorker() (client.Client, worker.Worker) {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
 
-	workerOptions := worker.Options{
+	w := worker.New(c, "cron-task-list", worker.Options{
 		Logger: logger,
-	}
-
-	w := worker.New(c, "cron-task-list", workerOptions)
+	})
 
 	w.RegisterWorkflow(cron.SampleCronWorkflow)
 	w.RegisterActivity(cron.SampleCronActivity)
