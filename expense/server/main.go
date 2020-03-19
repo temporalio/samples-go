@@ -7,8 +7,6 @@ import (
 	"sort"
 
 	"go.temporal.io/temporal/client"
-
-	"github.com/temporalio/temporal-go-samples/cmd/samples/common"
 )
 
 /**
@@ -25,17 +23,18 @@ const (
 )
 
 // use memory store for this dummy server
-var allExpense = make(map[string]expenseState)
-
-var tokenMap = make(map[string][]byte)
-
-var workflowClient client.Client
+var (
+	allExpense     = make(map[string]expenseState)
+	tokenMap       = make(map[string][]byte)
+	workflowClient client.Client
+)
 
 func main() {
-	var h common.SampleHelper
-	h.SetupServiceConfig()
 	var err error
-	workflowClient, err = h.Builder.BuildCadenceClient()
+	// The client is a heavyweight object that should be created once per process.
+	workflowClient, err = client.NewClient(client.Options{
+		HostPort: client.DefaultHostPort,
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -50,10 +49,10 @@ func main() {
 	_ = http.ListenAndServe(":8099", nil)
 }
 
-func listHandler(w http.ResponseWriter, r *http.Request) {
+func listHandler(w http.ResponseWriter, _ *http.Request) {
 	_, _ = fmt.Fprint(w, "<h1>DUMMY EXPENSE SYSTEM</h1>"+"<a href=\"/list\">HOME</a>"+
 		"<h3>All expense requests:</h3><table border=1><tr><th>Expense ID</th><th>Status</th><th>Action</th>")
-	keys := []string{}
+	var keys []string
 	for k := range allExpense {
 		keys = append(keys, k)
 	}

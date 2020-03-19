@@ -1,4 +1,4 @@
-package main
+package expense
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func createExpenseActivity(ctx context.Context, expenseID string) error {
+func CreateExpenseActivity(ctx context.Context, expenseID string) error {
 	if len(expenseID) == 0 {
 		return errors.New("expense id is empty")
 	}
@@ -40,7 +40,7 @@ func createExpenseActivity(ctx context.Context, expenseID string) error {
 // as failed or completed. The cadence server will wait until Client.CompleteActivity() is called or timeout happened
 // whichever happen first. In this sample case, the CompleteActivity() method is called by our dummy expense server when
 // the expense is approved.
-func waitForDecisionActivity(ctx context.Context, expenseID string) (string, error) {
+func WaitForDecisionActivity(ctx context.Context, expenseID string) (string, error) {
 	if len(expenseID) == 0 {
 		return "", errors.New("expense id is empty")
 	}
@@ -78,7 +78,7 @@ func waitForDecisionActivity(ctx context.Context, expenseID string) (string, err
 	return "", fmt.Errorf("register callback failed status:%s", status)
 }
 
-func paymentActivity(ctx context.Context, expenseID string) error {
+func PaymentActivity(ctx context.Context, expenseID string) error {
 	if len(expenseID) == 0 {
 		return errors.New("expense id is empty")
 	}

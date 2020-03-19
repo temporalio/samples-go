@@ -8,7 +8,7 @@ import (
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
 
-	"github.com/temporalio/temporal-go-samples/dsl"
+	"github.com/temporalio/temporal-go-samples/expense"
 )
 
 func main() {
@@ -25,16 +25,14 @@ func main() {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
 
-	w := worker.New(c, "dsl-task-list", worker.Options{
+	w := worker.New(c, "expense-task-list", worker.Options{
 		Logger: logger,
 	})
 
-	w.RegisterWorkflow(dsl.SimpleDSLWorkflow)
-	w.RegisterActivity(dsl.SampleActivity1)
-	w.RegisterActivity(dsl.SampleActivity2)
-	w.RegisterActivity(dsl.SampleActivity3)
-	w.RegisterActivity(dsl.SampleActivity4)
-	w.RegisterActivity(dsl.SampleActivity5)
+	w.RegisterWorkflow(expense.SampleExpenseWorkflow)
+	w.RegisterActivity(expense.CreateExpenseActivity)
+	w.RegisterActivity(expense.WaitForDecisionActivity)
+	w.RegisterActivity(expense.PaymentActivity)
 
 	err = w.Start()
 	if err != nil {

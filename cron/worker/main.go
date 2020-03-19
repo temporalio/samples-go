@@ -11,13 +11,8 @@ import (
 	"github.com/temporalio/temporal-go-samples/cron"
 )
 
-var (
-	logger *zap.Logger
-)
-
 func main() {
-	var err error
-	logger, err = zap.NewDevelopment()
+	logger, err := zap.NewDevelopment()
 	if err != nil {
 		panic(err)
 	}

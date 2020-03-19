@@ -1,4 +1,4 @@
-package main
+package expense
 
 import (
 	"time"
@@ -7,12 +7,9 @@ import (
 	"go.uber.org/zap"
 )
 
-const (
-	// ApplicationName is the task list for this sample
-	ApplicationName = "expenseGroup"
+var (
+	expenseServerHostPort = "http://localhost:8099"
 )
-
-var expenseServerHostPort = "http://localhost:8099"
 
 // SampleExpenseWorkflow workflow decider
 func SampleExpenseWorkflow(ctx workflow.Context, expenseID string) (result string, err error) {
@@ -25,7 +22,7 @@ func SampleExpenseWorkflow(ctx workflow.Context, expenseID string) (result strin
 	ctx1 := workflow.WithActivityOptions(ctx, ao)
 	logger := workflow.GetLogger(ctx)
 
-	err = workflow.ExecuteActivity(ctx1, createExpenseActivity, expenseID).Get(ctx1, nil)
+	err = workflow.ExecuteActivity(ctx1, CreateExpenseActivity, expenseID).Get(ctx1, nil)
 	if err != nil {
 		logger.Error("Failed to create expense report", zap.Error(err))
 		return "", err
@@ -41,7 +38,7 @@ func SampleExpenseWorkflow(ctx workflow.Context, expenseID string) (result strin
 	// complete (waiting for human to approve the request) is longer, you should set the timeout accordingly so the
 	// cadence system will wait accordingly. Otherwise, cadence system could mark the activity as failure by timeout.
 	var status string
-	err = workflow.ExecuteActivity(ctx2, waitForDecisionActivity, expenseID).Get(ctx2, &status)
+	err = workflow.ExecuteActivity(ctx2, WaitForDecisionActivity, expenseID).Get(ctx2, &status)
 	if err != nil {
 		return "", err
 	}
@@ -52,7 +49,7 @@ func SampleExpenseWorkflow(ctx workflow.Context, expenseID string) (result strin
 	}
 
 	// step 3, request payment to the expense
-	err = workflow.ExecuteActivity(ctx2, paymentActivity, expenseID).Get(ctx2, nil)
+	err = workflow.ExecuteActivity(ctx2, PaymentActivity, expenseID).Get(ctx2, nil)
 	if err != nil {
 		logger.Info("Workflow completed with payment failed.", zap.Error(err))
 		return "", err
