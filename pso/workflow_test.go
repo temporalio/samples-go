@@ -1,4 +1,4 @@
-package main
+package pso
 
 import (
 	"context"
@@ -8,7 +8,6 @@ import (
 	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/encoded"
 	"go.temporal.io/temporal/testsuite"
-	"go.temporal.io/temporal/worker"
 	"go.temporal.io/temporal/workflow"
 )
 
@@ -19,22 +18,18 @@ func Test_Workflow(t *testing.T) {
 	env.RegisterWorkflow(PSOChildWorkflow)
 
 	env.RegisterActivityWithOptions(
-		initParticleActivity,
-		activity.RegisterOptions{Name: initParticleActivityName},
+		InitParticleActivity,
+		activity.RegisterOptions{Name: InitParticleActivityName},
 	)
 	env.RegisterActivityWithOptions(
-		updateParticleActivity,
-		activity.RegisterOptions{Name: updateParticleActivityName},
+		UpdateParticleActivity,
+		activity.RegisterOptions{Name: UpdateParticleActivityName},
 	)
 
 	var activityCalled []string
 
-	//var dataConverter = NewGobDataConverter()
 	var dataConverter = NewJSONDataConverter()
-	workerOptions := worker.Options{
-		DataConverter: dataConverter,
-	}
-	env.SetWorkerOptions(workerOptions)
+	env.SetDataConverter(dataConverter)
 
 	// env.SetWorkflowTimeout(time.Minute * 5)
 	// env.SetTestTimeout(time.Minute * 5)

@@ -1,4 +1,4 @@
-package main
+package pso
 
 import (
 	"errors"
@@ -35,7 +35,7 @@ func NewSwarm(ctx workflow.Context, settings *SwarmSettings) (*Swarm, error) {
 		particleIdx := i
 		workflow.Go(ctx, func(ctx workflow.Context) {
 			var particle Particle
-			err := workflow.ExecuteActivity(ctx, initParticleActivityName, swarm).Get(ctx, &particle)
+			err := workflow.ExecuteActivity(ctx, InitParticleActivityName, swarm).Get(ctx, &particle)
 			if err == nil {
 				swarm.Particles[particleIdx] = &particle
 			}
@@ -90,7 +90,7 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (ParticleResult, error) 
 			particleIdx := i
 			workflow.Go(ctx, func(ctx workflow.Context) {
 				var particle Particle
-				err := workflow.ExecuteActivity(ctx, updateParticleActivityName, *swarm, particleIdx).Get(ctx, &particle)
+				err := workflow.ExecuteActivity(ctx, UpdateParticleActivityName, *swarm, particleIdx).Get(ctx, &particle)
 				if err == nil {
 					swarm.Particles[particleIdx] = &particle
 				}

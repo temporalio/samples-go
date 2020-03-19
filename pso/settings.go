@@ -1,4 +1,4 @@
-package main
+package pso
 
 const pso_max_size int = 100
 const pso_inertia float64 = 0.7298 // default value of w (see clerc02)

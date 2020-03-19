@@ -1,4 +1,4 @@
-package main
+package pso
 
 import (
 	"context"
@@ -12,8 +12,8 @@ import (
  * Sample activities used by file processing sample workflow.
  */
 const (
-	initParticleActivityName   = "initParticleActivityName"
-	updateParticleActivityName = "updateParticleActivityName"
+	InitParticleActivityName   = "initParticleActivityName"
+	UpdateParticleActivityName = "updateParticleActivityName"
 )
 
 var rng *rand.Rand
@@ -26,7 +26,7 @@ func init() {
 	rng = rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
-func initParticleActivity(ctx context.Context, swarm Swarm) (Particle, error) {
+func InitParticleActivity(ctx context.Context, swarm Swarm) (Particle, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("initParticleActivity started.")
 
@@ -36,7 +36,7 @@ func initParticleActivity(ctx context.Context, swarm Swarm) (Particle, error) {
 	return *particle, nil
 }
 
-func updateParticleActivity(ctx context.Context, swarm Swarm, particleIdx int) (Particle, error) {
+func UpdateParticleActivity(ctx context.Context, swarm Swarm, particleIdx int) (Particle, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("updateParticleActivity started.")
 

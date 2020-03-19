@@ -1,4 +1,4 @@
-package main
+package pso
 
 import "math/rand"
 
