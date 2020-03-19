@@ -22,10 +22,6 @@ func main() {
 		panic(err)
 	}
 
-	startWorkflow()
-}
-
-func startWorkflow() {
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,

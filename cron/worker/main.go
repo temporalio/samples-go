@@ -22,17 +22,7 @@ func main() {
 		panic(err)
 	}
 
-	// The workers are supposed to be long running process that should not exit.
-	c, w := startWorker()
-	waitCtrlC()
-	// Stop worker, close connection, clean up resources.
-	w.Stop()
-	_ = c.CloseConnection()
-}
-
-// This needs to be done as part of a bootstrap step when the process starts.
-func startWorker() (client.Client, worker.Worker) {
-	// The client is a heavyweight object that should be created once per process.
+	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
@@ -52,7 +42,11 @@ func startWorker() (client.Client, worker.Worker) {
 		logger.Fatal("Unable to start worker", zap.Error(err))
 	}
 
-	return c, w
+	// The workers are supposed to be long running process that should not exit.
+	waitCtrlC()
+	// Stop worker, close connection, clean up resources.
+	w.Stop()
+	_ = c.CloseConnection()
 }
 
 func waitCtrlC() {
