@@ -1,0 +1,62 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"io/ioutil"
+	"time"
+
+	"github.com/pborman/uuid"
+	"go.temporal.io/temporal/client"
+	"go.uber.org/zap"
+	"gopkg.in/yaml.v2"
+
+	"github.com/temporalio/temporal-go-samples/dsl"
+)
+
+var (
+	logger *zap.Logger
+)
+
+func main() {
+	var err error
+	logger, err = zap.NewDevelopment()
+	if err != nil {
+		panic(err)
+	}
+
+	var dslConfig string
+	flag.StringVar(&dslConfig, "dslConfig", "dsl/workflow1.yaml", "dslConfig specify the yaml file for the dsl workflow.")
+	flag.Parse()
+
+	data, err := ioutil.ReadFile(dslConfig)
+	if err != nil {
+		logger.Fatal("failed to load dsl config file", zap.Error(err))
+	}
+	var dslWorkflow dsl.Workflow
+	if err := yaml.Unmarshal(data, &dslWorkflow); err != nil {
+		logger.Fatal("failed to unmarshal dsl config", zap.Error(err))
+	}
+
+	// The client is a heavyweight object that should be created once per process.
+	c, err := client.NewClient(client.Options{
+		HostPort: client.DefaultHostPort,
+	})
+	if err != nil {
+		logger.Fatal("Unable to create client", zap.Error(err))
+	}
+
+	workflowOptions := client.StartWorkflowOptions{
+		ID:                              "dsl_" + uuid.New(),
+		TaskList:                        "dsl-task-list",
+		ExecutionStartToCloseTimeout:    time.Minute,
+		DecisionTaskStartToCloseTimeout: time.Minute,
+	}
+
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, dsl.SimpleDSLWorkflow, dslWorkflow)
+	if err != nil {
+		logger.Error("Unable to execute workflow", zap.Error(err))
+	} else {
+		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+	}
+}

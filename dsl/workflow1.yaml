@@ -11,17 +11,17 @@ root:
   sequence:
     elements:
      - activity:
-        name: main.sampleActivity1
+        name: SampleActivity1
         arguments:
           - arg1
         result: result1
      - activity:
-        name: main.sampleActivity2
+        name: SampleActivity2
         arguments:
           - result1
         result: result2
      - activity:
-        name: main.sampleActivity3
+        name: SampleActivity3
         arguments:
           - arg2
           - result2

@@ -1,4 +1,4 @@
-package main
+package dsl
 
 import (
 	"time"
@@ -6,9 +6,6 @@ import (
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
-
-// ApplicationName is the task list for this sample
-const ApplicationName = "dslGroup"
 
 type (
 	// Workflow is the type used to express the workflow definition. Variables are a map of valuables. Variables can be
