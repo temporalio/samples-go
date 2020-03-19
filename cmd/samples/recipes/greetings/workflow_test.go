@@ -20,8 +20,12 @@ func TestUnitTestSuite(t *testing.T) {
 }
 
 func (s *UnitTestSuite) Test_SampleGreetingsWorkflow() {
-	sayGreetingActivityName := "github.com/temporalio/temporal-go-samples/cmd/samples/recipes/greetings.sayGreetingActivity"
+	sayGreetingActivityName := "sayGreetingActivity"
 	env := s.NewTestWorkflowEnvironment()
+	env.RegisterActivity(getGreetingActivity)
+	env.RegisterActivity(getNameActivity)
+	env.RegisterActivity(sayGreetingActivity)
+
 	var startCalled, endCalled bool
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {
 		if sayGreetingActivityName == activityInfo.ActivityType.Name {

@@ -19,7 +19,11 @@ func startWorkers(h *common.SampleHelper) {
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	worker := h.StartWorker(h.Config.DomainName, ApplicationName, workerOptions)
+
+	worker.RegisterWorkflow(SampleParallelWorkflow)
+	worker.RegisterWorkflow(SampleBranchWorkflow)
+	worker.RegisterActivity(sampleActivity)
 }
 
 func startWorkflowParallel(h *common.SampleHelper) {

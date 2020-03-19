@@ -12,13 +12,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// This is registration process where you register all your activity handlers.
-func init() {
-	activity.Register(createExpenseActivity)
-	activity.Register(waitForDecisionActivity)
-	activity.Register(paymentActivity)
-}
-
 func createExpenseActivity(ctx context.Context, expenseID string) error {
 	if len(expenseID) == 0 {
 		return errors.New("expense id is empty")

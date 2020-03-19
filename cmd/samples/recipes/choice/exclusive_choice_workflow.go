@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"time"
 
-	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
@@ -25,17 +24,6 @@ const (
 )
 
 var _orderChoices = []string{orderChoiceApple, orderChoiceBanana, orderChoiceCherry, orderChoiceOrange}
-
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(ExclusiveChoiceWorkflow)
-	activity.Register(getOrderActivity)
-	activity.Register(orderAppleActivity)
-	activity.Register(orderBananaActivity)
-	activity.Register(orderCherryActivity)
-	activity.Register(orderOrangeActivity)
-}
 
 // ExclusiveChoiceWorkflow Workflow Decider.
 func ExclusiveChoiceWorkflow(ctx workflow.Context) error {

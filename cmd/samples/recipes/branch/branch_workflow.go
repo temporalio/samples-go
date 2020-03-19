@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/workflow"
 )
 
@@ -18,13 +17,6 @@ const (
 
 	totalBranches = 3
 )
-
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(SampleBranchWorkflow)
-	activity.Register(sampleActivity)
-}
 
 // SampleBranchWorkflow workflow decider
 func SampleBranchWorkflow(ctx workflow.Context) error {

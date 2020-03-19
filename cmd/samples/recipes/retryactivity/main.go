@@ -19,7 +19,9 @@ func startWorkers(h *common.SampleHelper) {
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	worker := h.StartWorker(h.Config.DomainName, ApplicationName, workerOptions)
+	worker.RegisterWorkflow(RetryWorkflow)
+	worker.RegisterActivity(batchProcessingActivity)
 }
 
 func startWorkflow(h *common.SampleHelper) {

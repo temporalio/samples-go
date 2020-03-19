@@ -19,7 +19,17 @@ func startWorkers(h *common.SampleHelper) {
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	worker := h.StartWorker(h.Config.DomainName, ApplicationName, workerOptions)
+
+	worker.RegisterWorkflow(ProcessingWorkflow)
+	worker.RegisterWorkflow(SignalHandlingWorkflow)
+	worker.RegisterActivity(activityForCondition0)
+	worker.RegisterActivity(activityForCondition1)
+	worker.RegisterActivity(activityForCondition2)
+	worker.RegisterActivity(activityForCondition3)
+	worker.RegisterActivity(activityForCondition4)
+
+	// no need to register local activities
 }
 
 func startWorkflow(h *common.SampleHelper) {

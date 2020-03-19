@@ -23,6 +23,10 @@ func TestUnitTestSuite(t *testing.T) {
 
 func (s *UnitTestSuite) Test_WorkflowWithMockActivities() {
 	env := s.NewTestWorkflowEnvironment()
+	env.RegisterActivity(createExpenseActivity)
+	env.RegisterActivity(waitForDecisionActivity)
+	env.RegisterActivity(paymentActivity)
+
 	env.OnActivity(createExpenseActivity, mock.Anything, mock.Anything).Return(nil).Once()
 	env.OnActivity(waitForDecisionActivity, mock.Anything, mock.Anything).Return("APPROVED", nil).Once()
 	env.OnActivity(paymentActivity, mock.Anything, mock.Anything).Return(nil).Once()
@@ -40,6 +44,9 @@ func (s *UnitTestSuite) Test_WorkflowWithMockActivities() {
 
 func (s *UnitTestSuite) Test_WorkflowWithMockServer() {
 	env := s.NewTestWorkflowEnvironment()
+	env.RegisterActivity(createExpenseActivity)
+	env.RegisterActivity(waitForDecisionActivity)
+	env.RegisterActivity(paymentActivity)
 
 	// setup mock expense server
 	handler := func(w http.ResponseWriter, r *http.Request) {

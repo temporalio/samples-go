@@ -13,6 +13,7 @@ import (
 func Test_Workflow(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
+	env.RegisterActivity(listExecutions)
 
 	// mock search attributes on start
 	_ = env.SetSearchAttributesOnStart(getSearchAttributesForStart())

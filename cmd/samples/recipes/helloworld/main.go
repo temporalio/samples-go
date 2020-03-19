@@ -19,7 +19,10 @@ func startWorkers(h *common.SampleHelper) {
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+
+	worker := h.StartWorker(h.Config.DomainName, ApplicationName, workerOptions)
+	worker.RegisterWorkflow(HelloworldWorkflow)
+	worker.RegisterActivity(helloworldActivity)
 }
 
 func startWorkflow(h *common.SampleHelper) {
@@ -29,7 +32,7 @@ func startWorkflow(h *common.SampleHelper) {
 		ExecutionStartToCloseTimeout:    time.Minute,
 		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
-	h.StartWorkflow(workflowOptions, Workflow, "Cadence")
+	h.StartWorkflow(workflowOptions, HelloworldWorkflow, "Cadence")
 }
 
 func main() {

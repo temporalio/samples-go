@@ -14,11 +14,6 @@ const (
 
 var expenseServerHostPort = "http://localhost:8099"
 
-// This is registration process where you register all your workflow handlers.
-func init() {
-	workflow.Register(SampleExpenseWorkflow)
-}
-
 // SampleExpenseWorkflow workflow decider
 func SampleExpenseWorkflow(ctx workflow.Context, expenseID string) (result string, err error) {
 	// step 1, create new expense report

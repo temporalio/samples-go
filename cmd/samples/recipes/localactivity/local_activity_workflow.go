@@ -21,21 +21,6 @@ const ApplicationName = "localActivityGroup"
 // SignalName is the signal name that workflow is waiting for
 const SignalName = "trigger-signal"
 
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(ProcessingWorkflow)
-	workflow.Register(SignalHandlingWorkflow)
-
-	activity.Register(activityForCondition0)
-	activity.Register(activityForCondition1)
-	activity.Register(activityForCondition2)
-	activity.Register(activityForCondition3)
-	activity.Register(activityForCondition4)
-
-	// no need to register local activities
-}
-
 type conditionAndAction struct {
 	// condition is a function pointer to a local activity
 	condition interface{}

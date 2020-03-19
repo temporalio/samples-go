@@ -16,13 +16,6 @@ import (
  * This multi choice sample workflow Execute different parallel branches based on the result of an activity.
  */
 
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(MultiChoiceWorkflow)
-	activity.Register(getBasketOrderActivity)
-}
-
 // MultiChoiceWorkflow Workflow Decider.
 func MultiChoiceWorkflow(ctx workflow.Context) error {
 	// Get basket order.

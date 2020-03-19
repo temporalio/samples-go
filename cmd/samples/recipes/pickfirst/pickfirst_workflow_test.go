@@ -21,6 +21,7 @@ func TestUnitTestSuite(t *testing.T) {
 
 func (s *UnitTestSuite) Test_Workflow() {
 	env := s.NewTestWorkflowEnvironment()
+	env.RegisterActivity(sampleActivity)
 	env.OnActivity(sampleActivity, mock.Anything, mock.Anything, mock.Anything).
 		Return(func(ctx context.Context, currentBranchID int, totalDuration time.Duration) (string, error) {
 			// make branch 0 super fast so we don't have to wait sleep time in unit test

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
@@ -16,15 +15,6 @@ import (
 
 // ApplicationName is the task list for this sample
 const ApplicationName = "greetingsGroup"
-
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(SampleGreetingsWorkflow)
-	activity.Register(getGreetingActivity)
-	activity.Register(getNameActivity)
-	activity.Register(sayGreetingActivity)
-}
 
 // SampleGreetingsWorkflow Workflow Decider.
 func SampleGreetingsWorkflow(ctx workflow.Context) error {

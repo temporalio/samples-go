@@ -16,6 +16,17 @@ func Test_Workflow(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
 
+	env.RegisterWorkflow(PSOChildWorkflow)
+
+	env.RegisterActivityWithOptions(
+		initParticleActivity,
+		activity.RegisterOptions{Name: initParticleActivityName},
+	)
+	env.RegisterActivityWithOptions(
+		updateParticleActivity,
+		activity.RegisterOptions{Name: updateParticleActivityName},
+	)
+
 	var activityCalled []string
 
 	//var dataConverter = NewGobDataConverter()

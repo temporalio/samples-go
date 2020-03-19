@@ -16,20 +16,26 @@ import (
 func startWorkers(h *common.SampleHelper) {
 	// Configure worker options.
 	workerOptions := worker.Options{
+		HostPort:     h.Config.HostPort,
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
 
 	// Start Worker.
-	worker := worker.New(
-		h.Service,
+	worker, err := worker.New(
 		h.Config.DomainName,
 		ApplicationName,
 		workerOptions)
-	err := worker.Start()
 	if err != nil {
-		panic("Failed to start workers")
+		panic("Failed to create worker")
 	}
+	err = worker.Start()
+	if err != nil {
+		panic("Failed to start worker")
+	}
+
+	worker.RegisterWorkflow(SamplePickFirstWorkflow)
+	worker.RegisterActivity(sampleActivity)
 }
 
 func startWorkflow(h *common.SampleHelper) {

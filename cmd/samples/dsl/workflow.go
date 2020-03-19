@@ -3,7 +3,6 @@ package main
 import (
 	"time"
 
-	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
@@ -50,17 +49,6 @@ type (
 		execute(ctx workflow.Context, bindings map[string]string) error
 	}
 )
-
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(SimpleDSLWorkflow)
-	activity.Register(sampleActivity1)
-	activity.Register(sampleActivity2)
-	activity.Register(sampleActivity3)
-	activity.Register(sampleActivity4)
-	activity.Register(sampleActivity5)
-}
 
 // SimpleDSLWorkflow workflow decider
 func SimpleDSLWorkflow(ctx workflow.Context, dslWorkflow Workflow) ([]byte, error) {

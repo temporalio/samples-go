@@ -38,13 +38,6 @@ var (
 	ErrCadenceClientNotFound = errors.New("failed to retrieve cadence client from context")
 )
 
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(SearchAttributesWorkflow)
-	activity.Register(listExecutions)
-}
-
 // SearchAttributesWorkflow workflow decider
 func SearchAttributesWorkflow(ctx workflow.Context) error {
 	logger := workflow.GetLogger(ctx)

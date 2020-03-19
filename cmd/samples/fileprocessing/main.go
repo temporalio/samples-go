@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
+	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
 
@@ -21,11 +22,25 @@ func startWorkers(h *common.SampleHelper) {
 		EnableLoggingInReplay: true,
 		EnableSessionWorker:   true,
 	}
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	workflowWorker := h.StartWorker(h.Config.DomainName, ApplicationName, workerOptions)
+	workflowWorker.RegisterWorkflow(SampleFileProcessingWorkflow)
 
 	// Host Specific activities processing case
 	workerOptions.DisableWorkflowWorker = true
-	h.StartWorkers(h.Config.DomainName, HostID, workerOptions)
+	worker := h.StartWorker(h.Config.DomainName, HostID, workerOptions)
+
+	worker.RegisterActivityWithOptions(
+		downloadFileActivity,
+		activity.RegisterOptions{Name: downloadFileActivityName},
+	)
+	worker.RegisterActivityWithOptions(
+		processFileActivity,
+		activity.RegisterOptions{Name: processFileActivityName},
+	)
+	worker.RegisterActivityWithOptions(
+		uploadFileActivity,
+		activity.RegisterOptions{Name: uploadFileActivityName},
+	)
 }
 
 func startWorkflow(h *common.SampleHelper, fileID string) {

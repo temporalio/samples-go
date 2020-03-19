@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 
 	"github.com/uber-go/tally"
-	"go.temporal.io/temporal-proto/workflowservice"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/encoded"
 	"go.temporal.io/temporal/worker"
@@ -22,7 +21,6 @@ const (
 type (
 	// SampleHelper class for workflow sample helper.
 	SampleHelper struct {
-		Service        workflowservice.WorkflowServiceClient
 		Scope          tally.Scope
 		Logger         *zap.Logger
 		Config         Configuration
@@ -33,18 +31,13 @@ type (
 
 	// Configuration for running samples.
 	Configuration struct {
-		DomainName      string `yaml:"domain"`
-		ServiceName     string `yaml:"service"`
-		HostNameAndPort string `yaml:"host"`
+		DomainName string `yaml:"domain"`
+		HostPort   string `yaml:"host"`
 	}
 )
 
 // SetupServiceConfig setup the config for the sample code run
 func (h *SampleHelper) SetupServiceConfig() {
-	if h.Service != nil {
-		return
-	}
-
 	// Initialize developer config for running samples
 	configData, err := ioutil.ReadFile(configFile)
 	if err != nil {
@@ -65,16 +58,11 @@ func (h *SampleHelper) SetupServiceConfig() {
 	h.Logger = logger
 	h.Scope = tally.NoopScope
 	h.Builder = NewBuilder(logger).
-		SetHostPort(h.Config.HostNameAndPort).
+		SetHostPort(h.Config.HostPort).
 		SetDomain(h.Config.DomainName).
 		SetMetricsScope(h.Scope).
 		SetDataConverter(h.DataConverter).
 		SetContextPropagators(h.CtxPropagators)
-	service, err := h.Builder.BuildServiceClient()
-	if err != nil {
-		panic(err)
-	}
-	h.Service = service
 
 	domainClient, _ := h.Builder.BuildCadenceDomainClient()
 	_, err = domainClient.Describe(context.Background(), h.Config.DomainName)
@@ -98,13 +86,13 @@ func (h *SampleHelper) StartWorkflowWithCtx(ctx context.Context, options client.
 		panic(err)
 	}
 
-	we, err := workflowClient.StartWorkflow(ctx, options, workflow, args...)
+	we, err := workflowClient.ExecuteWorkflow(ctx, options, workflow, args...)
 	if err != nil {
 		h.Logger.Error("Failed to create workflow", zap.Error(err))
 		panic("Failed to create workflow.")
 
 	} else {
-		h.Logger.Info("Started Workflow", zap.String("WorkflowID", we.ID), zap.String("RunID", we.RunID))
+		h.Logger.Info("Started Workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
 	}
 }
 
@@ -128,14 +116,21 @@ func (h *SampleHelper) SignalWithStartWorkflowWithCtx(ctx context.Context, workf
 	return we
 }
 
-// StartWorkers starts workflow worker and activity worker based on configured options.
-func (h *SampleHelper) StartWorkers(domainName, groupName string, options worker.Options) {
-	worker := worker.New(h.Service, domainName, groupName, options)
-	err := worker.Start()
+// StartWorker starts workflow worker and activity worker based on configured options.
+func (h *SampleHelper) StartWorker(domainName, groupName string, options worker.Options) worker.Worker {
+	worker, err := worker.New(domainName, groupName, options)
+	if err != nil {
+		h.Logger.Error("Failed to create worker.", zap.Error(err))
+		panic("Failed to start workers")
+	}
+
+	err = worker.Start()
 	if err != nil {
 		h.Logger.Error("Failed to start workers.", zap.Error(err))
 		panic("Failed to start workers")
 	}
+
+	return worker
 }
 
 func (h *SampleHelper) QueryWorkflow(workflowID, runID, queryType string, args ...interface{}) {

@@ -21,7 +21,10 @@ func startWorkers(h *common.SampleHelper) {
 		MaxConcurrentActivityExecutionSize: 3,
 	}
 
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	worker := h.StartWorker(h.Config.DomainName, ApplicationName, workerOptions)
+	worker.RegisterWorkflow(SampleTimerWorkflow)
+	worker.RegisterActivity(orderProcessingActivity)
+	worker.RegisterActivity(sendEmailActivity)
 }
 
 func startWorkflow(h *common.SampleHelper) {

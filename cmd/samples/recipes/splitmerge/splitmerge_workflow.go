@@ -26,13 +26,6 @@ type (
 	}
 )
 
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(SampleSplitMergeWorkflow)
-	activity.Register(chunkProcessingActivity)
-}
-
 // SampleSplitMergeWorkflow workflow decider
 func SampleSplitMergeWorkflow(ctx workflow.Context, workerCount int) (ChunkResult, error) {
 	chunkResultChannel := workflow.NewChannel(ctx)

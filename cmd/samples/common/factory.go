@@ -1,15 +1,11 @@
 package common
 
 import (
-	"errors"
-
 	"github.com/uber-go/tally"
-	"go.temporal.io/temporal-proto/workflowservice"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/encoded"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
 )
 
 // WorkflowClientBuilder build client to cadence service
@@ -30,9 +26,9 @@ func NewBuilder(logger *zap.Logger) *WorkflowClientBuilder {
 	}
 }
 
-// SetHostPort sets the hostport for the builder
-func (b *WorkflowClientBuilder) SetHostPort(hostport string) *WorkflowClientBuilder {
-	b.hostPort = hostport
+// SetHostPort sets the host:port for the builder
+func (b *WorkflowClientBuilder) SetHostPort(hostPort string) *WorkflowClientBuilder {
+	b.hostPort = hostPort
 	return b
 }
 
@@ -68,37 +64,25 @@ func (b *WorkflowClientBuilder) SetDataConverter(dataConverter encoded.DataConve
 
 // BuildCadenceClient builds a client to cadence service
 func (b *WorkflowClientBuilder) BuildCadenceClient() (client.Client, error) {
-	service, err := b.BuildServiceClient()
-	if err != nil {
-		return nil, err
-	}
-
-	return client.NewClient(
-		service, b.domain, &client.Options{Identity: b.clientIdentity, MetricsScope: b.metricsScope, DataConverter: b.dataConverter, ContextPropagators: b.ctxProps}), nil
+	return client.NewClient(b.domain,
+		client.Options{
+			HostPort:           b.hostPort,
+			Identity:           b.clientIdentity,
+			MetricsScope:       b.metricsScope,
+			DataConverter:      b.dataConverter,
+			ContextPropagators: b.ctxProps,
+		},
+	)
 }
 
 // BuildCadenceDomainClient builds a domain client to cadence service
 func (b *WorkflowClientBuilder) BuildCadenceDomainClient() (client.DomainClient, error) {
-	service, err := b.BuildServiceClient()
-	if err != nil {
-		return nil, err
-	}
-
 	return client.NewDomainClient(
-		service, &client.Options{Identity: b.clientIdentity, MetricsScope: b.metricsScope, ContextPropagators: b.ctxProps}), nil
-}
-
-// BuildServiceClient builds a rpc service client to cadence service
-func (b *WorkflowClientBuilder) BuildServiceClient() (workflowservice.WorkflowServiceClient, error) {
-	if len(b.hostPort) == 0 {
-		return nil, errors.New("HostPort is empty")
-	}
-
-	connection, err := grpc.Dial(b.hostPort, grpc.WithInsecure())
-	if err != nil {
-		return nil, err
-	}
-
-	// TODO: close connection somewhere
-	return workflowservice.NewWorkflowServiceClient(connection), nil
+		client.Options{
+			HostPort:           b.hostPort,
+			Identity:           b.clientIdentity,
+			MetricsScope:       b.metricsScope,
+			ContextPropagators: b.ctxProps,
+		},
+	)
 }

@@ -19,7 +19,12 @@ func startWorkers(h *common.SampleHelper) {
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	worker := h.StartWorker(h.Config.DomainName, ApplicationName, workerOptions)
+
+	worker.RegisterWorkflow(Workflow)
+	worker.RegisterActivity(activityToBeCanceled)
+	worker.RegisterActivity(activityToBeSkipped)
+	worker.RegisterActivity(cleanupActivity)
 }
 
 func startWorkflow(h *common.SampleHelper) {

@@ -16,12 +16,6 @@ import (
 // ApplicationName is the task list for this sample
 const ApplicationName = "childWorkflowGroup"
 
-// This is registration process where you register all your workflows
-// and activity function handlers.
-func init() {
-	workflow.Register(SampleParentWorkflow)
-}
-
 // SampleParentWorkflow workflow decider
 func SampleParentWorkflow(ctx workflow.Context) error {
 	logger := workflow.GetLogger(ctx)

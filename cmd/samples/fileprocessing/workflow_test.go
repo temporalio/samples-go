@@ -30,6 +30,20 @@ func (s *UnitTestSuite) Test_SampleFileProcessingWorkflow() {
 
 	var activityCalled []string
 	env := s.NewTestWorkflowEnvironment()
+
+	env.RegisterActivityWithOptions(
+		downloadFileActivity,
+		activity.RegisterOptions{Name: downloadFileActivityName},
+	)
+	env.RegisterActivityWithOptions(
+		processFileActivity,
+		activity.RegisterOptions{Name: processFileActivityName},
+	)
+	env.RegisterActivityWithOptions(
+		uploadFileActivity,
+		activity.RegisterOptions{Name: uploadFileActivityName},
+	)
+
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {
 		activityType := activityInfo.ActivityType.Name
 		if strings.HasPrefix(activityType, "internalSession") {

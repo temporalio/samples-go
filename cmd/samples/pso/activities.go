@@ -24,15 +24,6 @@ func init() {
 	// WARNING: the randomness of activity scheduling with multiple workers makes random number generation truly random and not repeatable in debugging
 	// worker.ReplayWorkflowHistoryFromJSONFile should be used to troubleshoot a specific workflow failure.
 	rng = rand.New(rand.NewSource(time.Now().UnixNano()))
-
-	activity.RegisterWithOptions(
-		initParticleActivity,
-		activity.RegisterOptions{Name: initParticleActivityName},
-	)
-	activity.RegisterWithOptions(
-		updateParticleActivity,
-		activity.RegisterOptions{Name: updateParticleActivityName},
-	)
 }
 
 func initParticleActivity(ctx context.Context, swarm Swarm) (Particle, error) {

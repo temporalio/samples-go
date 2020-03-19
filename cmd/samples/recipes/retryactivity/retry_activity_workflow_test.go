@@ -22,6 +22,7 @@ func TestUnitTestSuite(t *testing.T) {
 
 func (s *UnitTestSuite) Test_Workflow() {
 	env := s.NewTestWorkflowEnvironment()
+	env.RegisterActivity(batchProcessingActivity)
 	var startedIDs []int
 	env.OnActivity(batchProcessingActivity, mock.Anything, mock.Anything, mock.Anything, mock.Anything).
 		Return(func(ctx context.Context, firstTaskID, batchSize int, processDelay time.Duration) error {

@@ -35,13 +35,7 @@ var ActivityOptions = workflow.ActivityOptions{
 
 const ContinueAsNewStr = "CONTINUEASNEW"
 
-// This is registration process where you register all your workflow handlers.
-func init() {
-	workflow.Register(PSOWorkflow)
-	workflow.Register(PSOChildWorkflow)
-}
-
-//PSOWorkflow workflow decider
+// PSOWorkflow workflow decider
 func PSOWorkflow(ctx workflow.Context, functionName string) (string, error) {
 	logger := workflow.GetLogger(ctx)
 	logger.Info(fmt.Sprintf("Optimizing function %s", functionName))

@@ -18,6 +18,8 @@ func TestUnitTestSuite(t *testing.T) {
 
 func (s *UnitTestSuite) Test_Workflow() {
 	env := s.NewTestWorkflowEnvironment()
+	env.RegisterActivity(chunkProcessingActivity)
+
 	workerCount := 5
 	env.ExecuteWorkflow(SampleSplitMergeWorkflow, workerCount)
 

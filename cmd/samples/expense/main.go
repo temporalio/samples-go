@@ -19,7 +19,12 @@ func startWorkers(h *common.SampleHelper) {
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	worker := h.StartWorker(h.Config.DomainName, ApplicationName, workerOptions)
+
+	worker.RegisterWorkflow(SampleExpenseWorkflow)
+	worker.RegisterActivity(createExpenseActivity)
+	worker.RegisterActivity(waitForDecisionActivity)
+	worker.RegisterActivity(paymentActivity)
 }
 
 func startWorkflow(h *common.SampleHelper, expenseID string) {
