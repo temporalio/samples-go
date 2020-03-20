@@ -8,7 +8,7 @@ import (
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
 
-	"github.com/temporalio/temporal-go-samples/cron"
+	"github.com/temporalio/temporal-go-samples/expense"
 )
 
 func main() {
@@ -25,12 +25,14 @@ func main() {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
 
-	w := worker.New(c, "cron-task-list", worker.Options{
+	w := worker.New(c, "expense-task-list", worker.Options{
 		Logger: logger,
 	})
 
-	w.RegisterWorkflow(cron.SampleCronWorkflow)
-	w.RegisterActivity(cron.SampleCronActivity)
+	w.RegisterWorkflow(expense.SampleExpenseWorkflow)
+	w.RegisterActivity(expense.CreateExpenseActivity)
+	w.RegisterActivity(expense.WaitForDecisionActivity)
+	w.RegisterActivity(expense.PaymentActivity)
 
 	err = w.Start()
 	if err != nil {

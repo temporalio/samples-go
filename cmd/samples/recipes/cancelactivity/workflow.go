@@ -52,7 +52,7 @@ func Workflow(ctx workflow.Context) error {
 
 func activityToBeCanceled(ctx context.Context) (string, error) {
 	logger := activity.GetLogger(ctx)
-	logger.Info("activity started, to cancel workflow, use ./cancelactivity -m cancel -w <WorkflowID> or CLI: 'cadence --do samples-domain wf cancel -w <WorkflowID>' to cancel")
+	logger.Info("activity started, to cancel workflow, use ./cancelactivity -m cancel -w <WorkflowID> or CLI: 'cadence --do default wf cancel -w <WorkflowID>' to cancel")
 	for {
 		select {
 		case <-time.After(1 * time.Second):

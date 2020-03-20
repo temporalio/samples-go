@@ -117,14 +117,10 @@ func (h *SampleHelper) SignalWithStartWorkflowWithCtx(ctx context.Context, workf
 }
 
 // StartWorker starts workflow worker and activity worker based on configured options.
-func (h *SampleHelper) StartWorker(domainName, groupName string, options worker.Options) worker.Worker {
-	worker, err := worker.New(domainName, groupName, options)
-	if err != nil {
-		h.Logger.Error("Failed to create worker.", zap.Error(err))
-		panic("Failed to start workers")
-	}
+func (h *SampleHelper) StartWorker(client client.Client, groupName string, options worker.Options) worker.Worker {
+	worker := worker.New(client, groupName, options)
 
-	err = worker.Start()
+	err := worker.Start()
 	if err != nil {
 		h.Logger.Error("Failed to start workers.", zap.Error(err))
 		panic("Failed to start workers")

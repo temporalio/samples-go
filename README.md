@@ -1,5 +1,5 @@
 # Temporal Samples
-These are some samples to demostrate various capabilities of Temporal client and server.  You can learn more about Temporal at:
+These are some samples to demonstrate various capabilities of Temporal client and server.  You can learn more about Temporal at:
 * Temporal: https://github.com/temporalio/temporal
 * Temporal Client: https://github.com/temporalio/temporal-go-client
 
@@ -8,10 +8,6 @@ Run Temporal Server
 
 See instructions for running the Temporal Server: https://github.com/temporalio/temporal/blob/master/README.md
 
-See instructions for using CLI to register a domain(name as "samples-domain"): https://cadenceworkflow.io/docs/08_cli
- or https://github.com/temporalio/temporal/blob/master/tools/cli/README.md 
- 
- 
 ## Steps to run samples
 ### Build Samples
 ```
@@ -147,6 +143,16 @@ Run the multi choice workflow
 ```
 ```
 ./bin/dynamic -m trigger
+```
+
+#### search attributes  
+Before running this, Temporal Server need to run with advanced visibility store. 
+See https://github.com/temporalio/temporal/blob/master/docs/visibility-on-elasticsearch.md
+```
+./bin/searchattributes -m worker
+```
+```
+./bin/searchattributes -m trigger
 ```
 
 #### localactivity

@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	"os"
 	"os/signal"
 
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
+	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 
-	"github.com/temporalio/temporal-go-samples/cron"
+	"github.com/temporalio/temporal-go-samples/recovery"
+	"github.com/temporalio/temporal-go-samples/recovery/cache"
 )
 
 func main() {
@@ -25,12 +28,18 @@ func main() {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
 
-	w := worker.New(c, "cron-task-list", worker.Options{
-		Logger: logger,
+	ctx := context.WithValue(context.Background(), recovery.TemporalClientKey, c)
+	ctx = context.WithValue(ctx, recovery.WorkflowExecutionCacheKey, cache.NewLRU(10))
+
+	w := worker.New(c, "recovery-task-list", worker.Options{
+		Logger:                    logger,
+		BackgroundActivityContext: ctx,
 	})
 
-	w.RegisterWorkflow(cron.SampleCronWorkflow)
-	w.RegisterActivity(cron.SampleCronActivity)
+	w.RegisterWorkflowWithOptions(recovery.RecoverWorkflow, workflow.RegisterOptions{Name: "RecoverWorkflow"})
+	w.RegisterWorkflowWithOptions(recovery.TripWorkflow, workflow.RegisterOptions{Name: "TripWorkflow"})
+	w.RegisterActivity(recovery.ListOpenExecutions)
+	w.RegisterActivity(recovery.RecoverExecutions)
 
 	err = w.Start()
 	if err != nil {

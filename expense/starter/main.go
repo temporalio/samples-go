@@ -8,7 +8,7 @@ import (
 	"go.temporal.io/temporal/client"
 	"go.uber.org/zap"
 
-	"github.com/temporalio/temporal-go-samples/cron"
+	"github.com/temporalio/temporal-go-samples/expense"
 )
 
 func main() {
@@ -25,17 +25,15 @@ func main() {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
 
-	// This workflow ID can be user business logic identifier as well.
-	workflowID := "cron_" + uuid.New()
+	expenseID := uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              workflowID,
-		TaskList:                        "cron-task-list",
+		ID:                              "expense_" + expenseID,
+		TaskList:                        "expense-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
 		DecisionTaskStartToCloseTimeout: time.Minute,
-		CronSchedule:                    "* * * * *",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, cron.SampleCronWorkflow)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, expense.SampleExpenseWorkflow, expenseID)
 	if err != nil {
 		logger.Error("Unable to execute workflow", zap.Error(err))
 	} else {
