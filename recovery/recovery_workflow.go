@@ -51,7 +51,7 @@ type ClientKey int
 
 const (
 	// DomainName used for this sample
-	DomainName = "samples-domain"
+	DomainName = "default"
 
 	// TemporalClientKey for retrieving cadence client from context
 	TemporalClientKey ClientKey = iota

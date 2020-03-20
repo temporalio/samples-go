@@ -31,29 +31,17 @@ func main() {
 	ctx := context.WithValue(context.Background(), recovery.TemporalClientKey, c)
 	ctx = context.WithValue(ctx, recovery.WorkflowExecutionCacheKey, cache.NewLRU(10))
 
-	workflowWorker := worker.New(c, "recovery-task-list", worker.Options{
+	w := worker.New(c, "recovery-task-list", worker.Options{
 		Logger:                    logger,
 		BackgroundActivityContext: ctx,
 	})
 
-	workflowWorker.RegisterWorkflowWithOptions(recovery.RecoverWorkflow, workflow.RegisterOptions{Name: "RecoverWorkflow"})
-	workflowWorker.RegisterWorkflowWithOptions(recovery.TripWorkflow, workflow.RegisterOptions{Name: "TripWorkflow"})
-	workflowWorker.RegisterActivity(recovery.ListOpenExecutions)
+	w.RegisterWorkflowWithOptions(recovery.RecoverWorkflow, workflow.RegisterOptions{Name: "RecoverWorkflow"})
+	w.RegisterWorkflowWithOptions(recovery.TripWorkflow, workflow.RegisterOptions{Name: "TripWorkflow"})
+	w.RegisterActivity(recovery.ListOpenExecutions)
+	w.RegisterActivity(recovery.RecoverExecutions)
 
-	err = workflowWorker.Start()
-	if err != nil {
-		logger.Fatal("Unable to start worker", zap.Error(err))
-	}
-
-	hostWorker := worker.New(c, recovery.HostID, worker.Options{
-		Logger:                    logger,
-		BackgroundActivityContext: ctx,
-		DisableWorkflowWorker:     true,
-	})
-
-	hostWorker.RegisterActivity(recovery.RecoverExecutions)
-
-	err = hostWorker.Start()
+	err = w.Start()
 	if err != nil {
 		logger.Fatal("Unable to start worker", zap.Error(err))
 	}
@@ -61,8 +49,7 @@ func main() {
 	// The workers are supposed to be long running process that should not exit.
 	waitCtrlC()
 	// Stop worker, close connection, clean up resources.
-	hostWorker.Stop()
-	workflowWorker.Stop()
+	w.Stop()
 	_ = c.CloseConnection()
 }
 
