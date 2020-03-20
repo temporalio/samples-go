@@ -50,10 +50,7 @@ type (
 type ClientKey int
 
 const (
-	// DomainName used for this sample
-	DomainName = "default"
-
-	// TemporalClientKey for retrieving cadence client from context
+	// TemporalClientKey for retrieving client from context
 	TemporalClientKey ClientKey = iota
 	// WorkflowExecutionCacheKey for retrieving executions cache from context
 	WorkflowExecutionCacheKey
@@ -64,8 +61,8 @@ const (
 var HostID = "recovery_" + uuid.New()
 
 var (
-	// ErrCadenceClientNotFound when cadence client is not found on context
-	ErrCadenceClientNotFound = errors.New("failed to retrieve cadence client from context")
+	// ErrClientNotFound when client is not found on context
+	ErrClientNotFound = errors.New("failed to retrieve client from context")
 	// ErrExecutionCacheNotFound when executions cache is not found on context
 	ErrExecutionCacheNotFound = errors.New("failed to retrieve cache from context")
 )
@@ -153,7 +150,7 @@ func ListOpenExecutions(ctx context.Context, workflowType string) (*ListOpenExec
 		zap.String("WorkflowType", workflowType),
 		zap.String("HostID", HostID))
 
-	cadenceClient, err := getCadenceClientFromContext(ctx)
+	c, err := getClientFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -164,7 +161,7 @@ func ListOpenExecutions(ctx context.Context, workflowType string) (*ListOpenExec
 		return nil, ErrExecutionCacheNotFound
 	}
 
-	openExecutions, err := getAllExecutionsOfType(ctx, cadenceClient, workflowType)
+	openExecutions, err := getAllExecutionsOfType(ctx, c, workflowType)
 	if err != nil {
 		return nil, err
 	}
@@ -221,7 +218,7 @@ func RecoverExecutions(ctx context.Context, key string, startIndex, batchSize in
 
 func recoverSingleExecution(ctx context.Context, workflowID string) error {
 	logger := activity.GetLogger(ctx)
-	cadenceClient, err := getCadenceClientFromContext(ctx)
+	c, err := getClientFromContext(ctx)
 	if err != nil {
 		return err
 	}
@@ -256,21 +253,21 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 
 	// First terminate existing run if already running
 	if !isExecutionCompleted(lastEvent) {
-		err := cadenceClient.TerminateWorkflow(ctx, execution.GetWorkflowId(), execution.GetRunId(), "Recover", nil)
+		err := c.TerminateWorkflow(ctx, execution.GetWorkflowId(), execution.GetRunId(), "Recover", nil)
 		if err != nil {
 			return err
 		}
 	}
 
 	// Start new execution run
-	newRun, err := cadenceClient.ExecuteWorkflow(ctx, params.Options, "TripWorkflow", params.State)
+	newRun, err := c.ExecuteWorkflow(ctx, params.Options, "TripWorkflow", params.State)
 	if err != nil {
 		return err
 	}
 
 	// re-inject all signals to new run
 	for _, s := range signals {
-		_ = cadenceClient.SignalWorkflow(ctx, execution.GetWorkflowId(), newRun.GetRunID(), s.Name, s.Data)
+		_ = c.SignalWorkflow(ctx, execution.GetWorkflowId(), newRun.GetRunID(), s.Name, s.Data)
 	}
 
 	logger.Info("Successfully restarted workflow.",
@@ -340,12 +337,12 @@ func isExecutionCompleted(event *common.HistoryEvent) bool {
 	}
 }
 
-func getAllExecutionsOfType(ctx context.Context, cadenceClient client.Client, workflowType string) ([]*common.WorkflowExecution, error) {
+func getAllExecutionsOfType(ctx context.Context, c client.Client, workflowType string) ([]*common.WorkflowExecution, error) {
 	var openExecutions []*common.WorkflowExecution
 	var nextPageToken []byte
 	for hasMore := true; hasMore; hasMore = len(nextPageToken) > 0 {
-		resp, err := cadenceClient.ListOpenWorkflow(ctx, &workflowservice.ListOpenWorkflowExecutionsRequest{
-			Domain:          DomainName,
+		resp, err := c.ListOpenWorkflow(ctx, &workflowservice.ListOpenWorkflowExecutionsRequest{
+			Domain:          client.DefaultDomainName,
 			MaximumPageSize: 10,
 			NextPageToken:   nextPageToken,
 			StartTimeFilter: &common.StartTimeFilter{
@@ -372,12 +369,12 @@ func getAllExecutionsOfType(ctx context.Context, cadenceClient client.Client, wo
 }
 
 func getHistory(ctx context.Context, execution *common.WorkflowExecution) ([]*common.HistoryEvent, error) {
-	cadenceClient, err := getCadenceClientFromContext(ctx)
+	c, err := getClientFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	iter := cadenceClient.GetWorkflowHistory(ctx, execution.GetWorkflowId(), execution.GetRunId(), false, enums.HistoryEventFilterTypeAllEvent)
+	iter := c.GetWorkflowHistory(ctx, execution.GetWorkflowId(), execution.GetRunId(), false, enums.HistoryEventFilterTypeAllEvent)
 	var events []*common.HistoryEvent
 	for iter.HasNext() {
 		event, err := iter.Next()
@@ -391,12 +388,12 @@ func getHistory(ctx context.Context, execution *common.WorkflowExecution) ([]*co
 	return events, nil
 }
 
-func getCadenceClientFromContext(ctx context.Context) (client.Client, error) {
+func getClientFromContext(ctx context.Context) (client.Client, error) {
 	logger := activity.GetLogger(ctx)
 	temporalClient := ctx.Value(TemporalClientKey).(client.Client)
 	if temporalClient == nil {
 		logger.Error("Could not retrieve temporal client from context.")
-		return nil, ErrCadenceClientNotFound
+		return nil, ErrClientNotFound
 	}
 
 	return temporalClient, nil
