@@ -64,14 +64,14 @@ func (b *WorkflowClientBuilder) SetDataConverter(dataConverter encoded.DataConve
 
 // BuildCadenceClient builds a client to cadence service
 func (b *WorkflowClientBuilder) BuildCadenceClient() (client.Client, error) {
-	return client.NewClient(b.domain,
-		client.Options{
-			HostPort:           b.hostPort,
-			Identity:           b.clientIdentity,
-			MetricsScope:       b.metricsScope,
-			DataConverter:      b.dataConverter,
-			ContextPropagators: b.ctxProps,
-		},
+	return client.NewClient(client.Options{
+		DomainName:         b.domain,
+		HostPort:           b.hostPort,
+		Identity:           b.clientIdentity,
+		MetricsScope:       b.metricsScope,
+		DataConverter:      b.dataConverter,
+		ContextPropagators: b.ctxProps,
+	},
 	)
 }
 
