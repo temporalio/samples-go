@@ -17,15 +17,14 @@ define NEWLINE
 endef
 
 bins:
+	@echo Building samples...
 	$(foreach MAIN_FILE,$(MAIN_FILES), go build -i -o bin/$(call parentdirname,$(MAIN_FILE))/$(call dirname,$(MAIN_FILE)) $(MAIN_FILE)$(NEWLINE))
 
-test: bins
+test:
 	@rm -f test
 	@rm -f test.log
-	@echo Runing tests for $(TEST_DIRS)
-	@for dir in $(TEST_DIRS); do \
-		go test -coverprofile=$@ "$$dir" | tee -a test.log; \
-	done;
+	@echo Runing unit tests...
+	$(foreach TEST_DIR,$(TEST_DIRS), @go test $(TEST_DIR) | tee -a test.log$(NEWLINE))
 
 staticcheck:
 	GO111MODULE=off go get -u honnef.co/go/tools/cmd/staticcheck
@@ -38,4 +37,4 @@ errcheck:
 clean:
 	rm -rf bin
 
-check: clean staticcheck errcheck test
+check: clean staticcheck errcheck bins test

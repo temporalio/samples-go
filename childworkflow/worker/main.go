@@ -33,7 +33,6 @@ func main() {
 	w.RegisterWorkflow(childworkflow.SampleChildWorkflow)
 
 	err = w.Start()
-	err = w.Start()
 	if err != nil {
 		logger.Fatal("Unable to start worker", zap.Error(err))
 	}

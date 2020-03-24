@@ -20,17 +20,19 @@ const (
 	// RequestLockSignalName channel name for request lock
 	RequestLockSignalName = "request-lock-event"
 
-	ClientContextKey = "Client"
+	ClientContextKey ContextKey = "Client"
 )
 
-// UnlockFunc ...
-type UnlockFunc func() error
+type (
+	ContextKey string
 
-// Mutex - cadence mutex
-type Mutex struct {
-	currentWorkflowID string
-	lockNamespace     string
-}
+	UnlockFunc func() error
+
+	Mutex struct {
+		currentWorkflowID string
+		lockNamespace     string
+	}
+)
 
 // NewMutex initializes cadence mutex
 func NewMutex(currentWorkflowID string, lockNamespace string) *Mutex {
