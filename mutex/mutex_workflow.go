@@ -157,7 +157,6 @@ func SignalWithStartMutexWorkflowActivity(
 			ExpirationInterval: time.Minute * 10,
 			MaximumAttempts:    5,
 		},
-		WorkflowIDReusePolicy: client.WorkflowIDReusePolicyAllowDuplicate,
 	}
 	we, err := c.SignalWithStartWorkflow(
 		ctx, workflowID, RequestLockSignalName, senderWorkflowID,

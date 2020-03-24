@@ -19,7 +19,7 @@ func main() {
 	}
 
 	var sampleCase string
-	flag.StringVar(&sampleCase, "c", "parallel", "Sample case to run [parallel|branch].")
+	flag.StringVar(&sampleCase, "c", "branch", "Sample case to run [parallel|branch].")
 	flag.Parse()
 
 	// The client is a heavyweight object that should be created once per process.

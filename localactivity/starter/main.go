@@ -29,7 +29,6 @@ func main() {
 		TaskList:                        "local-activity-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute * 3,
 		DecisionTaskStartToCloseTimeout: time.Minute,
-		WorkflowIDReusePolicy:           client.WorkflowIDReusePolicyAllowDuplicate,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, localactivity.SignalHandlingWorkflow)
