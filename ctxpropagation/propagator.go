@@ -26,7 +26,7 @@ type (
 var PropagateKey = contextKey{}
 
 // propagationKey is the key used by the propagator to pass values through the
-// cadence server headers
+// Temporal server headers
 const propagationKey = "_prop"
 
 // NewContextPropagator returns a context propagator that propagates a set of

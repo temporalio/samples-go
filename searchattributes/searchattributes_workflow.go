@@ -31,8 +31,8 @@ const (
 )
 
 var (
-	// ErrCadenceClientNotFound when cadence client is not found on context
-	ErrCadenceClientNotFound = errors.New("failed to retrieve client from context")
+	// ErrClientNotFound when client is not found on context
+	ErrClientNotFound = errors.New("failed to retrieve client from context")
 )
 
 // SearchAttributesWorkflow workflow decider
@@ -155,8 +155,8 @@ func getClientFromContext(ctx context.Context) (client.Client, error) {
 	logger := activity.GetLogger(ctx)
 	c := ctx.Value(TemporalClientKey).(client.Client)
 	if c == nil {
-		logger.Error("Could not retrieve cadence client from context.")
-		return nil, ErrCadenceClientNotFound
+		logger.Error("Could not retrieve client from context.")
+		return nil, ErrClientNotFound
 	}
 
 	return c, nil

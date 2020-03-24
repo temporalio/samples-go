@@ -6,7 +6,7 @@ import (
 	"go.temporal.io/temporal/workflow"
 )
 
-// Workflow is an implementation of cadence workflow to demo how to setup query handler
+// Workflow is to demo how to setup query handler
 func QueryWorkflow(ctx workflow.Context) error {
 	queryResult := "started"
 	logger := workflow.GetLogger(ctx)

@@ -1,7 +1,7 @@
-# Temporal Samples
-These are some samples to demonstrate various capabilities of Temporal client and server.  You can learn more about Temporal at:
+# Temporal Go SDK Samples
+These are some samples to demonstrate various capabilities of Temporal Go SDK and server.  You can learn more about Temporal at:
 * Temporal: https://github.com/temporalio/temporal
-* Temporal Client: https://github.com/temporalio/temporal-go-client
+* Temporal Go SDK: https://github.com/temporalio/temporal-go-sdk
 
 ## Prerequisite
 Run Temporal Server

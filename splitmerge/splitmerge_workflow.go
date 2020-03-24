@@ -10,9 +10,9 @@ import (
 )
 
 /**
-* This sample workflow demonstrates how to use multiple Cadence corotinues (instead of native goroutine) to process a
+* This sample workflow demonstrates how to use multiple Temporal corotinues (instead of native goroutine) to process a
 * chunk of a large work item in parallel, and then merge the intermediate result to generate the final result.
-* In cadence workflow, you should not use go routine. Instead, you use corotinue via workflow.Go method.
+* In Temporal workflow, you should not use go routine. Instead, you use corotinue via workflow.Go method.
  */
 
 type (

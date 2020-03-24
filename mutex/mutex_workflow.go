@@ -34,7 +34,7 @@ type (
 	}
 )
 
-// NewMutex initializes cadence mutex
+// NewMutex initializes mutex
 func NewMutex(currentWorkflowID string, lockNamespace string) *Mutex {
 	return &Mutex{
 		currentWorkflowID: currentWorkflowID,
@@ -177,7 +177,7 @@ func generateUnlockChannelName(senderWorkflowID string) string {
 	return fmt.Sprintf("unlock-event-%s", senderWorkflowID)
 }
 
-// MockMutexLock stubs cadence mutex.Lock call
+// MockMutexLock stubs mutex.Lock call
 func MockMutexLock(env *testsuite.TestWorkflowEnvironment, resourceID string, mockError error) {
 	mockExecution := &workflow.Execution{ID: "mockID", RunID: "mockRunID"}
 	env.OnActivity(SignalWithStartMutexWorkflowActivity,
