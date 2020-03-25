@@ -129,7 +129,7 @@ func transcodeData(ctx context.Context, data []byte) []byte {
 }
 
 func saveToTmpFile(data []byte) (f *os.File, err error) {
-	tmpFile, err := ioutil.TempFile("", "cadence_sample")
+	tmpFile, err := ioutil.TempFile("", "temporal_sample")
 	if err != nil {
 		return nil, err
 	}

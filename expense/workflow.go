@@ -36,7 +36,7 @@ func SampleExpenseWorkflow(ctx workflow.Context, expenseID string) (result strin
 	ctx2 := workflow.WithActivityOptions(ctx, ao)
 	// Notice that we set the timeout to be 10 minutes for this sample demo. If the expected time for the activity to
 	// complete (waiting for human to approve the request) is longer, you should set the timeout accordingly so the
-	// cadence system will wait accordingly. Otherwise, cadence system could mark the activity as failure by timeout.
+	// Temporal system will wait accordingly. Otherwise, Temporal system could mark the activity as failure by timeout.
 	var status string
 	err = workflow.ExecuteActivity(ctx2, WaitForDecisionActivity, expenseID).Get(ctx2, &status)
 	if err != nil {

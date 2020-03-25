@@ -56,7 +56,7 @@ func SampleCronWorkflow(ctx workflow.Context) (*SampleCronResult, error) {
 	err := workflow.ExecuteActivity(ctx1, SampleCronActivity, startTime, endTime).Get(ctx, nil)
 
 	if err != nil {
-		// cron job failed. but next cron should continue to be scheduled by Cadence server
+		// cron job failed. but next cron should continue to be scheduled by server
 		workflow.GetLogger(ctx).Error("Cron job failed.", zap.Error(err))
 		return nil, err
 	}

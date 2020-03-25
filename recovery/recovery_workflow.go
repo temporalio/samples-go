@@ -292,7 +292,6 @@ func extractStateFromEvent(workflowID string, event *common.HistoryEvent) (*Rest
 				TaskList:                        attr.TaskList.GetName(),
 				ExecutionStartToCloseTimeout:    time.Second * time.Duration(attr.GetExecutionStartToCloseTimeoutSeconds()),
 				DecisionTaskStartToCloseTimeout: time.Second * time.Duration(attr.GetTaskStartToCloseTimeoutSeconds()),
-				WorkflowIDReusePolicy:           client.WorkflowIDReusePolicyAllowDuplicate,
 				// RetryPolicy: attr.RetryPolicy,
 			},
 			State: state,

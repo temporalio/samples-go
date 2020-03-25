@@ -36,8 +36,8 @@ func CreateExpenseActivity(ctx context.Context, expenseID string) error {
 }
 
 // waitForDecisionActivity waits for the expense decision. This activity will complete asynchronously. When this method
-// returns error activity.ErrResultPending, the cadence client recognize this error, and won't mark this activity
-// as failed or completed. The cadence server will wait until Client.CompleteActivity() is called or timeout happened
+// returns error activity.ErrResultPending, the Temporal Go SDK recognize this error, and won't mark this activity
+// as failed or completed. The Temporal server will wait until Client.CompleteActivity() is called or timeout happened
 // whichever happen first. In this sample case, the CompleteActivity() method is called by our dummy expense server when
 // the expense is approved.
 func WaitForDecisionActivity(ctx context.Context, expenseID string) (string, error) {
