@@ -1,8 +1,7 @@
-package branch
+package parallel
 
 import (
 	"fmt"
-	"go.uber.org/zap"
 	"time"
 
 	"go.temporal.io/temporal/workflow"
@@ -14,9 +13,6 @@ import (
 
 // SampleBranchWorkflow workflow definition
 func SampleBranchWorkflow(ctx workflow.Context, totalBranches int) (result []string, err error) {
-	logger := workflow.GetLogger(ctx)
-	logger.Info("SampleBranchWorkflow begin")
-
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
@@ -30,25 +26,23 @@ func SampleBranchWorkflow(ctx workflow.Context, totalBranches int) (result []str
 		future := workflow.ExecuteActivity(ctx, SampleActivity, activityInput)
 		futures = append(futures, future)
 	}
-	logger.Info("Activities started")
 
 	// accumulate results
 	for _, future := range futures {
 		var singleResult string
 		err = future.Get(ctx, &singleResult)
-		logger.Info("Activity returned with result", zap.String("resutl", singleResult))
 		if err != nil {
 			return
 		}
 		result = append(result, singleResult)
 	}
 
-	logger.Info("SampleBranchWorkflow end")
+	workflow.GetLogger(ctx).Info("Workflow completed.")
 	return
 }
 
 func SampleActivity(input string) (string, error) {
 	name := "sampleActivity"
 	fmt.Printf("Run %s with input %v \n", name, input)
-	return "Result_" + input, nil
+	return "Result_" + name, nil
 }
