@@ -5,7 +5,7 @@ import (
 	"go.uber.org/zap"
 	"time"
 
-	"github.com/temporalio/temporal-go-samples/branch"
+	"github.com/temporalio/temporal-go-samples/parallel"
 	"go.temporal.io/temporal/client"
 )
 
@@ -16,21 +16,22 @@ func main() {
 	}
 
 	// The client is a heavyweight object that should be created once per process.
-	c, err := client.NewClient(client.Options{})
+	c, err := client.NewClient(client.Options{
+		HostPort: client.DefaultHostPort,
+	})
 	if err != nil {
 		panic(err)
 	}
 	defer func() { _ = c.CloseConnection() }()
-
 	workflowOptions := client.StartWorkflowOptions{
-		TaskList:                        "branch-task-list",
+		TaskList:                        "parallel-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
 		DecisionTaskStartToCloseTimeout: time.Second * 10,
 	}
 	ctx := context.Background()
-	we, err := c.ExecuteWorkflow(ctx, workflowOptions, branch.SampleBranchWorkflow, 10)
+	we, err := c.ExecuteWorkflow(ctx, workflowOptions, parallel.SampleParallelWorkflow)
 	if err != nil {
-		logger.Fatal("Failure starting workflow", zap.Error(err))
+		panic(err)
 	}
 	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
 

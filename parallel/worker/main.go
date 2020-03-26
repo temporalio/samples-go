@@ -4,11 +4,10 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/temporalio/temporal-go-samples/parallel"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
-
-	"github.com/temporalio/temporal-go-samples/branch"
 )
 
 func main() {
@@ -26,12 +25,12 @@ func main() {
 	}
 	defer func() { _ = c.CloseConnection() }()
 
-	w := worker.New(c, "branch-task-list", worker.Options{
+	w := worker.New(c, "parallel-task-list", worker.Options{
 		Logger: logger,
 	})
 
-	w.RegisterWorkflow(branch.SampleBranchWorkflow)
-	w.RegisterActivity(branch.SampleActivity)
+	w.RegisterWorkflow(parallel.SampleParallelWorkflow)
+	w.RegisterActivity(parallel.SampleActivity)
 
 	err = w.Start()
 	if err != nil {
