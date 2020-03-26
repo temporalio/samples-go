@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"go.uber.org/zap"
 	"time"
 
 	"github.com/temporalio/temporal-go-samples/parallel"
@@ -10,6 +10,11 @@ import (
 )
 
 func main() {
+	logger, err := zap.NewDevelopment()
+	if err != nil {
+		panic(err)
+	}
+
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
@@ -28,7 +33,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Started workflow with WorkflowID=%v and RunID=%v", we.GetID(), we.GetRunID())
+	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
 
 	// Wait for workflow completion. This is rarely needed in real use cases
 	// when workflows are potentially long running
@@ -37,6 +42,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Activities execution result: %v", result)
-	// Close connection, clean up resources.
+	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
 }

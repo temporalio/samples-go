@@ -1,6 +1,7 @@
 package parallel
 
 import (
+	"fmt"
 	"time"
 
 	"go.temporal.io/temporal/workflow"
@@ -67,4 +68,10 @@ func SampleParallelWorkflow(ctx workflow.Context) ([]string, error) {
 	results = append(results, result)
 
 	return results, nil
+}
+
+func SampleActivity(input string) (string, error) {
+	name := "sampleActivity"
+	fmt.Printf("Run %s with input %v \n", name, input)
+	return "Result_" + input, nil
 }
