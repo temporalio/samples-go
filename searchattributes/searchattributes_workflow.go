@@ -133,7 +133,7 @@ func ListExecutions(ctx context.Context, query string) ([]*common.WorkflowExecut
 	var nextPageToken []byte
 	for hasMore := true; hasMore; hasMore = len(nextPageToken) > 0 {
 		resp, err := c.ListWorkflow(ctx, &workflowservice.ListWorkflowExecutionsRequest{
-			Domain:        DomainName,
+			Namespace:     DomainName,
 			PageSize:      10,
 			NextPageToken: nextPageToken,
 			Query:         query,

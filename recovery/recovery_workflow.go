@@ -341,7 +341,7 @@ func getAllExecutionsOfType(ctx context.Context, c client.Client, workflowType s
 	var nextPageToken []byte
 	for hasMore := true; hasMore; hasMore = len(nextPageToken) > 0 {
 		resp, err := c.ListOpenWorkflow(ctx, &workflowservice.ListOpenWorkflowExecutionsRequest{
-			Domain:          client.DefaultDomainName,
+			Namespace:       client.DefaultNamespace,
 			MaximumPageSize: 10,
 			NextPageToken:   nextPageToken,
 			StartTimeFilter: &common.StartTimeFilter{
