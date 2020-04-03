@@ -35,7 +35,7 @@ func Test_Workflow(t *testing.T) {
 	env.OnUpsertSearchAttributes(attributes).Return(nil).Once()
 
 	// mock activity
-	env.OnActivity(ListExecutions, mock.Anything, mock.Anything).Return([]*executionpb.WorkflowExecutionInfo{}, nil).Once()
+	env.OnActivity(ListExecutions, mock.Anything, mock.Anything).Return([]*executionpb.WorkflowExecutionInfo{{}}, nil).Once()
 
 	env.ExecuteWorkflow(SearchAttributesWorkflow)
 	require.True(t, env.IsWorkflowCompleted())

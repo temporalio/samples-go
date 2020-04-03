@@ -1,11 +1,7 @@
-.PHONY: test bins clean staticcheck errcheck check
-
-# default target
-default: check
+all: clean staticcheck errcheck bins test
 
 # all directories with *_test.go files in them
 TEST_DIRS := $(sort $(dir $(shell find . -name "*_test.go")))
-
 MAIN_FILES := $(shell find . -name "main.go")
 
 dir_no_slash = $(patsubst %/,%,$(dir $(1)))
@@ -18,7 +14,7 @@ endef
 
 bins:
 	@echo Building samples...
-	$(foreach MAIN_FILE,$(MAIN_FILES), go build -i -o bin/$(call parentdirname,$(MAIN_FILE))/$(call dirname,$(MAIN_FILE)) $(MAIN_FILE)$(NEWLINE))
+	$(foreach MAIN_FILE,$(MAIN_FILES), go build -o bin/$(call parentdirname,$(MAIN_FILE))/$(call dirname,$(MAIN_FILE)) $(MAIN_FILE)$(NEWLINE))
 
 test:
 	@rm -f test
@@ -36,5 +32,3 @@ errcheck:
 
 clean:
 	rm -rf bin
-
-check: clean staticcheck errcheck bins test
