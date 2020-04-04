@@ -7,8 +7,9 @@ import (
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal"
-	"go.temporal.io/temporal-proto/common"
-	"go.temporal.io/temporal-proto/enums"
+	eventpb "go.temporal.io/temporal-proto/event"
+	executionpb "go.temporal.io/temporal-proto/execution"
+	filterpb "go.temporal.io/temporal-proto/filter"
 	"go.temporal.io/temporal-proto/workflowservice"
 	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/client"
@@ -188,7 +189,7 @@ func RecoverExecutions(ctx context.Context, key string, startIndex, batchSize in
 		return ErrExecutionCacheNotFound
 	}
 
-	openExecutions := executionsCache.Get(key).([]*common.WorkflowExecution)
+	openExecutions := executionsCache.Get(key).([]*executionpb.WorkflowExecution)
 	endIndex := startIndex + batchSize
 
 	// Check if this activity has previous heartbeat to retrieve progress from it
@@ -223,7 +224,7 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 		return err
 	}
 
-	execution := &common.WorkflowExecution{
+	execution := &executionpb.WorkflowExecution{
 		WorkflowId: workflowID,
 	}
 	history, err := getHistory(ctx, execution)
@@ -277,9 +278,9 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 	return nil
 }
 
-func extractStateFromEvent(workflowID string, event *common.HistoryEvent) (*RestartParams, error) {
+func extractStateFromEvent(workflowID string, event *eventpb.HistoryEvent) (*RestartParams, error) {
 	switch event.GetEventType() {
-	case enums.EventTypeWorkflowExecutionStarted:
+	case eventpb.EventTypeWorkflowExecutionStarted:
 		attr := event.GetWorkflowExecutionStartedEventAttributes()
 		state, err := deserializeUserState(attr.Input)
 		if err != nil {
@@ -301,10 +302,10 @@ func extractStateFromEvent(workflowID string, event *common.HistoryEvent) (*Rest
 	}
 }
 
-func extractSignals(events []*common.HistoryEvent) ([]*SignalParams, error) {
+func extractSignals(events []*eventpb.HistoryEvent) ([]*SignalParams, error) {
 	var signals []*SignalParams
 	for _, event := range events {
-		if event.GetEventType() == enums.EventTypeWorkflowExecutionSignaled {
+		if event.GetEventType() == eventpb.EventTypeWorkflowExecutionSignaled {
 			attr := event.GetWorkflowExecutionSignaledEventAttributes()
 			if attr.GetSignalName() == TripSignalName && attr.Input != nil && len(attr.Input) > 0 {
 				signalData, err := deserializeTripEvent(attr.Input)
@@ -325,30 +326,30 @@ func extractSignals(events []*common.HistoryEvent) ([]*SignalParams, error) {
 	return signals, nil
 }
 
-func isExecutionCompleted(event *common.HistoryEvent) bool {
+func isExecutionCompleted(event *eventpb.HistoryEvent) bool {
 	switch event.GetEventType() {
-	case enums.EventTypeWorkflowExecutionCompleted, enums.EventTypeWorkflowExecutionTerminated,
-		enums.EventTypeWorkflowExecutionCanceled, enums.EventTypeWorkflowExecutionFailed,
-		enums.EventTypeWorkflowExecutionTimedOut:
+	case eventpb.EventTypeWorkflowExecutionCompleted, eventpb.EventTypeWorkflowExecutionTerminated,
+		eventpb.EventTypeWorkflowExecutionCanceled, eventpb.EventTypeWorkflowExecutionFailed,
+		eventpb.EventTypeWorkflowExecutionTimedOut:
 		return true
 	default:
 		return false
 	}
 }
 
-func getAllExecutionsOfType(ctx context.Context, c client.Client, workflowType string) ([]*common.WorkflowExecution, error) {
-	var openExecutions []*common.WorkflowExecution
+func getAllExecutionsOfType(ctx context.Context, c client.Client, workflowType string) ([]*executionpb.WorkflowExecution, error) {
+	var openExecutions []*executionpb.WorkflowExecution
 	var nextPageToken []byte
 	for hasMore := true; hasMore; hasMore = len(nextPageToken) > 0 {
 		resp, err := c.ListOpenWorkflow(ctx, &workflowservice.ListOpenWorkflowExecutionsRequest{
-			Domain:          client.DefaultDomainName,
+			Namespace:       client.DefaultNamespace,
 			MaximumPageSize: 10,
 			NextPageToken:   nextPageToken,
-			StartTimeFilter: &common.StartTimeFilter{
+			StartTimeFilter: &filterpb.StartTimeFilter{
 				EarliestTime: 0,
 				LatestTime:   time.Now().UnixNano(),
 			},
-			Filters: &workflowservice.ListOpenWorkflowExecutionsRequest_TypeFilter{TypeFilter: &common.WorkflowTypeFilter{
+			Filters: &workflowservice.ListOpenWorkflowExecutionsRequest_TypeFilter{TypeFilter: &filterpb.WorkflowTypeFilter{
 				Name: workflowType,
 			}},
 		})
@@ -367,14 +368,14 @@ func getAllExecutionsOfType(ctx context.Context, c client.Client, workflowType s
 	return openExecutions, nil
 }
 
-func getHistory(ctx context.Context, execution *common.WorkflowExecution) ([]*common.HistoryEvent, error) {
+func getHistory(ctx context.Context, execution *executionpb.WorkflowExecution) ([]*eventpb.HistoryEvent, error) {
 	c, err := getClientFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	iter := c.GetWorkflowHistory(ctx, execution.GetWorkflowId(), execution.GetRunId(), false, enums.HistoryEventFilterTypeAllEvent)
-	var events []*common.HistoryEvent
+	iter := c.GetWorkflowHistory(ctx, execution.GetWorkflowId(), execution.GetRunId(), false, filterpb.HistoryEventFilterTypeAllEvent)
+	var events []*eventpb.HistoryEvent
 	for iter.HasNext() {
 		event, err := iter.Next()
 		if err != nil {

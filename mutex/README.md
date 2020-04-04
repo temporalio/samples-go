@@ -1,5 +1,5 @@
-This mutex workflow demos an ability to lock/unlock a particular resource within a particular Temporal domain
-so that other workflows within the same domain would wait until a resource lock is released. This is useful 
+This mutex workflow demos an ability to lock/unlock a particular resource within a particular Temporal namespace
+so that other workflows within the same namespace would wait until a resource lock is released. This is useful 
 when we want to avoid race conditions or parallel mutually exclusive operations on the same resource.
 
 One way of coordinating parallel processing is to use Temporal signals with `SignalWithStartWorkflow` and

@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/temporal-proto/common"
+	executionpb "go.temporal.io/temporal-proto/execution"
 	"go.temporal.io/temporal/testsuite"
 )
 
@@ -35,7 +35,7 @@ func Test_Workflow(t *testing.T) {
 	env.OnUpsertSearchAttributes(attributes).Return(nil).Once()
 
 	// mock activity
-	env.OnActivity(ListExecutions, mock.Anything, mock.Anything).Return([]*common.WorkflowExecutionInfo{{}}, nil).Once()
+	env.OnActivity(ListExecutions, mock.Anything, mock.Anything).Return([]*executionpb.WorkflowExecutionInfo{{}}, nil).Once()
 
 	env.ExecuteWorkflow(SearchAttributesWorkflow)
 	require.True(t, env.IsWorkflowCompleted())

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"go.temporal.io/temporal-proto/common"
+	executionpb "go.temporal.io/temporal-proto/execution"
 	"go.temporal.io/temporal-proto/workflowservice"
 	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/client"
@@ -24,8 +25,8 @@ import (
 type ClientKey int
 
 const (
-	// DomainName used for this sample
-	DomainName = "default"
+	// Namespace used for this sample. "default" namespace always exists on the server.
+	Namespace = "default"
 	// TemporalClientKey for retrieving client from context
 	TemporalClientKey ClientKey = iota
 )
@@ -92,7 +93,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 	query := "CustomIntField=2 and CustomKeywordField='Update2' order by CustomDatetimeField DESC"
-	var listResults []*common.WorkflowExecutionInfo
+	var listResults []*executionpb.WorkflowExecutionInfo
 	err = workflow.ExecuteActivity(ctx, ListExecutions, query).Get(ctx, &listResults)
 	if err != nil {
 		logger.Error("Failed to list workflow executions.", zap.Error(err))
@@ -119,7 +120,7 @@ func printSearchAttributes(searchAttributes *common.SearchAttributes, logger *za
 	return nil
 }
 
-func ListExecutions(ctx context.Context, query string) ([]*common.WorkflowExecutionInfo, error) {
+func ListExecutions(ctx context.Context, query string) ([]*executionpb.WorkflowExecutionInfo, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("List executions.", zap.String("Query", query))
 
@@ -129,11 +130,11 @@ func ListExecutions(ctx context.Context, query string) ([]*common.WorkflowExecut
 		return nil, err
 	}
 
-	var executions []*common.WorkflowExecutionInfo
+	var executions []*executionpb.WorkflowExecutionInfo
 	var nextPageToken []byte
 	for hasMore := true; hasMore; hasMore = len(nextPageToken) > 0 {
 		resp, err := c.ListWorkflow(ctx, &workflowservice.ListWorkflowExecutionsRequest{
-			Domain:        DomainName,
+			Namespace:     Namespace,
 			PageSize:      10,
 			NextPageToken: nextPageToken,
 			Query:         query,
