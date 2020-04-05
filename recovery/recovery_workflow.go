@@ -280,7 +280,7 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 
 func extractStateFromEvent(workflowID string, event *eventpb.HistoryEvent) (*RestartParams, error) {
 	switch event.GetEventType() {
-	case eventpb.EventTypeWorkflowExecutionStarted:
+	case eventpb.EventType_WorkflowExecutionStarted:
 		attr := event.GetWorkflowExecutionStartedEventAttributes()
 		state, err := deserializeUserState(attr.Input)
 		if err != nil {
@@ -305,7 +305,7 @@ func extractStateFromEvent(workflowID string, event *eventpb.HistoryEvent) (*Res
 func extractSignals(events []*eventpb.HistoryEvent) ([]*SignalParams, error) {
 	var signals []*SignalParams
 	for _, event := range events {
-		if event.GetEventType() == eventpb.EventTypeWorkflowExecutionSignaled {
+		if event.GetEventType() == eventpb.EventType_WorkflowExecutionSignaled {
 			attr := event.GetWorkflowExecutionSignaledEventAttributes()
 			if attr.GetSignalName() == TripSignalName && attr.Input != nil && len(attr.Input) > 0 {
 				signalData, err := deserializeTripEvent(attr.Input)
@@ -328,9 +328,9 @@ func extractSignals(events []*eventpb.HistoryEvent) ([]*SignalParams, error) {
 
 func isExecutionCompleted(event *eventpb.HistoryEvent) bool {
 	switch event.GetEventType() {
-	case eventpb.EventTypeWorkflowExecutionCompleted, eventpb.EventTypeWorkflowExecutionTerminated,
-		eventpb.EventTypeWorkflowExecutionCanceled, eventpb.EventTypeWorkflowExecutionFailed,
-		eventpb.EventTypeWorkflowExecutionTimedOut:
+	case eventpb.EventType_WorkflowExecutionCompleted, eventpb.EventType_WorkflowExecutionTerminated,
+		eventpb.EventType_WorkflowExecutionCanceled, eventpb.EventType_WorkflowExecutionFailed,
+		eventpb.EventType_WorkflowExecutionTimedOut:
 		return true
 	default:
 		return false
@@ -374,7 +374,7 @@ func getHistory(ctx context.Context, execution *executionpb.WorkflowExecution) (
 		return nil, err
 	}
 
-	iter := c.GetWorkflowHistory(ctx, execution.GetWorkflowId(), execution.GetRunId(), false, filterpb.HistoryEventFilterTypeAllEvent)
+	iter := c.GetWorkflowHistory(ctx, execution.GetWorkflowId(), execution.GetRunId(), false, filterpb.HistoryEventFilterType_AllEvent)
 	var events []*eventpb.HistoryEvent
 	for iter.HasNext() {
 		event, err := iter.Next()
