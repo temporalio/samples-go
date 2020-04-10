@@ -12,7 +12,7 @@ import (
  * This multi choice sample workflow executes multiple parallel branches based on the result of an activity.
  */
 
-// MultiChoiceWorkflow Workflow Decider.
+// MultiChoiceWorkflow Workflow definition.
 func MultiChoiceWorkflow(ctx workflow.Context) error {
 	// Get basket order.
 	ao := workflow.ActivityOptions{

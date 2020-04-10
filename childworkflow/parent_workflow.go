@@ -13,7 +13,7 @@ import (
  * workflow execution is starting a new run and parent execution is notified only after the completion of last run.
  */
 
-// SampleParentWorkflow workflow decider
+// SampleParentWorkflow workflow definition
 func SampleParentWorkflow(ctx workflow.Context) error {
 	logger := workflow.GetLogger(ctx)
 	execution := workflow.GetInfo(ctx).WorkflowExecution

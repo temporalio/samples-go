@@ -14,7 +14,7 @@ import (
  * and then cancels other activities that are not finished yet.
  */
 
-// SamplePickFirstWorkflow workflow decider
+// SamplePickFirstWorkflow workflow definition
 func SamplePickFirstWorkflow(ctx workflow.Context) error {
 	selector := workflow.NewSelector(ctx)
 	var firstResponse string

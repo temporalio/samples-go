@@ -61,7 +61,7 @@ func (a *Activities) ProcessFileActivity(ctx context.Context, fileName string) (
 }
 
 func (a *Activities) UploadFileActivity(ctx context.Context, fileName string) error {
-	logger := activity.GetLogger(ctx).With(zap.String("HostID", HostID))
+	logger := activity.GetLogger(ctx)
 	logger.Info("uploadFileActivity begin.", zap.String("UploadedFileName", fileName))
 
 	defer func() { _ = os.Remove(fileName) }() // cleanup temp file

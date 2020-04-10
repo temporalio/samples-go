@@ -3,24 +3,12 @@ package fileprocessing
 import (
 	"time"
 
-	"github.com/pborman/uuid"
 	"go.temporal.io/temporal"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
 
-type (
-	fileInfo struct {
-		FileName string
-		HostID   string
-	}
-)
-
-// HostID - Use a new uuid just for demo so we can run 2 host specific activity workers on same machine.
-// In real world case, you would use a hostname or ip address as HostID.
-var HostID = "fileprocessing_" + uuid.New()
-
-// SampleFileProcessingWorkflow workflow decider
+// SampleFileProcessingWorkflow workflow definition
 func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err error) {
 	// step 1: download resource file
 	ao := workflow.ActivityOptions{
@@ -39,7 +27,7 @@ func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err erro
 
 	// Retry the whole sequence from the first activity on any error
 	// to retry it on a different host. In a real application it might be reasonable to
-	// retry individual activities and the whole sequence discriminating between different types of errors.
+	// retry individual activities as well as the whole sequence discriminating between different types of errors.
 	// See the retryactivity sample for a more sophisticated retry implementation.
 	for i := 1; i < 5; i++ {
 		err = processFile(ctx, fileID)

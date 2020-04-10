@@ -18,7 +18,7 @@ const (
 	OrderChoiceOrange = "orange"
 )
 
-// ExclusiveChoiceWorkflow Workflow Decider.
+// ExclusiveChoiceWorkflow Workflow definition.
 func ExclusiveChoiceWorkflow(ctx workflow.Context) error {
 	// Get order.
 	ao := workflow.ActivityOptions{

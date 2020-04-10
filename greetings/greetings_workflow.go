@@ -13,7 +13,7 @@ import (
  * and then pass greeting and name as input to a 3rd activity to generate final greetings.
  */
 
-// SampleGreetingsWorkflow Workflow Decider.
+// SampleGreetingsWorkflow Workflow definition.
 func SampleGreetingsWorkflow(ctx workflow.Context) error {
 	// Get Greeting.
 	ao := workflow.ActivityOptions{
