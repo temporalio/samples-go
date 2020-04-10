@@ -29,14 +29,16 @@ func main() {
 		Logger: logger,
 	})
 
+
 	w.RegisterWorkflow(choice.ExclusiveChoiceWorkflow)
-	w.RegisterActivity(choice.GetOrderActivity)
-	w.RegisterActivity(choice.OrderAppleActivity)
-	w.RegisterActivity(choice.OrderBananaActivity)
-	w.RegisterActivity(choice.OrderCherryActivity)
-	w.RegisterActivity(choice.OrderOrangeActivity)
 	w.RegisterWorkflow(choice.MultiChoiceWorkflow)
-	w.RegisterActivity(choice.GetBasketOrderActivity)
+
+	orderChoices := []string{
+		choice.OrderChoiceApple,
+		choice.OrderChoiceBanana,
+		choice.OrderChoiceCherry,
+		choice.OrderChoiceOrange}
+	w.RegisterActivity(&choice.OrderActivities{OrderChoices: orderChoices})
 
 	err = w.Start()
 	if err != nil {

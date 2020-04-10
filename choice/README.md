@@ -4,11 +4,11 @@
 ```
 go run choice/worker/main.go
 ```
-3) Run the following command to start the single choice workflow
+3) Run the following command to start the exclusive choice workflow
 ```
-go run choice/starter/main.go
+go run choice/exclusive_choice_starter/main.go
 ```
 4) Run the following command to start the multi choice workflow
 ```
-go run choice/starter/main.go -c multi
+go run choice/multi_choice_starter/main.go -c multi
 ```

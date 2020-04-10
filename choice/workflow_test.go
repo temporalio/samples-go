@@ -18,11 +18,11 @@ func TestUnitTestSuite(t *testing.T) {
 
 func (s *UnitTestSuite) Test_ExclusiveChoiceWorkflow() {
 	env := s.NewTestWorkflowEnvironment()
-	env.RegisterActivity(GetOrderActivity)
-	env.RegisterActivity(OrderAppleActivity)
-	env.RegisterActivity(OrderBananaActivity)
-	env.RegisterActivity(OrderCherryActivity)
-	env.RegisterActivity(OrderOrangeActivity)
+
+	orderChoices := []string{
+		OrderChoiceApple,
+		OrderChoiceOrange}
+	env.RegisterActivity(&OrderActivities{OrderChoices: orderChoices})
 
 	env.ExecuteWorkflow(ExclusiveChoiceWorkflow)
 
@@ -32,7 +32,12 @@ func (s *UnitTestSuite) Test_ExclusiveChoiceWorkflow() {
 
 func (s *UnitTestSuite) Test_MultiChoiceWorkflow() {
 	env := s.NewTestWorkflowEnvironment()
-	env.RegisterActivity(GetBasketOrderActivity)
+
+	orderChoices := []string{
+		OrderChoiceApple,
+		OrderChoiceBanana,
+		OrderChoiceOrange}
+	env.RegisterActivity(&OrderActivities{OrderChoices: orderChoices})
 
 	env.ExecuteWorkflow(MultiChoiceWorkflow)
 
