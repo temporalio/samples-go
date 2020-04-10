@@ -24,6 +24,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
+	defer func() { _ = c.CloseConnection() }()
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                              "greetings_" + uuid.New(),
@@ -31,13 +32,10 @@ func main() {
 		ExecutionStartToCloseTimeout:    time.Minute,
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, greetings.SampleGreetingsWorkflow)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, greetings.GreetingSample)
 	if err != nil {
 		logger.Error("Unable to execute workflow", zap.Error(err))
 	} else {
 		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
 	}
-
-	// Close connection, clean up resources.
-	_ = c.CloseConnection()
 }
