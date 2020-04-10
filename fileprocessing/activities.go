@@ -2,7 +2,6 @@ package fileprocessing
 
 import (
 	"context"
-	"errors"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -15,47 +14,37 @@ import (
 /**
  * Sample activities used by file processing sample workflow.
  */
-const (
-	DownloadFileActivityName = "downloadFileActivity"
-	ProcessFileActivityName  = "processFileActivity"
-	UploadFileActivityName   = "uploadFileActivity"
-)
 
-func DownloadFileActivity(ctx context.Context, fileID string) (*fileInfo, error) {
+type Activities struct {
+	BlobStore *BlobStore
+}
+
+func (a *Activities) DownloadFileActivity(ctx context.Context, fileID string) (string, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Downloading file...", zap.String("FileID", fileID))
-	data := downloadFile(fileID)
+	data := a.BlobStore.downloadFile(fileID)
 
 	tmpFile, err := saveToTmpFile(data)
 	if err != nil {
 		logger.Error("downloadFileActivity failed to save tmp file.", zap.Error(err))
-		return nil, err
+		return "", err
 	}
-
-	fileInfo := &fileInfo{FileName: tmpFile.Name(), HostID: HostID}
-	logger.Info("downloadFileActivity succeed.", zap.String("SavedFilePath", fileInfo.FileName))
-	return fileInfo, nil
+	fileName := tmpFile.Name()
+	logger.Info("downloadFileActivity succeed.", zap.String("SavedFilePath", fileName))
+	return fileName, nil
 }
 
-func ProcessFileActivity(ctx context.Context, fInfo fileInfo) (*fileInfo, error) {
-	logger := activity.GetLogger(ctx).With(zap.String("HostID", HostID))
-	logger.Info("processFileActivity started.", zap.String("FileName", fInfo.FileName))
-	// assert that we are running on the same host as the file was downloaded
-	// this check is not necessary, just to demo the host specific tasklist is working
-	if fInfo.HostID != HostID {
-		logger.Error("processFileActivity on wrong host",
-			zap.String("TargetFile", fInfo.FileName),
-			zap.String("TargetHostID", fInfo.HostID))
-		return nil, errors.New("processFileActivity running on wrong host")
-	}
+func (a *Activities) ProcessFileActivity(ctx context.Context, fileName string) (string, error) {
+	logger := activity.GetLogger(ctx)
+	logger.Info("processFileActivity started.", zap.String("FileName", fileName))
 
-	defer func() { _ = os.Remove(fInfo.FileName) }() // cleanup temp file
+	defer func() { _ = os.Remove(fileName) }() // cleanup temp file
 
 	// read downloaded file
-	data, err := ioutil.ReadFile(fInfo.FileName)
+	data, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		logger.Error("processFileActivity failed to read file.", zap.String("FileName", fInfo.FileName), zap.Error(err))
-		return nil, err
+		logger.Error("processFileActivity failed to read file.", zap.String("FileName", fileName), zap.Error(err))
+		return "", err
 	}
 
 	// process the file
@@ -63,45 +52,38 @@ func ProcessFileActivity(ctx context.Context, fInfo fileInfo) (*fileInfo, error)
 	tmpFile, err := saveToTmpFile(transData)
 	if err != nil {
 		logger.Error("processFileActivity failed to save tmp file.", zap.Error(err))
-		return nil, err
+		return "", err
 	}
 
-	processedInfo := &fileInfo{FileName: tmpFile.Name(), HostID: HostID}
-	logger.Info("processFileActivity succeed.", zap.String("SavedFilePath", processedInfo.FileName))
-	return processedInfo, nil
+	processedFileName := tmpFile.Name()
+	logger.Info("processFileActivity succeed.", zap.String("SavedFilePath", processedFileName))
+	return processedFileName, nil
 }
 
-func UploadFileActivity(ctx context.Context, fInfo fileInfo) error {
+func (a *Activities) UploadFileActivity(ctx context.Context, fileName string) error {
 	logger := activity.GetLogger(ctx).With(zap.String("HostID", HostID))
-	logger.Info("uploadFileActivity begin.", zap.String("UploadedFileName", fInfo.FileName))
+	logger.Info("uploadFileActivity begin.", zap.String("UploadedFileName", fileName))
 
-	// assert that we are running on the same host as the file was downloaded
-	// this check is not necessary, just to demo the host specific tasklist is working
-	if fInfo.HostID != HostID {
-		logger.Error("uploadFileActivity on wrong host",
-			zap.String("TargetFile", fInfo.FileName),
-			zap.String("TargetHostID", fInfo.HostID))
-		return errors.New("uploadFileActivity running on wrong host")
-	}
+	defer func() { _ = os.Remove(fileName) }() // cleanup temp file
 
-	defer func() { _ = os.Remove(fInfo.FileName) }() // cleanup temp file
-
-	err := uploadFile(ctx, fInfo.FileName)
+	err := a.BlobStore.uploadFile(ctx, fileName)
 	if err != nil {
 		logger.Error("uploadFileActivity uploading failed.", zap.Error(err))
 		return err
 	}
-	logger.Info("uploadFileActivity succeed.", zap.String("UploadedFileName", fInfo.FileName))
+	logger.Info("uploadFileActivity succeed.", zap.String("UploadedFileName", fileName))
 	return nil
 }
 
-func downloadFile(fileID string) []byte {
+type BlobStore struct{}
+
+func (b *BlobStore) downloadFile(fileID string) []byte {
 	// dummy downloader
 	dummyContent := "dummy content for fileID:" + fileID
 	return []byte(dummyContent)
 }
 
-func uploadFile(ctx context.Context, filename string) error {
+func (b *BlobStore) uploadFile(ctx context.Context, filename string) error {
 	// dummy uploader
 	_, err := ioutil.ReadFile(filename)
 	for i := 0; i < 5; i++ {

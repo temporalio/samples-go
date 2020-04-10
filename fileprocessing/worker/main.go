@@ -4,7 +4,6 @@ import (
 	"os"
 	"os/signal"
 
-	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
@@ -25,27 +24,17 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
+	defer func() { _ = c.CloseConnection() }()
 
 	workerOptions := worker.Options{
 		Logger:                logger,
-		EnableLoggingInReplay: true,
-		EnableSessionWorker:   true,
+		EnableSessionWorker:   true, // Important for a worker to participate in the session
 	}
-	workflowWorker := worker.New(c, "fileprocessing-task-list", workerOptions)
+	w := worker.New(c, "fileprocessing-task-list", workerOptions)
+	defer w.Stop()
 
-	workflowWorker.RegisterWorkflow(fileprocessing.SampleFileProcessingWorkflow)
-
-	err = workflowWorker.Start()
-	if err != nil {
-		logger.Fatal("Unable to start worker", zap.Error(err))
-	}
-
-	workerOptions.DisableWorkflowWorker = true
-	w := worker.New(c, fileprocessing.HostID, workerOptions)
-
-	w.RegisterActivityWithOptions(fileprocessing.DownloadFileActivity, activity.RegisterOptions{Name: fileprocessing.DownloadFileActivityName})
-	w.RegisterActivityWithOptions(fileprocessing.ProcessFileActivity, activity.RegisterOptions{Name: fileprocessing.ProcessFileActivityName})
-	w.RegisterActivityWithOptions(fileprocessing.UploadFileActivity, activity.RegisterOptions{Name: fileprocessing.UploadFileActivityName})
+	w.RegisterWorkflow(fileprocessing.SampleFileProcessingWorkflow)
+	w.RegisterActivity(&fileprocessing.Activities{BlobStore: &fileprocessing.BlobStore{}})
 
 	err = w.Start()
 	if err != nil {
@@ -54,10 +43,6 @@ func main() {
 
 	// The workers are supposed to be long running process that should not exit.
 	waitCtrlC()
-	// Stop worker, close connection, clean up resources.
-	workflowWorker.Stop()
-	w.Stop()
-	_ = c.CloseConnection()
 }
 
 func waitCtrlC() {

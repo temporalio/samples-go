@@ -24,6 +24,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
+	defer func() { _ = c.CloseConnection() }()
 
 	// This workflow ID can be user business logic identifier as well.
 	workflowID := "cron_" + uuid.New()
@@ -40,7 +41,4 @@ func main() {
 	} else {
 		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
 	}
-
-	// Close connection, clean up resources.
-	_ = c.CloseConnection()
 }

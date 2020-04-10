@@ -29,11 +29,13 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
+	defer func() { _ = c.CloseConnection() }()
 
 	w := worker.New(c, "ctx-propagation-task-list", worker.Options{
 		Logger:                logger,
 		EnableLoggingInReplay: true,
 	})
+	defer w.Stop()
 
 	w.RegisterWorkflow(ctxpropagation.CtxPropWorkflow)
 	w.RegisterActivityWithOptions(ctxpropagation.SampleActivity, activity.RegisterOptions{Name: ctxpropagation.SampleActivityName})
@@ -45,9 +47,6 @@ func main() {
 
 	// The workers are supposed to be long running process that should not exit.
 	waitCtrlC()
-	// Stop worker, close connection, clean up resources.
-	w.Stop()
-	_ = c.CloseConnection()
 }
 
 func waitCtrlC() {

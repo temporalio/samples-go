@@ -56,11 +56,11 @@ func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err erro
 }
 
 func processFile(ctx workflow.Context, fileID string) (err error) {
-	var fInfo *fileInfo
 	so := &workflow.SessionOptions{
 		CreationTimeout:  time.Minute,
 		ExecutionTimeout: time.Minute,
 	}
+	var a *Activities
 
 	sessionCtx, err := workflow.CreateSession(ctx, so)
 	if err != nil {
@@ -68,17 +68,18 @@ func processFile(ctx workflow.Context, fileID string) (err error) {
 	}
 	defer workflow.CompleteSession(sessionCtx)
 
-	err = workflow.ExecuteActivity(sessionCtx, DownloadFileActivityName, fileID).Get(sessionCtx, &fInfo)
+	var fileName string
+	err = workflow.ExecuteActivity(sessionCtx, a.DownloadFileActivity, fileID).Get(sessionCtx, &fileName)
 	if err != nil {
 		return err
 	}
 
-	var fInfoProcessed *fileInfo
-	err = workflow.ExecuteActivity(sessionCtx, ProcessFileActivityName, *fInfo).Get(sessionCtx, &fInfoProcessed)
+	var processedFileName string
+	err = workflow.ExecuteActivity(sessionCtx, a.ProcessFileActivity, fileName).Get(sessionCtx, &processedFileName)
 	if err != nil {
 		return err
 	}
 
-	err = workflow.ExecuteActivity(sessionCtx, UploadFileActivityName, *fInfoProcessed).Get(sessionCtx, nil)
+	err = workflow.ExecuteActivity(sessionCtx, a.UploadFileActivity, processedFileName).Get(sessionCtx, nil)
 	return err
 }
