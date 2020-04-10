@@ -30,7 +30,6 @@ func main() {
 		ID:                              workflowID,
 		TaskList:                        "ctx-propagation-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	ctx := context.Background()

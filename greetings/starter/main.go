@@ -29,7 +29,6 @@ func main() {
 		ID:                              "greetings_" + uuid.New(),
 		TaskList:                        "greetings-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, greetings.SampleGreetingsWorkflow)

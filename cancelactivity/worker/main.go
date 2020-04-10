@@ -30,9 +30,7 @@ func main() {
 	})
 
 	w.RegisterWorkflow(cancelactivity.Workflow)
-	w.RegisterActivity(cancelactivity.ActivityToBeCanceled)
-	w.RegisterActivity(cancelactivity.ActivityToBeSkipped)
-	w.RegisterActivity(cancelactivity.CleanupActivity)
+	w.RegisterActivity(&cancelactivity.Activities{})
 
 	err = w.Start()
 	if err != nil {

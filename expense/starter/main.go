@@ -30,7 +30,6 @@ func main() {
 		ID:                              "expense_" + expenseID,
 		TaskList:                        "expense-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, expense.SampleExpenseWorkflow, expenseID)

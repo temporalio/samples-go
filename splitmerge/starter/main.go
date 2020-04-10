@@ -29,7 +29,6 @@ func main() {
 		ID:                              "split_merge_" + uuid.New(),
 		TaskList:                        "split-merge-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, splitmerge.SampleSplitMergeWorkflow, 5)

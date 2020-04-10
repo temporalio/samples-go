@@ -149,7 +149,6 @@ func SignalWithStartMutexWorkflowActivity(
 		ID:                              workflowID,
 		TaskList:                        "mutex-task-list",
 		ExecutionStartToCloseTimeout:    time.Hour,
-		DecisionTaskStartToCloseTimeout: time.Hour,
 		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:    time.Second,
 			BackoffCoefficient: 2.0,

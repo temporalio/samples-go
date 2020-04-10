@@ -29,7 +29,6 @@ func main() {
 		ID:                              "pick-first_" + uuid.New(),
 		TaskList:                        "pick-first-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, pickfirst.SamplePickFirstWorkflow)

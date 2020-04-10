@@ -31,7 +31,6 @@ func main() {
 		ID:                              workflowID,
 		TaskList:                        "dynamic-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, dynamic.GreetingsWorkflowName)

@@ -26,7 +26,6 @@ func main() {
 	workflowOptions := client.StartWorkflowOptions{
 		TaskList:                        "parallel-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Second * 10,
 	}
 	ctx := context.Background()
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, parallel.SampleParallelWorkflow)

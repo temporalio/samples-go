@@ -25,7 +25,6 @@ func main() {
 	workflowOptions := client.StartWorkflowOptions{
 		TaskList:                        "branch-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Second * 10,
 	}
 	ctx := context.Background()
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, branch.SampleBranchWorkflow, 10)

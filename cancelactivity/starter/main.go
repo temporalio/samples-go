@@ -30,10 +30,9 @@ func main() {
 	}
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              workflowID,
-		TaskList:                        "cancel-activity-task-list",
-		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
+		ID:                           workflowID,
+		TaskList:                     "cancel-activity-task-list",
+		ExecutionStartToCloseTimeout: 5 * time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, cancelactivity.Workflow)

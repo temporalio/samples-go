@@ -28,7 +28,6 @@ func main() {
 		ID:                              "local_activity_workflow",
 		TaskList:                        "local-activity-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute * 3,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, localactivity.SignalHandlingWorkflow)

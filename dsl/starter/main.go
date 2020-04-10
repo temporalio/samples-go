@@ -45,7 +45,6 @@ func main() {
 		ID:                              "dsl_" + uuid.New(),
 		TaskList:                        "dsl-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, dsl.SimpleDSLWorkflow, dslWorkflow)

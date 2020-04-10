@@ -31,7 +31,6 @@ func main() {
 		ID:                              workflowID,
 		TaskList:                        "cron-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 		CronSchedule:                    "* * * * *",
 	}
 

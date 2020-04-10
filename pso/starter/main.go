@@ -35,7 +35,6 @@ func main() {
 		ID:                              "PSO_" + uuid.New(),
 		TaskList:                        "pso-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute * 60,
-		DecisionTaskStartToCloseTimeout: time.Second * 10, // Measure of responsiveness of the worker to various server signals apart from start workflow. Small means faster recovery in the case of worker failure
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, pso.PSOWorkflow, functionName)

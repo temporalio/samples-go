@@ -28,7 +28,6 @@ func main() {
 		ID:                              "query_workflow",
 		TaskList:                        "query-task-list",
 		ExecutionStartToCloseTimeout:    time.Hour,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, query.QueryWorkflow)

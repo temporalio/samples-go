@@ -29,7 +29,6 @@ func main() {
 		ID:                              "search_attributes_" + uuid.New(),
 		TaskList:                        "search-attributes-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 		SearchAttributes: map[string]interface{}{ // optional search attributes when start workflow
 			"CustomIntField": 1,
 		},

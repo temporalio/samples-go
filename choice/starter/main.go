@@ -47,7 +47,6 @@ func main() {
 		ID:                              workflowID,
 		TaskList:                        "choice-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, workflowFn)

@@ -29,7 +29,6 @@ func main() {
 		ID:                              "retry_activity_" + uuid.New(),
 		TaskList:                        "retry-activity-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, retryactivity.RetryWorkflow)

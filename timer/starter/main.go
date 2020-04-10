@@ -29,7 +29,6 @@ func main() {
 		ID:                              "timer_" + uuid.New(),
 		TaskList:                        "timer-task-list",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, timer.SampleTimerWorkflow, time.Second*3)
