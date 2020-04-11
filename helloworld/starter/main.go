@@ -21,6 +21,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
+	defer func() { _ = c.CloseConnection() }()
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                           "hello_world_workflowID",
@@ -28,13 +29,18 @@ func main() {
 		ExecutionStartToCloseTimeout: time.Minute,
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, helloworld.HelloworldWorkflow, "Temporal")
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, helloworld.Workflow, "Temporal")
 	if err != nil {
-		logger.Error("Unable to execute workflow", zap.Error(err))
-	} else {
-		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+		logger.Fatal("Unable to execute workflow", zap.Error(err))
 	}
 
-	// Close connection, clean up resources.
-	_ = c.CloseConnection()
+	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+
+	// Synchronously wait for the workflow completion.
+	var result string
+	err = we.Get(context.Background(), &result)
+	if err != nil {
+		logger.Fatal("Unable get workflow result", zap.Error(err))
+	}
+	logger.Info("Workflow result", zap.String("Result", result))
 }

@@ -98,6 +98,8 @@ go.temporal.io/temporal v0.21.0 h1:nT5e8/hy31fcX/yjgqHn8/Mnl9CdRyKvOHhFJq92+Jk=
 go.temporal.io/temporal v0.21.0/go.mod h1:TOtCf34hTUyK+Caf4e2NGl/WwF09438v4BDtNuoy2Go=
 go.temporal.io/temporal v0.21.1-0.20200409181724-ab97b592d9c5 h1:Qdr1Zj6u63tfr2d8mlq2t1AsgMEFSY9r4MA8kg+cZDA=
 go.temporal.io/temporal v0.21.1-0.20200409181724-ab97b592d9c5/go.mod h1:TOtCf34hTUyK+Caf4e2NGl/WwF09438v4BDtNuoy2Go=
+go.temporal.io/temporal v0.21.1-0.20200410164001-4ea26797f670 h1:e+haXt3Pzx8ZbXxkpw5TA1PWaQtIyANw6v1p7ohUinI=
+go.temporal.io/temporal v0.21.1-0.20200410164001-4ea26797f670/go.mod h1:TOtCf34hTUyK+Caf4e2NGl/WwF09438v4BDtNuoy2Go=
 go.temporal.io/temporal-proto v0.20.14 h1:dpDmpCGy/eQbusg1b0b32/4HnFZXtrY1sZKxvQa2WiY=
 go.temporal.io/temporal-proto v0.20.14/go.mod h1:Lv8L8YBpbp0Z7V5nbvw5UD0j7x0isebhCOIDLkBqn6s=
 go.temporal.io/temporal-proto v0.20.15 h1:Qvai9DaBkQRpvDXfJIGJpSc1JnbZ9+oWcXzpZfWoEvA=
@@ -201,6 +203,8 @@ google.golang.org/genproto v0.0.0-20200403120447-c50568487044 h1:112OPFAnKD+XtZh
 google.golang.org/genproto v0.0.0-20200403120447-c50568487044/go.mod h1:55QSHmfGQM9UVYDPBsyGGes0y52j32PQ3BqQfXhyH3c=
 google.golang.org/genproto v0.0.0-20200409111301-baae70f3302d h1:I7Vuu5Ejagca+VcgfBINHke3xwjCTYnIG4Q57fv0wYY=
 google.golang.org/genproto v0.0.0-20200409111301-baae70f3302d/go.mod h1:55QSHmfGQM9UVYDPBsyGGes0y52j32PQ3BqQfXhyH3c=
+google.golang.org/genproto v0.0.0-20200410110633-0848e9f44c36 h1:QGM8iDIfHwTRMruKa7+aKDNRMQcWKeS6LDhdMiucYCE=
+google.golang.org/genproto v0.0.0-20200410110633-0848e9f44c36/go.mod h1:55QSHmfGQM9UVYDPBsyGGes0y52j32PQ3BqQfXhyH3c=
 google.golang.org/grpc v1.12.0/go.mod h1:yo6s7OP7yaDglbqo1J04qKzAhqBH6lvTonzMVmEdcZw=
 google.golang.org/grpc v1.19.0/go.mod h1:mqu4LbDTu4XGKhr4mRzUsmM4RtVoemTSY81AxZiDr8c=
 google.golang.org/grpc v1.23.0/go.mod h1:Y5yQAOtifL1yxbo5wqy6BxZv8vAUGQwXBOALyacEbxg=

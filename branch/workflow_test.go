@@ -2,6 +2,7 @@ package branch
 
 import (
 	"github.com/stretchr/testify/mock"
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -24,10 +25,13 @@ func (s *UnitTestSuite) Test_BranchWorkflow() {
 	env.OnActivity(SampleActivity, mock.Anything).Return("two", nil).Once()
 	env.OnActivity(SampleActivity, mock.Anything).Return("three", nil).Once();
 	env.ExecuteWorkflow(SampleBranchWorkflow, 3)
-	var result []string
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())
+	var result []string
 	s.NoError(env.GetWorkflowResult(&result))
-	s.Equal([]string{"one", "two", "three"}, result)
+	sort.Strings(result)
+	expected := []string{"one", "two", "three"}
+	sort.Strings(expected)
+	s.Equal(expected, result)
 }
 

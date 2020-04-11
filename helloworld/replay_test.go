@@ -39,7 +39,7 @@ func (s *replayTestSuite) TestReplayWorkflowHistoryFromFile() {
 	logger, _ := zap.NewDevelopment()
 	replayer := worker.NewWorkflowReplayer()
 
-	replayer.RegisterWorkflow(HelloworldWorkflow)
+	replayer.RegisterWorkflow(Workflow)
 
 	err := replayer.ReplayWorkflowHistoryFromJSONFile(logger, "helloworld.json")
 	require.NoError(s.T(), err)

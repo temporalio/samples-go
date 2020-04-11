@@ -1,26 +1,25 @@
 package fileprocessing
 
 import (
+	"go.temporal.io/temporal"
 	"time"
 
-	"go.temporal.io/temporal"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
 
 // SampleFileProcessingWorkflow workflow definition
-func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err error) {
-	// step 1: download resource file
+func SampleFileProcessingWorkflow(ctx workflow.Context, fileName string) (err error) {
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Second * 5,
 		StartToCloseTimeout:    time.Minute,
+		ScheduleToStartTimeout: time.Minute,
 		HeartbeatTimeout:       time.Second * 2, // such a short timeout to make sample fail over very fast
 		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:          time.Second,
 			BackoffCoefficient:       2.0,
 			MaximumInterval:          time.Minute,
 			ExpirationInterval:       time.Minute * 10,
-			NonRetriableErrorReasons: []string{"bad-error"},
+			NonRetriableErrorReasons: []string{"bad-argument"},
 		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
@@ -30,7 +29,7 @@ func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err erro
 	// retry individual activities as well as the whole sequence discriminating between different types of errors.
 	// See the retryactivity sample for a more sophisticated retry implementation.
 	for i := 1; i < 5; i++ {
-		err = processFile(ctx, fileID)
+		err = processFile(ctx, fileName)
 		if err == nil {
 			break
 		}
@@ -43,7 +42,7 @@ func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err erro
 	return err
 }
 
-func processFile(ctx workflow.Context, fileID string) (err error) {
+func processFile(ctx workflow.Context, fileName string) (err error) {
 	so := &workflow.SessionOptions{
 		CreationTimeout:  time.Minute,
 		ExecutionTimeout: time.Minute,
@@ -56,14 +55,14 @@ func processFile(ctx workflow.Context, fileID string) (err error) {
 	}
 	defer workflow.CompleteSession(sessionCtx)
 
-	var fileName string
-	err = workflow.ExecuteActivity(sessionCtx, a.DownloadFileActivity, fileID).Get(sessionCtx, &fileName)
+	var downloadedName string
+	err = workflow.ExecuteActivity(sessionCtx, a.DownloadFileActivity, fileName).Get(sessionCtx, &downloadedName)
 	if err != nil {
 		return err
 	}
 
 	var processedFileName string
-	err = workflow.ExecuteActivity(sessionCtx, a.ProcessFileActivity, fileName).Get(sessionCtx, &processedFileName)
+	err = workflow.ExecuteActivity(sessionCtx, a.ProcessFileActivity, downloadedName).Get(sessionCtx, &processedFileName)
 	if err != nil {
 		return err
 	}

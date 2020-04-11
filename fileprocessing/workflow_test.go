@@ -1,6 +1,7 @@
 package fileprocessing
 
 import (
+	"github.com/stretchr/testify/mock"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -17,21 +18,19 @@ func TestUnitTestSuite(t *testing.T) {
 }
 
 func (s *UnitTestSuite) Test_SampleFileProcessingWorkflow() {
-	fileID := "test-file-id"
-	expectedCall := []string{
-		"downloadFileActivity",
-		"processFileActivity",
-		"uploadFileActivity",
-	}
-
-	var activityCalled []string
 	env := s.NewTestWorkflowEnvironment()
+	var a *Activities
 
-	env.RegisterActivity(&Activities{&BlobStore{}})
+	env.OnActivity(a.DownloadFileActivity, mock.Anything, "file1").Return("file2", nil)
+	env.OnActivity(a.ProcessFileActivity, mock.Anything, "file2").Return("file3", nil)
+	env.OnActivity(a.UploadFileActivity, mock.Anything, "file3").Return(nil)
 
-	env.ExecuteWorkflow(SampleFileProcessingWorkflow, fileID)
+	env.RegisterActivity(a)
+
+	env.ExecuteWorkflow(SampleFileProcessingWorkflow, "file1")
 
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())
-	s.Equal(expectedCall, activityCalled)
+
+	env.AssertExpectations(s.T())
 }
