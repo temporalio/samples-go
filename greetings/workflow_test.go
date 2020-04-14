@@ -18,16 +18,17 @@ func TestUnitTestSuite(t *testing.T) {
 
 func (s *UnitTestSuite) Test_SampleGreetingsWorkflow() {
 	env := s.NewTestWorkflowEnvironment()
-	name := "World"
-	greeting := "Hello"
-	env.On("GetNameActivity", ).Return(name)
-	env.On("GetGreeting", ).Return(greeting)
-	env.On("SayGreeting", "Hello", "World").Return(name + " " + greeting + "!")
+	var a *Activities
+	//env.RegisterActivity(a)
+
+	env.OnActivity(a.GetGreeting).Return("Hello", nil)
+	env.OnActivity(a.GetName).Return("World", nil)
+	env.OnActivity(a.SayGreeting, "Hello", "World").Return("Hello World!", nil)
 
 	env.ExecuteWorkflow(GreetingSample)
 
-	env.AssertCalled(s.T(), "SayGreeting", "Hello", "World")
-
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())
+
+	env.AssertExpectations(s.T())
 }
