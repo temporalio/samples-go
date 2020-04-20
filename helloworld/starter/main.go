@@ -25,7 +25,7 @@ func main() {
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                           "hello_world_workflowID",
-		TaskList:                     "hello-world-task-list",
+		TaskList:                     "hello-world",
 		ExecutionStartToCloseTimeout: time.Minute,
 	}
 

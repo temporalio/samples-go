@@ -33,16 +33,16 @@ func main() {
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                              "PSO_" + uuid.New(),
-		TaskList:                        "pso-task-list",
+		TaskList:                        "pso",
 		ExecutionStartToCloseTimeout:    time.Minute * 60,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, pso.PSOWorkflow, functionName)
 	if err != nil {
-		logger.Error("Unable to execute workflow", zap.Error(err))
-	} else {
-		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+		logger.Fatal("Unable to execute workflow", zap.Error(err))
 	}
+	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+
 
 	// Close connection, clean up resources.
 	_ = c.CloseConnection()

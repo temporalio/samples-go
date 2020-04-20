@@ -42,7 +42,7 @@ func main() {
 		}
 		workflowOptions := client.StartWorkflowOptions{
 			ID:                              workflowID,
-			TaskList:                        "recovery-task-list",
+			TaskList:                        "recovery",
 			ExecutionStartToCloseTimeout:    time.Hour * 24,
 		}
 		we, weError = c.ExecuteWorkflow(context.Background(), workflowOptions, recovery.TripWorkflow, userState)
@@ -54,7 +54,7 @@ func main() {
 
 		workflowOptions := client.StartWorkflowOptions{
 			ID:                              workflowID,
-			TaskList:                        "recovery-task-list",
+			TaskList:                        "recovery",
 			ExecutionStartToCloseTimeout:    time.Hour * 24,
 		}
 		we, weError = c.ExecuteWorkflow(context.Background(), workflowOptions, recovery.RecoverWorkflow, params)

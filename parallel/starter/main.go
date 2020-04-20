@@ -24,7 +24,7 @@ func main() {
 	}
 	defer func() { _ = c.CloseConnection() }()
 	workflowOptions := client.StartWorkflowOptions{
-		TaskList:                        "parallel-task-list",
+		TaskList:                        "parallel",
 		ExecutionStartToCloseTimeout:    time.Minute,
 	}
 	ctx := context.Background()

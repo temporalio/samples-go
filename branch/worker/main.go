@@ -26,7 +26,7 @@ func main() {
 	}
 	defer func() { _ = c.CloseConnection() }()
 
-	w := worker.New(c, "branch-task-list", worker.Options{
+	w := worker.New(c, "branch", worker.Options{
 		Logger: logger,
 	})
 

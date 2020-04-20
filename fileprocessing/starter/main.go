@@ -29,14 +29,14 @@ func main() {
 	fileID := uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                              "fileprocessing_" + fileID,
-		TaskList:                        "fileprocessing-task-list",
+		TaskList:                        "fileprocessing",
 		ExecutionStartToCloseTimeout:    time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, fileprocessing.SampleFileProcessingWorkflow, fileID)
 	if err != nil {
-		logger.Error("Unable to execute workflow", zap.Error(err))
-	} else {
-		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+		logger.Fatal("Unable to execute workflow", zap.Error(err))
 	}
+	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+
 }

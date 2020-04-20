@@ -2,9 +2,9 @@
 1) You need a Temporal service running. See details in README.md
 2) Run the following command to start the worker
 ```
-go run childworkflow/worker/main.go
+go run child-workflow/worker/main.go
 ```
 3) Run the following command to start the example
 ```
-go run childworkflow/starter/main.go
+go run child-workflow/starter/main.go
 ```

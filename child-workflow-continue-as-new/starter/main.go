@@ -5,10 +5,9 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
+	cw "github.com/temporalio/temporal-go-samples/child-workflow-continue-as-new"
 	"go.temporal.io/temporal/client"
 	"go.uber.org/zap"
-
-	"github.com/temporalio/temporal-go-samples/childworkflow"
 )
 
 func main() {
@@ -29,15 +28,14 @@ func main() {
 	// This workflow ID can be user business logic identifier as well.
 	workflowID := "parent-workflow_" + uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              workflowID,
-		TaskList:                        "child-workflow-task-list",
-		ExecutionStartToCloseTimeout:    time.Minute,
+		ID:                           workflowID,
+		TaskList:                     "child-workflow-continue-as-new",
+		ExecutionStartToCloseTimeout: time.Minute,
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, childworkflow.SampleParentWorkflow)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, cw.SampleParentWorkflow)
 	if err != nil {
-		logger.Error("Unable to execute workflow", zap.Error(err))
-	} else {
-		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+		logger.Fatal("Unable to execute workflow", zap.Error(err))
 	}
+	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
 }

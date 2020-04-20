@@ -28,7 +28,7 @@ func main() {
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                           "exclusive_" + uuid.New(),
-		TaskList:                     "choice-task-list",
+		TaskList:                     "choice",
 		ExecutionStartToCloseTimeout: time.Minute,
 	}
 

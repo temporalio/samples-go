@@ -2,11 +2,10 @@ package main
 
 import (
 	"context"
-	"go.uber.org/zap"
-	"time"
-
 	"github.com/temporalio/temporal-go-samples/branch"
 	"go.temporal.io/temporal/client"
+	"go.uber.org/zap"
+	"time"
 )
 
 func main() {
@@ -23,8 +22,8 @@ func main() {
 	defer func() { _ = c.CloseConnection() }()
 
 	workflowOptions := client.StartWorkflowOptions{
-		TaskList:                        "branch-task-list",
-		ExecutionStartToCloseTimeout:    time.Minute,
+		TaskList:                     "branch",
+		ExecutionStartToCloseTimeout: time.Minute,
 	}
 	ctx := context.Background()
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, branch.SampleBranchWorkflow, 10)

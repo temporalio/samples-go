@@ -28,14 +28,14 @@ func main() {
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                           "multi_choice_" + uuid.New(),
-		TaskList:                     "choice-task-list",
+		TaskList:                     "choice",
 		ExecutionStartToCloseTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, choice.MultiChoiceWorkflow)
 	if err != nil {
-		logger.Error("Unable to execute workflow", zap.Error(err))
-	} else {
-		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+		logger.Fatal("Unable to execute workflow", zap.Error(err))
 	}
+	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+
 }

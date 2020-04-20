@@ -1,4 +1,4 @@
-package childworkflow
+package child_workflow_continue_as_new
 
 import (
 	"errors"
@@ -7,11 +7,6 @@ import (
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
-
-/**
- * This sample workflow demonstrates how to use invoke child workflow from parent workflow execution.  Each child
- * workflow execution is starting a new run and parent execution is notified only after the completion of last run.
- */
 
 // SampleChildWorkflow workflow definition
 func SampleChildWorkflow(ctx workflow.Context, totalCount, runCount int) (string, error) {

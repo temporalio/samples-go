@@ -30,7 +30,7 @@ func main() {
 		Logger:                logger,
 		EnableSessionWorker:   true, // Important for a worker to participate in the session
 	}
-	w := worker.New(c, "fileprocessing-task-list", workerOptions)
+	w := worker.New(c, "fileprocessing", workerOptions)
 	defer w.Stop()
 
 	w.RegisterWorkflow(fileprocessing.SampleFileProcessingWorkflow)

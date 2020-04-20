@@ -29,16 +29,15 @@ func main() {
 	// This workflow ID can be user business logic identifier as well.
 	workflowID := "cron_" + uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              workflowID,
-		TaskList:                        "cron-task-list",
-		ExecutionStartToCloseTimeout:    time.Minute,
-		CronSchedule:                    "* * * * *",
+		ID:                           workflowID,
+		TaskList:                     "cron",
+		ExecutionStartToCloseTimeout: time.Hour,
+		CronSchedule:                 "* * * * *",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, cron.SampleCronWorkflow)
 	if err != nil {
-		logger.Error("Unable to execute workflow", zap.Error(err))
-	} else {
-		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+		logger.Fatal("Unable to execute workflow", zap.Error(err))
 	}
+	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
 }

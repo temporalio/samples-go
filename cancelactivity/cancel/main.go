@@ -15,7 +15,7 @@ func main() {
 	}
 
 	var workflowID string
-	flag.StringVar(&workflowID, "w", "workflowID-to-cancel", "w is the workflowID of the workflow to be canceled.")
+	flag.StringVar(&workflowID, "wid", "", "workflowID of the workflow to be canceled.")
 	flag.Parse()
 
 	if workflowID == "" {
@@ -35,7 +35,6 @@ func main() {
 	err = c.CancelWorkflow(context.Background(), workflowID, "")
 	if err != nil {
 		logger.Fatal("Unable to cancel workflow", zap.Error(err))
-	} else {
-		logger.Info("Workflow cancelled", zap.String("WorkflowID", workflowID))
 	}
+	logger.Info("Workflow cancelled", zap.String("WorkflowID", workflowID))
 }

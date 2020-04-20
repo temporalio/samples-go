@@ -25,7 +25,7 @@ func main() {
 	}
 	defer func() { _ = c.CloseConnection() }()
 
-	w := worker.New(c, "parallel-task-list", worker.Options{
+	w := worker.New(c, "parallel", worker.Options{
 		Logger: logger,
 	})
 

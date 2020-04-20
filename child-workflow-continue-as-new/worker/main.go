@@ -4,11 +4,10 @@ import (
 	"os"
 	"os/signal"
 
+	cw "github.com/temporalio/temporal-go-samples/child-workflow-continue-as-new"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
-
-	"github.com/temporalio/temporal-go-samples/childworkflow"
 )
 
 func main() {
@@ -26,13 +25,13 @@ func main() {
 	}
 	defer func() { _ = c.CloseConnection() }()
 
-	w := worker.New(c, "child-workflow-task-list", worker.Options{
+	w := worker.New(c, "child-workflow-continue-as-new", worker.Options{
 		Logger: logger,
 	})
 	defer w.Stop()
 
-	w.RegisterWorkflow(childworkflow.SampleParentWorkflow)
-	w.RegisterWorkflow(childworkflow.SampleChildWorkflow)
+	w.RegisterWorkflow(cw.SampleParentWorkflow)
+	w.RegisterWorkflow(cw.SampleChildWorkflow)
 
 	err = w.Start()
 	if err != nil {

@@ -20,27 +20,17 @@ func TestUnitTestSuite(t *testing.T) {
 }
 
 func (s *UnitTestSuite) Test_CtxPropWorkflow() {
-	expectedCall := []string{
-		"sampleActivity",
-	}
+	env := s.NewTestWorkflowEnvironment()
+	env.RegisterActivity(SampleActivity)
 
 	var activityCalled []string
-	env := s.NewTestWorkflowEnvironment()
-	env.RegisterActivityWithOptions(
-		SampleActivity,
-		activity.RegisterOptions{Name: SampleActivityName},
-	)
-
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {
 		activityType := activityInfo.ActivityType.Name
 		activityCalled = append(activityCalled, activityType)
-		if activityType != expectedCall[0] {
-			panic("unexpected activity call")
-		}
 	})
 	env.ExecuteWorkflow(CtxPropWorkflow)
 
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())
-	s.Equal(expectedCall, activityCalled)
+	s.Equal([]string{"SampleActivity"}, activityCalled)
 }

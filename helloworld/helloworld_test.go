@@ -1,6 +1,7 @@
 package helloworld
 
 import (
+	"github.com/stretchr/testify/mock"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -12,7 +13,7 @@ func Test_Workflow(t *testing.T) {
 	env := testSuite.NewTestWorkflowEnvironment()
 
 	// Mock activity implementation
-	env.On("Activity", "Temporal").Return("Hello Temporal!")
+	env.OnActivity(Activity, mock.Anything, "Temporal").Return("Hello Temporal!", nil)
 
 	env.ExecuteWorkflow(Workflow, "Temporal")
 

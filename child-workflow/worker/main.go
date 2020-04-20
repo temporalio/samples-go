@@ -8,7 +8,7 @@ import (
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
 
-	"github.com/temporalio/temporal-go-samples/dynamic"
+	"github.com/temporalio/temporal-go-samples/child-workflow"
 )
 
 func main() {
@@ -26,15 +26,13 @@ func main() {
 	}
 	defer func() { _ = c.CloseConnection() }()
 
-	w := worker.New(c, "dynamic", worker.Options{
+	w := worker.New(c, "child-workflow", worker.Options{
 		Logger: logger,
 	})
 	defer w.Stop()
 
-	w.RegisterWorkflow(dynamic.SampleGreetingsWorkflow)
-	w.RegisterActivity(dynamic.GetGreetingActivity)
-	w.RegisterActivity(dynamic.GetNameActivity)
-	w.RegisterActivity(dynamic.SayGreetingActivity)
+	w.RegisterWorkflow(child_workflow.SampleParentWorkflow)
+	w.RegisterWorkflow(child_workflow.SampleChildWorkflow)
 
 	err = w.Start()
 	if err != nil {

@@ -25,7 +25,7 @@ func main() {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
 
-	w := worker.New(c, "retry-activity-task-list", worker.Options{
+	w := worker.New(c, "retry-activity", worker.Options{
 		Logger: logger,
 	})
 
