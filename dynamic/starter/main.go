@@ -7,8 +7,6 @@ import (
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal/client"
 	"go.uber.org/zap"
-
-	"github.com/temporalio/temporal-go-samples/dynamic"
 )
 
 func main() {
@@ -29,12 +27,12 @@ func main() {
 	// This workflow ID can be user business logic identifier as well.
 	workflowID := "dynamic_" + uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              workflowID,
-		TaskList:                        "dynamic",
-		ExecutionStartToCloseTimeout:    time.Minute,
+		ID:                           workflowID,
+		TaskList:                     "dynamic",
+		ExecutionStartToCloseTimeout: time.Minute,
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, dynamic.GreetingsWorkflowName)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, "SampleGreetingsWorkflow")
 	if err != nil {
 		logger.Fatal("Unable to execute workflow", zap.Error(err))
 	}

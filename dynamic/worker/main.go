@@ -32,9 +32,7 @@ func main() {
 	defer w.Stop()
 
 	w.RegisterWorkflow(dynamic.SampleGreetingsWorkflow)
-	w.RegisterActivity(dynamic.GetGreetingActivity)
-	w.RegisterActivity(dynamic.GetNameActivity)
-	w.RegisterActivity(dynamic.SayGreetingActivity)
+	w.RegisterActivity(&dynamic.Activities{})
 
 	err = w.Start()
 	if err != nil {
