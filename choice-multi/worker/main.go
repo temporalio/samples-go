@@ -4,11 +4,10 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/temporalio/temporal-go-samples/choice-multi"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
-
-	"github.com/temporalio/temporal-go-samples/choice"
 )
 
 func main() {
@@ -26,20 +25,19 @@ func main() {
 	}
 	defer func() { _ = c.CloseConnection() }()
 
-	w := worker.New(c, "choice", worker.Options{
+	w := worker.New(c, "choice-multi", worker.Options{
 		Logger: logger,
 	})
 	defer w.Stop()
 
-	w.RegisterWorkflow(choice.ExclusiveChoiceWorkflow)
-	w.RegisterWorkflow(choice.MultiChoiceWorkflow)
+	w.RegisterWorkflow(choice_multi.MultiChoiceWorkflow)
 
 	orderChoices := []string{
-		choice.OrderChoiceApple,
-		choice.OrderChoiceBanana,
-		choice.OrderChoiceCherry,
-		choice.OrderChoiceOrange}
-	w.RegisterActivity(&choice.OrderActivities{OrderChoices: orderChoices})
+		choice_multi.OrderChoiceApple,
+		choice_multi.OrderChoiceBanana,
+		choice_multi.OrderChoiceCherry,
+		choice_multi.OrderChoiceOrange}
+	w.RegisterActivity(&choice_multi.OrderActivities{OrderChoices: orderChoices})
 
 	err = w.Start()
 	if err != nil {

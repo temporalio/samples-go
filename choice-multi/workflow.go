@@ -1,4 +1,4 @@
-package choice
+package choice_multi
 
 import (
 	"errors"
@@ -8,9 +8,12 @@ import (
 	"go.uber.org/zap"
 )
 
-/**
- * This multi choice sample workflow executes multiple parallel branches based on the result of an activity.
- */
+const (
+	OrderChoiceApple  = "apple"
+	OrderChoiceBanana = "banana"
+	OrderChoiceCherry = "cherry"
+	OrderChoiceOrange = "orange"
+)
 
 // MultiChoiceWorkflow Workflow definition.
 func MultiChoiceWorkflow(ctx workflow.Context) error {
@@ -45,7 +48,7 @@ func MultiChoiceWorkflow(ctx workflow.Context) error {
 			f = workflow.ExecuteActivity(ctx, orderActivities.OrderOrange, item)
 		default:
 			logger.Error("Unexpected order.", zap.String("Order", item))
-			return errors.New("invalid choice")
+			return errors.New("invalid choice-multi")
 		}
 		futures = append(futures, f)
 	}

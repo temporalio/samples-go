@@ -7,10 +7,6 @@ import (
 	"go.uber.org/zap"
 )
 
-/**
- * This sample workflow executes one of many code paths based on the result of an activity.
- */
-
 const (
 	OrderChoiceApple  = "apple"
 	OrderChoiceBanana = "banana"
