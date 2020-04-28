@@ -45,6 +45,9 @@ func main() {
 	// If you need to wait for the workflow completion from another process use
 	// Client.GetWorkflow API to get an instance of a WorkflowRun.
 	var result string
-	workflowRun.Get(context.Background(), &result)
+	err = workflowRun.Get(context.Background(), &result)
+	if err != nil {
+		logger.Fatal("Failure getting workflow result", zap.Error(err))
+	}
 	logger.Info("Workflow result: %v", zap.String("result", result))
 }

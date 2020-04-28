@@ -120,7 +120,7 @@ func MutexWorkflow(
 		selector.AddFuture(workflow.NewTimer(ctx, unlockTimeout), func(f workflow.Future) {
 			logger.Info("unlockTimeout exceeded")
 		})
-		selector.AddReceive(workflow.GetSignalChannel(ctx, releaseLockChannelName), func(c workflow.Channel, more bool) {
+		selector.AddReceive(workflow.GetSignalChannel(ctx, releaseLockChannelName), func(c workflow.ReceiveChannel, more bool) {
 			c.Receive(ctx, &ack)
 			logger.Info("release signal received")
 		})
