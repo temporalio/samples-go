@@ -18,7 +18,7 @@ func main() {
 		panic(err)
 	}
 
-	// The client and w are heavyweight objects that should be created once per process.
+	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
@@ -45,7 +45,7 @@ func main() {
 
 	// The workers are supposed to be long running process that should not exit.
 	waitCtrlC()
-	// Stop w, close connection, clean up resources.
+	// Stop the worker, close connection, clean up resources.
 	w.Stop()
 	_ = c.CloseConnection()
 }

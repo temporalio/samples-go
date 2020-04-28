@@ -49,6 +49,7 @@ func processFile(ctx workflow.Context, fileName string) (err error) {
 		ExecutionTimeout: time.Minute,
 	}
 
+	// All activities requested using sessionCtx are guaranteed to execute on the same worker process
 	sessionCtx, err := workflow.CreateSession(ctx, so)
 	if err != nil {
 		return err
