@@ -29,20 +29,11 @@ func main() {
 	workerOptions := worker.Options{
 		Logger:                logger,
 		EnableLoggingInReplay: true,
-		EnableSessionWorker:   true,
+		EnableSessionWorker:   true, // !!! Must be enabled for sessions to work
 	}
-	workflowWorker := worker.New(c, "fileprocessing-task-list", workerOptions)
+	w := worker.New(c, "fileprocessing-task-list", workerOptions)
 
-	workflowWorker.RegisterWorkflow(fileprocessing.SampleFileProcessingWorkflow)
-
-	err = workflowWorker.Start()
-	if err != nil {
-		logger.Fatal("Unable to start worker", zap.Error(err))
-	}
-
-	workerOptions.DisableWorkflowWorker = true
-	w := worker.New(c, fileprocessing.HostID, workerOptions)
-
+	w.RegisterWorkflow(fileprocessing.SampleFileProcessingWorkflow)
 	w.RegisterActivityWithOptions(fileprocessing.DownloadFileActivity, activity.RegisterOptions{Name: fileprocessing.DownloadFileActivityName})
 	w.RegisterActivityWithOptions(fileprocessing.ProcessFileActivity, activity.RegisterOptions{Name: fileprocessing.ProcessFileActivityName})
 	w.RegisterActivityWithOptions(fileprocessing.UploadFileActivity, activity.RegisterOptions{Name: fileprocessing.UploadFileActivityName})
@@ -54,8 +45,7 @@ func main() {
 
 	// The workers are supposed to be long running process that should not exit.
 	waitCtrlC()
-	// Stop worker, close connection, clean up resources.
-	workflowWorker.Stop()
+	// Stop the worker, close connection, clean up resources.
 	w.Stop()
 	_ = c.CloseConnection()
 }

@@ -56,13 +56,11 @@ func (s *UnitTestSuite) Test_SampleFileProcessingWorkflow() {
 			s.NoError(args.Get(&input))
 			s.Equal(fileID, input)
 		case expectedCall[1]:
-			var input fileInfo
+			var input string
 			s.NoError(args.Get(&input))
-			s.Equal(input.HostID, HostID)
 		case expectedCall[2]:
-			var input fileInfo
+			var input string
 			s.NoError(args.Get(&input))
-			s.Equal(input.HostID, HostID)
 		default:
 			panic("unexpected activity call")
 		}

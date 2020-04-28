@@ -3,22 +3,10 @@ package fileprocessing
 import (
 	"time"
 
-	"github.com/pborman/uuid"
 	"go.temporal.io/temporal"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
-
-type (
-	fileInfo struct {
-		FileName string
-		HostID   string
-	}
-)
-
-// HostID - Use a new uuid just for demo so we can run 2 host specific activity workers on same machine.
-// In real world case, you would use a hostname or ip address as HostID.
-var HostID = "fileprocessing_" + uuid.New()
 
 // SampleFileProcessingWorkflow workflow decider
 func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err error) {
@@ -55,30 +43,31 @@ func SampleFileProcessingWorkflow(ctx workflow.Context, fileID string) (err erro
 	return err
 }
 
-func processFile(ctx workflow.Context, fileID string) (err error) {
-	var fInfo *fileInfo
+func processFile(ctx workflow.Context, fileName string) (err error) {
 	so := &workflow.SessionOptions{
 		CreationTimeout:  time.Minute,
 		ExecutionTimeout: time.Minute,
 	}
 
+	// All activities requested using sessionCtx are guaranteed to execute on the same worker process
 	sessionCtx, err := workflow.CreateSession(ctx, so)
 	if err != nil {
 		return err
 	}
 	defer workflow.CompleteSession(sessionCtx)
 
-	err = workflow.ExecuteActivity(sessionCtx, DownloadFileActivityName, fileID).Get(sessionCtx, &fInfo)
+	var downloaded string
+	err = workflow.ExecuteActivity(sessionCtx, DownloadFileActivityName, fileName).Get(sessionCtx, &downloaded)
 	if err != nil {
 		return err
 	}
 
-	var fInfoProcessed *fileInfo
-	err = workflow.ExecuteActivity(sessionCtx, ProcessFileActivityName, *fInfo).Get(sessionCtx, &fInfoProcessed)
+	var processed string
+	err = workflow.ExecuteActivity(sessionCtx, ProcessFileActivityName, downloaded).Get(sessionCtx, &processed)
 	if err != nil {
 		return err
 	}
 
-	err = workflow.ExecuteActivity(sessionCtx, UploadFileActivityName, *fInfoProcessed).Get(sessionCtx, nil)
+	err = workflow.ExecuteActivity(sessionCtx, UploadFileActivityName, processed).Get(sessionCtx, nil)
 	return err
 }
