@@ -1,5 +1,5 @@
 This sample workflow demos context propagation through a workflow. Details about context propagation are
-available [here](https://docs.temporal.io/docs/07_goclient/17_tracing).
+available [here](https://docs.temporal.io/docs/go-tracing).
 
 The sample workflow initializes the client with a context propagator which propagates
 specific information in the `context.Context` object across the workflow. The `context.Context` object is populated
