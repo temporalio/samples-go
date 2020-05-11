@@ -26,7 +26,31 @@ func SampleParentWorkflow(ctx workflow.Context) error {
 	}
 	ctx = workflow.WithChildOptions(ctx, cwo)
 	var result string
-	err := workflow.ExecuteChildWorkflow(ctx, SampleChildWorkflow, 0, 5).Get(ctx, &result)
+	childFuture := workflow.ExecuteChildWorkflow(ctx, SampleChildWorkflow)
+
+	// wait for child to start
+	var childWE workflow.Execution
+	if err := childFuture.GetChildWorkflowExecution().Get(ctx, &childWE); err != nil {
+		logger.Error("child execution failed to start.", zap.Error(err))
+		return err
+	}
+
+	// send signal to child
+	signalFuture1 := childFuture.SignalChildWorkflow(ctx, "signal_child", "Hello")
+	err := signalFuture1.Get(ctx, nil)
+	if err != nil {
+		logger.Error("failed to send signal to child.", zap.Error(err))
+		return err
+	}
+
+	// Receive signal from child
+	signalCh := workflow.GetSignalChannel(ctx, "signal_parent")
+	var dataFromChild string
+	signalCh.Receive(ctx, &dataFromChild)
+	logger.Info("Received signal from child", zap.String("data", dataFromChild))
+
+	// wait for child to complete
+	err = childFuture.Get(ctx, &result)
 	if err != nil {
 		logger.Error("Parent execution received child execution failure.", zap.Error(err))
 		return err

@@ -1,9 +1,6 @@
 package childworkflow
 
 import (
-	"errors"
-	"fmt"
-
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
@@ -14,23 +11,25 @@ import (
  */
 
 // SampleChildWorkflow workflow decider
-func SampleChildWorkflow(ctx workflow.Context, totalCount, runCount int) (string, error) {
+func SampleChildWorkflow(ctx workflow.Context) (string, error) {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Child workflow execution started.")
-	if runCount <= 0 {
-		logger.Error("Invalid valid for run count.", zap.Int("RunCount", runCount))
-		return "", errors.New("invalid run count")
+
+	// Receive signal from parent
+	signalCh := workflow.GetSignalChannel(ctx, "signal_child")
+	var dataFromParent string
+	signalCh.Receive(ctx, &dataFromParent)
+	logger.Info("Received signal from parent", zap.String("data", dataFromParent))
+
+	// Send signal to parent
+	parentWF := workflow.GetInfo(ctx).ParentWorkflowExecution
+	signalFuture := workflow.SignalExternalWorkflow(ctx, parentWF.ID, parentWF.RunID, "signal_parent", "World")
+	err := signalFuture.Get(ctx, nil)
+	if err != nil {
+		logger.Error("failed to send signal to parent.", zap.Error(err))
+		return "", err
 	}
 
-	totalCount++
-	runCount--
-	if runCount == 0 {
-		result := fmt.Sprintf("Child workflow execution completed after %v runs", totalCount)
-		logger.Info("Child workflow completed.", zap.String("Result", result))
-		return result, nil
-	}
-
-	logger.Info("Child workflow starting new run.", zap.Int("RunCount", runCount), zap.Int("TotalCount",
-		totalCount))
-	return "", workflow.NewContinueAsNewError(ctx, SampleChildWorkflow, totalCount, runCount)
+	logger.Info("Child execution completed.", zap.String("Result", dataFromParent))
+	return "done", nil
 }
