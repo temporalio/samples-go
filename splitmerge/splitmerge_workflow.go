@@ -23,7 +23,7 @@ type (
 	}
 )
 
-// SampleSplitMergeWorkflow workflow decider
+// SampleSplitMergeWorkflow workflow definition
 func SampleSplitMergeWorkflow(ctx workflow.Context, workerCount int) (ChunkResult, error) {
 	chunkResultChannel := workflow.NewChannel(ctx)
 	ao := workflow.ActivityOptions{

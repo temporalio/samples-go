@@ -8,12 +8,12 @@
       "taskId": 33554432,
       "workflowExecutionStartedEventAttributes": {
         "workflowType": {
-          "name": "HelloworldWorkflow"
+          "name": "Workflow"
         },
         "taskList": {
-          "name": "helloWorldGroup"
+          "name": "hello-world"
         },
-        "input": "IkNhZGVuY2UiCg==",
+        "input": "IlRlbXBvcmFsIg==",
         "executionStartToCloseTimeoutSeconds": 3600,
         "taskStartToCloseTimeoutSeconds": 10,
         "identity": "66434@longer-C02V60N3HTDG@",
@@ -29,7 +29,7 @@
       "taskId": 33554433,
       "decisionTaskScheduledEventAttributes": {
         "taskList": {
-          "name": "helloWorldGroup"
+          "name": "hello-world"
         },
         "startToCloseTimeoutSeconds": 10,
         "attempt": 0
@@ -69,12 +69,12 @@
       "activityTaskScheduledEventAttributes": {
         "activityId": "0",
         "activityType": {
-          "name": "main.helloworldActivity"
+          "name": "helloworld.Activity"
         },
         "taskList": {
-          "name": "helloWorldGroup"
+          "name": "hello-world"
         },
-        "input": "IkNhZGVuY2UiCg==",
+        "input": "IlRlbXBvcmFsIg==",
         "scheduleToCloseTimeoutSeconds": 3600,
         "scheduleToStartTimeoutSeconds": 3600,
         "startToCloseTimeoutSeconds": 3600,
@@ -102,7 +102,7 @@
       "version": -24,
       "taskId": 33554447,
       "activityTaskCompletedEventAttributes": {
-        "result": "IkhlbGxvIENhZGVuY2UhIgo=",
+        "result": "IkhlbGxvIFRlbXBvcmFsISI=",
         "scheduledEventId": 5,
         "startedEventId": 6,
         "identity": "66471@longer-C02V60N3HTDG@helloWorldGroup"
@@ -154,7 +154,8 @@
       "version": -24,
       "taskId": 33554458,
       "workflowExecutionCompletedEventAttributes": {
-        "decisionTaskCompletedEventId": 10
+        "decisionTaskCompletedEventId": 10,
+        "result": "IkhlbGxvIFRlbXBvcmFsISIK"
       }
     }
   ]

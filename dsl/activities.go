@@ -1,35 +1,41 @@
 package dsl
 
 import (
+	"context"
 	"fmt"
+
+	"go.temporal.io/temporal/activity"
 )
 
-func SampleActivity1(input []string) (string, error) {
-	name := "sampleActivity1"
+type SampleActivities struct {
+}
+
+func (a *SampleActivities) SampleActivity1(ctx context.Context, input []string) (string, error) {
+	name := activity.GetInfo(ctx).ActivityType.Name
 	fmt.Printf("Run %s with input %v \n", name, input)
 	return "Result_" + name, nil
 }
 
-func SampleActivity2(input []string) (string, error) {
-	name := "sampleActivity2"
+func (a *SampleActivities) SampleActivity2(ctx context.Context, input []string) (string, error) {
+	name := activity.GetInfo(ctx).ActivityType.Name
 	fmt.Printf("Run %s with input %v \n", name, input)
 	return "Result_" + name, nil
 }
 
-func SampleActivity3(input []string) (string, error) {
-	name := "sampleActivity3"
+func (a *SampleActivities) SampleActivity3(ctx context.Context, input []string) (string, error) {
+	name := activity.GetInfo(ctx).ActivityType.Name
 	fmt.Printf("Run %s with input %v \n", name, input)
 	return "Result_" + name, nil
 }
 
-func SampleActivity4(input []string) (string, error) {
-	name := "sampleActivity4"
+func (a *SampleActivities) SampleActivity4(ctx context.Context, input []string) (string, error) {
+	name := activity.GetInfo(ctx).ActivityType.Name
 	fmt.Printf("Run %s with input %v \n", name, input)
 	return "Result_" + name, nil
 }
 
-func SampleActivity5(input []string) (string, error) {
-	name := "sampleActivity5"
+func (a *SampleActivities) SampleActivity5(ctx context.Context, input []string) (string, error) {
+	name := activity.GetInfo(ctx).ActivityType.Name
 	fmt.Printf("Run %s with input %v \n", name, input)
 	return "Result_" + name, nil
 }

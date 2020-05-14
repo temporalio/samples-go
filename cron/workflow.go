@@ -14,13 +14,6 @@ import (
  * very simple, but you could have more complicated scheduler logic that meet your needs.
  */
 
-const (
-	// timeout for activity task from put in queue to started
-	activityScheduleToStartTimeout = time.Second * 10
-	// timeout for activity from start to complete
-	activityStartToCloseTimeout = time.Minute
-)
-
 // Cron sample job activity.
 func SampleCronActivity(ctx context.Context, beginTime, endTime time.Time) error {
 	activity.GetLogger(ctx).Info("Cron job running.", zap.Time("beginTime_exclude", beginTime), zap.Time("endTime_include", endTime))
@@ -38,8 +31,8 @@ func SampleCronWorkflow(ctx workflow.Context) (*SampleCronResult, error) {
 	workflow.GetLogger(ctx).Info("Cron workflow started.", zap.Time("StartTime", workflow.Now(ctx)))
 
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: activityScheduleToStartTimeout,
-		StartToCloseTimeout:    activityStartToCloseTimeout,
+		ScheduleToStartTimeout: time.Minute,
+		StartToCloseTimeout:    time.Minute,
 	}
 	ctx1 := workflow.WithActivityOptions(ctx, ao)
 

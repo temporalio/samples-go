@@ -2,17 +2,15 @@ package branch
 
 import (
 	"fmt"
-	"go.uber.org/zap"
 	"time"
+
+	"go.uber.org/zap"
 
 	"go.temporal.io/temporal/workflow"
 )
 
-/**
- * This sample workflow executes multiple branches in parallel. The number of branches is controlled by passed in parameter.
- */
-
 // SampleBranchWorkflow workflow definition
+// This workflow executes multiple activities in parallel. The number of branches is controlled by a passed in parameter.
 func SampleBranchWorkflow(ctx workflow.Context, totalBranches int) (result []string, err error) {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("SampleBranchWorkflow begin")

@@ -14,30 +14,30 @@ import (
 /**
  * Sample activities used by file processing sample workflow.
  */
-const (
-	DownloadFileActivityName = "downloadFileActivity"
-	ProcessFileActivityName  = "processFileActivity"
-	UploadFileActivityName   = "uploadFileActivity"
-)
 
-func DownloadFileActivity(ctx context.Context, fileName string) (string, error) {
+type Activities struct {
+	BlobStore *BlobStore
+}
+
+func (a *Activities) DownloadFileActivity(ctx context.Context, fileID string) (string, error) {
 	logger := activity.GetLogger(ctx)
-	logger.Info("Downloading file...", zap.String("FileID", fileName))
-	data := downloadFile(fileName)
+	logger.Info("Downloading file...", zap.String("FileID", fileID))
+	data := a.BlobStore.downloadFile(fileID)
 
 	tmpFile, err := saveToTmpFile(data)
 	if err != nil {
 		logger.Error("downloadFileActivity failed to save tmp file.", zap.Error(err))
 		return "", err
 	}
-
-	logger.Info("downloadFileActivity succeed.", zap.String("SavedFilePath", tmpFile.Name()))
-	return tmpFile.Name(), nil
+	fileName := tmpFile.Name()
+	logger.Info("downloadFileActivity succeed.", zap.String("SavedFilePath", fileName))
+	return fileName, nil
 }
 
-func ProcessFileActivity(ctx context.Context, fileName string) (string, error) {
+func (a *Activities) ProcessFileActivity(ctx context.Context, fileName string) (string, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("processFileActivity started.", zap.String("FileName", fileName))
+
 	defer func() { _ = os.Remove(fileName) }() // cleanup temp file
 
 	// read downloaded file
@@ -55,17 +55,18 @@ func ProcessFileActivity(ctx context.Context, fileName string) (string, error) {
 		return "", err
 	}
 
-	logger.Info("processFileActivity succeed.", zap.String("SavedFilePath", tmpFile.Name()))
-	return tmpFile.Name(), nil
+	processedFileName := tmpFile.Name()
+	logger.Info("processFileActivity succeed.", zap.String("SavedFilePath", processedFileName))
+	return processedFileName, nil
 }
 
-func UploadFileActivity(ctx context.Context, fileName string) error {
+func (a *Activities) UploadFileActivity(ctx context.Context, fileName string) error {
 	logger := activity.GetLogger(ctx)
 	logger.Info("uploadFileActivity begin.", zap.String("UploadedFileName", fileName))
 
 	defer func() { _ = os.Remove(fileName) }() // cleanup temp file
 
-	err := uploadFile(ctx, fileName)
+	err := a.BlobStore.uploadFile(ctx, fileName)
 	if err != nil {
 		logger.Error("uploadFileActivity uploading failed.", zap.Error(err))
 		return err
@@ -74,13 +75,15 @@ func UploadFileActivity(ctx context.Context, fileName string) error {
 	return nil
 }
 
-func downloadFile(fileID string) []byte {
+type BlobStore struct{}
+
+func (b *BlobStore) downloadFile(fileID string) []byte {
 	// dummy downloader
 	dummyContent := "dummy content for fileID:" + fileID
 	return []byte(dummyContent)
 }
 
-func uploadFile(ctx context.Context, filename string) error {
+func (b *BlobStore) uploadFile(ctx context.Context, filename string) error {
 	// dummy uploader
 	_, err := ioutil.ReadFile(filename)
 	for i := 0; i < 5; i++ {

@@ -32,7 +32,7 @@ var ActivityOptions = workflow.ActivityOptions{
 
 const ContinueAsNewStr = "CONTINUEASNEW"
 
-// PSOWorkflow workflow decider
+// PSOWorkflow workflow definition
 func PSOWorkflow(ctx workflow.Context, functionName string) (string, error) {
 	logger := workflow.GetLogger(ctx)
 	logger.Info(fmt.Sprintf("Optimizing function %s", functionName))
@@ -69,6 +69,7 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (string, error) {
 		cwo := workflow.ChildWorkflowOptions{
 			WorkflowID:                   "PSO_Child_" + uuid.New(),
 			ExecutionStartToCloseTimeout: time.Minute,
+			TaskStartToCloseTimeout:      time.Minute,
 		}
 		ctx = workflow.WithChildOptions(ctx, cwo)
 
@@ -95,7 +96,7 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (string, error) {
 	return msg, nil
 }
 
-// PSOChildWorkflow workflow decider
+// PSOChildWorkflow workflow definition
 // Returns true if the optimization has converged
 func PSOChildWorkflow(ctx workflow.Context, swarm Swarm, startingStep int) (WorkflowResult, error) {
 	logger := workflow.GetLogger(ctx)

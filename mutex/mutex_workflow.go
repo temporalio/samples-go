@@ -120,7 +120,7 @@ func MutexWorkflow(
 		selector.AddFuture(workflow.NewTimer(ctx, unlockTimeout), func(f workflow.Future) {
 			logger.Info("unlockTimeout exceeded")
 		})
-		selector.AddReceive(workflow.GetSignalChannel(ctx, releaseLockChannelName), func(c workflow.Channel, more bool) {
+		selector.AddReceive(workflow.GetSignalChannel(ctx, releaseLockChannelName), func(c workflow.ReceiveChannel, more bool) {
 			c.Receive(ctx, &ack)
 			logger.Info("release signal received")
 		})
@@ -147,9 +147,8 @@ func SignalWithStartMutexWorkflowActivity(
 	)
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                              workflowID,
-		TaskList:                        "mutex-task-list",
+		TaskList:                        "mutex",
 		ExecutionStartToCloseTimeout:    time.Hour,
-		DecisionTaskStartToCloseTimeout: time.Hour,
 		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:    time.Second,
 			BackoffCoefficient: 2.0,

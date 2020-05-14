@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// CtxPropWorkflow workflow decider
+// CtxPropWorkflow workflow definition
 func CtxPropWorkflow(ctx workflow.Context) (err error) {
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Second * 5,

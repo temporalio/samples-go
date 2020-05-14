@@ -31,7 +31,7 @@ func main() {
 	ctx := context.WithValue(context.Background(), recovery.TemporalClientKey, c)
 	ctx = context.WithValue(ctx, recovery.WorkflowExecutionCacheKey, cache.NewLRU(10))
 
-	w := worker.New(c, "recovery-task-list", worker.Options{
+	w := worker.New(c, "recovery", worker.Options{
 		Logger:                    logger,
 		BackgroundActivityContext: ctx,
 	})

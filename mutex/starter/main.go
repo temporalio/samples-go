@@ -29,16 +29,14 @@ func main() {
 	resourceID := uuid.New()
 	workflow1Options := client.StartWorkflowOptions{
 		ID:                              "SampleWorkflow1WithMutex_" + uuid.New(),
-		TaskList:                        "mutex-task-list",
+		TaskList:                        "mutex",
 		ExecutionStartToCloseTimeout:    10 * time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	workflow2Options := client.StartWorkflowOptions{
 		ID:                              "SampleWorkflow2WithMutex_" + uuid.New(),
-		TaskList:                        "mutex-task-list",
+		TaskList:                        "mutex",
 		ExecutionStartToCloseTimeout:    10 * time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflow1Options, mutex.SampleWorkflowWithMutex, resourceID)

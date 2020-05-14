@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
-	"go.uber.org/zap"
 	"time"
 
-	"github.com/temporalio/temporal-go-samples/parallel"
+	"go.uber.org/zap"
+
 	"go.temporal.io/temporal/client"
+
+	"github.com/temporalio/temporal-go-samples/parallel"
 )
 
 func main() {
@@ -24,9 +26,8 @@ func main() {
 	}
 	defer func() { _ = c.CloseConnection() }()
 	workflowOptions := client.StartWorkflowOptions{
-		TaskList:                        "parallel-task-list",
-		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Second * 10,
+		TaskList:                     "parallel",
+		ExecutionStartToCloseTimeout: time.Minute,
 	}
 	ctx := context.Background()
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, parallel.SampleParallelWorkflow)

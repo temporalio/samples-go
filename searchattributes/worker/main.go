@@ -28,7 +28,7 @@ func main() {
 
 	ctx := context.WithValue(context.Background(), searchattributes.TemporalClientKey, c)
 
-	w := worker.New(c, "search-attributes-task-list", worker.Options{
+	w := worker.New(c, "search-attributes", worker.Options{
 		Logger:                    logger,
 		BackgroundActivityContext: ctx,
 	})

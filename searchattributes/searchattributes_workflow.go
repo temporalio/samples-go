@@ -36,7 +36,7 @@ var (
 	ErrClientNotFound = errors.New("failed to retrieve client from context")
 )
 
-// SearchAttributesWorkflow workflow decider
+// SearchAttributesWorkflow workflow definition
 func SearchAttributesWorkflow(ctx workflow.Context) error {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("SearchAttributes workflow started")

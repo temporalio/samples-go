@@ -29,7 +29,7 @@ func (s *UnitTestSuite) Test_Workflow() {
 				totalDuration = time.Nanosecond
 			}
 			return SampleActivity(ctx, currentBranchID, totalDuration)
-		}).Once()
+		})
 	env.ExecuteWorkflow(SamplePickFirstWorkflow)
 
 	s.True(env.IsWorkflowCompleted())

@@ -27,7 +27,7 @@ func main() {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
 
-	w := worker.New(c, "pso-task-list", worker.Options{
+	w := worker.New(c, "pso", worker.Options{
 		Logger:                             logger,
 		MaxConcurrentActivityExecutionSize: 1, // Activities are supposed to be CPU intensive, so better limit the concurrency
 	})
