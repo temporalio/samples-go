@@ -5,9 +5,10 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
-	"github.com/temporalio/temporal-go-samples/choice-multi"
 	"go.temporal.io/temporal/client"
 	"go.uber.org/zap"
+
+	choice_multi "github.com/temporalio/temporal-go-samples/choice-multi"
 )
 
 func main() {

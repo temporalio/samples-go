@@ -3,9 +3,10 @@ package choice
 import (
 	"context"
 	"fmt"
+	"math/rand"
+
 	"go.temporal.io/temporal/activity"
 	"go.uber.org/zap"
-	"math/rand"
 )
 
 type OrderActivities struct {

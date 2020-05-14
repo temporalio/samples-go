@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
-	"github.com/temporalio/temporal-go-samples/branch"
+	"time"
+
 	"go.temporal.io/temporal/client"
 	"go.uber.org/zap"
-	"time"
+
+	"github.com/temporalio/temporal-go-samples/branch"
 )
 
 func main() {

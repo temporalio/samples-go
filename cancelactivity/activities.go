@@ -2,8 +2,9 @@ package cancelactivity
 
 import (
 	"context"
-	"go.temporal.io/temporal/activity"
 	"time"
+
+	"go.temporal.io/temporal/activity"
 )
 
 type Activities struct {

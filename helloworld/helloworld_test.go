@@ -1,8 +1,9 @@
 package helloworld
 
 import (
-	"github.com/stretchr/testify/mock"
 	"testing"
+
+	"github.com/stretchr/testify/mock"
 
 	"github.com/stretchr/testify/require"
 	"go.temporal.io/temporal/testsuite"

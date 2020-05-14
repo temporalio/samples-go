@@ -1,8 +1,9 @@
 package dynamic
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"go.temporal.io/temporal/testsuite"
 )

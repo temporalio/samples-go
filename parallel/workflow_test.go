@@ -1,9 +1,10 @@
 package parallel
 
 import (
-	"github.com/stretchr/testify/mock"
 	"sort"
 	"testing"
+
+	"github.com/stretchr/testify/mock"
 
 	"github.com/stretchr/testify/suite"
 	"go.temporal.io/temporal/testsuite"

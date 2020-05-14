@@ -5,9 +5,10 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
-	cw "github.com/temporalio/temporal-go-samples/child-workflow-continue-as-new"
 	"go.temporal.io/temporal/client"
 	"go.uber.org/zap"
+
+	cw "github.com/temporalio/temporal-go-samples/child-workflow-continue-as-new"
 )
 
 func main() {

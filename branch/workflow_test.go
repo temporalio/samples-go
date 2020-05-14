@@ -1,9 +1,10 @@
 package branch
 
 import (
-	"github.com/stretchr/testify/mock"
 	"sort"
 	"testing"
+
+	"github.com/stretchr/testify/mock"
 
 	"github.com/stretchr/testify/suite"
 	"go.temporal.io/temporal/testsuite"
@@ -23,7 +24,7 @@ func (s *UnitTestSuite) Test_BranchWorkflow() {
 	env.RegisterActivity(SampleActivity)
 	env.OnActivity(SampleActivity, mock.Anything).Return("one", nil).Once()
 	env.OnActivity(SampleActivity, mock.Anything).Return("two", nil).Once()
-	env.OnActivity(SampleActivity, mock.Anything).Return("three", nil).Once();
+	env.OnActivity(SampleActivity, mock.Anything).Return("three", nil).Once()
 	env.ExecuteWorkflow(SampleBranchWorkflow, 3)
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())
@@ -34,4 +35,3 @@ func (s *UnitTestSuite) Test_BranchWorkflow() {
 	sort.Strings(expected)
 	s.Equal(expected, result)
 }
-

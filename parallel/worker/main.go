@@ -4,10 +4,11 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/temporalio/temporal-go-samples/parallel"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
+
+	"github.com/temporalio/temporal-go-samples/parallel"
 )
 
 func main() {

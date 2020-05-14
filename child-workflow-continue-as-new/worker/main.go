@@ -4,10 +4,11 @@ import (
 	"os"
 	"os/signal"
 
-	cw "github.com/temporalio/temporal-go-samples/child-workflow-continue-as-new"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
+
+	cw "github.com/temporalio/temporal-go-samples/child-workflow-continue-as-new"
 )
 
 func main() {
