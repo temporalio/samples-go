@@ -25,8 +25,8 @@ func TestUnitTestSuite(t *testing.T) {
 func (s *UnitTestSuite) Test_CronWorkflow() {
 	testWorkflow := func(ctx workflow.Context) error {
 		ctx1 := workflow.WithChildOptions(ctx, workflow.ChildWorkflowOptions{
-			ExecutionStartToCloseTimeout: time.Minute * 10,
-			CronSchedule:                 "0 * * * *", // hourly
+			WorkflowRunTimeout: time.Minute * 10,
+			CronSchedule:       "0 * * * *", // hourly
 		})
 
 		cronFuture := workflow.ExecuteChildWorkflow(ctx1, SampleCronWorkflow) // cron never stop so this future won't return

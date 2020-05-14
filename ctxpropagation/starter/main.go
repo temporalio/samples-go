@@ -28,9 +28,9 @@ func main() {
 
 	workflowID := "ctx-propagation_" + uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                           workflowID,
-		TaskList:                     "ctx-propagation",
-		ExecutionStartToCloseTimeout: time.Minute,
+		ID:                 workflowID,
+		TaskList:           "ctx-propagation",
+		WorkflowRunTimeout: time.Minute,
 	}
 
 	ctx := context.Background()

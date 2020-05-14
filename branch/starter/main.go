@@ -24,8 +24,8 @@ func main() {
 	defer func() { _ = c.CloseConnection() }()
 
 	workflowOptions := client.StartWorkflowOptions{
-		TaskList:                     "branch",
-		ExecutionStartToCloseTimeout: time.Minute,
+		TaskList:           "branch",
+		WorkflowRunTimeout: time.Minute,
 	}
 	ctx := context.Background()
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, branch.SampleBranchWorkflow, 10)

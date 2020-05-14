@@ -24,7 +24,6 @@ var ActivityOptions = workflow.ActivityOptions{
 		InitialInterval:          time.Second,
 		BackoffCoefficient:       2.0,
 		MaximumInterval:          time.Minute,
-		ExpirationInterval:       time.Minute * 10,
 		MaximumAttempts:          5,
 		NonRetriableErrorReasons: []string{"bad-error"},
 	},
@@ -67,9 +66,9 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (string, error) {
 		// Set child workflow options
 		// Parent workflow can choose to specify it's own ID for child execution.  Make sure they are unique for each execution.
 		cwo := workflow.ChildWorkflowOptions{
-			WorkflowID:                   "PSO_Child_" + uuid.New(),
-			ExecutionStartToCloseTimeout: time.Minute,
-			TaskStartToCloseTimeout:      time.Minute,
+			WorkflowID:          "PSO_Child_" + uuid.New(),
+			WorkflowRunTimeout:  time.Minute,
+			WorkflowTaskTimeout: time.Minute,
 		}
 		ctx = workflow.WithChildOptions(ctx, cwo)
 

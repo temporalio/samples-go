@@ -24,9 +24,9 @@ func main() {
 	defer func() { _ = c.CloseConnection() }()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                           "hello_world_workflowID",
-		TaskList:                     "hello-world",
-		ExecutionStartToCloseTimeout: time.Minute,
+		ID:                 "hello_world_workflowID",
+		TaskList:           "hello-world",
+		WorkflowRunTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, helloworld.Workflow, "Temporal")

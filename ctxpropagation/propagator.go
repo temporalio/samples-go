@@ -2,8 +2,9 @@ package ctxpropagation
 
 import (
 	"context"
-	"encoding/json"
 
+	commonpb "go.temporal.io/temporal-proto/common"
+	"go.temporal.io/temporal/encoded"
 	"go.temporal.io/temporal/workflow"
 )
 
@@ -38,7 +39,7 @@ func NewContextPropagator() workflow.ContextPropagator {
 // Inject injects values from context into headers for propagation
 func (s *propagator) Inject(ctx context.Context, writer workflow.HeaderWriter) error {
 	value := ctx.Value(PropagateKey)
-	payload, err := json.Marshal(value)
+	payload, err := encoded.GetDefaultPayloadConverter().ToData(value)
 	if err != nil {
 		return err
 	}
@@ -49,7 +50,7 @@ func (s *propagator) Inject(ctx context.Context, writer workflow.HeaderWriter) e
 // InjectFromWorkflow injects values from context into headers for propagation
 func (s *propagator) InjectFromWorkflow(ctx workflow.Context, writer workflow.HeaderWriter) error {
 	value := ctx.Value(PropagateKey)
-	payload, err := json.Marshal(value)
+	payload, err := encoded.GetDefaultPayloadConverter().ToData(value)
 	if err != nil {
 		return err
 	}
@@ -59,10 +60,10 @@ func (s *propagator) InjectFromWorkflow(ctx workflow.Context, writer workflow.He
 
 // Extract extracts values from headers and puts them into context
 func (s *propagator) Extract(ctx context.Context, reader workflow.HeaderReader) (context.Context, error) {
-	if err := reader.ForEachKey(func(key string, value []byte) error {
+	if err := reader.ForEachKey(func(key string, value *commonpb.Payload) error {
 		if key == propagationKey {
 			var values Values
-			if err := json.Unmarshal(value, &values); err != nil {
+			if err := encoded.GetDefaultPayloadConverter().FromData(value, &values); err != nil {
 				return err
 			}
 			ctx = context.WithValue(ctx, PropagateKey, values)
@@ -76,10 +77,10 @@ func (s *propagator) Extract(ctx context.Context, reader workflow.HeaderReader) 
 
 // ExtractToWorkflow extracts values from headers and puts them into context
 func (s *propagator) ExtractToWorkflow(ctx workflow.Context, reader workflow.HeaderReader) (workflow.Context, error) {
-	if err := reader.ForEachKey(func(key string, value []byte) error {
+	if err := reader.ForEachKey(func(key string, value *commonpb.Payload) error {
 		if key == propagationKey {
 			var values Values
-			if err := json.Unmarshal(value, &values); err != nil {
+			if err := encoded.GetDefaultPayloadConverter().FromData(value, &values); err != nil {
 				return err
 			}
 			ctx = workflow.WithValue(ctx, PropagateKey, values)

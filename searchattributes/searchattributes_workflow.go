@@ -13,6 +13,7 @@ import (
 	"go.temporal.io/temporal-proto/workflowservice"
 	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/client"
+	"go.temporal.io/temporal/encoded"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
@@ -45,7 +46,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	info := workflow.GetInfo(ctx)
 	val := info.SearchAttributes.IndexedFields["CustomIntField"]
 	var currentIntValue int
-	err := client.NewValue(val).Get(&currentIntValue)
+	err := encoded.GetDefaultPayloadConverter().FromData(val, &currentIntValue)
 	if err != nil {
 		logger.Error("Get search attribute failed", zap.Error(err))
 		return err
@@ -109,7 +110,7 @@ func printSearchAttributes(searchAttributes *common.SearchAttributes, logger *za
 	buf := new(bytes.Buffer)
 	for k, v := range searchAttributes.IndexedFields {
 		var currentVal interface{}
-		err := client.NewValue(v).Get(&currentVal)
+		err := encoded.GetDefaultPayloadConverter().FromData(v, &currentVal)
 		if err != nil {
 			logger.Error(fmt.Sprintf("Get search attribute for key %s failed", k), zap.Error(err))
 			return err

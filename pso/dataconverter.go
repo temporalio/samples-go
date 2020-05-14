@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"reflect"
 
+	commonpb "go.temporal.io/temporal-proto/common"
 	"go.temporal.io/temporal/encoded"
 )
 
@@ -22,7 +23,7 @@ func NewJSONDataConverter() encoded.DataConverter {
 
 // Json data converter implementation
 
-func (dc *jsonDataConverter) ToData(value ...interface{}) ([]byte, error) {
+func (dc *jsonDataConverter) ToData(value ...interface{}) (*commonpb.Payloads, error) {
 	var buf bytes.Buffer
 	enc := json.NewEncoder(&buf)
 	var err error
@@ -54,16 +55,25 @@ func (dc *jsonDataConverter) ToData(value ...interface{}) ([]byte, error) {
 				"unable to encode argument: %d, %v, with error: %v", i, reflect.TypeOf(obj), err)
 		}
 	}
-	return buf.Bytes(), nil
+
+	return encoded.GetDefaultDataConverter().ToData(buf.Bytes())
 	// TODO: store buf.Bytes() in DB/S3 and get key
 	// return key, nil
 }
 
-func (dc *jsonDataConverter) FromData(input []byte, valuePtr ...interface{}) error {
+func (dc *jsonDataConverter) FromData(input *commonpb.Payloads, valuePtr ...interface{}) error {
 	// TODO: convert input into key in DB/S3 and retrieve bytes
-	//dec := json.NewDecoder(bytes)
-	dec := json.NewDecoder(bytes.NewBuffer(input))
-	var err error
+	var b []byte
+	err := encoded.GetDefaultDataConverter().FromData(input, &b)
+	if err != nil {
+		return err
+	}
+
+	if b == nil {
+		return nil
+	}
+
+	dec := json.NewDecoder(bytes.NewBuffer(b))
 	for i, obj := range valuePtr {
 		switch t := obj.(type) {
 		case *Swarm:

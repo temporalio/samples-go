@@ -31,9 +31,9 @@ func main() {
 	defer func() { _ = c.CloseConnection() }()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                           workflowID,
-		TaskList:                     "cancel-activity",
-		ExecutionStartToCloseTimeout: 5 * time.Minute,
+		ID:                 workflowID,
+		TaskList:           "cancel-activity",
+		WorkflowRunTimeout: 5 * time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, cancelactivity.Workflow)

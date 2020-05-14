@@ -49,8 +49,8 @@ func EvalRosenbrock(vec []float64) float64 {
 	var sum float64 = 0
 	for i := 0; i < len(vec)-1; i++ {
 		sum += 100.0*
-			math.Pow((vec[i+1]-math.Pow(vec[i], 2.0)), 2.0) +
-			math.Pow((1-vec[i]), 2.0)
+			math.Pow(vec[i+1]-math.Pow(vec[i], 2.0), 2.0) +
+			math.Pow(1-vec[i], 2.0)
 	}
 	return sum
 }

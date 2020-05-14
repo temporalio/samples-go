@@ -29,10 +29,10 @@ func main() {
 	// This workflow ID can be user business logic identifier as well.
 	workflowID := "cron_" + uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                           workflowID,
-		TaskList:                     "cron",
-		ExecutionStartToCloseTimeout: time.Hour,
-		CronSchedule:                 "* * * * *",
+		ID:                 workflowID,
+		TaskList:           "cron",
+		WorkflowRunTimeout: time.Hour,
+		CronSchedule:       "* * * * *",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, cron.SampleCronWorkflow)

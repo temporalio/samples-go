@@ -27,9 +27,9 @@ func main() {
 	defer func() { _ = c.CloseConnection() }()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                           "multi_choice_" + uuid.New(),
-		TaskList:                     "choice-multi",
-		ExecutionStartToCloseTimeout: time.Minute,
+		ID:                 "multi_choice_" + uuid.New(),
+		TaskList:           "choice-multi",
+		WorkflowRunTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, choice_multi.MultiChoiceWorkflow)

@@ -39,9 +39,6 @@ func main() {
 
 	// The workers are supposed to be long running process that should not exit.
 	waitCtrlC()
-	// Stop worker, close connection, clean up resources.
-	w.Stop()
-	_ = c.CloseConnection()
 }
 
 func waitCtrlC() {

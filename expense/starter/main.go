@@ -28,9 +28,9 @@ func main() {
 
 	expenseID := uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              "expense_" + expenseID,
-		TaskList:                        "expense",
-		ExecutionStartToCloseTimeout:    time.Minute,
+		ID:                 "expense_" + expenseID,
+		TaskList:           "expense",
+		WorkflowRunTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, expense.SampleExpenseWorkflow, expenseID)

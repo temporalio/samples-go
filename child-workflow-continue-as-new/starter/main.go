@@ -29,9 +29,9 @@ func main() {
 	// This workflow ID can be user business logic identifier as well.
 	workflowID := "parent-workflow_" + uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                           workflowID,
-		TaskList:                     "child-workflow-continue-as-new",
-		ExecutionStartToCloseTimeout: time.Minute,
+		ID:                 workflowID,
+		TaskList:           "child-workflow-continue-as-new",
+		WorkflowRunTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, cw.SampleParentWorkflow)

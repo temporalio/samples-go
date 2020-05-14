@@ -16,8 +16,8 @@ func SampleParentWorkflow(ctx workflow.Context) error {
 	childID := fmt.Sprintf("child_workflow:%v", execution.RunID)
 	cwo := workflow.ChildWorkflowOptions{
 		// Do not specify WorkflowID if you want Temporal server to generate a unique ID for child execution
-		WorkflowID:                   childID,
-		ExecutionStartToCloseTimeout: time.Minute,
+		WorkflowID:         childID,
+		WorkflowRunTimeout: time.Minute,
 	}
 	ctx = workflow.WithChildOptions(ctx, cwo)
 	var result string

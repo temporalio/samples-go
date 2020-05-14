@@ -26,9 +26,9 @@ func main() {
 	}
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              "search_attributes_" + uuid.New(),
-		TaskList:                        "search-attributes",
-		ExecutionStartToCloseTimeout:    time.Minute,
+		ID:                 "search_attributes_" + uuid.New(),
+		TaskList:           "search-attributes",
+		WorkflowRunTimeout: time.Minute,
 		SearchAttributes: map[string]interface{}{ // optional search attributes when start workflow
 			"CustomIntField": 1,
 		},
@@ -39,7 +39,6 @@ func main() {
 		logger.Fatal("Unable to execute workflow", zap.Error(err))
 	}
 	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
-
 
 	// Close connection, clean up resources.
 	_ = c.CloseConnection()

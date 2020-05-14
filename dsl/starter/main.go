@@ -42,9 +42,9 @@ func main() {
 	}
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              "dsl_" + uuid.New(),
-		TaskList:                        "dsl",
-		ExecutionStartToCloseTimeout:    time.Minute,
+		ID:                 "dsl_" + uuid.New(),
+		TaskList:           "dsl",
+		WorkflowRunTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, dsl.SimpleDSLWorkflow, dslWorkflow)

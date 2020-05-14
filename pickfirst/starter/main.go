@@ -26,9 +26,9 @@ func main() {
 	}
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              "pick-first_" + uuid.New(),
-		TaskList:                        "pick-first",
-		ExecutionStartToCloseTimeout:    time.Minute,
+		ID:                 "pick-first_" + uuid.New(),
+		TaskList:           "pick-first",
+		WorkflowRunTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, pickfirst.SamplePickFirstWorkflow)
@@ -36,7 +36,6 @@ func main() {
 		logger.Fatal("Unable to execute workflow", zap.Error(err))
 	}
 	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
-
 
 	// Close connection, clean up resources.
 	_ = c.CloseConnection()

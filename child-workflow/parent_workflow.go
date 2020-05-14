@@ -15,7 +15,7 @@ func SampleParentWorkflow(ctx workflow.Context) (string, error) {
 	logger := workflow.GetLogger(ctx)
 
 	cwo := workflow.ChildWorkflowOptions{
-		ExecutionStartToCloseTimeout: time.Minute,
+		WorkflowRunTimeout: time.Minute,
 	}
 	ctx = workflow.WithChildOptions(ctx, cwo)
 

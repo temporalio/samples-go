@@ -1,8 +1,8 @@
 package recovery
 
 import (
-	"encoding/json"
-
+	commonpb "go.temporal.io/temporal-proto/common"
+	"go.temporal.io/temporal/encoded"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
@@ -61,18 +61,18 @@ func TripWorkflow(ctx workflow.Context, state UserState) error {
 	return workflow.NewContinueAsNewError(ctx, "TripWorkflow", state)
 }
 
-func deserializeUserState(data []byte) (UserState, error) {
+func deserializeUserState(data *commonpb.Payloads) (UserState, error) {
 	var state UserState
-	if err := json.Unmarshal(data, &state); err != nil {
+	if err := encoded.GetDefaultDataConverter().FromData(data, &state); err != nil {
 		return UserState{}, err
 	}
 
 	return state, nil
 }
 
-func deserializeTripEvent(data []byte) (TripEvent, error) {
+func deserializeTripEvent(data *commonpb.Payloads) (TripEvent, error) {
 	var trip TripEvent
-	if err := json.Unmarshal(data, &trip); err != nil {
+	if err := encoded.GetDefaultDataConverter().FromData(data, &trip); err != nil {
 		return TripEvent{}, err
 	}
 
