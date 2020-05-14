@@ -15,7 +15,7 @@ func main() {
 	}
 
 	var workflowID string
-	flag.StringVar(&workflowID, "w", "workflowID-to-cancel", "w is the workflowID of the workflow to be canceled.")
+	flag.StringVar(&workflowID, "wid", "", "workflowID of the workflow to be canceled.")
 	flag.Parse()
 
 	if workflowID == "" {
@@ -30,14 +30,11 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
+	defer func() { _ = c.CloseConnection() }()
 
 	err = c.CancelWorkflow(context.Background(), workflowID, "")
 	if err != nil {
 		logger.Fatal("Unable to cancel workflow", zap.Error(err))
-	} else {
-		logger.Info("Workflow cancelled", zap.String("WorkflowID", workflowID))
 	}
-
-	// Close connection, clean up resources.
-	_ = c.CloseConnection()
+	logger.Info("Workflow cancelled", zap.String("WorkflowID", workflowID))
 }

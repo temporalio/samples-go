@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// SampleTimerWorkflow workflow decider
+// SampleTimerWorkflow workflow definition
 func SampleTimerWorkflow(ctx workflow.Context, processingTimeThreshold time.Duration) error {
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,

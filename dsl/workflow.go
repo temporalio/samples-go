@@ -47,7 +47,7 @@ type (
 	}
 )
 
-// SimpleDSLWorkflow workflow decider
+// SimpleDSLWorkflow workflow definition
 func SimpleDSLWorkflow(ctx workflow.Context, dslWorkflow Workflow) ([]byte, error) {
 	bindings := make(map[string]string)
 	for k, v := range dslWorkflow.Variables {

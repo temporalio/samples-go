@@ -25,7 +25,7 @@ func main() {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
 
-	w := worker.New(c, "query-task-list", worker.Options{
+	w := worker.New(c, "query", worker.Options{
 		Logger: logger,
 	})
 

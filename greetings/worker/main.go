@@ -24,15 +24,16 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
+	defer func() { _ = c.CloseConnection() }()
 
-	w := worker.New(c, "greetings-task-list", worker.Options{
+	w := worker.New(c, "greetings", worker.Options{
 		Logger: logger,
 	})
+	defer w.Stop()
 
-	w.RegisterWorkflow(greetings.SampleGreetingsWorkflow)
-	w.RegisterActivity(greetings.GetGreetingActivity)
-	w.RegisterActivity(greetings.GetNameActivity)
-	w.RegisterActivity(greetings.SayGreetingActivity)
+	w.RegisterWorkflow(greetings.GreetingSample)
+	activities := &greetings.Activities{Name: "Temporal", Greeting: "Hello"}
+	w.RegisterActivity(activities)
 
 	err = w.Start()
 	if err != nil {
@@ -41,9 +42,6 @@ func main() {
 
 	// The workers are supposed to be long running process that should not exit.
 	waitCtrlC()
-	// Stop worker, close connection, clean up resources.
-	w.Stop()
-	_ = c.CloseConnection()
 }
 
 func waitCtrlC() {

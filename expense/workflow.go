@@ -11,7 +11,7 @@ var (
 	expenseServerHostPort = "http://localhost:8099"
 )
 
-// SampleExpenseWorkflow workflow decider
+// SampleExpenseWorkflow workflow definition
 func SampleExpenseWorkflow(ctx workflow.Context, expenseID string) (result string, err error) {
 	// step 1, create new expense report
 	ao := workflow.ActivityOptions{

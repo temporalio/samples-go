@@ -27,17 +27,16 @@ func main() {
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                              "split_merge_" + uuid.New(),
-		TaskList:                        "split-merge-task-list",
+		TaskList:                        "split-merge",
 		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, splitmerge.SampleSplitMergeWorkflow, 5)
 	if err != nil {
-		logger.Error("Unable to execute workflow", zap.Error(err))
-	} else {
-		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+		logger.Fatal("Unable to execute workflow", zap.Error(err))
 	}
+	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+
 
 	// Close connection, clean up resources.
 	_ = c.CloseConnection()

@@ -22,13 +22,15 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
+	defer func() { _ = c.CloseConnection() }()
 
-	w := worker.New(c, "hello-world-task-list", worker.Options{
+	w := worker.New(c, "hello-world", worker.Options{
 		Logger: logger,
 	})
+	defer w.Stop()
 
-	w.RegisterWorkflow(helloworld.HelloworldWorkflow)
-	w.RegisterActivity(helloworld.HelloworldActivity)
+	w.RegisterWorkflow(helloworld.Workflow)
+	w.RegisterActivity(helloworld.Activity)
 
 	err = w.Start()
 	if err != nil {

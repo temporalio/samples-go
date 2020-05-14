@@ -24,10 +24,12 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
+	defer func() { _ = c.CloseConnection() }()
 
-	w := worker.New(c, "cron-task-list", worker.Options{
+	w := worker.New(c, "cron", worker.Options{
 		Logger: logger,
 	})
+	defer w.Stop()
 
 	w.RegisterWorkflow(cron.SampleCronWorkflow)
 	w.RegisterActivity(cron.SampleCronActivity)
@@ -39,9 +41,6 @@ func main() {
 
 	// The workers are supposed to be long running process that should not exit.
 	waitCtrlC()
-	// Stop worker, close connection, clean up resources.
-	w.Stop()
-	_ = c.CloseConnection()
 }
 
 func waitCtrlC() {

@@ -25,7 +25,7 @@ func main() {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
 
-	w := worker.New(c, "pick-first-task-list", worker.Options{
+	w := worker.New(c, "pick-first", worker.Options{
 		Logger: logger,
 	})
 
