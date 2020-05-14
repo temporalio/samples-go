@@ -31,7 +31,8 @@ func SampleCronWorkflow(ctx workflow.Context) (*SampleCronResult, error) {
 	workflow.GetLogger(ctx).Info("Cron workflow started.", zap.Time("StartTime", workflow.Now(ctx)))
 
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout: time.Minute,
+		ScheduleToStartTimeout: time.Minute,
+		StartToCloseTimeout:    time.Minute,
 	}
 	ctx1 := workflow.WithActivityOptions(ctx, ao)
 

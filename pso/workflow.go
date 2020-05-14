@@ -69,6 +69,7 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (string, error) {
 		cwo := workflow.ChildWorkflowOptions{
 			WorkflowID:                   "PSO_Child_" + uuid.New(),
 			ExecutionStartToCloseTimeout: time.Minute,
+			TaskStartToCloseTimeout:      time.Minute,
 		}
 		ctx = workflow.WithChildOptions(ctx, cwo)
 

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/mock"
+	"go.temporal.io/temporal/worker"
 
 	"github.com/stretchr/testify/suite"
 	"go.temporal.io/temporal/testsuite"
@@ -20,6 +21,9 @@ func TestUnitTestSuite(t *testing.T) {
 
 func (s *UnitTestSuite) Test_SampleFileProcessingWorkflow() {
 	env := s.NewTestWorkflowEnvironment()
+	env.SetWorkerOptions(worker.Options{
+		EnableSessionWorker: true, // Important for a worker to participate in the session
+	})
 	var a *Activities
 
 	env.OnActivity(a.DownloadFileActivity, mock.Anything, "file1").Return("file2", nil)
