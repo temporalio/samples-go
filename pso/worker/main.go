@@ -22,13 +22,14 @@ func main() {
 	c, err := client.NewClient(client.Options{
 		HostPort:      client.DefaultHostPort,
 		DataConverter: pso.NewJSONDataConverter(),
+		Logger:        logger,
 	})
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
+	defer c.CloseConnection()
 
 	w := worker.New(c, "pso", worker.Options{
-		Logger:                             logger,
 		MaxConcurrentActivityExecutionSize: 1, // Activities are supposed to be CPU intensive, so better limit the concurrency
 	})
 
@@ -42,12 +43,10 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to start worker", zap.Error(err))
 	}
+	defer w.Stop()
 
 	// The workers are supposed to be long running process that should not exit.
 	waitCtrlC()
-	// Stop worker, close connection, clean up resources.
-	w.Stop()
-	_ = c.CloseConnection()
 }
 
 func waitCtrlC() {

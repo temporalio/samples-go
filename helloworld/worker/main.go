@@ -18,15 +18,15 @@ func main() {
 	}
 
 	// The client and worker are heavyweight objects that should be created once per process.
-	c, err := client.NewClient(client.Options{})
+	c, err := client.NewClient(client.Options{
+		Logger: logger,
+	})
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
-	defer func() { _ = c.CloseConnection() }()
+	defer c.CloseConnection()
 
-	w := worker.New(c, "hello-world", worker.Options{
-		Logger: logger,
-	})
+	w := worker.New(c, "hello-world", worker.Options{})
 	defer w.Stop()
 
 	w.RegisterWorkflow(helloworld.Workflow)

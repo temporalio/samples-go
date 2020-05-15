@@ -24,14 +24,14 @@ func main() {
 		ContextPropagators: []workflow.ContextPropagator{
 			ctxpropagation.NewContextPropagator(),
 		},
+		Logger: logger,
 	})
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
-	defer func() { _ = c.CloseConnection() }()
+	defer c.CloseConnection()
 
 	w := worker.New(c, "ctx-propagation", worker.Options{
-		Logger:                logger,
 		EnableLoggingInReplay: true,
 	})
 	defer w.Stop()

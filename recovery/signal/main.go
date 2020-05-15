@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
+	defer c.CloseConnection()
 
 	var tripEvent recovery.TripEvent
 	if err := json.Unmarshal([]byte(signal), &tripEvent); err != nil {
@@ -39,7 +40,4 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to signal workflow", zap.Error(err))
 	}
-
-	// Close connection, clean up resources.
-	_ = c.CloseConnection()
 }

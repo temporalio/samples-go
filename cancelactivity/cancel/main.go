@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
-	defer func() { _ = c.CloseConnection() }()
+	defer c.CloseConnection()
 
 	err = c.CancelWorkflow(context.Background(), workflowID, "")
 	if err != nil {

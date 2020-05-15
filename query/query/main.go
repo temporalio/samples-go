@@ -26,6 +26,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
+	defer c.CloseConnection()
 
 	resp, err := c.QueryWorkflow(context.Background(), workflowID, "", queryType)
 	if err != nil {
@@ -36,7 +37,4 @@ func main() {
 		logger.Error("Unable to decode query result", zap.Error(err))
 	}
 	logger.Info("Received query result", zap.Any("Result", result))
-
-	// Close connection, clean up resources.
-	_ = c.CloseConnection()
 }

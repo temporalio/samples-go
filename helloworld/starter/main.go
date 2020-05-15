@@ -20,7 +20,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
-	defer func() { _ = c.CloseConnection() }()
+	defer c.CloseConnection()
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:       "hello_world_workflowID",

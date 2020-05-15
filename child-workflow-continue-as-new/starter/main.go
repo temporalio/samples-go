@@ -23,7 +23,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
-	defer func() { _ = c.CloseConnection() }()
+	defer c.CloseConnection()
 
 	// This workflow ID can be user business logic identifier as well.
 	workflowID := "parent-workflow_" + uuid.New()

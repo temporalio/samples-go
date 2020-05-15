@@ -20,7 +20,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer func() { _ = c.CloseConnection() }()
+	defer c.CloseConnection()
 
 	workflowOptions := client.StartWorkflowOptions{
 		TaskList: "branch",
