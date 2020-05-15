@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal/client"
@@ -26,9 +25,8 @@ func main() {
 	}
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                 "pick-first_" + uuid.New(),
-		TaskList:           "pick-first",
-		WorkflowRunTimeout: time.Minute,
+		ID:       "pick-first_" + uuid.New(),
+		TaskList: "pick-first",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, pickfirst.SamplePickFirstWorkflow)

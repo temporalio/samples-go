@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal/client"
@@ -26,9 +25,8 @@ func main() {
 	}
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                 "search_attributes_" + uuid.New(),
-		TaskList:           "search-attributes",
-		WorkflowRunTimeout: time.Minute,
+		ID:       "search_attributes_" + uuid.New(),
+		TaskList: "search-attributes",
 		SearchAttributes: map[string]interface{}{ // optional search attributes when start workflow
 			"CustomIntField": 1,
 		},

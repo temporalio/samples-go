@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"time"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal/client"
@@ -32,9 +31,8 @@ func main() {
 	}
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                 "PSO_" + uuid.New(),
-		TaskList:           "pso",
-		WorkflowRunTimeout: time.Minute * 60,
+		ID:       "PSO_" + uuid.New(),
+		TaskList: "pso",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, pso.PSOWorkflow, functionName)

@@ -26,9 +26,8 @@ func main() {
 	}
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                 "timer_" + uuid.New(),
-		TaskList:           "timer",
-		WorkflowRunTimeout: time.Minute,
+		ID:       "timer_" + uuid.New(),
+		TaskList: "timer",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, timer.SampleTimerWorkflow, time.Second*3)

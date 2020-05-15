@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal/client"
@@ -26,9 +25,8 @@ func main() {
 	}
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                 "split_merge_" + uuid.New(),
-		TaskList:           "split-merge",
-		WorkflowRunTimeout: time.Minute,
+		ID:       "split_merge_" + uuid.New(),
+		TaskList: "split-merge",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, splitmerge.SampleSplitMergeWorkflow, 5)

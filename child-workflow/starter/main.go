@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal/client"
@@ -29,9 +28,8 @@ func main() {
 	// This workflow ID can be user business logic identifier as well.
 	workflowID := "parent-workflow_" + uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                 workflowID,
-		TaskList:           "child-workflow",
-		WorkflowRunTimeout: time.Minute,
+		ID:       workflowID,
+		TaskList: "child-workflow",
 	}
 
 	workflowRun, err := c.ExecuteWorkflow(context.Background(), workflowOptions, child_workflow.SampleParentWorkflow)

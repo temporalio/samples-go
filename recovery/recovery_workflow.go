@@ -290,7 +290,6 @@ func extractStateFromEvent(workflowID string, event *eventpb.HistoryEvent) (*Res
 			Options: client.StartWorkflowOptions{
 				ID:                  workflowID,
 				TaskList:            attr.TaskList.GetName(),
-				WorkflowRunTimeout:  time.Second * time.Duration(attr.GetWorkflowExecutionTimeoutSeconds()),
 				WorkflowTaskTimeout: time.Second * time.Duration(attr.GetWorkflowTaskTimeoutSeconds()),
 				// RetryPolicy: attr.RetryPolicy,
 			},

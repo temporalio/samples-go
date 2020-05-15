@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"go.temporal.io/temporal/client"
 	"go.uber.org/zap"
@@ -25,9 +24,8 @@ func main() {
 	}
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                 "query_workflow",
-		TaskList:           "query",
-		WorkflowRunTimeout: time.Hour,
+		ID:       "query_workflow",
+		TaskList: "query",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, query.QueryWorkflow)
