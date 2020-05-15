@@ -52,7 +52,6 @@ func (s *Mutex) Lock(ctx workflow.Context,
 			InitialInterval:    time.Second,
 			BackoffCoefficient: 2.0,
 			MaximumInterval:    time.Minute,
-			ExpirationInterval: time.Minute * 10,
 			MaximumAttempts:    5,
 		},
 	})
@@ -146,14 +145,12 @@ func SignalWithStartMutexWorkflowActivity(
 		resourceID,
 	)
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              workflowID,
-		TaskList:                        "mutex",
-		ExecutionStartToCloseTimeout:    time.Hour,
+		ID:       workflowID,
+		TaskList: "mutex",
 		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:    time.Second,
 			BackoffCoefficient: 2.0,
 			MaximumInterval:    time.Minute,
-			ExpirationInterval: time.Minute * 10,
 			MaximumAttempts:    5,
 		},
 	}

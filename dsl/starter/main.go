@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"io/ioutil"
-	"time"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal/client"
@@ -42,9 +41,8 @@ func main() {
 	}
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              "dsl_" + uuid.New(),
-		TaskList:                        "dsl",
-		ExecutionStartToCloseTimeout:    time.Minute,
+		ID:       "dsl_" + uuid.New(),
+		TaskList: "dsl",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, dsl.SimpleDSLWorkflow, dslWorkflow)

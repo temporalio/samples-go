@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
-	"time"
 
 	"go.temporal.io/temporal/client"
 	"go.uber.org/zap"
@@ -41,9 +40,8 @@ func main() {
 			logger.Fatal("Unable to unmarshal workflow input parameters", zap.Error(err))
 		}
 		workflowOptions := client.StartWorkflowOptions{
-			ID:                              workflowID,
-			TaskList:                        "recovery",
-			ExecutionStartToCloseTimeout:    time.Hour * 24,
+			ID:       workflowID,
+			TaskList: "recovery",
 		}
 		we, weError = c.ExecuteWorkflow(context.Background(), workflowOptions, recovery.TripWorkflow, userState)
 	case "recoveryworkflow":
@@ -53,9 +51,8 @@ func main() {
 		}
 
 		workflowOptions := client.StartWorkflowOptions{
-			ID:                              workflowID,
-			TaskList:                        "recovery",
-			ExecutionStartToCloseTimeout:    time.Hour * 24,
+			ID:       workflowID,
+			TaskList: "recovery",
 		}
 		we, weError = c.ExecuteWorkflow(context.Background(), workflowOptions, recovery.RecoverWorkflow, params)
 	default:

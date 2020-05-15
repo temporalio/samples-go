@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"go.uber.org/zap"
 
@@ -26,8 +25,7 @@ func main() {
 	}
 	defer func() { _ = c.CloseConnection() }()
 	workflowOptions := client.StartWorkflowOptions{
-		TaskList:                     "parallel",
-		ExecutionStartToCloseTimeout: time.Minute,
+		TaskList: "parallel",
 	}
 	ctx := context.Background()
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, parallel.SampleParallelWorkflow)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal/client"
@@ -29,10 +28,9 @@ func main() {
 	// This workflow ID can be user business logic identifier as well.
 	workflowID := "cron_" + uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                           workflowID,
-		TaskList:                     "cron",
-		ExecutionStartToCloseTimeout: time.Hour,
-		CronSchedule:                 "* * * * *",
+		ID:           workflowID,
+		TaskList:     "cron",
+		CronSchedule: "* * * * *",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, cron.SampleCronWorkflow)

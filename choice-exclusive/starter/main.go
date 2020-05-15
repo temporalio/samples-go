@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal/client"
@@ -27,9 +26,8 @@ func main() {
 	defer func() { _ = c.CloseConnection() }()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                           "exclusive_" + uuid.New(),
-		TaskList:                     "choice",
-		ExecutionStartToCloseTimeout: time.Minute,
+		ID:       "exclusive_" + uuid.New(),
+		TaskList: "choice",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, choice.ExclusiveChoiceWorkflow)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"go.temporal.io/temporal/client"
 	"go.uber.org/zap"
@@ -25,9 +24,8 @@ func main() {
 	}
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              "query_workflow",
-		TaskList:                        "query",
-		ExecutionStartToCloseTimeout:    time.Hour,
+		ID:       "query_workflow",
+		TaskList: "query",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, query.QueryWorkflow)
@@ -35,7 +33,6 @@ func main() {
 		logger.Fatal("Unable to execute workflow", zap.Error(err))
 	}
 	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
-
 
 	// Close connection, clean up resources.
 	_ = c.CloseConnection()

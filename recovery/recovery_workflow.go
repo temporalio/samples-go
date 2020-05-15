@@ -103,12 +103,11 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 
 	// Setup retry policy for recovery activity
 	info := workflow.GetInfo(ctx)
-	expiration := time.Duration(info.ExecutionStartToCloseTimeoutSeconds) * time.Second
+	expiration := time.Duration(info.WorkflowExecutionTimeoutSeconds) * time.Second
 	retryPolicy := &temporal.RetryPolicy{
 		InitialInterval:    time.Second,
 		BackoffCoefficient: 2,
 		MaximumInterval:    10 * time.Second,
-		ExpirationInterval: expiration,
 		MaximumAttempts:    100,
 	}
 	ao = workflow.ActivityOptions{
@@ -282,17 +281,16 @@ func extractStateFromEvent(workflowID string, event *eventpb.HistoryEvent) (*Res
 	switch event.GetEventType() {
 	case eventpb.EventType_WorkflowExecutionStarted:
 		attr := event.GetWorkflowExecutionStartedEventAttributes()
-		state, err := deserializeUserState(attr.Input)
+		state, err := deserializeUserState(attr.GetInput())
 		if err != nil {
 			// Corrupted Workflow Execution State
 			return nil, err
 		}
 		return &RestartParams{
 			Options: client.StartWorkflowOptions{
-				ID:                              workflowID,
-				TaskList:                        attr.TaskList.GetName(),
-				ExecutionStartToCloseTimeout:    time.Second * time.Duration(attr.GetExecutionStartToCloseTimeoutSeconds()),
-				DecisionTaskStartToCloseTimeout: time.Second * time.Duration(attr.GetTaskStartToCloseTimeoutSeconds()),
+				ID:                  workflowID,
+				TaskList:            attr.TaskList.GetName(),
+				WorkflowTaskTimeout: time.Second * time.Duration(attr.GetWorkflowTaskTimeoutSeconds()),
 				// RetryPolicy: attr.RetryPolicy,
 			},
 			State: state,
@@ -307,8 +305,8 @@ func extractSignals(events []*eventpb.HistoryEvent) ([]*SignalParams, error) {
 	for _, event := range events {
 		if event.GetEventType() == eventpb.EventType_WorkflowExecutionSignaled {
 			attr := event.GetWorkflowExecutionSignaledEventAttributes()
-			if attr.GetSignalName() == TripSignalName && attr.Input != nil && len(attr.Input) > 0 {
-				signalData, err := deserializeTripEvent(attr.Input)
+			if attr.GetSignalName() == TripSignalName && attr.GetInput() != nil {
+				signalData, err := deserializeTripEvent(attr.GetInput())
 				if err != nil {
 					// Corrupted Signal Payload
 					return nil, err

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal/client"
@@ -28,9 +27,8 @@ func main() {
 
 	fileID := uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              "fileprocessing_" + fileID,
-		TaskList:                        "fileprocessing",
-		ExecutionStartToCloseTimeout:    time.Minute,
+		ID:       "fileprocessing_" + fileID,
+		TaskList: "fileprocessing",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, fileprocessing.SampleFileProcessingWorkflow, fileID)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"go.temporal.io/temporal/client"
 	"go.uber.org/zap"
@@ -24,9 +23,8 @@ func main() {
 	defer func() { _ = c.CloseConnection() }()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                           "hello_world_workflowID",
-		TaskList:                     "hello-world",
-		ExecutionStartToCloseTimeout: time.Minute,
+		ID:       "hello_world_workflowID",
+		TaskList: "hello-world",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, helloworld.Workflow, "Temporal")

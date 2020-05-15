@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"reflect"
 
+	commonpb "go.temporal.io/temporal-proto/common"
 	"go.temporal.io/temporal/encoded"
 )
 
@@ -22,11 +23,13 @@ func NewJSONDataConverter() encoded.DataConverter {
 
 // Json data converter implementation
 
-func (dc *jsonDataConverter) ToData(value ...interface{}) ([]byte, error) {
-	var buf bytes.Buffer
-	enc := json.NewEncoder(&buf)
-	var err error
+func (dc *jsonDataConverter) ToData(value ...interface{}) (*commonpb.Payloads, error) {
+	payloads := &commonpb.Payloads{}
 	for i, obj := range value {
+		var err error
+		var buf bytes.Buffer
+		enc := json.NewEncoder(&buf)
+
 		switch t := obj.(type) {
 		case Swarm:
 			err = enc.Encode(*t.Settings)
@@ -44,8 +47,10 @@ func (dc *jsonDataConverter) ToData(value ...interface{}) ([]byte, error) {
 				}
 			}
 		case WorkflowResult:
-			_ = enc.Encode(t.Msg)
-			err = enc.Encode(t.Success)
+			err = enc.Encode(t.Msg)
+			if err == nil {
+				err = enc.Encode(t.Success)
+			}
 		default:
 			err = enc.Encode(obj)
 		}
@@ -53,18 +58,26 @@ func (dc *jsonDataConverter) ToData(value ...interface{}) ([]byte, error) {
 			return nil, fmt.Errorf(
 				"unable to encode argument: %d, %v, with error: %v", i, reflect.TypeOf(obj), err)
 		}
+
+		payloads.Payloads = append(payloads.Payloads, &commonpb.Payload{
+			Metadata: map[string][]byte{
+				"encoding": []byte("raw"),
+			},
+			Data: buf.Bytes(),
+		})
 	}
-	return buf.Bytes(), nil
-	// TODO: store buf.Bytes() in DB/S3 and get key
+
+	return payloads, nil
+	// TODO: store payloads in DB/S3 and return encoded key
 	// return key, nil
 }
 
-func (dc *jsonDataConverter) FromData(input []byte, valuePtr ...interface{}) error {
-	// TODO: convert input into key in DB/S3 and retrieve bytes
-	//dec := json.NewDecoder(bytes)
-	dec := json.NewDecoder(bytes.NewBuffer(input))
-	var err error
-	for i, obj := range valuePtr {
+func (dc *jsonDataConverter) FromData(payloads *commonpb.Payloads, valuePtr ...interface{}) error {
+	// TODO: convert payloads into key in DB/S3 and retrieve actual payloads from DB/S3
+	for i, payload := range payloads.Payloads {
+		var err error
+		obj := valuePtr[i]
+		dec := json.NewDecoder(bytes.NewBuffer(payload.GetData()))
 		switch t := obj.(type) {
 		case *Swarm:
 			t.Settings = new(SwarmSettings)
@@ -78,8 +91,10 @@ func (dc *jsonDataConverter) FromData(input []byte, valuePtr ...interface{}) err
 				err = dec.Decode(t.Particles[index])
 			}
 		case *WorkflowResult:
-			_ = dec.Decode(&t.Msg)
-			err = dec.Decode(&t.Success)
+			err = dec.Decode(&t.Msg)
+			if err == nil {
+				err = dec.Decode(&t.Success)
+			}
 		default:
 			err = dec.Decode(obj)
 		}

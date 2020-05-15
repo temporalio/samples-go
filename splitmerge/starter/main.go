@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal/client"
@@ -26,9 +25,8 @@ func main() {
 	}
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              "split_merge_" + uuid.New(),
-		TaskList:                        "split-merge",
-		ExecutionStartToCloseTimeout:    time.Minute,
+		ID:       "split_merge_" + uuid.New(),
+		TaskList: "split-merge",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, splitmerge.SampleSplitMergeWorkflow, 5)
@@ -36,7 +34,6 @@ func main() {
 		logger.Fatal("Unable to execute workflow", zap.Error(err))
 	}
 	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
-
 
 	// Close connection, clean up resources.
 	_ = c.CloseConnection()

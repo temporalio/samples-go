@@ -1,8 +1,6 @@
 package child_workflow
 
 import (
-	"time"
-
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
@@ -14,9 +12,7 @@ import (
 func SampleParentWorkflow(ctx workflow.Context) (string, error) {
 	logger := workflow.GetLogger(ctx)
 
-	cwo := workflow.ChildWorkflowOptions{
-		ExecutionStartToCloseTimeout: time.Minute,
-	}
+	cwo := workflow.ChildWorkflowOptions{}
 	ctx = workflow.WithChildOptions(ctx, cwo)
 
 	var result string
