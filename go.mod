@@ -11,7 +11,7 @@ require (
 	github.com/stretchr/testify v1.5.1
 	github.com/uber-go/tally v3.3.16+incompatible // indirect
 	github.com/uber/jaeger-client-go v2.23.1+incompatible // indirect
-	go.temporal.io/temporal v0.22.9
+	go.temporal.io/temporal v0.23.0
 	go.temporal.io/temporal-proto v0.20.34
 	go.uber.org/zap v1.15.0
 	golang.org/x/mod v0.3.0 // indirect
