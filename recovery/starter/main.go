@@ -30,6 +30,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
+	defer c.CloseConnection()
 
 	var we client.WorkflowRun
 	var weError error
@@ -57,7 +58,6 @@ func main() {
 		we, weError = c.ExecuteWorkflow(context.Background(), workflowOptions, recovery.RecoverWorkflow, params)
 	default:
 		flag.PrintDefaults()
-		_ = c.CloseConnection()
 		return
 	}
 
@@ -66,7 +66,4 @@ func main() {
 	} else {
 		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
 	}
-
-	// Close connection, clean up resources.
-	_ = c.CloseConnection()
 }

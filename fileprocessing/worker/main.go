@@ -20,14 +20,14 @@ func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
+		Logger:   logger,
 	})
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
-	defer func() { _ = c.CloseConnection() }()
+	defer c.CloseConnection()
 
 	workerOptions := worker.Options{
-		Logger:              logger,
 		EnableSessionWorker: true, // Important for a worker to participate in the session
 	}
 	w := worker.New(c, "fileprocessing", workerOptions)
