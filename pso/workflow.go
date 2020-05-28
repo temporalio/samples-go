@@ -107,7 +107,7 @@ func PSOChildWorkflow(ctx workflow.Context, swarm Swarm, startingStep int) (Work
 	result, err := swarm.Run(ctx, startingStep)
 	if err != nil {
 		if err.Error() == ContinueAsNewStr {
-			return WorkflowResult{"NewContinueAsNewError", false}, workflow.NewContinueAsNewError(ctx, PSOChildWorkflow, swarm, result.Step+1)
+			return WorkflowResult{"NewContinueAsNewError", false}, temporal.NewContinueAsNewError(ctx, PSOChildWorkflow, swarm, result.Step+1)
 		}
 
 		msg := fmt.Sprintf("Error in swarm loop: " + err.Error())
