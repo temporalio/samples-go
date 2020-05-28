@@ -7,8 +7,8 @@ import (
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal"
+	commonpb "go.temporal.io/temporal-proto/common"
 	eventpb "go.temporal.io/temporal-proto/event"
-	executionpb "go.temporal.io/temporal-proto/execution"
 	filterpb "go.temporal.io/temporal-proto/filter"
 	"go.temporal.io/temporal-proto/workflowservice"
 	"go.temporal.io/temporal/activity"
@@ -188,7 +188,7 @@ func RecoverExecutions(ctx context.Context, key string, startIndex, batchSize in
 		return ErrExecutionCacheNotFound
 	}
 
-	openExecutions := executionsCache.Get(key).([]*executionpb.WorkflowExecution)
+	openExecutions := executionsCache.Get(key).([]*commonpb.WorkflowExecution)
 	endIndex := startIndex + batchSize
 
 	// Check if this activity has previous heartbeat to retrieve progress from it
@@ -223,7 +223,7 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 		return err
 	}
 
-	execution := &executionpb.WorkflowExecution{
+	execution := &commonpb.WorkflowExecution{
 		WorkflowId: workflowID,
 	}
 	history, err := getHistory(ctx, execution)
@@ -335,8 +335,8 @@ func isExecutionCompleted(event *eventpb.HistoryEvent) bool {
 	}
 }
 
-func getAllExecutionsOfType(ctx context.Context, c client.Client, workflowType string) ([]*executionpb.WorkflowExecution, error) {
-	var openExecutions []*executionpb.WorkflowExecution
+func getAllExecutionsOfType(ctx context.Context, c client.Client, workflowType string) ([]*commonpb.WorkflowExecution, error) {
+	var openExecutions []*commonpb.WorkflowExecution
 	var nextPageToken []byte
 	for hasMore := true; hasMore; hasMore = len(nextPageToken) > 0 {
 		resp, err := c.ListOpenWorkflow(ctx, &workflowservice.ListOpenWorkflowExecutionsRequest{
@@ -366,7 +366,7 @@ func getAllExecutionsOfType(ctx context.Context, c client.Client, workflowType s
 	return openExecutions, nil
 }
 
-func getHistory(ctx context.Context, execution *executionpb.WorkflowExecution) ([]*eventpb.HistoryEvent, error) {
+func getHistory(ctx context.Context, execution *commonpb.WorkflowExecution) ([]*eventpb.HistoryEvent, error) {
 	c, err := getClientFromContext(ctx)
 	if err != nil {
 		return nil, err

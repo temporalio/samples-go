@@ -23,11 +23,10 @@ func RetryWorkflow(ctx workflow.Context) error {
 		StartToCloseTimeout:    time.Minute * 10,
 		HeartbeatTimeout:       time.Second * 10,
 		RetryPolicy: &temporal.RetryPolicy{
-			InitialInterval:          time.Second,
-			BackoffCoefficient:       2.0,
-			MaximumInterval:          time.Minute,
-			MaximumAttempts:          5,
-			NonRetriableErrorReasons: []string{"bad-error"},
+			InitialInterval:    time.Second,
+			BackoffCoefficient: 2.0,
+			MaximumInterval:    time.Minute,
+			MaximumAttempts:    5,
 		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
@@ -69,7 +68,7 @@ func BatchProcessingActivity(ctx context.Context, firstTaskID, batchSize int, pr
 			logger.Info("Activity failed, will retry...")
 			// Activity could return different error types for different failures so workflow could handle them differently.
 			// For example, decide to retry or not based on error reasons.
-			return temporal.NewCustomError("some-retryable-error")
+			return temporal.NewApplicationError("some-retryable-error", false)
 		}
 	}
 

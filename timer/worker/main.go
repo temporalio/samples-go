@@ -1,9 +1,6 @@
 package main
 
 import (
-	"os"
-	"os/signal"
-
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
@@ -25,7 +22,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
-	defer c.CloseConnection()
+	defer c.Close()
 
 	w := worker.New(c, "timer", worker.Options{
 		MaxConcurrentActivityExecutionSize: 3,
@@ -35,18 +32,8 @@ func main() {
 	w.RegisterActivity(timer.OrderProcessingActivity)
 	w.RegisterActivity(timer.SendEmailActivity)
 
-	err = w.Start()
+	err = w.Run()
 	if err != nil {
 		logger.Fatal("Unable to start worker", zap.Error(err))
 	}
-	defer w.Stop()
-
-	// The workers are supposed to be long running process that should not exit.
-	waitCtrlC()
-}
-
-func waitCtrlC() {
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, os.Interrupt)
-	<-ch
 }
