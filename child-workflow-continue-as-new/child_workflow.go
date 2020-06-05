@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"go.temporal.io/temporal"
 	"go.temporal.io/temporal/workflow"
 	"go.uber.org/zap"
 )
@@ -28,5 +27,5 @@ func SampleChildWorkflow(ctx workflow.Context, totalCount, runCount int) (string
 
 	logger.Info("Child workflow starting new run.", zap.Int("RunCount", runCount), zap.Int("TotalCount",
 		totalCount))
-	return "", temporal.NewContinueAsNewError(ctx, SampleChildWorkflow, totalCount, runCount)
+	return "", workflow.NewContinueAsNewError(ctx, SampleChildWorkflow, totalCount, runCount)
 }

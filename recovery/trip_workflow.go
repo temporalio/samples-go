@@ -1,7 +1,6 @@
 package recovery
 
 import (
-	"go.temporal.io/temporal"
 	commonpb "go.temporal.io/temporal-proto/common"
 	"go.temporal.io/temporal/encoded"
 	"go.temporal.io/temporal/workflow"
@@ -59,7 +58,7 @@ func TripWorkflow(ctx workflow.Context, state UserState) error {
 	}
 
 	logger.Info("Starting a new run.", zap.Int("TripCounter", state.TripCounter))
-	return temporal.NewContinueAsNewError(ctx, "TripWorkflow", state)
+	return workflow.NewContinueAsNewError(ctx, "TripWorkflow", state)
 }
 
 func deserializeUserState(data *commonpb.Payloads) (UserState, error) {

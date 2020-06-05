@@ -68,7 +68,7 @@ func BatchProcessingActivity(ctx context.Context, firstTaskID, batchSize int, pr
 			logger.Info("Activity failed, will retry...")
 			// Activity could return different error types for different failures so workflow could handle them differently.
 			// For example, use *ApplicationError to control if error should be retryable or not.
-			return temporal.NewRetryableApplicationError("some retryable error")
+			return temporal.NewApplicationError("some retryable error")
 		}
 	}
 
