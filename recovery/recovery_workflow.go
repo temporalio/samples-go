@@ -7,10 +7,11 @@ import (
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/temporal"
-	commonpb "go.temporal.io/temporal-proto/common"
-	eventpb "go.temporal.io/temporal-proto/event"
-	filterpb "go.temporal.io/temporal-proto/filter"
-	"go.temporal.io/temporal-proto/workflowservice"
+	commonpb "go.temporal.io/temporal-proto/common/v1"
+	enumspb "go.temporal.io/temporal-proto/enums/v1"
+	filterpb "go.temporal.io/temporal-proto/filter/v1"
+	historypb "go.temporal.io/temporal-proto/history/v1"
+	"go.temporal.io/temporal-proto/workflowservice/v1"
 	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/workflow"
@@ -277,9 +278,9 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 	return nil
 }
 
-func extractStateFromEvent(workflowID string, event *eventpb.HistoryEvent) (*RestartParams, error) {
+func extractStateFromEvent(workflowID string, event *historypb.HistoryEvent) (*RestartParams, error) {
 	switch event.GetEventType() {
-	case eventpb.EventType_WorkflowExecutionStarted:
+	case enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_STARTED:
 		attr := event.GetWorkflowExecutionStartedEventAttributes()
 		state, err := deserializeUserState(attr.GetInput())
 		if err != nil {
@@ -300,10 +301,10 @@ func extractStateFromEvent(workflowID string, event *eventpb.HistoryEvent) (*Res
 	}
 }
 
-func extractSignals(events []*eventpb.HistoryEvent) ([]*SignalParams, error) {
+func extractSignals(events []*historypb.HistoryEvent) ([]*SignalParams, error) {
 	var signals []*SignalParams
 	for _, event := range events {
-		if event.GetEventType() == eventpb.EventType_WorkflowExecutionSignaled {
+		if event.GetEventType() == enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_SIGNALED {
 			attr := event.GetWorkflowExecutionSignaledEventAttributes()
 			if attr.GetSignalName() == TripSignalName && attr.GetInput() != nil {
 				signalData, err := deserializeTripEvent(attr.GetInput())
@@ -324,11 +325,11 @@ func extractSignals(events []*eventpb.HistoryEvent) ([]*SignalParams, error) {
 	return signals, nil
 }
 
-func isExecutionCompleted(event *eventpb.HistoryEvent) bool {
+func isExecutionCompleted(event *historypb.HistoryEvent) bool {
 	switch event.GetEventType() {
-	case eventpb.EventType_WorkflowExecutionCompleted, eventpb.EventType_WorkflowExecutionTerminated,
-		eventpb.EventType_WorkflowExecutionCanceled, eventpb.EventType_WorkflowExecutionFailed,
-		eventpb.EventType_WorkflowExecutionTimedOut:
+	case enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_COMPLETED, enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_TERMINATED,
+		enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_CANCELED, enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_FAILED,
+		enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_TIMED_OUT:
 		return true
 	default:
 		return false
@@ -366,14 +367,14 @@ func getAllExecutionsOfType(ctx context.Context, c client.Client, workflowType s
 	return openExecutions, nil
 }
 
-func getHistory(ctx context.Context, execution *commonpb.WorkflowExecution) ([]*eventpb.HistoryEvent, error) {
+func getHistory(ctx context.Context, execution *commonpb.WorkflowExecution) ([]*historypb.HistoryEvent, error) {
 	c, err := getClientFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	iter := c.GetWorkflowHistory(ctx, execution.GetWorkflowId(), execution.GetRunId(), false, filterpb.HistoryEventFilterType_AllEvent)
-	var events []*eventpb.HistoryEvent
+	iter := c.GetWorkflowHistory(ctx, execution.GetWorkflowId(), execution.GetRunId(), false, enumspb.HISTORY_EVENT_FILTER_TYPE_ALL_EVENT)
+	var events []*historypb.HistoryEvent
 	for iter.HasNext() {
 		event, err := iter.Next()
 		if err != nil {

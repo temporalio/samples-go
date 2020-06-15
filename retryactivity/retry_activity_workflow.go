@@ -66,8 +66,8 @@ func BatchProcessingActivity(ctx context.Context, firstTaskID, batchSize int, pr
 		// simulate failure after process 1/3 of the tasks
 		if taskProcessedInThisAttempt >= batchSize/3 && i < firstTaskID+batchSize-1 {
 			logger.Info("Activity failed, will retry...")
-			// Activity could return different error types for different failures so workflow could handle them differently.
-			// For example, use *ApplicationError to control if error should be retryable or not.
+			// Activity could return *ApplicationError which is always retryable.
+			// To return non-retryable error use temporal.NewNonRetryableApplicationError() constructor.
 			return temporal.NewApplicationError("some retryable error")
 		}
 	}
