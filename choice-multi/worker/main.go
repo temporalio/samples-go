@@ -1,9 +1,6 @@
 package main
 
 import (
-	"os"
-	"os/signal"
-
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/worker"
 	"go.uber.org/zap"
@@ -39,17 +36,8 @@ func main() {
 		choice_multi.OrderChoiceOrange}
 	w.RegisterActivity(&choice_multi.OrderActivities{OrderChoices: orderChoices})
 
-	err = w.Start()
+	err = w.Run()
 	if err != nil {
 		logger.Fatal("Unable to start worker", zap.Error(err))
 	}
-
-	// The workers are supposed to be long running process that should not exit.
-	waitCtrlC()
-}
-
-func waitCtrlC() {
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, os.Interrupt)
-	<-ch
 }
