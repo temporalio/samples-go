@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
-	defer c.CloseConnection()
+	defer c.Close()
 
 	w := worker.New(c, "cancel-activity", worker.Options{})
 	defer w.Stop()

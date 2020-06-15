@@ -27,7 +27,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
-	defer c.CloseConnection()
+	defer c.Close()
 
 	w := worker.New(c, "pso", worker.Options{
 		MaxConcurrentActivityExecutionSize: 1, // Activities are supposed to be CPU intensive, so better limit the concurrency

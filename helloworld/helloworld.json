@@ -2,6 +2,7 @@
   "events": [
     {
       "eventId": "1",
+      "eventType": "WorkflowExecutionStarted",
       "timestamp": "1589493706813852514",
       "version": "-24",
       "taskId": "2097152",

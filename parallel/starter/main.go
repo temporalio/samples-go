@@ -23,7 +23,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer c.CloseConnection()
+	defer c.Close()
 	workflowOptions := client.StartWorkflowOptions{
 		TaskList: "parallel",
 	}

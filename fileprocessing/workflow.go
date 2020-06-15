@@ -16,10 +16,9 @@ func SampleFileProcessingWorkflow(ctx workflow.Context, fileName string) (err er
 		ScheduleToStartTimeout: time.Minute,
 		HeartbeatTimeout:       time.Second * 2, // such a short timeout to make sample fail over very fast
 		RetryPolicy: &temporal.RetryPolicy{
-			InitialInterval:          time.Second,
-			BackoffCoefficient:       2.0,
-			MaximumInterval:          time.Minute,
-			NonRetriableErrorReasons: []string{"bad-argument"},
+			InitialInterval:    time.Second,
+			BackoffCoefficient: 2.0,
+			MaximumInterval:    time.Minute,
 		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)

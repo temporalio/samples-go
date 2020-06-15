@@ -29,7 +29,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
-	defer c.CloseConnection()
+	defer c.Close()
 
 	var tripEvent recovery.TripEvent
 	if err := json.Unmarshal([]byte(signal), &tripEvent); err != nil {

@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
 	}
-	defer c.CloseConnection()
+	defer c.Close()
 
 	workerOptions := worker.Options{
 		EnableSessionWorker: true, // Important for a worker to participate in the session

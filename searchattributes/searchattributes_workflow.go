@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"time"
 
-	"go.temporal.io/temporal-proto/common"
-	executionpb "go.temporal.io/temporal-proto/execution"
-	"go.temporal.io/temporal-proto/workflowservice"
+	"go.temporal.io/temporal-proto/common/v1"
+	workflowpb "go.temporal.io/temporal-proto/workflow/v1"
+	"go.temporal.io/temporal-proto/workflowservice/v1"
 	"go.temporal.io/temporal/activity"
 	"go.temporal.io/temporal/client"
 	"go.temporal.io/temporal/encoded"
@@ -46,7 +46,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	info := workflow.GetInfo(ctx)
 	val := info.SearchAttributes.IndexedFields["CustomIntField"]
 	var currentIntValue int
-	err := encoded.GetDefaultPayloadConverter().FromData(val, &currentIntValue)
+	err := encoded.GetDefaultDataConverter().FromPayload(val, &currentIntValue)
 	if err != nil {
 		logger.Error("Get search attribute failed", zap.Error(err))
 		return err
@@ -94,7 +94,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 	query := "CustomIntField=2 and CustomKeywordField='Update2' order by CustomDatetimeField DESC"
-	var listResults []*executionpb.WorkflowExecutionInfo
+	var listResults []*workflowpb.WorkflowExecutionInfo
 	err = workflow.ExecuteActivity(ctx, ListExecutions, query).Get(ctx, &listResults)
 	if err != nil {
 		logger.Error("Failed to list workflow executions.", zap.Error(err))
@@ -110,7 +110,7 @@ func printSearchAttributes(searchAttributes *common.SearchAttributes, logger *za
 	buf := new(bytes.Buffer)
 	for k, v := range searchAttributes.IndexedFields {
 		var currentVal interface{}
-		err := encoded.GetDefaultPayloadConverter().FromData(v, &currentVal)
+		err := encoded.GetDefaultDataConverter().FromPayload(v, &currentVal)
 		if err != nil {
 			logger.Error(fmt.Sprintf("Get search attribute for key %s failed", k), zap.Error(err))
 			return err
@@ -121,7 +121,7 @@ func printSearchAttributes(searchAttributes *common.SearchAttributes, logger *za
 	return nil
 }
 
-func ListExecutions(ctx context.Context, query string) ([]*executionpb.WorkflowExecutionInfo, error) {
+func ListExecutions(ctx context.Context, query string) ([]*workflowpb.WorkflowExecutionInfo, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("List executions.", zap.String("Query", query))
 
@@ -131,7 +131,7 @@ func ListExecutions(ctx context.Context, query string) ([]*executionpb.WorkflowE
 		return nil, err
 	}
 
-	var executions []*executionpb.WorkflowExecutionInfo
+	var executions []*workflowpb.WorkflowExecutionInfo
 	var nextPageToken []byte
 	for hasMore := true; hasMore; hasMore = len(nextPageToken) > 0 {
 		resp, err := c.ListWorkflow(ctx, &workflowservice.ListWorkflowExecutionsRequest{
