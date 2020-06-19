@@ -25,7 +25,6 @@ func main() {
 	defer c.Close()
 
 	w := worker.New(c, "child-workflow", worker.Options{})
-	defer w.Stop()
 
 	w.RegisterWorkflow(child_workflow.SampleParentWorkflow)
 	w.RegisterWorkflow(child_workflow.SampleChildWorkflow)

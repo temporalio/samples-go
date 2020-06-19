@@ -25,7 +25,6 @@ func main() {
 	defer c.Close()
 
 	w := worker.New(c, "choice", worker.Options{})
-	defer w.Stop()
 
 	w.RegisterWorkflow(choice.ExclusiveChoiceWorkflow)
 

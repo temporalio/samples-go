@@ -25,7 +25,6 @@ func main() {
 	defer c.Close()
 
 	w := worker.New(c, "dynamic", worker.Options{})
-	defer w.Stop()
 
 	w.RegisterWorkflow(dynamic.SampleGreetingsWorkflow)
 	w.RegisterActivity(&dynamic.Activities{})

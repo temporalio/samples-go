@@ -31,7 +31,6 @@ func main() {
 	w := worker.New(c, "ctx-propagation", worker.Options{
 		EnableLoggingInReplay: true,
 	})
-	defer w.Stop()
 
 	w.RegisterWorkflow(ctxpropagation.CtxPropWorkflow)
 	w.RegisterActivity(ctxpropagation.SampleActivity)

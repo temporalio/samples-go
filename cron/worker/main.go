@@ -25,7 +25,6 @@ func main() {
 	defer c.Close()
 
 	w := worker.New(c, "cron", worker.Options{})
-	defer w.Stop()
 
 	w.RegisterWorkflow(cron.SampleCronWorkflow)
 	w.RegisterActivity(cron.SampleCronActivity)

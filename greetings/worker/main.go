@@ -25,7 +25,6 @@ func main() {
 	defer c.Close()
 
 	w := worker.New(c, "greetings", worker.Options{})
-	defer w.Stop()
 
 	w.RegisterWorkflow(greetings.GreetingSample)
 	activities := &greetings.Activities{Name: "Temporal", Greeting: "Hello"}

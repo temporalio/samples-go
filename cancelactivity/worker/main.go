@@ -25,7 +25,6 @@ func main() {
 	defer c.Close()
 
 	w := worker.New(c, "cancel-activity", worker.Options{})
-	defer w.Stop()
 
 	w.RegisterWorkflow(cancelactivity.Workflow)
 	w.RegisterActivity(&cancelactivity.Activities{})
