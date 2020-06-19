@@ -25,7 +25,6 @@ func main() {
 	defer c.Close()
 
 	w := worker.New(c, "expense", worker.Options{})
-	defer w.Stop()
 
 	w.RegisterWorkflow(expense.SampleExpenseWorkflow)
 	w.RegisterActivity(expense.CreateExpenseActivity)

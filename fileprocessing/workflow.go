@@ -46,8 +46,6 @@ func processFile(ctx workflow.Context, fileName string) (err error) {
 		CreationTimeout:  time.Minute,
 		ExecutionTimeout: time.Minute,
 	}
-	var a *Activities
-
 	sessionCtx, err := workflow.CreateSession(ctx, so)
 	if err != nil {
 		return err
@@ -55,6 +53,7 @@ func processFile(ctx workflow.Context, fileName string) (err error) {
 	defer workflow.CompleteSession(sessionCtx)
 
 	var downloadedName string
+	var a *Activities
 	err = workflow.ExecuteActivity(sessionCtx, a.DownloadFileActivity, fileName).Get(sessionCtx, &downloadedName)
 	if err != nil {
 		return err

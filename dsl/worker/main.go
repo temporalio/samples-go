@@ -25,7 +25,6 @@ func main() {
 	defer c.Close()
 
 	w := worker.New(c, "dsl", worker.Options{})
-	defer w.Stop()
 
 	w.RegisterWorkflow(dsl.SimpleDSLWorkflow)
 	w.RegisterActivity(&dsl.SampleActivities{})

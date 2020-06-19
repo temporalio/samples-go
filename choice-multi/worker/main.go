@@ -25,7 +25,6 @@ func main() {
 	defer c.Close()
 
 	w := worker.New(c, "choice-multi", worker.Options{})
-	defer w.Stop()
 
 	w.RegisterWorkflow(choice_multi.MultiChoiceWorkflow)
 

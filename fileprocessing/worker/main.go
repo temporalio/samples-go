@@ -28,7 +28,6 @@ func main() {
 		EnableSessionWorker: true, // Important for a worker to participate in the session
 	}
 	w := worker.New(c, "fileprocessing", workerOptions)
-	defer w.Stop()
 
 	w.RegisterWorkflow(fileprocessing.SampleFileProcessingWorkflow)
 	w.RegisterActivity(&fileprocessing.Activities{BlobStore: &fileprocessing.BlobStore{}})
