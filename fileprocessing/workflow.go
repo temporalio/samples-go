@@ -12,9 +12,8 @@ import (
 // SampleFileProcessingWorkflow workflow definition
 func SampleFileProcessingWorkflow(ctx workflow.Context, fileName string) (err error) {
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout:    time.Minute,
-		ScheduleToStartTimeout: time.Minute,
-		HeartbeatTimeout:       time.Second * 2, // such a short timeout to make sample fail over very fast
+		StartToCloseTimeout: time.Minute,
+		HeartbeatTimeout:    time.Second * 2, // such a short timeout to make sample fail over very fast
 		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:    time.Second,
 			BackoffCoefficient: 2.0,
