@@ -32,8 +32,8 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       "PSO_" + uuid.New(),
-		TaskList: "pso",
+		ID:        "PSO_" + uuid.New(),
+		TaskQueue: "pso",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, pso.PSOWorkflow, functionName)

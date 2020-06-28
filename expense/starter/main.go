@@ -27,8 +27,8 @@ func main() {
 
 	expenseID := uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       "expense_" + expenseID,
-		TaskList: "expense",
+		ID:        "expense_" + expenseID,
+		TaskQueue: "expense",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, expense.SampleExpenseWorkflow, expenseID)

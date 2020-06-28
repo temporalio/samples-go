@@ -27,8 +27,8 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       "timer_" + uuid.New(),
-		TaskList: "timer",
+		ID:        "timer_" + uuid.New(),
+		TaskQueue: "timer",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, timer.SampleTimerWorkflow, time.Second*3)

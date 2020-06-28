@@ -26,8 +26,8 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       "split_merge_" + uuid.New(),
-		TaskList: "split-merge",
+		ID:        "split_merge_" + uuid.New(),
+		TaskQueue: "split-merge",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, splitmerge.SampleSplitMergeWorkflow, 5)

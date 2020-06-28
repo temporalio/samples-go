@@ -145,8 +145,8 @@ func SignalWithStartMutexWorkflowActivity(
 		resourceID,
 	)
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       workflowID,
-		TaskList: "mutex",
+		ID:        workflowID,
+		TaskQueue: "mutex",
 		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:    time.Second,
 			BackoffCoefficient: 2.0,

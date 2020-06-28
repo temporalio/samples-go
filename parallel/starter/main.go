@@ -25,7 +25,7 @@ func main() {
 	}
 	defer c.Close()
 	workflowOptions := client.StartWorkflowOptions{
-		TaskList: "parallel",
+		TaskQueue: "parallel",
 	}
 	ctx := context.Background()
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, parallel.SampleParallelWorkflow)

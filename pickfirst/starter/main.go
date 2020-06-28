@@ -26,8 +26,8 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       "pick-first_" + uuid.New(),
-		TaskList: "pick-first",
+		ID:        "pick-first_" + uuid.New(),
+		TaskQueue: "pick-first",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, pickfirst.SamplePickFirstWorkflow)

@@ -41,8 +41,8 @@ func main() {
 	}
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       "dsl_" + uuid.New(),
-		TaskList: "dsl",
+		ID:        "dsl_" + uuid.New(),
+		TaskQueue: "dsl",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, dsl.SimpleDSLWorkflow, dslWorkflow)

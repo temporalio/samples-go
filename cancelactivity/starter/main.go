@@ -30,8 +30,8 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       workflowID,
-		TaskList: "cancel-activity",
+		ID:        workflowID,
+		TaskQueue: "cancel-activity",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, cancelactivity.Workflow)

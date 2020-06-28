@@ -10,7 +10,7 @@
         "workflowType": {
           "name": "Workflow"
         },
-        "taskList": {
+        "taskQueue": {
           "name": "hello-world"
         },
         "input": {
@@ -39,7 +39,7 @@
       "version": "-24",
       "taskId": "2097153",
       "decisionTaskScheduledEventAttributes": {
-        "taskList": {
+        "taskQueue": {
           "name": "hello-world"
         },
         "startToCloseTimeoutSeconds": 10
@@ -81,7 +81,7 @@
         "activityType": {
           "name": "Activity"
         },
-        "taskList": {
+        "taskQueue": {
           "name": "hello-world"
         },
         "header": {},
@@ -142,7 +142,7 @@
       "version": "-24",
       "taskId": "2097171",
       "decisionTaskScheduledEventAttributes": {
-        "taskList": {
+        "taskQueue": {
           "name": "Host:34cb98ff-1832-4ffa-a917-dd111f7fff1c"
         },
         "startToCloseTimeoutSeconds": 10

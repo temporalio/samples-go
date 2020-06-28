@@ -26,8 +26,8 @@ func main() {
 	// This workflow ID can be user business logic identifier as well.
 	workflowID := "dynamic_" + uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       workflowID,
-		TaskList: "dynamic",
+		ID:        workflowID,
+		TaskQueue: "dynamic",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, "SampleGreetingsWorkflow")

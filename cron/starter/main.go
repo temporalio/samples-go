@@ -29,7 +29,7 @@ func main() {
 	workflowID := "cron_" + uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
 		ID:           workflowID,
-		TaskList:     "cron",
+		TaskQueue:    "cron",
 		CronSchedule: "* * * * *",
 	}
 
