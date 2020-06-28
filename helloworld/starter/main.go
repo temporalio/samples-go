@@ -23,8 +23,8 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       "hello_world_workflowID",
-		TaskList: "hello-world",
+		ID:        "hello_world_workflowID",
+		TaskQueue: "hello-world",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, helloworld.Workflow, "Temporal")

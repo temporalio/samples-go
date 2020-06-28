@@ -23,7 +23,7 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		TaskList: "branch",
+		TaskQueue: "branch",
 	}
 	ctx := context.Background()
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, branch.SampleBranchWorkflow, 10)

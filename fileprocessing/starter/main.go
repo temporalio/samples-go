@@ -27,8 +27,8 @@ func main() {
 
 	fileID := uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       "fileprocessing_" + fileID,
-		TaskList: "fileprocessing",
+		ID:        "fileprocessing_" + fileID,
+		TaskQueue: "fileprocessing",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, fileprocessing.SampleFileProcessingWorkflow, fileID)

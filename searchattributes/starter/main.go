@@ -26,8 +26,8 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       "search_attributes_" + uuid.New(),
-		TaskList: "search-attributes",
+		ID:        "search_attributes_" + uuid.New(),
+		TaskQueue: "search-attributes",
 		SearchAttributes: map[string]interface{}{ // optional search attributes when start workflow
 			"CustomIntField": 1,
 		},

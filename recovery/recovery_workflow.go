@@ -290,7 +290,7 @@ func extractStateFromEvent(workflowID string, event *historypb.HistoryEvent) (*R
 		return &RestartParams{
 			Options: client.StartWorkflowOptions{
 				ID:                  workflowID,
-				TaskList:            attr.TaskList.GetName(),
+				TaskQueue:           attr.TaskQueue.GetName(),
 				WorkflowTaskTimeout: time.Second * time.Duration(attr.GetWorkflowTaskTimeoutSeconds()),
 				// RetryPolicy: attr.RetryPolicy,
 			},

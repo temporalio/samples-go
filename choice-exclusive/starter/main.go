@@ -26,8 +26,8 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       "exclusive_" + uuid.New(),
-		TaskList: "choice",
+		ID:        "exclusive_" + uuid.New(),
+		TaskQueue: "choice",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, choice.ExclusiveChoiceWorkflow)

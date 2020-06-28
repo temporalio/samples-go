@@ -41,8 +41,8 @@ func main() {
 			logger.Fatal("Unable to unmarshal workflow input parameters", zap.Error(err))
 		}
 		workflowOptions := client.StartWorkflowOptions{
-			ID:       workflowID,
-			TaskList: "recovery",
+			ID:        workflowID,
+			TaskQueue: "recovery",
 		}
 		we, weError = c.ExecuteWorkflow(context.Background(), workflowOptions, recovery.TripWorkflow, userState)
 	case "recoveryworkflow":
@@ -52,8 +52,8 @@ func main() {
 		}
 
 		workflowOptions := client.StartWorkflowOptions{
-			ID:       workflowID,
-			TaskList: "recovery",
+			ID:        workflowID,
+			TaskQueue: "recovery",
 		}
 		we, weError = c.ExecuteWorkflow(context.Background(), workflowOptions, recovery.RecoverWorkflow, params)
 	default:

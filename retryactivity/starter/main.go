@@ -26,8 +26,8 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       "retry_activity_" + uuid.New(),
-		TaskList: "retry-activity",
+		ID:        "retry_activity_" + uuid.New(),
+		TaskQueue: "retry-activity",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, retryactivity.RetryWorkflow)

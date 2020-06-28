@@ -145,8 +145,8 @@ func SignalWithStartMutexWorkflowActivity(
 		resourceID,
 	)
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       workflowID,
-		TaskList: "mutex",
+		ID:        workflowID,
+		TaskQueue: "mutex",
 		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:    time.Second,
 			BackoffCoefficient: 2.0,
@@ -154,17 +154,20 @@ func SignalWithStartMutexWorkflowActivity(
 			MaximumAttempts:    5,
 		},
 	}
-	we, err := c.SignalWithStartWorkflow(
+	wr, err := c.SignalWithStartWorkflow(
 		ctx, workflowID, RequestLockSignalName, senderWorkflowID,
 		workflowOptions, MutexWorkflow, namespace, resourceID, unlockTimeout)
 
 	if err != nil {
 		activity.GetLogger(ctx).Fatal("Unable to signal with start workflow", zap.Error(err))
 	} else {
-		activity.GetLogger(ctx).Info("Signaled and started Workflow", zap.String("WorkflowID", we.ID), zap.String("RunID", we.RunID))
+		activity.GetLogger(ctx).Info("Signaled and started Workflow", zap.String("WorkflowID", wr.GetID()), zap.String("RunID", wr.GetRunID()))
 	}
 
-	return we, nil
+	return &workflow.Execution{
+		ID:    wr.GetID(),
+		RunID: wr.GetRunID(),
+	}, nil
 }
 
 // generateUnlockChannelName generates release lock channel name
@@ -174,15 +177,15 @@ func generateUnlockChannelName(senderWorkflowID string) string {
 
 // MockMutexLock stubs mutex.Lock call
 func MockMutexLock(env *testsuite.TestWorkflowEnvironment, resourceID string, mockError error) {
-	mockExecution := &workflow.Execution{ID: "mockID", RunID: "mockRunID"}
+	execution := &workflow.Execution{ID: "mockID", RunID: "mockRunID"}
 	env.OnActivity(SignalWithStartMutexWorkflowActivity,
 		mock.Anything, mock.Anything, resourceID, mock.Anything, mock.Anything).
-		Return(mockExecution, mockError)
+		Return(execution, mockError)
 	env.RegisterDelayedCallback(func() {
 		env.SignalWorkflow(AcquireLockSignalName, "mockReleaseLockChannelName")
 	}, time.Millisecond*0)
 	if mockError == nil {
-		env.OnSignalExternalWorkflow(mock.Anything, mock.Anything, mockExecution.RunID,
+		env.OnSignalExternalWorkflow(mock.Anything, mock.Anything, execution.RunID,
 			mock.Anything, mock.Anything).Return(nil)
 	}
 }
