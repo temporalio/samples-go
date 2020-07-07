@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"go.temporal.io/temporal"
 	"go.temporal.io/temporal/testsuite"
 	"go.temporal.io/temporal/worker"
 )
@@ -48,7 +49,10 @@ func (s *UnitTestSuite) Test_Workflow_Error() {
 	env.ExecuteWorkflow(SampleWorkflowWithMutex, mockResourceID)
 
 	s.True(env.IsWorkflowCompleted())
-	s.EqualError(env.GetWorkflowError(), "bad-error")
+	err := env.GetWorkflowError()
+	var applicationErr *temporal.ApplicationError
+	s.True(errors.As(err, &applicationErr))
+	s.Equal("bad-error", applicationErr.Error())
 	env.AssertExpectations(s.T())
 }
 

@@ -68,7 +68,7 @@ func BatchProcessingActivity(ctx context.Context, firstTaskID, batchSize int, pr
 			logger.Info("Activity failed, will retry...")
 			// Activity could return *ApplicationError which is always retryable.
 			// To return non-retryable error use temporal.NewNonRetryableApplicationError() constructor.
-			return temporal.NewApplicationError("some retryable error")
+			return temporal.NewApplicationError("some retryable error", "SomeType")
 		}
 	}
 
