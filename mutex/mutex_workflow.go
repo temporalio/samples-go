@@ -154,19 +154,19 @@ func SignalWithStartMutexWorkflowActivity(
 			MaximumAttempts:    5,
 		},
 	}
-	wr, err := c.SignalWithStartWorkflow(
+	we, err := c.SignalWithStartWorkflow(
 		ctx, workflowID, RequestLockSignalName, senderWorkflowID,
 		workflowOptions, MutexWorkflow, namespace, resourceID, unlockTimeout)
 
 	if err != nil {
 		activity.GetLogger(ctx).Fatal("Unable to signal with start workflow", zap.Error(err))
 	} else {
-		activity.GetLogger(ctx).Info("Signaled and started Workflow", zap.String("WorkflowID", wr.GetID()), zap.String("RunID", wr.GetRunID()))
+		activity.GetLogger(ctx).Info("Signaled and started Workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
 	}
 
 	return &workflow.Execution{
-		ID:    wr.GetID(),
-		RunID: wr.GetRunID(),
+		ID:    we.GetID(),
+		RunID: we.GetRunID(),
 	}, nil
 }
 
