@@ -3,7 +3,7 @@ package query
 import (
 	"time"
 
-	"go.temporal.io/temporal/workflow"
+	"go.temporal.io/sdk/workflow"
 )
 
 // Workflow is to demo how to setup query handler

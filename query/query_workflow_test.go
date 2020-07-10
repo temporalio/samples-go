@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/temporal/testsuite"
+	"go.temporal.io/sdk/testsuite"
 )
 
 func Test_QueryWorkflow(t *testing.T) {

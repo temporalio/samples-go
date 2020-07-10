@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/mock"
-	"go.temporal.io/temporal"
-	"go.temporal.io/temporal/activity"
-	"go.temporal.io/temporal/client"
-	"go.temporal.io/temporal/testsuite"
-	"go.temporal.io/temporal/workflow"
+	"go.temporal.io/sdk/activity"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/temporal"
+	"go.temporal.io/sdk/testsuite"
+	"go.temporal.io/sdk/workflow"
 	"go.uber.org/zap"
 )
 

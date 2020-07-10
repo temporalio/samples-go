@@ -3,7 +3,7 @@ package child_workflow_continue_as_new
 import (
 	"fmt"
 
-	"go.temporal.io/temporal/workflow"
+	"go.temporal.io/sdk/workflow"
 	"go.uber.org/zap"
 )
 

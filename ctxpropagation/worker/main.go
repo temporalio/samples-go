@@ -1,9 +1,9 @@
 package main
 
 import (
-	"go.temporal.io/temporal/client"
-	"go.temporal.io/temporal/worker"
-	"go.temporal.io/temporal/workflow"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 	"go.uber.org/zap"
 
 	"github.com/temporalio/temporal-go-samples/ctxpropagation"

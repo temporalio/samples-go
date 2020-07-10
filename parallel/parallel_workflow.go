@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"go.temporal.io/temporal/workflow"
+	"go.temporal.io/sdk/workflow"
 )
 
 /**

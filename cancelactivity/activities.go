@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"go.temporal.io/temporal/activity"
+	"go.temporal.io/sdk/activity"
 )
 
 type Activities struct {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"go.temporal.io/temporal/activity"
+	"go.temporal.io/sdk/activity"
 )
 
 type SampleActivities struct {
