@@ -6,7 +6,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"go.temporal.io/temporal/workflow"
+	"go.temporal.io/sdk/workflow"
 )
 
 // SampleBranchWorkflow workflow definition

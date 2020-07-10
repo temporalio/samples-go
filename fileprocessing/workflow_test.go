@@ -4,10 +4,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/mock"
-	"go.temporal.io/temporal/worker"
+	"go.temporal.io/sdk/worker"
 
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/temporal/testsuite"
+	"go.temporal.io/sdk/testsuite"
 )
 
 type UnitTestSuite struct {

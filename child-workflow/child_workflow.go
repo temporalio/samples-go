@@ -1,7 +1,7 @@
 package child_workflow
 
 import (
-	"go.temporal.io/temporal/workflow"
+	"go.temporal.io/sdk/workflow"
 )
 
 // SampleChildWorkflow workflow definition

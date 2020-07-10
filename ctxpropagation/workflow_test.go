@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/temporal/activity"
-	"go.temporal.io/temporal/encoded"
-	"go.temporal.io/temporal/testsuite"
+	"go.temporal.io/sdk/activity"
+	"go.temporal.io/sdk/encoded"
+	"go.temporal.io/sdk/testsuite"
 )
 
 type UnitTestSuite struct {

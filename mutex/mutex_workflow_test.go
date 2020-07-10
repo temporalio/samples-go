@@ -8,9 +8,9 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/temporal"
-	"go.temporal.io/temporal/testsuite"
-	"go.temporal.io/temporal/worker"
+	"go.temporal.io/sdk/temporal"
+	"go.temporal.io/sdk/testsuite"
+	"go.temporal.io/sdk/worker"
 )
 
 type UnitTestSuite struct {

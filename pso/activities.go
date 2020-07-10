@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"go.temporal.io/temporal/activity"
+	"go.temporal.io/sdk/activity"
 )
 
 /**

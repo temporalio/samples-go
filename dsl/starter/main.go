@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 
 	"github.com/pborman/uuid"
-	"go.temporal.io/temporal/client"
+	"go.temporal.io/sdk/client"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 
