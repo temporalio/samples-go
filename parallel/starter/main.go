@@ -5,7 +5,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"go.temporal.io/temporal/client"
+	"go.temporal.io/sdk/client"
 
 	"github.com/temporalio/temporal-go-samples/parallel"
 )

@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"go.temporal.io/temporal/activity"
+	"go.temporal.io/sdk/activity"
 	"go.uber.org/zap"
 )
 

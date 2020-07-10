@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	commonpb "go.temporal.io/temporal-proto/common/v1"
-	"go.temporal.io/temporal/encoded"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/sdk/encoded"
 )
 
 // jsonDataConverter implements encoded.DataConverter using JSON for Swarm and Particle

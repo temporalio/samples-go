@@ -1,8 +1,12 @@
-all: clean staticcheck errcheck bins test
+############################# Main targets #############################
+# Run all checks, build, and test.
+install: clean staticcheck errcheck bins test
+########################################################################
 
-# all directories with *_test.go files in them
+##### Variables ######
 TEST_DIRS := $(sort $(dir $(shell find . -name "*_test.go")))
 MAIN_FILES := $(shell find . -name "main.go")
+COLOR := "\e[1;36m%s\e[0m\n"
 
 dir_no_slash = $(patsubst %/,%,$(dir $(1)))
 dirname = $(notdir $(call dir_no_slash,$(1)))
@@ -12,23 +16,26 @@ define NEWLINE
 
 endef
 
+##### Targets ######
 bins:
-	@echo Building samples...
+	@printf $(COLOR) "Build samples..."
 	$(foreach MAIN_FILE,$(MAIN_FILES), go build -o bin/$(call parentdirname,$(MAIN_FILE))/$(call dirname,$(MAIN_FILE)) $(MAIN_FILE)$(NEWLINE))
 
 test:
+	@printf $(COLOR) "Run unit tests..."
 	@rm -f test
 	@rm -f test.log
-	@echo Runing unit tests...
 	$(foreach TEST_DIR,$(TEST_DIRS), @go test $(TEST_DIR) | tee -a test.log$(NEWLINE))
 
 staticcheck:
-	GO111MODULE=off go get -u honnef.co/go/tools/cmd/staticcheck
-	staticcheck ./...
+	@printf $(COLOR) "Run static check..."
+	@GO111MODULE=off go get -u honnef.co/go/tools/cmd/staticcheck
+	@staticcheck ./...
 
 errcheck:
-	GO111MODULE=off go get -u github.com/kisielk/errcheck
-	errcheck ./...
+	@printf $(COLOR) "Run error check..."
+	@GO111MODULE=off go get -u github.com/kisielk/errcheck
+	@errcheck ./...
 
 clean:
 	rm -rf bin

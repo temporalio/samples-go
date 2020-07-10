@@ -8,13 +8,13 @@ import (
 	"strconv"
 	"time"
 
-	"go.temporal.io/temporal-proto/common/v1"
-	workflowpb "go.temporal.io/temporal-proto/workflow/v1"
-	"go.temporal.io/temporal-proto/workflowservice/v1"
-	"go.temporal.io/temporal/activity"
-	"go.temporal.io/temporal/client"
-	"go.temporal.io/temporal/encoded"
-	"go.temporal.io/temporal/workflow"
+	"go.temporal.io/api/common/v1"
+	workflowpb "go.temporal.io/api/workflow/v1"
+	"go.temporal.io/api/workflowservice/v1"
+	"go.temporal.io/sdk/activity"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/encoded"
+	"go.temporal.io/sdk/workflow"
 	"go.uber.org/zap"
 )
 

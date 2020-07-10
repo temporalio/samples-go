@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	workflowpb "go.temporal.io/temporal-proto/workflow/v1"
-	"go.temporal.io/temporal/testsuite"
+	workflowpb "go.temporal.io/api/workflow/v1"
+	"go.temporal.io/sdk/testsuite"
 )
 
 func Test_Workflow(t *testing.T) {

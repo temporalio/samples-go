@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"sort"
 
-	"go.temporal.io/temporal/client"
+	"go.temporal.io/sdk/client"
 )
 
 /**
