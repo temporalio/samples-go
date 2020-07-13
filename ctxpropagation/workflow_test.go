@@ -20,6 +20,8 @@ func TestUnitTestSuite(t *testing.T) {
 	suite.Run(t, new(UnitTestSuite))
 }
 
+// TODO: Modify this unit test to actually test that propagation is happening.
+// This will be possible after https://github.com/temporalio/go-sdk/issues/190 is resolved.
 func (s *UnitTestSuite) Test_CtxPropWorkflow() {
 	s.SetContextPropagators([]workflow.ContextPropagator{NewContextPropagator()})
 	env := s.NewTestWorkflowEnvironment()
