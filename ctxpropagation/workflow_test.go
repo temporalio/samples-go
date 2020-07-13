@@ -2,6 +2,7 @@ package ctxpropagation
 
 import (
 	"context"
+	"go.temporal.io/temporal/workflow"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -20,6 +21,7 @@ func TestUnitTestSuite(t *testing.T) {
 }
 
 func (s *UnitTestSuite) Test_CtxPropWorkflow() {
+	s.SetContextPropagators([]workflow.ContextPropagator{NewContextPropagator()})
 	env := s.NewTestWorkflowEnvironment()
 	env.RegisterActivity(SampleActivity)
 
