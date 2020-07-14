@@ -123,3 +123,7 @@ func (dc *jsonDataConverter) FromPayload(payload *commonpb.Payload, valuePtr int
 	}
 	return nil
 }
+
+func (dc *jsonDataConverter) ToStrings(_ *commonpb.Payloads) ([]string, error) {
+	return []string{"implement me"}, nil
+}
