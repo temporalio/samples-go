@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/temporal/testsuite"
+	"go.temporal.io/sdk/testsuite"
 )
 
 func Test_Workflow(t *testing.T) {

@@ -3,7 +3,7 @@ package ctxpropagation
 import (
 	"time"
 
-	"go.temporal.io/temporal/workflow"
+	"go.temporal.io/sdk/workflow"
 	"go.uber.org/zap"
 )
 

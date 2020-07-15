@@ -1,8 +1,8 @@
 package main
 
 import (
-	"go.temporal.io/temporal/client"
-	"go.temporal.io/temporal/worker"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/worker"
 	"go.uber.org/zap"
 
 	cw "github.com/temporalio/temporal-go-samples/child-workflow-continue-as-new"

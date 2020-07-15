@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"go.temporal.io/temporal/activity"
+	"go.temporal.io/sdk/activity"
 	"go.uber.org/zap"
 )
 

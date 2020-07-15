@@ -3,9 +3,9 @@ package ctxpropagation
 import (
 	"context"
 
-	commonpb "go.temporal.io/temporal-proto/common/v1"
-	"go.temporal.io/temporal/encoded"
-	"go.temporal.io/temporal/workflow"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/sdk/encoded"
+	"go.temporal.io/sdk/workflow"
 )
 
 type (

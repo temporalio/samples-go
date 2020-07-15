@@ -5,7 +5,7 @@ import (
 	"go.temporal.io/temporal/workflow"
 
 	"github.com/pborman/uuid"
-	"go.temporal.io/temporal/client"
+	"go.temporal.io/sdk/client"
 	"go.uber.org/zap"
 
 	"github.com/temporalio/temporal-go-samples/ctxpropagation"

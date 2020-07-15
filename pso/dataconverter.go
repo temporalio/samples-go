@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	commonpb "go.temporal.io/temporal-proto/common/v1"
-	"go.temporal.io/temporal/encoded"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/sdk/encoded"
 )
 
 // jsonDataConverter implements encoded.DataConverter using JSON for Swarm and Particle
@@ -122,4 +122,8 @@ func (dc *jsonDataConverter) FromPayload(payload *commonpb.Payload, valuePtr int
 			"unable to decode argument: %T, with error: %v", valuePtr, err)
 	}
 	return nil
+}
+
+func (dc *jsonDataConverter) ToStrings(_ *commonpb.Payloads) ([]string, error) {
+	return []string{"implement me"}, nil
 }
