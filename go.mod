@@ -7,8 +7,8 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pborman/uuid v1.2.0
 	github.com/stretchr/testify v1.6.1
-	go.temporal.io/api v0.26.1-0.20200714004414-a2b31a0f7797
-	go.temporal.io/sdk v0.26.1-0.20200714051239-9b7db6c0fe19
+	go.temporal.io/api v0.27.0
+	go.temporal.io/sdk v0.27.0
 	go.uber.org/zap v1.15.0
 	golang.org/x/mod v0.3.0 // indirect
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect

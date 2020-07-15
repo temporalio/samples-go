@@ -2,13 +2,13 @@ package ctxpropagation
 
 import (
 	"context"
-	"go.temporal.io/temporal/workflow"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/encoded"
 	"go.temporal.io/sdk/testsuite"
+	"go.temporal.io/sdk/workflow"
 )
 
 type UnitTestSuite struct {
