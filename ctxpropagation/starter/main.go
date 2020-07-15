@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"go.temporal.io/temporal/workflow"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
@@ -18,7 +19,8 @@ func main() {
 
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
-		HostPort: client.DefaultHostPort,
+		HostPort:           client.DefaultHostPort,
+		ContextPropagators: []workflow.ContextPropagator{ctxpropagation.NewContextPropagator()},
 	})
 	if err != nil {
 		logger.Fatal("Unable to create client", zap.Error(err))
