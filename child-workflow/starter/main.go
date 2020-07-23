@@ -2,26 +2,21 @@ package main
 
 import (
 	"context"
+	"log"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
-	"go.uber.org/zap"
 
 	child_workflow "github.com/temporalio/temporal-go-samples/child-workflow"
 )
 
 func main() {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
-
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
 	if err != nil {
-		logger.Fatal("Unable to create client", zap.Error(err))
+		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
 
@@ -34,10 +29,10 @@ func main() {
 
 	workflowRun, err := c.ExecuteWorkflow(context.Background(), workflowOptions, child_workflow.SampleParentWorkflow)
 	if err != nil {
-		logger.Fatal("Unable to execute workflow", zap.Error(err))
+		log.Fatalln("Unable to execute workflow", err)
 	}
-	logger.Info("Started workflow",
-		zap.String("WorkflowID", workflowRun.GetID()), zap.String("RunID", workflowRun.GetRunID()))
+	log.Println("Started workflow",
+		"WorkflowID", workflowRun.GetID(), "RunID", workflowRun.GetRunID())
 
 	// Synchronously wait for the workflow completion. Behind the scenes the SDK performs a long poll operation.
 	// If you need to wait for the workflow completion from another process use
@@ -45,7 +40,7 @@ func main() {
 	var result string
 	err = workflowRun.Get(context.Background(), &result)
 	if err != nil {
-		logger.Fatal("Failure getting workflow result", zap.Error(err))
+		log.Fatalln("Failure getting workflow result", err)
 	}
-	logger.Info("Workflow result: %v", zap.String("result", result))
+	log.Println("Workflow result: %v", "result", result)
 }

@@ -9,7 +9,6 @@ import (
 	"net/url"
 
 	"go.temporal.io/sdk/activity"
-	"go.uber.org/zap"
 )
 
 func CreateExpenseActivity(ctx context.Context, expenseID string) error {
@@ -28,7 +27,7 @@ func CreateExpenseActivity(ctx context.Context, expenseID string) error {
 	}
 
 	if string(body) == "SUCCEED" {
-		activity.GetLogger(ctx).Info("Expense created.", zap.String("ExpenseID", expenseID))
+		activity.GetLogger(ctx).Info("Expense created.", "ExpenseID", expenseID)
 		return nil
 	}
 
@@ -55,7 +54,7 @@ func WaitForDecisionActivity(ctx context.Context, expenseID string) (string, err
 	registerCallbackURL := expenseServerHostPort + "/registerCallback?id=" + expenseID
 	resp, err := http.PostForm(registerCallbackURL, formData)
 	if err != nil {
-		logger.Info("waitForDecisionActivity failed to register callback.", zap.Error(err))
+		logger.Info("waitForDecisionActivity failed to register callback.", "Error", err)
 		return "", err
 	}
 	body, err := ioutil.ReadAll(resp.Body)
@@ -67,14 +66,14 @@ func WaitForDecisionActivity(ctx context.Context, expenseID string) (string, err
 	status := string(body)
 	if status == "SUCCEED" {
 		// register callback succeed
-		logger.Info("Successfully registered callback.", zap.String("ExpenseID", expenseID))
+		logger.Info("Successfully registered callback.", "ExpenseID", expenseID)
 
 		// ErrActivityResultPending is returned from activity's execution to indicate the activity is not completed when it returns.
 		// activity will be completed asynchronously when Client.CompleteActivity() is called.
 		return "", activity.ErrResultPending
 	}
 
-	logger.Warn("Register callback failed.", zap.String("ExpenseStatus", status))
+	logger.Warn("Register callback failed.", "ExpenseStatus", status)
 	return "", fmt.Errorf("register callback failed status:%s", status)
 }
 
@@ -94,7 +93,7 @@ func PaymentActivity(ctx context.Context, expenseID string) error {
 	}
 
 	if string(body) == "SUCCEED" {
-		activity.GetLogger(ctx).Info("paymentActivity succeed", zap.String("ExpenseID", expenseID))
+		activity.GetLogger(ctx).Info("paymentActivity succeed", "ExpenseID", expenseID)
 		return nil
 	}
 

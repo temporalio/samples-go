@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"flag"
+	"log"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
-	"go.uber.org/zap"
 
 	"github.com/temporalio/temporal-go-samples/pso"
 )
@@ -16,18 +16,13 @@ func main() {
 	flag.StringVar(&functionName, "f", "sphere", "One of [sphere, rosenbrock, griewank]")
 	flag.Parse()
 
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
-
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort:      client.DefaultHostPort,
 		DataConverter: pso.NewJSONDataConverter(),
 	})
 	if err != nil {
-		logger.Fatal("Unable to create client", zap.Error(err))
+		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
 
@@ -38,7 +33,7 @@ func main() {
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, pso.PSOWorkflow, functionName)
 	if err != nil {
-		logger.Fatal("Unable to execute workflow", zap.Error(err))
+		log.Fatalln("Unable to execute workflow", err)
 	}
-	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 }

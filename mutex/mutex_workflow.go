@@ -11,7 +11,6 @@ import (
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/testsuite"
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 const (
@@ -86,8 +85,8 @@ func MutexWorkflow(
 		// unit testing hack, see https://github.com/uber-go/cadence-client/issues/663
 		_ = workflow.Sleep(ctx, 10*time.Millisecond)
 	}
-	logger := workflow.GetLogger(ctx).With(zap.String("currentWorkflowID", currentWorkflowID))
-	logger.Info("started")
+	logger := workflow.GetLogger(ctx)
+	logger.Info("started", "currentWorkflowID", currentWorkflowID)
 	var ack string
 	requestLockCh := workflow.GetSignalChannel(ctx, RequestLockSignalName)
 	for {
@@ -100,8 +99,7 @@ func MutexWorkflow(
 		_ = workflow.SideEffect(ctx, func(ctx workflow.Context) interface{} {
 			return generateUnlockChannelName(senderWorkflowID)
 		}).Get(&releaseLockChannelName)
-		logger := logger.With(zap.String("releaseLockChannelName", releaseLockChannelName))
-		logger.Info("generated release lock channel name")
+		logger.Info("generated release lock channel name", "releaseLockChannelName", releaseLockChannelName)
 		// Send release lock channel name back to a senderWorkflowID, so that it can
 		// release the lock using release lock channel name
 		err := workflow.SignalExternalWorkflow(ctx, senderWorkflowID, "",
@@ -111,10 +109,10 @@ func MutexWorkflow(
 			// If the senderWorkflowID is closed (terminated/canceled/timeouted/completed/etc), this would return error.
 			// In this case we release the lock immediately instead of failing the mutex workflow.
 			// Mutex workflow failing would lead to all workflows that have sent requestLock will be waiting.
-			logger.With(zap.Error(err)).Info("SignalExternalWorkflow error")
+			logger.Info("SignalExternalWorkflow error", "Error", err)
 			continue
 		}
-		logger.With(zap.Error(err)).Info("signaled external workflow")
+		logger.Info("signaled external workflow")
 		selector := workflow.NewSelector(ctx)
 		selector.AddFuture(workflow.NewTimer(ctx, unlockTimeout), func(f workflow.Future) {
 			logger.Info("unlockTimeout exceeded")
@@ -159,9 +157,9 @@ func SignalWithStartMutexWorkflowActivity(
 		workflowOptions, MutexWorkflow, namespace, resourceID, unlockTimeout)
 
 	if err != nil {
-		activity.GetLogger(ctx).Fatal("Unable to signal with start workflow", zap.Error(err))
+		activity.GetLogger(ctx).Error("Unable to signal with start workflow", "Error", err)
 	} else {
-		activity.GetLogger(ctx).Info("Signaled and started Workflow", zap.String("WorkflowID", wr.GetID()), zap.String("RunID", wr.GetRunID()))
+		activity.GetLogger(ctx).Info("Signaled and started Workflow", "WorkflowID", wr.GetID(), "RunID", wr.GetRunID())
 	}
 
 	return &workflow.Execution{
@@ -195,10 +193,8 @@ func SampleWorkflowWithMutex(
 	resourceID string,
 ) error {
 	currentWorkflowID := workflow.GetInfo(ctx).WorkflowExecution.ID
-	logger := workflow.GetLogger(ctx).
-		With(zap.String("currentWorkflowID", currentWorkflowID)).
-		With(zap.String("resourceID", resourceID))
-	logger.Info("started")
+	logger := workflow.GetLogger(ctx)
+	logger.Info("started", "currentWorkflowID", currentWorkflowID, "resourceID", resourceID)
 
 	mutex := NewMutex(currentWorkflowID, "TestUseCase")
 	unlockFunc, err := mutex.Lock(ctx, resourceID, 10*time.Minute)

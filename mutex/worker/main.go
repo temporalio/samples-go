@@ -2,27 +2,21 @@ package main
 
 import (
 	"context"
+	"log"
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
-	"go.uber.org/zap"
 
 	"github.com/temporalio/temporal-go-samples/mutex"
 )
 
 func main() {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
-
 	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
-		Logger:   logger,
 	})
 	if err != nil {
-		logger.Fatal("Unable to create client", zap.Error(err))
+		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
 
@@ -34,8 +28,8 @@ func main() {
 	w.RegisterWorkflow(mutex.MutexWorkflow)
 	w.RegisterWorkflow(mutex.SampleWorkflowWithMutex)
 
-	err = w.Run()
+	err = w.Run(worker.InterruptCh())
 	if err != nil {
-		logger.Fatal("Unable to start worker", zap.Error(err))
+		log.Fatalln("Unable to start worker", err)
 	}
 }

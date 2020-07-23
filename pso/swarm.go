@@ -3,10 +3,8 @@ package pso
 import (
 	"errors"
 	"fmt"
-	"strconv"
 
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 type ParticleResult struct {
@@ -84,7 +82,7 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (ParticleResult, error) 
 	// the algorithm goes here
 	chunkResultChannel := workflow.NewChannel(ctx)
 	for step <= swarm.Settings.Steps {
-		logger.Info("Iteration ", zap.String("step", strconv.Itoa(step)))
+		logger.Info("Iteration ", "step", step)
 		// Update particles in parallel
 		for i := 0; i < swarm.Settings.Size; i++ {
 			particleIdx := i
@@ -113,13 +111,13 @@ func (swarm *Swarm) Run(ctx workflow.Context, step int) (ParticleResult, error) 
 			}
 		}
 
-		logger.Debug("Iteration Update Swarm Best", zap.String("step", strconv.Itoa(step)))
+		logger.Debug("Iteration Update Swarm Best", "step", step)
 
 		swarm.updateBest()
 
 		// Check if the goal has reached then stop early
 		if swarm.Gbest.Fitness < swarm.Settings.function.Goal {
-			logger.Debug("Iteration New Swarm Best", zap.String("step", strconv.Itoa(step)))
+			logger.Debug("Iteration New Swarm Best", "step", step)
 			return ParticleResult{
 				Position: *swarm.Gbest,
 				Step:     step,

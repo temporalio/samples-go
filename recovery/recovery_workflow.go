@@ -15,7 +15,6 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 
 	"github.com/temporalio/temporal-go-samples/recovery/cache"
 )
@@ -84,7 +83,7 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 	var result ListOpenExecutionsResult
 	err := workflow.ExecuteActivity(ctx, ListOpenExecutions, params.Type).Get(ctx, &result)
 	if err != nil {
-		logger.Error("Failed to list open workflow executions.", zap.Error(err))
+		logger.Error("Failed to list open workflow executions.", "Error", err)
 		return err
 	}
 
@@ -126,9 +125,9 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 		workflow.Go(ctx, func(ctx workflow.Context) {
 			err = workflow.ExecuteActivity(ctx, RecoverExecutions, result.ID, startIndex, batchSize).Get(ctx, nil)
 			if err != nil {
-				logger.Error("Recover executions failed.", zap.Int("StartIndex", startIndex), zap.Error(err))
+				logger.Error("Recover executions failed.", "StartIndex", startIndex, "Error", err)
 			} else {
-				logger.Info("Recover executions completed.", zap.Int("StartIndex", startIndex))
+				logger.Info("Recover executions completed.", "StartIndex", startIndex)
 			}
 
 			doneCh.Send(ctx, "done")
@@ -139,7 +138,7 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 		doneCh.Receive(ctx, nil)
 	}
 
-	logger.Info("Workflow completed.", zap.Int("Result", result.Count))
+	logger.Info("Workflow completed.", "Result", result.Count)
 
 	return nil
 }
@@ -148,8 +147,8 @@ func ListOpenExecutions(ctx context.Context, workflowType string) (*ListOpenExec
 	key := uuid.New()
 	logger := activity.GetLogger(ctx)
 	logger.Info("List all open executions of type.",
-		zap.String("WorkflowType", workflowType),
-		zap.String("HostID", HostID))
+		"WorkflowType", workflowType,
+		"HostID", HostID)
 
 	c, err := getClientFromContext(ctx)
 	if err != nil {
@@ -178,10 +177,10 @@ func ListOpenExecutions(ctx context.Context, workflowType string) (*ListOpenExec
 func RecoverExecutions(ctx context.Context, key string, startIndex, batchSize int) error {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Starting execution recovery.",
-		zap.String("HostID", HostID),
-		zap.String("Key", key),
-		zap.Int("StartIndex", startIndex),
-		zap.Int("BatchSize", batchSize))
+		"HostID", HostID,
+		"Key", key,
+		"StartIndex", startIndex,
+		"BatchSize", batchSize)
 
 	executionsCache := ctx.Value(WorkflowExecutionCacheKey).(cache.Cache)
 	if executionsCache == nil {
@@ -205,8 +204,8 @@ func RecoverExecutions(ctx context.Context, key string, startIndex, batchSize in
 		execution := openExecutions[index]
 		if err := recoverSingleExecution(ctx, execution.GetWorkflowId()); err != nil {
 			logger.Error("Failed to recover execution.",
-				zap.String("WorkflowID", execution.GetWorkflowId()),
-				zap.Error(err))
+				"WorkflowID", execution.GetWorkflowId(),
+				"Error", err)
 			return err
 		}
 
@@ -272,8 +271,8 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 	}
 
 	logger.Info("Successfully restarted workflow.",
-		zap.String("WorkflowID", execution.GetWorkflowId()),
-		zap.String("NewRunID", newRun.GetRunID()))
+		"WorkflowID", execution.GetWorkflowId(),
+		"NewRunID", newRun.GetRunID())
 
 	return nil
 }

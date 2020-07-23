@@ -6,7 +6,6 @@ import (
 	"go.temporal.io/sdk/temporal"
 
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 // SampleFileProcessingWorkflow workflow definition
@@ -33,7 +32,7 @@ func SampleFileProcessingWorkflow(ctx workflow.Context, fileName string) (err er
 		}
 	}
 	if err != nil {
-		workflow.GetLogger(ctx).Error("Workflow failed.", zap.String("Error", err.Error()))
+		workflow.GetLogger(ctx).Error("Workflow failed.", "Error", err.Error())
 	} else {
 		workflow.GetLogger(ctx).Info("Workflow completed.")
 	}

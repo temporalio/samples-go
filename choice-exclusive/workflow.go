@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 const (
@@ -44,7 +43,7 @@ func ExclusiveChoiceWorkflow(ctx workflow.Context) error {
 		// Activity can be also called by its name
 		workflow.ExecuteActivity(ctx, "OrderOrange", orderChoice)
 	default:
-		logger.Error("Unexpected order", zap.String("Choice", orderChoice))
+		logger.Error("Unexpected order", "Choice", orderChoice)
 	}
 
 	logger.Info("Workflow completed.")

@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"go.temporal.io/sdk/activity"
-	"go.uber.org/zap"
 )
 
 /**
@@ -21,29 +20,29 @@ type Activities struct {
 
 func (a *Activities) DownloadFileActivity(ctx context.Context, fileID string) (string, error) {
 	logger := activity.GetLogger(ctx)
-	logger.Info("Downloading file...", zap.String("FileID", fileID))
+	logger.Info("Downloading file...", "FileID", fileID)
 	data := a.BlobStore.downloadFile(fileID)
 
 	tmpFile, err := saveToTmpFile(data)
 	if err != nil {
-		logger.Error("downloadFileActivity failed to save tmp file.", zap.Error(err))
+		logger.Error("downloadFileActivity failed to save tmp file.", "Error", err)
 		return "", err
 	}
 	fileName := tmpFile.Name()
-	logger.Info("downloadFileActivity succeed.", zap.String("SavedFilePath", fileName))
+	logger.Info("downloadFileActivity succeed.", "SavedFilePath", fileName)
 	return fileName, nil
 }
 
 func (a *Activities) ProcessFileActivity(ctx context.Context, fileName string) (string, error) {
 	logger := activity.GetLogger(ctx)
-	logger.Info("processFileActivity started.", zap.String("FileName", fileName))
+	logger.Info("processFileActivity started.", "FileName", fileName)
 
 	defer func() { _ = os.Remove(fileName) }() // cleanup temp file
 
 	// read downloaded file
 	data, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		logger.Error("processFileActivity failed to read file.", zap.String("FileName", fileName), zap.Error(err))
+		logger.Error("processFileActivity failed to read file.", "FileName", fileName, "Error", err)
 		return "", err
 	}
 
@@ -51,27 +50,27 @@ func (a *Activities) ProcessFileActivity(ctx context.Context, fileName string) (
 	transData := transcodeData(ctx, data)
 	tmpFile, err := saveToTmpFile(transData)
 	if err != nil {
-		logger.Error("processFileActivity failed to save tmp file.", zap.Error(err))
+		logger.Error("processFileActivity failed to save tmp file.", "Error", err)
 		return "", err
 	}
 
 	processedFileName := tmpFile.Name()
-	logger.Info("processFileActivity succeed.", zap.String("SavedFilePath", processedFileName))
+	logger.Info("processFileActivity succeed.", "SavedFilePath", processedFileName)
 	return processedFileName, nil
 }
 
 func (a *Activities) UploadFileActivity(ctx context.Context, fileName string) error {
 	logger := activity.GetLogger(ctx)
-	logger.Info("uploadFileActivity begin.", zap.String("UploadedFileName", fileName))
+	logger.Info("uploadFileActivity begin.", "UploadedFileName", fileName)
 
 	defer func() { _ = os.Remove(fileName) }() // cleanup temp file
 
 	err := a.BlobStore.uploadFile(ctx, fileName)
 	if err != nil {
-		logger.Error("uploadFileActivity uploading failed.", zap.Error(err))
+		logger.Error("uploadFileActivity uploading failed.", "Error", err)
 		return err
 	}
-	logger.Info("uploadFileActivity succeed.", zap.String("UploadedFileName", fileName))
+	logger.Info("uploadFileActivity succeed.", "UploadedFileName", fileName)
 	return nil
 }
 

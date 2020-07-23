@@ -4,7 +4,6 @@ import (
 	commonpb "go.temporal.io/api/common/v1"
 	"go.temporal.io/sdk/encoded"
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 type (
@@ -35,8 +34,8 @@ func TripWorkflow(ctx workflow.Context, state UserState) error {
 	logger := workflow.GetLogger(ctx)
 	workflowID := workflow.GetInfo(ctx).WorkflowExecution.ID
 	logger.Info("Trip Workflow Started for User.",
-		zap.String("User", workflowID),
-		zap.Int("TripCounter", state.TripCounter))
+		"User", workflowID,
+		"TripCounter", state.TripCounter)
 
 	// Register query handler to return trip count
 	err := workflow.SetQueryHandler(ctx, QueryName, func(input []byte) (int, error) {
@@ -44,7 +43,7 @@ func TripWorkflow(ctx workflow.Context, state UserState) error {
 	})
 
 	if err != nil {
-		logger.Info("SetQueryHandler failed.", zap.Error(err))
+		logger.Info("SetQueryHandler failed.", "Error", err)
 		return err
 	}
 
@@ -53,11 +52,11 @@ func TripWorkflow(ctx workflow.Context, state UserState) error {
 	for i := 0; i < 10; i++ {
 		var trip TripEvent
 		tripCh.Receive(ctx, &trip)
-		logger.Info("Trip complete event received.", zap.String("ID", trip.ID), zap.Int("Total", trip.Total))
+		logger.Info("Trip complete event received.", "ID", trip.ID, "Total", trip.Total)
 		state.TripCounter++
 	}
 
-	logger.Info("Starting a new run.", zap.Int("TripCounter", state.TripCounter))
+	logger.Info("Starting a new run.", "TripCounter", state.TripCounter)
 	return workflow.NewContinueAsNewError(ctx, "TripWorkflow", state)
 }
 

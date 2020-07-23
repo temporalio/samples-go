@@ -7,7 +7,6 @@ import (
 
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 // SampleTimerWorkflow workflow definition
@@ -62,7 +61,7 @@ func OrderProcessingActivity(ctx context.Context) error {
 	logger.Info("OrderProcessingActivity processing started.")
 	timeNeededToProcess := time.Second * time.Duration(rand.Intn(10))
 	time.Sleep(timeNeededToProcess)
-	logger.Info("OrderProcessingActivity done.", zap.Duration("duration", timeNeededToProcess))
+	logger.Info("OrderProcessingActivity done.", "duration", timeNeededToProcess)
 	return nil
 }
 

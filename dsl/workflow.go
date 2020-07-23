@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 type (
@@ -64,7 +63,7 @@ func SimpleDSLWorkflow(ctx workflow.Context, dslWorkflow Workflow) ([]byte, erro
 
 	err := dslWorkflow.Root.execute(ctx, bindings)
 	if err != nil {
-		logger.Error("DSL Workflow failed.", zap.Error(err))
+		logger.Error("DSL Workflow failed.", "Error", err)
 		return nil, err
 	}
 

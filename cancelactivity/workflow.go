@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 /**
@@ -29,7 +28,7 @@ func Workflow(ctx workflow.Context) error {
 		newCtx, _ := workflow.NewDisconnectedContext(ctx)
 		err := workflow.ExecuteActivity(newCtx, a.CleanupActivity).Get(ctx, nil)
 		if err != nil {
-			logger.Error("Cleanup activity failed", zap.Error(err))
+			logger.Error("Cleanup activity failed", "Error", err)
 		}
 	}()
 
@@ -38,7 +37,7 @@ func Workflow(ctx workflow.Context) error {
 	logger.Info(fmt.Sprintf("activityToBeCanceled returns %v, %v", result, err))
 
 	err = workflow.ExecuteActivity(ctx, a.ActivityToBeSkipped).Get(ctx, nil)
-	logger.Error("Error from activityToBeSkipped", zap.Error(err))
+	logger.Error("Error from activityToBeSkipped", "Error", err)
 
 	logger.Info("Workflow completed.")
 
