@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 // SampleGreetingsWorkflow Workflow.
@@ -20,7 +19,7 @@ func SampleGreetingsWorkflow(ctx workflow.Context) error {
 	var greetResult string
 	err := workflow.ExecuteActivity(ctx, "GetGreeting").Get(ctx, &greetResult)
 	if err != nil {
-		logger.Error("Get greeting failed.", zap.Error(err))
+		logger.Error("Get greeting failed.", "Error", err)
 		return err
 	}
 
@@ -28,7 +27,7 @@ func SampleGreetingsWorkflow(ctx workflow.Context) error {
 	var nameResult string
 	err = workflow.ExecuteActivity(ctx, "GetName").Get(ctx, &nameResult)
 	if err != nil {
-		logger.Error("Get name failed.", zap.Error(err))
+		logger.Error("Get name failed.", "Error", err)
 		return err
 	}
 
@@ -36,10 +35,10 @@ func SampleGreetingsWorkflow(ctx workflow.Context) error {
 	var sayResult string
 	err = workflow.ExecuteActivity(ctx, "SayGreeting", greetResult, nameResult).Get(ctx, &sayResult)
 	if err != nil {
-		logger.Error("Marshalling failed with error.", zap.Error(err))
+		logger.Error("Marshalling failed with error.", "Error", err)
 		return err
 	}
 
-	logger.Info("Workflow completed.", zap.String("Result", sayResult))
+	logger.Info("Workflow completed.", "Result", sayResult)
 	return nil
 }

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 const (
@@ -47,7 +46,7 @@ func MultiChoiceWorkflow(ctx workflow.Context) error {
 		case OrderChoiceOrange:
 			f = workflow.ExecuteActivity(ctx, orderActivities.OrderOrange, item)
 		default:
-			logger.Error("Unexpected order.", zap.String("Order", item))
+			logger.Error("Unexpected order.", "Order", item)
 			return errors.New("invalid choice-multi")
 		}
 		futures = append(futures, f)

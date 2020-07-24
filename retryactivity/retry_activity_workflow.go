@@ -7,7 +7,6 @@ import (
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 /**
@@ -33,7 +32,7 @@ func RetryWorkflow(ctx workflow.Context) error {
 
 	err := workflow.ExecuteActivity(ctx, BatchProcessingActivity, 0, 20, time.Second).Get(ctx, nil)
 	if err != nil {
-		workflow.GetLogger(ctx).Info("Workflow completed with error.", zap.Error(err))
+		workflow.GetLogger(ctx).Info("Workflow completed with error.", "Error", err)
 		return err
 	}
 	workflow.GetLogger(ctx).Info("Workflow completed.")
@@ -51,14 +50,14 @@ func BatchProcessingActivity(ctx context.Context, firstTaskID, batchSize int, pr
 		var completedIdx int
 		if err := activity.GetHeartbeatDetails(ctx, &completedIdx); err == nil {
 			i = completedIdx + 1
-			logger.Info("Resuming from failed attempt", zap.Int("ReportedProgress", completedIdx))
+			logger.Info("Resuming from failed attempt", "ReportedProgress", completedIdx)
 		}
 	}
 
 	taskProcessedInThisAttempt := 0 // used to determine when to fail (simulate failure)
 	for ; i < firstTaskID+batchSize; i++ {
 		// process task i
-		logger.Info("processing task", zap.Int("TaskID", i))
+		logger.Info("processing task", "TaskID", i)
 		time.Sleep(processDelay) // simulate time spend on processing each task
 		activity.RecordHeartbeat(ctx, i)
 		taskProcessedInThisAttempt++

@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/suite"
 	"go.temporal.io/api/workflowservicemock/v1"
 	"go.temporal.io/sdk/worker"
-	"go.uber.org/zap"
 )
 
 type replayTestSuite struct {
@@ -36,11 +35,10 @@ func (s *replayTestSuite) TearDownTest() {
 //      tctl wf show -w hello_world_workflowID --output_filename ./helloworld.json
 // Or from Temporal Web UI. And you may need to change workflowType in the first event.
 func (s *replayTestSuite) TestReplayWorkflowHistoryFromFile() {
-	logger, _ := zap.NewDevelopment()
 	replayer := worker.NewWorkflowReplayer()
 
 	replayer.RegisterWorkflow(Workflow)
 
-	err := replayer.ReplayWorkflowHistoryFromJSONFile(logger, "helloworld.json")
+	err := replayer.ReplayWorkflowHistoryFromJSONFile(nil, "helloworld.json")
 	require.NoError(s.T(), err)
 }

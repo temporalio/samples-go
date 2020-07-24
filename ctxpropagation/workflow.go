@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 // CtxPropWorkflow workflow definition
@@ -18,15 +17,15 @@ func CtxPropWorkflow(ctx workflow.Context) (err error) {
 
 	if val := ctx.Value(PropagateKey); val != nil {
 		vals := val.(Values)
-		workflow.GetLogger(ctx).Info("custom context propagated to workflow", zap.String(vals.Key, vals.Value))
+		workflow.GetLogger(ctx).Info("custom context propagated to workflow", vals.Key, vals.Value)
 	}
 
 	var values Values
 	if err = workflow.ExecuteActivity(ctx, SampleActivity).Get(ctx, &values); err != nil {
-		workflow.GetLogger(ctx).Error("Workflow failed.", zap.Error(err))
+		workflow.GetLogger(ctx).Error("Workflow failed.", "Error", err)
 		return err
 	}
-	workflow.GetLogger(ctx).Info("context propagated to activity", zap.String(values.Key, values.Value))
+	workflow.GetLogger(ctx).Info("context propagated to activity", values.Key, values.Value)
 	workflow.GetLogger(ctx).Info("Workflow completed.")
 	return nil
 }

@@ -6,7 +6,6 @@ import (
 
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 /**
@@ -16,7 +15,7 @@ import (
 
 // Cron sample job activity.
 func SampleCronActivity(ctx context.Context, beginTime, endTime time.Time) error {
-	activity.GetLogger(ctx).Info("Cron job running.", zap.Time("beginTime_exclude", beginTime), zap.Time("endTime_include", endTime))
+	activity.GetLogger(ctx).Info("Cron job running.", "beginTime_exclude", beginTime, "endTime_include", endTime)
 	// ...
 	return nil
 }
@@ -28,7 +27,7 @@ type SampleCronResult struct {
 
 // SampleCronWorkflow is the sample cron workflow.
 func SampleCronWorkflow(ctx workflow.Context) (*SampleCronResult, error) {
-	workflow.GetLogger(ctx).Info("Cron workflow started.", zap.Time("StartTime", workflow.Now(ctx)))
+	workflow.GetLogger(ctx).Info("Cron workflow started.", "StartTime", workflow.Now(ctx))
 
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
@@ -50,7 +49,7 @@ func SampleCronWorkflow(ctx workflow.Context) (*SampleCronResult, error) {
 
 	if err != nil {
 		// cron job failed. but next cron should continue to be scheduled by server
-		workflow.GetLogger(ctx).Error("Cron job failed.", zap.Error(err))
+		workflow.GetLogger(ctx).Error("Cron job failed.", "Error", err)
 		return nil, err
 	}
 

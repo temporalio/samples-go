@@ -3,17 +3,12 @@ package main
 import (
 	"context"
 	"flag"
+	"log"
 
 	"go.temporal.io/sdk/client"
-	"go.uber.org/zap"
 )
 
 func main() {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
-
 	var workflowID string
 	flag.StringVar(&workflowID, "wid", "", "workflowID of the workflow to be canceled.")
 	flag.Parse()
@@ -28,13 +23,13 @@ func main() {
 		HostPort: client.DefaultHostPort,
 	})
 	if err != nil {
-		logger.Fatal("Unable to create client", zap.Error(err))
+		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
 
 	err = c.CancelWorkflow(context.Background(), workflowID, "")
 	if err != nil {
-		logger.Fatal("Unable to cancel workflow", zap.Error(err))
+		log.Fatalln("Unable to cancel workflow", err)
 	}
-	logger.Info("Workflow cancelled", zap.String("WorkflowID", workflowID))
+	log.Println("Workflow cancelled", "WorkflowID", workflowID)
 }

@@ -6,7 +6,6 @@ import (
 
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 /**
@@ -70,6 +69,6 @@ func ChunkProcessingActivity(ctx context.Context, chunkID int) (result ChunkResu
 	numberOfItemsInChunk := chunkID
 	sumInChunk := chunkID * chunkID
 
-	activity.GetLogger(ctx).Info("Chunk processed", zap.Int("chunkID", chunkID))
+	activity.GetLogger(ctx).Info("Chunk processed", "chunkID", chunkID)
 	return ChunkResult{numberOfItemsInChunk, sumInChunk}, nil
 }

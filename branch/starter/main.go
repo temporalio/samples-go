@@ -2,19 +2,14 @@ package main
 
 import (
 	"context"
+	"log"
 
 	"go.temporal.io/sdk/client"
-	"go.uber.org/zap"
 
 	"github.com/temporalio/temporal-go-samples/branch"
 )
 
 func main() {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
-
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{})
 	if err != nil {
@@ -28,9 +23,9 @@ func main() {
 	ctx := context.Background()
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, branch.SampleBranchWorkflow, 10)
 	if err != nil {
-		logger.Fatal("Failure starting workflow", zap.Error(err))
+		log.Fatalln("Failure starting workflow", err)
 	}
-	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 
 	// Wait for workflow completion. This is rarely needed in real use cases
 	// when workflows are potentially long running
@@ -39,5 +34,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 }

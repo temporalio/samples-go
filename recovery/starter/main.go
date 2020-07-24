@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
+	"log"
 
 	"go.temporal.io/sdk/client"
-	"go.uber.org/zap"
 
 	"github.com/temporalio/temporal-go-samples/recovery"
 )
@@ -18,17 +18,12 @@ func main() {
 	flag.StringVar(&workflowType, "wt", "tripworkflow", "Workflow type (tripworkflow|recoveryworkflow).")
 	flag.Parse()
 
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
-
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
 	if err != nil {
-		logger.Fatal("Unable to create client", zap.Error(err))
+		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
 
@@ -38,7 +33,7 @@ func main() {
 	case "tripworkflow":
 		var userState recovery.UserState
 		if err := json.Unmarshal([]byte(input), &userState); err != nil {
-			logger.Fatal("Unable to unmarshal workflow input parameters", zap.Error(err))
+			log.Fatalln("Unable to unmarshal workflow input parameters", err)
 		}
 		workflowOptions := client.StartWorkflowOptions{
 			ID:        workflowID,
@@ -48,7 +43,7 @@ func main() {
 	case "recoveryworkflow":
 		var params recovery.Params
 		if err := json.Unmarshal([]byte(input), &params); err != nil {
-			logger.Fatal("Unable to unmarshal workflow input parameters", zap.Error(err))
+			log.Fatalln("Unable to unmarshal workflow input parameters", err)
 		}
 
 		workflowOptions := client.StartWorkflowOptions{
@@ -62,8 +57,8 @@ func main() {
 	}
 
 	if weError != nil {
-		logger.Error("Unable to execute workflow", zap.Error(err))
+		log.Fatalln("Unable to execute workflow", err)
 	} else {
-		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+		log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 	}
 }
