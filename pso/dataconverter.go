@@ -124,6 +124,10 @@ func (dc *jsonDataConverter) FromPayload(payload *commonpb.Payload, valuePtr int
 	return nil
 }
 
-func (dc *jsonDataConverter) ToStrings(_ *commonpb.Payloads) ([]string, error) {
-	return []string{"implement me"}, nil
+func (dc *jsonDataConverter) ToString(_ *commonpb.Payload) string {
+	return "implement me"
+}
+
+func (dc *jsonDataConverter) ToStrings(_ *commonpb.Payloads) []string {
+	return []string{"implement me"}
 }
