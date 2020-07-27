@@ -2,7 +2,7 @@ package recovery
 
 import (
 	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/sdk/encoded"
+	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -62,7 +62,7 @@ func TripWorkflow(ctx workflow.Context, state UserState) error {
 
 func deserializeUserState(data *commonpb.Payloads) (UserState, error) {
 	var state UserState
-	if err := encoded.GetDefaultDataConverter().FromPayloads(data, &state); err != nil {
+	if err := converter.GetDefaultDataConverter().FromPayloads(data, &state); err != nil {
 		return UserState{}, err
 	}
 
@@ -71,7 +71,7 @@ func deserializeUserState(data *commonpb.Payloads) (UserState, error) {
 
 func deserializeTripEvent(data *commonpb.Payloads) (TripEvent, error) {
 	var trip TripEvent
-	if err := encoded.GetDefaultDataConverter().FromPayloads(data, &trip); err != nil {
+	if err := converter.GetDefaultDataConverter().FromPayloads(data, &trip); err != nil {
 		return TripEvent{}, err
 	}
 

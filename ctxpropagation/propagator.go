@@ -4,7 +4,7 @@ import (
 	"context"
 
 	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/sdk/encoded"
+	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -39,7 +39,7 @@ func NewContextPropagator() workflow.ContextPropagator {
 // Inject injects values from context into headers for propagation
 func (s *propagator) Inject(ctx context.Context, writer workflow.HeaderWriter) error {
 	value := ctx.Value(PropagateKey)
-	payload, err := encoded.GetDefaultDataConverter().ToPayload(value)
+	payload, err := converter.GetDefaultDataConverter().ToPayload(value)
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func (s *propagator) Inject(ctx context.Context, writer workflow.HeaderWriter) e
 // InjectFromWorkflow injects values from context into headers for propagation
 func (s *propagator) InjectFromWorkflow(ctx workflow.Context, writer workflow.HeaderWriter) error {
 	value := ctx.Value(PropagateKey)
-	payload, err := encoded.GetDefaultDataConverter().ToPayload(value)
+	payload, err := converter.GetDefaultDataConverter().ToPayload(value)
 	if err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (s *propagator) Extract(ctx context.Context, reader workflow.HeaderReader) 
 	if err := reader.ForEachKey(func(key string, value *commonpb.Payload) error {
 		if key == propagationKey {
 			var values Values
-			if err := encoded.GetDefaultDataConverter().FromPayload(value, &values); err != nil {
+			if err := converter.GetDefaultDataConverter().FromPayload(value, &values); err != nil {
 				return err
 			}
 			ctx = context.WithValue(ctx, PropagateKey, values)
@@ -80,7 +80,7 @@ func (s *propagator) ExtractToWorkflow(ctx workflow.Context, reader workflow.Hea
 	if err := reader.ForEachKey(func(key string, value *commonpb.Payload) error {
 		if key == propagationKey {
 			var values Values
-			if err := encoded.GetDefaultDataConverter().FromPayload(value, &values); err != nil {
+			if err := converter.GetDefaultDataConverter().FromPayload(value, &values); err != nil {
 				return err
 			}
 			ctx = workflow.WithValue(ctx, PropagateKey, values)
