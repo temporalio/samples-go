@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"go.temporal.io/sdk/activity"
-	"go.temporal.io/sdk/encoded"
+	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/testsuite"
 	"go.temporal.io/sdk/workflow"
 )
@@ -46,7 +46,7 @@ func (s *UnitTestSuite) Test_CronWorkflow() {
 	env.OnActivity(SampleCronActivity, mock.Anything, mock.Anything, mock.Anything).Return(nil).Times(3)
 
 	var startTimeList, endTimeList []time.Time
-	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {
+	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args converter.Values) {
 		var startTime, endTime time.Time
 		err := args.Get(&startTime, &endTime)
 		s.NoError(err)
