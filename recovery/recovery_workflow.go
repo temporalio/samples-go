@@ -103,7 +103,7 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 
 	// Setup retry policy for recovery activity
 	info := workflow.GetInfo(ctx)
-	expiration := time.Duration(info.WorkflowExecutionTimeoutSeconds) * time.Second
+	expiration := info.WorkflowExecutionTimeout
 	retryPolicy := &temporal.RetryPolicy{
 		InitialInterval:    time.Second,
 		BackoffCoefficient: 2,
@@ -290,7 +290,7 @@ func extractStateFromEvent(workflowID string, event *historypb.HistoryEvent) (*R
 			Options: client.StartWorkflowOptions{
 				ID:                  workflowID,
 				TaskQueue:           attr.TaskQueue.GetName(),
-				WorkflowTaskTimeout: time.Second * time.Duration(attr.GetWorkflowTaskTimeoutSeconds()),
+				WorkflowTaskTimeout: *attr.GetWorkflowTaskTimeout(),
 				// RetryPolicy: attr.RetryPolicy,
 			},
 			State: state,
@@ -339,13 +339,15 @@ func getAllExecutionsOfType(ctx context.Context, c client.Client, workflowType s
 	var openExecutions []*commonpb.WorkflowExecution
 	var nextPageToken []byte
 	for hasMore := true; hasMore; hasMore = len(nextPageToken) > 0 {
+		zeroTime := time.Time{}
+		now := time.Now()
 		resp, err := c.ListOpenWorkflow(ctx, &workflowservice.ListOpenWorkflowExecutionsRequest{
 			Namespace:       client.DefaultNamespace,
 			MaximumPageSize: 10,
 			NextPageToken:   nextPageToken,
 			StartTimeFilter: &filterpb.StartTimeFilter{
-				EarliestTime: 0,
-				LatestTime:   time.Now().UnixNano(),
+				EarliestTime: &zeroTime,
+				LatestTime:   &now,
 			},
 			Filters: &workflowservice.ListOpenWorkflowExecutionsRequest_TypeFilter{TypeFilter: &filterpb.WorkflowTypeFilter{
 				Name: workflowType,

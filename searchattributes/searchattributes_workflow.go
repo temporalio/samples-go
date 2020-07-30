@@ -13,6 +13,7 @@ import (
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/converter"
+	"go.temporal.io/sdk/log"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -104,7 +105,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	return nil
 }
 
-func printSearchAttributes(searchAttributes *common.SearchAttributes, logger client.Logger) error {
+func printSearchAttributes(searchAttributes *common.SearchAttributes, logger log.Logger) error {
 	buf := new(bytes.Buffer)
 	for k, v := range searchAttributes.IndexedFields {
 		var currentVal interface{}

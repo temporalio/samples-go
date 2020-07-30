@@ -46,7 +46,7 @@ func (s *UnitTestSuite) Test_CronWorkflow() {
 	env.OnActivity(SampleCronActivity, mock.Anything, mock.Anything, mock.Anything).Return(nil).Times(3)
 
 	var startTimeList, endTimeList []time.Time
-	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args converter.Values) {
+	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args converter.EncodedValues) {
 		var startTime, endTime time.Time
 		err := args.Get(&startTime, &endTime)
 		s.NoError(err)
