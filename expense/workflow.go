@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 var (
@@ -24,7 +23,7 @@ func SampleExpenseWorkflow(ctx workflow.Context, expenseID string) (result strin
 
 	err = workflow.ExecuteActivity(ctx1, CreateExpenseActivity, expenseID).Get(ctx1, nil)
 	if err != nil {
-		logger.Error("Failed to create expense report", zap.Error(err))
+		logger.Error("Failed to create expense report", "Error", err)
 		return "", err
 	}
 
@@ -44,14 +43,14 @@ func SampleExpenseWorkflow(ctx workflow.Context, expenseID string) (result strin
 	}
 
 	if status != "APPROVED" {
-		logger.Info("Workflow completed.", zap.String("ExpenseStatus", status))
+		logger.Info("Workflow completed.", "ExpenseStatus", status)
 		return "", nil
 	}
 
 	// step 3, request payment to the expense
 	err = workflow.ExecuteActivity(ctx2, PaymentActivity, expenseID).Get(ctx2, nil)
 	if err != nil {
-		logger.Info("Workflow completed with payment failed.", zap.Error(err))
+		logger.Info("Workflow completed with payment failed.", "Error", err)
 		return "", err
 	}
 

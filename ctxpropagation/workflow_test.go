@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 	"go.temporal.io/sdk/activity"
-	"go.temporal.io/sdk/encoded"
+	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/testsuite"
 	"go.temporal.io/sdk/workflow"
 )
@@ -28,7 +28,7 @@ func (s *UnitTestSuite) Test_CtxPropWorkflow() {
 	env.RegisterActivity(SampleActivity)
 
 	var activityCalled []string
-	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {
+	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args converter.EncodedValues) {
 		activityType := activityInfo.ActivityType.Name
 		activityCalled = append(activityCalled, activityType)
 	})

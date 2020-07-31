@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"go.temporal.io/sdk/activity"
-	"go.temporal.io/sdk/encoded"
+	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/testsuite"
 	"go.temporal.io/sdk/workflow"
 )
@@ -35,7 +35,7 @@ func Test_Workflow(t *testing.T) {
 	// env.SetWorkflowTimeout(time.Minute * 5)
 	// env.SetTestTimeout(time.Minute * 5)
 
-	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args encoded.Values) {
+	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args converter.EncodedValues) {
 		activityType := activityInfo.ActivityType.Name
 		activityCalled = append(activityCalled, activityType)
 		switch activityType {
@@ -47,7 +47,7 @@ func Test_Workflow(t *testing.T) {
 	})
 
 	var childWorkflowID string
-	env.SetOnChildWorkflowStartedListener(func(workflowInfo *workflow.Info, ctx workflow.Context, args encoded.Values) {
+	env.SetOnChildWorkflowStartedListener(func(workflowInfo *workflow.Info, ctx workflow.Context, args converter.EncodedValues) {
 		childWorkflowID = workflowInfo.WorkflowExecution.ID
 	})
 

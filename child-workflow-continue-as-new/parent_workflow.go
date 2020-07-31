@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 // SampleParentWorkflow workflow definition
@@ -21,10 +20,10 @@ func SampleParentWorkflow(ctx workflow.Context) error {
 	var result string
 	err := workflow.ExecuteChildWorkflow(ctx, SampleChildWorkflow, 0, 5).Get(ctx, &result)
 	if err != nil {
-		logger.Error("Parent execution received child execution failure.", zap.Error(err))
+		logger.Error("Parent execution received child execution failure.", "Error", err)
 		return err
 	}
 
-	logger.Info("Parent execution completed.", zap.String("Result", result))
+	logger.Info("Parent execution completed.", "Result", result)
 	return nil
 }

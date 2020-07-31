@@ -37,5 +37,10 @@ errcheck:
 	@GO111MODULE=off go get -u github.com/kisielk/errcheck
 	@errcheck ./...
 
+update-sdk:
+	go get -u go.temporal.io/api@master
+	go get -u go.temporal.io/sdk@master
+	go mod tidy
+
 clean:
 	rm -rf bin

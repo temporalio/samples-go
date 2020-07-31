@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"go.uber.org/zap"
-
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -34,7 +32,7 @@ func SampleBranchWorkflow(ctx workflow.Context, totalBranches int) (result []str
 	for _, future := range futures {
 		var singleResult string
 		err = future.Get(ctx, &singleResult)
-		logger.Info("Activity returned with result", zap.String("resutl", singleResult))
+		logger.Info("Activity returned with result", "resutl", singleResult)
 		if err != nil {
 			return
 		}

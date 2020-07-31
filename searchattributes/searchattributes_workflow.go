@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
 	"time"
 
 	"go.temporal.io/api/common/v1"
@@ -13,9 +12,9 @@ import (
 	"go.temporal.io/api/workflowservice/v1"
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/encoded"
+	"go.temporal.io/sdk/converter"
+	"go.temporal.io/sdk/log"
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 /**
@@ -46,12 +45,12 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	info := workflow.GetInfo(ctx)
 	val := info.SearchAttributes.IndexedFields["CustomIntField"]
 	var currentIntValue int
-	err := encoded.GetDefaultDataConverter().FromPayload(val, &currentIntValue)
+	err := converter.GetDefaultDataConverter().FromPayload(val, &currentIntValue)
 	if err != nil {
-		logger.Error("Get search attribute failed", zap.Error(err))
+		logger.Error("Get search attribute failed", "Error", err)
 		return err
 	}
-	logger.Info("Current Search Attributes: ", zap.String("CustomIntField", strconv.Itoa(currentIntValue)))
+	logger.Info("Current Search Attributes: ", "CustomIntField", currentIntValue)
 
 	// upsert search attributes
 	attributes := map[string]interface{}{
@@ -97,22 +96,22 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	var listResults []*workflowpb.WorkflowExecutionInfo
 	err = workflow.ExecuteActivity(ctx, ListExecutions, query).Get(ctx, &listResults)
 	if err != nil {
-		logger.Error("Failed to list workflow executions.", zap.Error(err))
+		logger.Error("Failed to list workflow executions.", "Error", err)
 		return err
 	}
 
-	logger.Info("Workflow completed.", zap.String("Execution", listResults[0].String()))
+	logger.Info("Workflow completed.", "Execution", listResults[0].String())
 
 	return nil
 }
 
-func printSearchAttributes(searchAttributes *common.SearchAttributes, logger *zap.Logger) error {
+func printSearchAttributes(searchAttributes *common.SearchAttributes, logger log.Logger) error {
 	buf := new(bytes.Buffer)
 	for k, v := range searchAttributes.IndexedFields {
 		var currentVal interface{}
-		err := encoded.GetDefaultDataConverter().FromPayload(v, &currentVal)
+		err := converter.GetDefaultDataConverter().FromPayload(v, &currentVal)
 		if err != nil {
-			logger.Error(fmt.Sprintf("Get search attribute for key %s failed", k), zap.Error(err))
+			logger.Error(fmt.Sprintf("Get search attribute for key %s failed", k), "Error", err)
 			return err
 		}
 		_, _ = fmt.Fprintf(buf, "%s=%v\n", k, currentVal)
@@ -123,7 +122,7 @@ func printSearchAttributes(searchAttributes *common.SearchAttributes, logger *za
 
 func ListExecutions(ctx context.Context, query string) ([]*workflowpb.WorkflowExecutionInfo, error) {
 	logger := activity.GetLogger(ctx)
-	logger.Info("List executions.", zap.String("Query", query))
+	logger.Info("List executions.", "Query", query)
 
 	c, err := getClientFromContext(ctx)
 	if err != nil {

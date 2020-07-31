@@ -2,9 +2,8 @@ package recovery
 
 import (
 	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/sdk/encoded"
+	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 type (
@@ -35,8 +34,8 @@ func TripWorkflow(ctx workflow.Context, state UserState) error {
 	logger := workflow.GetLogger(ctx)
 	workflowID := workflow.GetInfo(ctx).WorkflowExecution.ID
 	logger.Info("Trip Workflow Started for User.",
-		zap.String("User", workflowID),
-		zap.Int("TripCounter", state.TripCounter))
+		"User", workflowID,
+		"TripCounter", state.TripCounter)
 
 	// Register query handler to return trip count
 	err := workflow.SetQueryHandler(ctx, QueryName, func(input []byte) (int, error) {
@@ -44,7 +43,7 @@ func TripWorkflow(ctx workflow.Context, state UserState) error {
 	})
 
 	if err != nil {
-		logger.Info("SetQueryHandler failed.", zap.Error(err))
+		logger.Info("SetQueryHandler failed.", "Error", err)
 		return err
 	}
 
@@ -53,17 +52,17 @@ func TripWorkflow(ctx workflow.Context, state UserState) error {
 	for i := 0; i < 10; i++ {
 		var trip TripEvent
 		tripCh.Receive(ctx, &trip)
-		logger.Info("Trip complete event received.", zap.String("ID", trip.ID), zap.Int("Total", trip.Total))
+		logger.Info("Trip complete event received.", "ID", trip.ID, "Total", trip.Total)
 		state.TripCounter++
 	}
 
-	logger.Info("Starting a new run.", zap.Int("TripCounter", state.TripCounter))
+	logger.Info("Starting a new run.", "TripCounter", state.TripCounter)
 	return workflow.NewContinueAsNewError(ctx, "TripWorkflow", state)
 }
 
 func deserializeUserState(data *commonpb.Payloads) (UserState, error) {
 	var state UserState
-	if err := encoded.GetDefaultDataConverter().FromPayloads(data, &state); err != nil {
+	if err := converter.GetDefaultDataConverter().FromPayloads(data, &state); err != nil {
 		return UserState{}, err
 	}
 
@@ -72,7 +71,7 @@ func deserializeUserState(data *commonpb.Payloads) (UserState, error) {
 
 func deserializeTripEvent(data *commonpb.Payloads) (TripEvent, error) {
 	var trip TripEvent
-	if err := encoded.GetDefaultDataConverter().FromPayloads(data, &trip); err != nil {
+	if err := converter.GetDefaultDataConverter().FromPayloads(data, &trip); err != nil {
 		return TripEvent{}, err
 	}
 

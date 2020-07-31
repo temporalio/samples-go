@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/zap"
 )
 
 // SampleChildWorkflow workflow definition
@@ -13,7 +12,7 @@ func SampleChildWorkflow(ctx workflow.Context, totalCount, runCount int) (string
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Child workflow execution started.")
 	if runCount <= 0 {
-		logger.Error("Invalid valid for run count.", zap.Int("RunCount", runCount))
+		logger.Error("Invalid valid for run count.", "RunCount", runCount)
 		return "", errors.New("invalid run count")
 	}
 
@@ -21,11 +20,10 @@ func SampleChildWorkflow(ctx workflow.Context, totalCount, runCount int) (string
 	runCount--
 	if runCount == 0 {
 		result := fmt.Sprintf("Child workflow execution completed after %v runs", totalCount)
-		logger.Info("Child workflow completed.", zap.String("Result", result))
+		logger.Info("Child workflow completed.", "Result", result)
 		return result, nil
 	}
 
-	logger.Info("Child workflow starting new run.", zap.Int("RunCount", runCount), zap.Int("TotalCount",
-		totalCount))
+	logger.Info("Child workflow starting new run.", "RunCount", runCount, "TotalCount", totalCount)
 	return "", workflow.NewContinueAsNewError(ctx, SampleChildWorkflow, totalCount, runCount)
 }

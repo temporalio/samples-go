@@ -6,17 +6,17 @@ import (
 	"fmt"
 
 	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/sdk/encoded"
+	"go.temporal.io/sdk/converter"
 )
 
-// jsonDataConverter implements encoded.DataConverter using JSON for Swarm and Particle
+// jsonDataConverter implements converter.DataConverter using JSON for Swarm and Particle
 // WARGNING: Make sure all struct members are public (Capital letter) otherwise serialization does not work!
 // TODO: consider storing blobs in external DB or S3
 type jsonDataConverter struct {
 }
 
 // NewJSONDataConverter creates a json data converter
-func NewJSONDataConverter() encoded.DataConverter {
+func NewJSONDataConverter() converter.DataConverter {
 	return &jsonDataConverter{}
 }
 
@@ -34,7 +34,7 @@ func (dc *jsonDataConverter) ToPayloads(value ...interface{}) (*commonpb.Payload
 	}
 
 	return payloads, nil
-	// TODO: store payloads in DB/S3 and return encoded key
+	// TODO: store payloads in DB/S3 and return converter key
 	// return key, nil
 }
 
@@ -124,6 +124,10 @@ func (dc *jsonDataConverter) FromPayload(payload *commonpb.Payload, valuePtr int
 	return nil
 }
 
-func (dc *jsonDataConverter) ToStrings(_ *commonpb.Payloads) ([]string, error) {
-	return []string{"implement me"}, nil
+func (dc *jsonDataConverter) ToString(_ *commonpb.Payload) string {
+	return "implement me"
+}
+
+func (dc *jsonDataConverter) ToStrings(_ *commonpb.Payloads) []string {
+	return []string{"implement me"}
 }
