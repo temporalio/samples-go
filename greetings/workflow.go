@@ -6,6 +6,7 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
+// @@@START greeting-workflow
 // GreetingSample workflow definition.
 // This greetings sample workflow executes 3 activities in sequential.
 // It gets greeting and name from 2 different activities,
@@ -47,3 +48,4 @@ func GreetingSample(ctx workflow.Context) (string, error) {
 	logger.Info("GreetingSample completed.", "Result", sayResult)
 	return sayResult, nil
 }
+// @@@END
