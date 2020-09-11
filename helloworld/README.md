@@ -1,10 +1,15 @@
-### Steps to run this sample:
-1) You need a Temporal service running. See details in README.md
-2) Run the following command to start the worker
-```
-go run helloworld/worker/main.go
-```
-3) Run the following command to start the example
+## HelloWorld! Temporal Go SDK sample
+
+To use this sample, first [Install and run the Temporal server](https://docs.temporal.io/docs/install-temporal-server).
+
+Run the Workflow:
+
 ```
 go run helloworld/starter/main.go
+```
+
+Run the Worker:
+
+```
+go run helloworld/worker/main.go
 ```

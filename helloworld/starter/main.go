@@ -19,14 +19,18 @@ func main() {
   defer c.Close()
   // Task Queue that the Workflow and Activity Tasks will be sent to
   // Must be the same name as the Task Queue the Worker is listening to
-  taskQueue := "hello-world-task-queue"
+  taskQueue := "helloworld-task-queue"
+  // The Workflow ID is optional but will help to easily identify
+  // This Workflow via the web UI or CLI
+  workflowID := "helloworld-workflow-id"
   // Create Workflow options
   workflowOptions := client.StartWorkflowOptions{
+    ID: workflowID,
     TaskQueue: taskQueue,
   }
   // This is the name we are feeding to the Workflow
   // Which will in turn, be fed to the Activity
-  // And will be appended to "Hello "
+  // And will be appended to "Hello"
   name := "World"
   // Execute the Workflow
   wrkflw, err := c.ExecuteWorkflow(context.Background(), workflowOptions, helloworld.HelloWorldWorkflow, name)

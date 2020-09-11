@@ -17,11 +17,9 @@ func main() {
     log.Fatalln("unable to create client", err)
   }
   defer c.Close()
-
   // Task Queue that the Worker will listen to
   // Must be the same name as the Task Queue the Workflow is sent to
-  taskQueue := "hello-world-task-queue"
-
+  taskQueue := "helloworld-task-queue"
   // Create a Worker that is listening to the taskQueue
 	wrkr := worker.New(c, taskQueue, worker.Options{})
   // Register Workflow with the Worker
