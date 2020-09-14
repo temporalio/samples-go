@@ -33,7 +33,7 @@ func main() {
   // And will be appended to "Hello"
   name := "World"
   // Execute the Workflow
-  wrkflw, err := c.ExecuteWorkflow(context.Background(), workflowOptions, HelloWorldWorkflow, name)
+  wrkflw, err := c.ExecuteWorkflow(context.Background(), workflowOptions, helloworld.HelloWorldWorkflow, name)
   if err != nil {
     log.Fatalln("unable to execute Workflow", err)
   }
@@ -47,4 +47,3 @@ func main() {
   log.Println("Workflow result: ", result)
 }
 // @@@END
-

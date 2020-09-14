@@ -9,7 +9,7 @@ import (
 
 func HelloWorldActivity(ctx context.Context, name string) (string, error) {
   logger := activity.GetLogger(ctx)
-	logger.Info("Activity is executing\n")
+  logger.Info("Activity is executing\n")
   // Append the name to the greeting and return it
   greeting := "Hello " + name + "!"
 	return greeting, nil

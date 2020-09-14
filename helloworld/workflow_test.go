@@ -9,14 +9,14 @@ import (
 )
 
 func Test_Workflow(t *testing.T) {
-  // Create a WorkflowTestSuite
+	// Create a WorkflowTestSuite
 	testSuite := &testsuite.WorkflowTestSuite{}
-  // Establish a new environment
+	// Establish a new environment
 	env := testSuite.NewTestWorkflowEnvironment()
 	// Mock activity implementation
 	env.OnActivity(HelloWorldActivity, mock.Anything, "World").Return("Hello World!", nil)
-  // Execute the Workflow in the test environment
-  env.ExecuteWorkflow(HelloWorldWorkflow, "World")
+	// Execute the Workflow in the test environment
+	env.ExecuteWorkflow(HelloWorldWorkflow, "World")
 	require.True(t, env.IsWorkflowCompleted())
 	require.NoError(t, env.GetWorkflowError())
 	var result string
