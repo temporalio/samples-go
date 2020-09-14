@@ -4,9 +4,9 @@ package main
 import (
   "context"
   "log"
-
+  // Import the Temporal Go SDK client package
   "go.temporal.io/sdk/client"
-
+  // Import the helloworld package
   "github.com/temporalio/temporal-go-samples/helloworld"
 )
 
@@ -33,7 +33,7 @@ func main() {
   // And will be appended to "Hello"
   name := "World"
   // Execute the Workflow
-  wrkflw, err := c.ExecuteWorkflow(context.Background(), workflowOptions, helloworld.HelloWorldWorkflow, name)
+  wrkflw, err := c.ExecuteWorkflow(context.Background(), workflowOptions, HelloWorldWorkflow, name)
   if err != nil {
     log.Fatalln("unable to execute Workflow", err)
   }
@@ -47,3 +47,4 @@ func main() {
   log.Println("Workflow result: ", result)
 }
 // @@@END
+

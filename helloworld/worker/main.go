@@ -3,10 +3,11 @@ package main
 
 import (
   "log"
-
+  // Import the Temporal Go SDK client package
   "go.temporal.io/sdk/client"
+  // Import the SDK Worker pacakge
   "go.temporal.io/sdk/worker"
-
+  // Import the helloworld package
   "github.com/temporalio/temporal-go-samples/helloworld"
 )
 
@@ -32,3 +33,4 @@ func main() {
   }
 }
 // @@@END
+
