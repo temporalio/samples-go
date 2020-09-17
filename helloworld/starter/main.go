@@ -1,4 +1,4 @@
-// @@@START go-helloworld-sample-workflow-starter
+// @@@SNIPSTART go-helloworld-sample-workflow-starter
 package main
 
 import (
@@ -46,4 +46,4 @@ func main() {
   // Print the Workflow result to the console
   log.Println("Workflow result: ", result)
 }
-// @@@END
+// @@@SNIPEND

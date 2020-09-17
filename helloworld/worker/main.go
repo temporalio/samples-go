@@ -1,4 +1,4 @@
-// @@@START go-helloworld-sample-worker
+// @@@SNIPSTART go-helloworld-sample-worker
 package main
 
 import (
@@ -32,4 +32,4 @@ func main() {
     log.Fatalln("unable to run Worker", err)
   }
 }
-// @@@END
+// @@@SNIPEND

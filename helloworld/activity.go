@@ -1,4 +1,4 @@
-// @@@START go-helloworld-sample-activity
+// @@@SNIPSTART go-helloworld-sample-activity
 package helloworld
 
 import (
@@ -14,4 +14,4 @@ func HelloWorldActivity(ctx context.Context, name string) (string, error) {
   greeting := "Hello " + name + "!"
 	return greeting, nil
 }
-// @@@END"
+// @@@SNIPEND"

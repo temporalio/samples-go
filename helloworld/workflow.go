@@ -1,4 +1,4 @@
-// @@@START go-helloworld-sample-workflow
+// @@@SNIPSTART go-helloworld-sample-workflow
 package helloworld
 
 import (
@@ -28,4 +28,4 @@ func HelloWorldWorkflow(ctx workflow.Context, name string) (string, error) {
   // Return the Activity result back to the starter
   return result, nil
 }
-// @@@END
+// @@@SNIPEND
