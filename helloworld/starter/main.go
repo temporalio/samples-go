@@ -4,9 +4,9 @@ package main
 import (
   "context"
   "log"
-  // Import the Temporal Go SDK client package
+
   "go.temporal.io/sdk/client"
-  // Import the helloworld package
+  
   "github.com/temporalio/temporal-go-samples/helloworld"
 )
 

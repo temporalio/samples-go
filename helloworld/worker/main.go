@@ -3,11 +3,10 @@ package main
 
 import (
   "log"
-  // Import the Temporal Go SDK client package
+
   "go.temporal.io/sdk/client"
-  // Import the SDK Worker pacakge
   "go.temporal.io/sdk/worker"
-  // Import the helloworld package
+
   "github.com/temporalio/temporal-go-samples/helloworld"
 )
 
@@ -27,7 +26,7 @@ func main() {
   wrkr.RegisterWorkflow(helloworld.HelloWorldWorkflow)
   // Register Activity with the Worker
   wrkr.RegisterActivity(helloworld.HelloWorldActivity)
-  // Run the Worker
+  // Run the Worker until the interrupt signal is received
   if err = wrkr.Run(worker.InterruptCh()); err != nil {
     log.Fatalln("unable to run Worker", err)
   }

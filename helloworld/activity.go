@@ -3,7 +3,7 @@ package helloworld
 
 import (
   "context"
-  // Import the Go SDK activity package
+
   "go.temporal.io/sdk/activity"
 )
 

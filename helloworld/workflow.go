@@ -3,7 +3,7 @@ package helloworld
 
 import (
   "time"
-  // Import the SDK workflow package
+  
   "go.temporal.io/sdk/workflow"
 )
 
