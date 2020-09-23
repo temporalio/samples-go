@@ -7,7 +7,7 @@ import (
 
 	"go.temporal.io/sdk/client"
 
-	"github.com/temporalio/temporal-go-samples/pso"
+	"github.com/temporalio/samples-go/pso"
 )
 
 func main() {

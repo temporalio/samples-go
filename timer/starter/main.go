@@ -8,7 +8,7 @@ import (
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
 
-	"github.com/temporalio/temporal-go-samples/timer"
+	"github.com/temporalio/samples-go/timer"
 )
 
 func main() {

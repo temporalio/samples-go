@@ -16,7 +16,7 @@ import (
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 
-	"github.com/temporalio/temporal-go-samples/recovery/cache"
+	"github.com/temporalio/samples-go/recovery/cache"
 )
 
 type (

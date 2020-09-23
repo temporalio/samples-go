@@ -6,7 +6,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	choice "github.com/temporalio/temporal-go-samples/choice-exclusive"
+	choice "github.com/temporalio/samples-go/choice-exclusive"
 )
 
 func main() {

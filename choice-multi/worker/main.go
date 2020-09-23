@@ -6,7 +6,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	choice_multi "github.com/temporalio/temporal-go-samples/choice-multi"
+	choice_multi "github.com/temporalio/samples-go/choice-multi"
 )
 
 func main() {

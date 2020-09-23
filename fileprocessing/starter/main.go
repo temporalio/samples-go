@@ -7,7 +7,7 @@ import (
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
 
-	"github.com/temporalio/temporal-go-samples/fileprocessing"
+	"github.com/temporalio/samples-go/fileprocessing"
 )
 
 func main() {
