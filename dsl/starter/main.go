@@ -8,7 +8,7 @@ import (
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	"github.com/temporalio/samples-go/dsl"
 )
