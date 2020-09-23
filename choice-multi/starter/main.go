@@ -7,7 +7,7 @@ import (
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
 
-	choice_multi "github.com/temporalio/temporal-go-samples/choice-multi"
+	choice_multi "github.com/temporalio/samples-go/choice-multi"
 )
 
 func main() {

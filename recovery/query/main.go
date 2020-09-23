@@ -7,7 +7,7 @@ import (
 
 	"go.temporal.io/sdk/client"
 
-	"github.com/temporalio/temporal-go-samples/recovery"
+	"github.com/temporalio/samples-go/recovery"
 )
 
 func main() {

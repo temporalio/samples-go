@@ -6,7 +6,7 @@ import (
 
 	"go.temporal.io/sdk/client"
 
-	"github.com/temporalio/temporal-go-samples/parallel"
+	"github.com/temporalio/samples-go/parallel"
 )
 
 func main() {

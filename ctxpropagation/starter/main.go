@@ -8,7 +8,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/workflow"
 
-	"github.com/temporalio/temporal-go-samples/ctxpropagation"
+	"github.com/temporalio/samples-go/ctxpropagation"
 )
 
 func main() {

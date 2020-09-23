@@ -10,7 +10,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"gopkg.in/yaml.v2"
 
-	"github.com/temporalio/temporal-go-samples/dsl"
+	"github.com/temporalio/samples-go/dsl"
 )
 
 func main() {

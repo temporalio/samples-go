@@ -8,8 +8,8 @@ import (
 	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
 
-	"github.com/temporalio/temporal-go-samples/recovery"
-	"github.com/temporalio/temporal-go-samples/recovery/cache"
+	"github.com/temporalio/samples-go/recovery"
+	"github.com/temporalio/samples-go/recovery/cache"
 )
 
 func main() {

@@ -7,7 +7,7 @@ import (
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
 
-	child_workflow "github.com/temporalio/temporal-go-samples/child-workflow"
+	child_workflow "github.com/temporalio/samples-go/child-workflow"
 )
 
 func main() {
