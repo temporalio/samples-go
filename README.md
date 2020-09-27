@@ -1,7 +1,7 @@
 # Temporal Go SDK Samples
 These are some samples to demonstrate various capabilities of Temporal Go SDK and server.  You can learn more about Temporal at:
 * Temporal: https://github.com/temporalio/temporal,
-* Temporal Go SDK: https://github.com/temporalio/temporal-go-sdk.
+* Temporal Go SDK: https://github.com/temporalio/sdk-go.
 
 ## Prerequisite
 #### Run Temporal Server
