@@ -28,7 +28,7 @@ var PropagateKey = contextKey{}
 
 // propagationKey is the key used by the propagator to pass values through the
 // Temporal server headers
-const propagationKey = "_prop"
+const propagationKey = "custom-header"
 
 // NewContextPropagator returns a context propagator that propagates a set of
 // string key-value pairs across a workflow

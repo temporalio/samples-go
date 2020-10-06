@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/opentracing/opentracing-go"
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/workflow"
@@ -12,9 +13,14 @@ import (
 )
 
 func main() {
+	// Set tracer which will be returned by opentracing.GlobalTracer().
+	closer := ctxpropagation.SetJaegerGlobalTracer()
+	defer func() { _ = closer.Close() }()
+
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort:           client.DefaultHostPort,
+		Tracer:             opentracing.GlobalTracer(),
 		ContextPropagators: []workflow.ContextPropagator{ctxpropagation.NewContextPropagator()},
 	})
 	if err != nil {
