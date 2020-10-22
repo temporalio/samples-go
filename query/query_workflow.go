@@ -7,7 +7,7 @@ import (
 )
 
 // Workflow is to demo how to setup query handler
-func QueryWorkflow(ctx workflow.Context) error {
+func QueryWorkflow(ctx workflow.Context) (string, error) {
 	queryResult := "started"
 	logger := workflow.GetLogger(ctx)
 	logger.Info("QueryWorkflow started")
@@ -17,7 +17,7 @@ func QueryWorkflow(ctx workflow.Context) error {
 	})
 	if err != nil {
 		logger.Info("SetQueryHandler failed: " + err.Error())
-		return err
+		return "", err
 	}
 
 	queryResult = "waiting on timer"
@@ -25,7 +25,12 @@ func QueryWorkflow(ctx workflow.Context) error {
 	_ = workflow.NewTimer(ctx, time.Minute*2).Get(ctx, nil)
 	logger.Info("Timer fired")
 
+	queryResult = "waiting on signal"
+	signalCh := workflow.GetSignalChannel(ctx, "result")
+	signalResult := ""
+	signalCh.Receive(ctx, &signalResult)
+
 	queryResult = "done"
 	logger.Info("QueryWorkflow completed")
-	return nil
+	return signalResult, nil
 }

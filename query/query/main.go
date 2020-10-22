@@ -23,7 +23,11 @@ func main() {
 	}
 	defer c.Close()
 
-	resp, err := c.QueryWorkflow(context.Background(), workflowID, "", queryType)
+	//queryCtx, cancel := context.WithDeadline(context.Background(), time.Now().Add(5*time.Second))
+	queryCtx := context.Background()
+	//defer cancel()
+
+	resp, err := c.QueryWorkflow(queryCtx, workflowID, "", queryType)
 	if err != nil {
 		log.Fatalln("Unable to query workflow", err)
 	}
