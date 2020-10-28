@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	activityLatency = "activity_latency"
-	startLatency    = "schedule_to_start_latency"
+	activityLatency        = "activity_latency"
+	scheduleToStartLatency = "schedule_to_start_latency"
 
 	activityStartedCount = "activity_started"
 	activityFailedCount  = "activity_failed"
@@ -17,8 +17,8 @@ const (
 
 func recordActivityStart(scope tally.Scope, activityType string, scheduledTimeNanos int64) (tally.Scope, tally.Stopwatch) {
 	scope = scope.Tagged(map[string]string{"operation": activityType})
-	elapsed := time.Now().UnixNano() - scheduledTimeNanos
-	scope.Timer(startLatency).Record(time.Duration(elapsed))
+	scheduleToStartDuration := time.Duration(time.Now().UnixNano() - scheduledTimeNanos)
+	scope.Timer(scheduleToStartLatency).Record(scheduleToStartDuration)
 	scope.Counter(activityStartedCount).Inc(1)
 	sw := scope.Timer(activityLatency).Start()
 	return scope, sw

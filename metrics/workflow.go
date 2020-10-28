@@ -18,9 +18,9 @@ func Workflow(ctx workflow.Context) error {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Metrics workflow started.")
 
-	startTime := workflow.Now(ctx).UnixNano()
+	scheduledTimeNanos := workflow.Now(ctx).UnixNano()
 	workflow.Sleep(ctx, 500*time.Millisecond)
-	err := workflow.ExecuteActivity(ctx, Activity, startTime).Get(ctx, nil)
+	err := workflow.ExecuteActivity(ctx, Activity, scheduledTimeNanos).Get(ctx, nil)
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
 		return err
