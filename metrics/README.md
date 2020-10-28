@@ -8,4 +8,4 @@ go run metrics/worker/main.go
 ```
 go run metrics/starter/main.go
 ```
-4) Check metrics at http://localhost:9090/metrics (this where Prometheus agent scrapes it).
+4) Check metrics at http://localhost:9090/metrics (this is where the Prometheus agent scrapes it from).
