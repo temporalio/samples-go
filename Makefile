@@ -4,8 +4,9 @@ install: clean staticcheck errcheck bins test
 ########################################################################
 
 ##### Variables ######
-TEST_DIRS := $(sort $(dir $(shell find . -name "*_test.go")))
+UNIT_TEST_DIRS := $(sort $(dir $(shell find . -name "*_test.go")))
 MAIN_FILES := $(shell find . -name "main.go")
+TEST_TIMEOUT := 20s
 COLOR := "\e[1;36m%s\e[0m\n"
 
 dir_no_slash = $(patsubst %/,%,$(dir $(1)))
@@ -23,9 +24,11 @@ bins:
 
 test:
 	@printf $(COLOR) "Run unit tests..."
-	@rm -f test
 	@rm -f test.log
-	$(foreach TEST_DIR,$(TEST_DIRS), @go test $(TEST_DIR) | tee -a test.log$(NEWLINE))
+	$(foreach UNIT_TEST_DIR,$(UNIT_TEST_DIRS),\
+		@go test -timeout $(TEST_TIMEOUT) -race $(UNIT_TEST_DIR) | tee -a test.log \
+	$(NEWLINE))
+	@! grep -q "^--- FAIL" test.log
 
 staticcheck:
 	@printf $(COLOR) "Run static check..."

@@ -61,7 +61,7 @@ func Test_Workflow(t *testing.T) {
 	err := env.GetWorkflowError()
 	var continueAsNewErr *workflow.ContinueAsNewError
 	require.True(t, errors.As(err, &continueAsNewErr))
-	require.Equal(t, "ContinueAsNew", continueAsNewErr.Error())
+	require.Equal(t, "continue as new", continueAsNewErr.Error())
 }
 
 func queryAndVerify(t *testing.T, env *testsuite.TestWorkflowEnvironment, query string, expectedState string) {
