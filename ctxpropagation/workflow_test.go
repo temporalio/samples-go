@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
+	commonpb "go.temporal.io/api/common/v1"
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/testsuite"
@@ -17,24 +18,37 @@ type UnitTestSuite struct {
 }
 
 func TestUnitTestSuite(t *testing.T) {
-	suite.Run(t, new(UnitTestSuite))
+	s := &UnitTestSuite{}
+	// Create header as if it was injected from context.
+	// Test suite doesn't accept context therefore it is not possible to inject PropagateKey value it from real context.
+	payload, _ := converter.GetDefaultDataConverter().ToPayload(Values{"some key", "some value"})
+	s.SetHeader(&commonpb.Header{
+		Fields: map[string]*commonpb.Payload{
+			propagationKey: payload,
+		},
+	})
+
+	suite.Run(t, s)
 }
 
-// TODO: Modify this unit test to actually test that propagation is happening.
-// This will be possible after https://github.com/temporalio/go-sdk/issues/190 is resolved.
 func (s *UnitTestSuite) Test_CtxPropWorkflow() {
-	s.SetContextPropagators([]workflow.ContextPropagator{NewContextPropagator()})
 	env := s.NewTestWorkflowEnvironment()
+	env.SetContextPropagators([]workflow.ContextPropagator{NewContextPropagator()})
 	env.RegisterActivity(SampleActivity)
 
-	var activityCalled []string
+	var propagatedValue interface{}
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args converter.EncodedValues) {
-		activityType := activityInfo.ActivityType.Name
-		activityCalled = append(activityCalled, activityType)
+		// PropagateKey should be propagated by custom context propagator from propagationKey header.
+		propagatedValue = ctx.Value(PropagateKey)
 	})
-	env.ExecuteWorkflow(CtxPropWorkflow)
 
+	env.ExecuteWorkflow(CtxPropWorkflow)
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())
-	s.Equal([]string{"SampleActivity"}, activityCalled)
+
+	s.NotNil(propagatedValue)
+	pv, ok := propagatedValue.(Values)
+	s.True(ok)
+	s.Equal("some key", pv.Key)
+	s.Equal("some value", pv.Value)
 }
