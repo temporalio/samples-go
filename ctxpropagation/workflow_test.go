@@ -20,7 +20,7 @@ type UnitTestSuite struct {
 func TestUnitTestSuite(t *testing.T) {
 	s := &UnitTestSuite{}
 	// Create header as if it was injected from context.
-	// Test suite doesn't accept context therefore it is possible to inject PropagateKey value it from real context.
+	// Test suite doesn't accept context therefore it is not possible to inject PropagateKey value it from real context.
 	payload, _ := converter.GetDefaultDataConverter().ToPayload(Values{"some key", "some value"})
 	s.SetHeader(&commonpb.Header{
 		Fields: map[string]*commonpb.Payload{
