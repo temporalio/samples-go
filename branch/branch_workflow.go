@@ -32,7 +32,7 @@ func SampleBranchWorkflow(ctx workflow.Context, totalBranches int) (result []str
 	for _, future := range futures {
 		var singleResult string
 		err = future.Get(ctx, &singleResult)
-		logger.Info("Activity returned with result", "resutl", singleResult)
+		logger.Info("Activity returned with result", "result", singleResult)
 		if err != nil {
 			return
 		}
