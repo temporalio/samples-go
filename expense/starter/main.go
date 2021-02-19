@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"log"
+	"math/rand"
+	"time"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
@@ -11,6 +13,7 @@ import (
 )
 
 func main() {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
@@ -25,8 +28,9 @@ func main() {
 		ID:        "expense_" + expenseID,
 		TaskQueue: "expense",
 	}
+	companyID := r.Intn(3)
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, expense.SampleExpenseWorkflow, expenseID)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, expense.SampleExpenseWorkflow, expenseID, companyID)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}

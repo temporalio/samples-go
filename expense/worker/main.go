@@ -22,6 +22,7 @@ func main() {
 	w := worker.New(c, "expense", worker.Options{})
 
 	w.RegisterWorkflow(expense.SampleExpenseWorkflow)
+	w.RegisterWorkflow(expense.SendPaymentsWorkflow)
 	w.RegisterActivity(expense.CreateExpenseActivity)
 	w.RegisterActivity(expense.WaitForDecisionActivity)
 	w.RegisterActivity(expense.PaymentActivity)
