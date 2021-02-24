@@ -1,6 +1,6 @@
 module github.com/temporalio/samples-go
 
-go 1.14
+go 1.16
 
 require (
 	github.com/HdrHistogram/hdrhistogram-go v0.9.0 // indirect
