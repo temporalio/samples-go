@@ -20,7 +20,7 @@ func main() {
 	}
 	defer c.Close()
 
-	ctx := context.WithValue(context.Background(), searchattributes.TemporalClientKey, c)
+	ctx := context.WithValue(context.Background(), searchattributes.ClientCtxKey, c)
 
 	w := worker.New(c, "search-attributes", worker.Options{
 		BackgroundActivityContext: ctx,

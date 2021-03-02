@@ -17,23 +17,23 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-/**
- * This sample shows how to use search attributes. (Note this feature only work with ElasticSearch)
+/*
+ * This sample shows how to use search attributes. (Note this feature only work with Elasticsearch)
  */
 
-// ClientKey is the key for lookup
-type ClientKey int
+// ClientContextKey is the key for lookup
+type ClientContextKey struct{}
 
 const (
-	// Namespace used for this sample. "default" namespace always exists on the server.
-	Namespace = "default"
-	// TemporalClientKey for retrieving client from context
-	TemporalClientKey ClientKey = iota
+	// namespace used for this sample. "default" namespace always exists on the server.
+	namespace = "default"
 )
 
 var (
 	// ErrClientNotFound when client is not found on context
 	ErrClientNotFound = errors.New("failed to retrieve client from context")
+	// ClientCtxKey for retrieving client from context
+	ClientCtxKey ClientContextKey
 )
 
 // SearchAttributesWorkflow workflow definition
@@ -58,10 +58,13 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 		"CustomKeywordField":  "Update1",
 		"CustomBoolField":     true,
 		"CustomDoubleField":   3.14,
-		"CustomDatetimeField": time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local),
+		"CustomDatetimeField": time.Date(2019, 8, 22, 0, 0, 0, 0, time.Local),
 		"CustomStringField":   "String field is for text. When query, it will be tokenized for partial match. StringTypeField cannot be used in Order By",
 	}
-	_ = workflow.UpsertSearchAttributes(ctx, attributes)
+	err = workflow.UpsertSearchAttributes(ctx, attributes)
+	if err != nil {
+		return err
+	}
 
 	// print current search attributes
 	info = workflow.GetInfo(ctx)
@@ -74,7 +77,10 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	attributes = map[string]interface{}{
 		"CustomKeywordField": "Update2",
 	}
-	_ = workflow.UpsertSearchAttributes(ctx, attributes)
+	err = workflow.UpsertSearchAttributes(ctx, attributes)
+	if err != nil {
+		return err
+	}
 
 	// print current search attributes
 	info = workflow.GetInfo(ctx)
@@ -134,7 +140,7 @@ func ListExecutions(ctx context.Context, query string) ([]*workflowpb.WorkflowEx
 	var nextPageToken []byte
 	for hasMore := true; hasMore; hasMore = len(nextPageToken) > 0 {
 		resp, err := c.ListWorkflow(ctx, &workflowservice.ListWorkflowExecutionsRequest{
-			Namespace:     Namespace,
+			Namespace:     namespace,
 			PageSize:      10,
 			NextPageToken: nextPageToken,
 			Query:         query,
@@ -154,7 +160,7 @@ func ListExecutions(ctx context.Context, query string) ([]*workflowpb.WorkflowEx
 
 func getClientFromContext(ctx context.Context) (client.Client, error) {
 	logger := activity.GetLogger(ctx)
-	c := ctx.Value(TemporalClientKey).(client.Client)
+	c := ctx.Value(ClientCtxKey).(client.Client)
 	if c == nil {
 		logger.Error("Could not retrieve client from context.")
 		return nil, ErrClientNotFound
