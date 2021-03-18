@@ -15,8 +15,6 @@ import (
 const (
 	// MetadataWrappedEncoding is "wrapped-encoding"
 	MetadataWrappedEncoding = "wrapped-encoding"
-	// MetadataEncyptedEncoding is "binary/crypt"
-	MetadataEncryptedEncoding = "binary/crypt"
 )
 
 // CryptDataConverter implements DataConverter using AES Crypt.
@@ -108,11 +106,12 @@ func (dc *CryptDataConverter) ToPayload(value interface{}) (*commonpb.Payload, e
 		return nil, converter.ErrMetadataIsNotSet
 	}
 
-	encoding := metadata[converter.MetadataEncoding]
-	if encoding != nil {
-		metadata[MetadataWrappedEncoding] = encoding
+	encoding, ok := metadata[converter.MetadataEncoding]
+	if !ok {
+		return nil, converter.ErrEncodingIsNotSet
 	}
-	metadata[converter.MetadataEncoding] = []byte(MetadataEncryptedEncoding)
+	metadata[MetadataWrappedEncoding] = encoding
+	metadata[converter.MetadataEncoding] = []byte(converter.MetadataEncodingBinary)
 
 	encryptedData, err := encrypt(payload.GetData(), dc.getKey())
 	if err != nil {
@@ -143,12 +142,12 @@ func (dc *CryptDataConverter) FromPayload(payload *commonpb.Payload, valuePtr in
 		return converter.ErrMetadataIsNotSet
 	}
 
-	encoding := metadata[converter.MetadataEncoding]
-	if string(encoding) != MetadataEncryptedEncoding {
+	encoding, ok := metadata[MetadataWrappedEncoding]
+	if !ok {
 		return dc.dataConverter.FromPayload(payload, valuePtr)
 	}
 
-	metadata[converter.MetadataEncoding] = metadata[MetadataWrappedEncoding]
+	metadata[converter.MetadataEncoding] = encoding
 	delete(metadata, MetadataWrappedEncoding)
 
 	decryptData, err := decrypt(payload.GetData(), dc.getKey())
