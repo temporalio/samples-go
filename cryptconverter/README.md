@@ -8,3 +8,7 @@ go run worker/main.go
 ```
 go run starter/main.go
 ```
+4) Run the following command and see the encrypted payloads
+```
+tctl workflow show --wid cryptconverter_workflowID
+```

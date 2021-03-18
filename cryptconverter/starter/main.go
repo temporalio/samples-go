@@ -7,7 +7,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/converter"
 
-	cryptconverter "github.com/temporalio/samples-go/encrypted-payloads"
+	"github.com/temporalio/samples-go/cryptconverter"
 )
 
 func main() {
@@ -25,8 +25,8 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "encrypted-payloads_workflowID",
-		TaskQueue: "encrypted-payloads",
+		ID:        "cryptconverter_workflowID",
+		TaskQueue: "cryptconverter",
 	}
 
 	// The workflow input "My Secret Friend" will be encrypted by the DataConverter before being sent to Temporal

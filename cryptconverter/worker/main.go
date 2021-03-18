@@ -7,7 +7,7 @@ import (
 	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/worker"
 
-	cryptconverter "github.com/temporalio/samples-go/encrypted-payloads"
+	"github.com/temporalio/samples-go/cryptconverter"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "encrypted-payloads", worker.Options{})
+	w := worker.New(c, "cryptconverter", worker.Options{})
 
 	w.RegisterWorkflow(cryptconverter.Workflow)
 	w.RegisterActivity(cryptconverter.Activity)

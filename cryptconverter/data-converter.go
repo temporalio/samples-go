@@ -12,6 +12,11 @@ import (
 	"go.temporal.io/sdk/converter"
 )
 
+const (
+	// MetadataWrappedEncoding is "wrapped-encoding"
+	MetadataWrappedEncoding = "wrapped-encoding"
+)
+
 // CryptDataConverter implements DataConverter using AES Crypt.
 type CryptDataConverter struct {
 	dataConverter converter.DataConverter
@@ -30,7 +35,7 @@ func NewCryptDataConverter(dataConverter converter.DataConverter) *CryptDataConv
 	}
 }
 
-func encrypt(plaintext []byte, key []byte) ([]byte, error) {
+func encrypt(plainData []byte, key []byte) ([]byte, error) {
 	c, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
@@ -46,10 +51,10 @@ func encrypt(plaintext []byte, key []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	return gcm.Seal(nonce, nonce, plaintext, nil), nil
+	return gcm.Seal(nonce, nonce, plainData, nil), nil
 }
 
-func decrypt(ciphertext []byte, key []byte) ([]byte, error) {
+func decrypt(encryptedData []byte, key []byte) ([]byte, error) {
 	c, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
@@ -61,12 +66,12 @@ func decrypt(ciphertext []byte, key []byte) ([]byte, error) {
 	}
 
 	nonceSize := gcm.NonceSize()
-	if len(ciphertext) < nonceSize {
-		return nil, fmt.Errorf("ciphertext too short: %v", ciphertext)
+	if len(encryptedData) < nonceSize {
+		return nil, fmt.Errorf("ciphertext too short: %v", encryptedData)
 	}
 
-	nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
-	return gcm.Open(nil, nonce, ciphertext, nil)
+	nonce, encryptedData := encryptedData[:nonceSize], encryptedData[nonceSize:]
+	return gcm.Open(nil, nonce, encryptedData, nil)
 }
 
 // ToPayloads converts a list of values.
@@ -93,12 +98,23 @@ func (dc *CryptDataConverter) ToPayload(value interface{}) (*commonpb.Payload, e
 	}
 
 	if payload != nil {
-		cryptData, err := encrypt(payload.GetData(), dc.getKey())
+		metadata := payload.GetMetadata()
+		if metadata == nil {
+			return nil, converter.ErrMetadataIsNotSet
+		}
+
+		encoding := metadata[converter.MetadataEncoding]
+		if encoding != nil {
+			metadata[MetadataWrappedEncoding] = encoding
+		}
+		metadata[converter.MetadataEncoding] = []byte("binary/crypt")
+
+		encryptedData, err := encrypt(payload.GetData(), dc.getKey())
 		if err != nil {
 			return nil, fmt.Errorf("%w: %v", converter.ErrUnableToEncode, err)
 		}
 
-		payload.Data = cryptData
+		payload.Data = encryptedData
 	}
 
 	return payload, nil
@@ -123,6 +139,17 @@ func (dc *CryptDataConverter) FromPayload(payload *commonpb.Payload, valuePtr in
 		return fmt.Errorf("%w: %v", converter.ErrUnableToDecode, err)
 	}
 
+	metadata := payload.GetMetadata()
+	if metadata == nil {
+		return converter.ErrMetadataIsNotSet
+	}
+
+	encoding := metadata[MetadataWrappedEncoding]
+	if encoding != nil {
+		metadata[converter.MetadataEncoding] = encoding
+		delete(metadata, MetadataWrappedEncoding)
+	}
+
 	payload.Data = decryptData
 
 	return dc.dataConverter.FromPayload(payload, valuePtr)
@@ -142,9 +169,10 @@ func (dc *CryptDataConverter) ToStrings(payloads *commonpb.Payloads) []string {
 func (dc *CryptDataConverter) ToString(payload *commonpb.Payload) string {
 	decryptData, err := decrypt(payload.GetData(), dc.getKey())
 	// No way to return an error here...
-	if err == nil {
-		payload.Data = decryptData
+	if err != nil {
+		return err.Error()
 	}
+	payload.Data = decryptData
 
 	return dc.dataConverter.ToString(payload)
 }
