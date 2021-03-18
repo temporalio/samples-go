@@ -15,6 +15,8 @@ import (
 const (
 	// MetadataWrappedEncoding is "wrapped-encoding"
 	MetadataWrappedEncoding = "wrapped-encoding"
+	// MetadataEncyptedEncoding is "binary/crypt"
+	MetadataEncryptedEncoding = "binary/crypt"
 )
 
 // CryptDataConverter implements DataConverter using AES Crypt.
@@ -97,25 +99,27 @@ func (dc *CryptDataConverter) ToPayload(value interface{}) (*commonpb.Payload, e
 		return nil, err
 	}
 
-	if payload != nil {
-		metadata := payload.GetMetadata()
-		if metadata == nil {
-			return nil, converter.ErrMetadataIsNotSet
-		}
-
-		encoding := metadata[converter.MetadataEncoding]
-		if encoding != nil {
-			metadata[MetadataWrappedEncoding] = encoding
-		}
-		metadata[converter.MetadataEncoding] = []byte("binary/crypt")
-
-		encryptedData, err := encrypt(payload.GetData(), dc.getKey())
-		if err != nil {
-			return nil, fmt.Errorf("%w: %v", converter.ErrUnableToEncode, err)
-		}
-
-		payload.Data = encryptedData
+	if payload == nil {
+		return payload, nil
 	}
+
+	metadata := payload.GetMetadata()
+	if metadata == nil {
+		return nil, converter.ErrMetadataIsNotSet
+	}
+
+	encoding := metadata[converter.MetadataEncoding]
+	if encoding != nil {
+		metadata[MetadataWrappedEncoding] = encoding
+	}
+	metadata[converter.MetadataEncoding] = []byte(MetadataEncryptedEncoding)
+
+	encryptedData, err := encrypt(payload.GetData(), dc.getKey())
+	if err != nil {
+		return nil, fmt.Errorf("%w: %v", converter.ErrUnableToEncode, err)
+	}
+
+	payload.Data = encryptedData
 
 	return payload, nil
 }
@@ -134,20 +138,22 @@ func (dc *CryptDataConverter) FromPayloads(payloads *commonpb.Payloads, valuePtr
 
 // FromPayload converts single value from payload.
 func (dc *CryptDataConverter) FromPayload(payload *commonpb.Payload, valuePtr interface{}) error {
-	decryptData, err := decrypt(payload.GetData(), dc.getKey())
-	if err != nil {
-		return fmt.Errorf("%w: %v", converter.ErrUnableToDecode, err)
-	}
-
 	metadata := payload.GetMetadata()
 	if metadata == nil {
 		return converter.ErrMetadataIsNotSet
 	}
 
-	encoding := metadata[MetadataWrappedEncoding]
-	if encoding != nil {
-		metadata[converter.MetadataEncoding] = encoding
-		delete(metadata, MetadataWrappedEncoding)
+	encoding := metadata[converter.MetadataEncoding]
+	if string(encoding) != MetadataEncryptedEncoding {
+		return dc.dataConverter.FromPayload(payload, valuePtr)
+	}
+
+	metadata[converter.MetadataEncoding] = metadata[MetadataWrappedEncoding]
+	delete(metadata, MetadataWrappedEncoding)
+
+	decryptData, err := decrypt(payload.GetData(), dc.getKey())
+	if err != nil {
+		return fmt.Errorf("%w: %v", converter.ErrUnableToDecode, err)
 	}
 
 	payload.Data = decryptData
