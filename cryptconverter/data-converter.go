@@ -13,8 +13,11 @@ import (
 )
 
 const (
-	// MetadataWrappedEncoding is "wrapped-encoding"
-	MetadataWrappedEncoding = "wrapped-encoding"
+	// MetadataEncryptionKeyId is "encryption-key-id"
+	MetadataEncryptionKeyId = "encryption-key-id"
+
+	// MetadataContentEncoding is "content-encoding"
+	MetadataContentEncoding = "content-encoding"
 )
 
 // CryptDataConverter implements DataConverter using AES Crypt.
@@ -22,8 +25,14 @@ type CryptDataConverter struct {
 	dataConverter converter.DataConverter
 }
 
-// getKey fetches the crypt key from secure storage
-func (dc *CryptDataConverter) getKey() (key []byte) {
+// getEncryptionKey fetches the crypt key from secure storage
+func (dc *CryptDataConverter) getEncryptionKey() (keyId string, key []byte) {
+	// Key can be fetched from KMS or other secure storage.
+	return "test", []byte("test-key-test-key-test-key-test!")
+}
+
+// getDecryptionKey fetches the crypt key from secure storage
+func (dc *CryptDataConverter) getDecryptionKey(keyId string) (key []byte) {
 	// Key can be fetched from KMS or other secure storage.
 	return []byte("test-key-test-key-test-key-test!")
 }
@@ -90,6 +99,30 @@ func (dc *CryptDataConverter) ToPayloads(values ...interface{}) (*commonpb.Paylo
 	return result, nil
 }
 
+func (dc *CryptDataConverter) EncryptPayload(payload *commonpb.Payload, keyId string, key []byte) error {
+	metadata := payload.GetMetadata()
+	if metadata == nil {
+		return converter.ErrMetadataIsNotSet
+	}
+
+	encoding, ok := metadata[converter.MetadataEncoding]
+	if !ok {
+		return converter.ErrEncodingIsNotSet
+	}
+	metadata[converter.MetadataEncoding] = []byte(converter.MetadataEncodingBinary)
+	metadata[MetadataContentEncoding] = encoding
+	metadata[MetadataEncryptionKeyId] = []byte(keyId)
+
+	encryptedData, err := encrypt(payload.GetData(), key)
+	if err != nil {
+		return fmt.Errorf("%w: %v", converter.ErrUnableToEncode, err)
+	}
+
+	payload.Data = encryptedData
+
+	return nil
+}
+
 // ToPayload converts single value to payload.
 func (dc *CryptDataConverter) ToPayload(value interface{}) (*commonpb.Payload, error) {
 	payload, err := dc.dataConverter.ToPayload(value)
@@ -101,24 +134,12 @@ func (dc *CryptDataConverter) ToPayload(value interface{}) (*commonpb.Payload, e
 		return payload, nil
 	}
 
-	metadata := payload.GetMetadata()
-	if metadata == nil {
-		return nil, converter.ErrMetadataIsNotSet
-	}
+	keyId, key := dc.getEncryptionKey()
 
-	encoding, ok := metadata[converter.MetadataEncoding]
-	if !ok {
-		return nil, converter.ErrEncodingIsNotSet
-	}
-	metadata[MetadataWrappedEncoding] = encoding
-	metadata[converter.MetadataEncoding] = []byte(converter.MetadataEncodingBinary)
-
-	encryptedData, err := encrypt(payload.GetData(), dc.getKey())
+	err = dc.EncryptPayload(payload, keyId, key)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", converter.ErrUnableToEncode, err)
+		return nil, err
 	}
-
-	payload.Data = encryptedData
 
 	return payload, nil
 }
@@ -135,27 +156,43 @@ func (dc *CryptDataConverter) FromPayloads(payloads *commonpb.Payloads, valuePtr
 	return nil
 }
 
-// FromPayload converts single value from payload.
-func (dc *CryptDataConverter) FromPayload(payload *commonpb.Payload, valuePtr interface{}) error {
+func (dc *CryptDataConverter) DecryptPayload(payload *commonpb.Payload) error {
 	metadata := payload.GetMetadata()
 	if metadata == nil {
 		return converter.ErrMetadataIsNotSet
 	}
 
-	encoding, ok := metadata[MetadataWrappedEncoding]
+	keyId, ok := metadata[MetadataEncryptionKeyId]
 	if !ok {
-		return dc.dataConverter.FromPayload(payload, valuePtr)
+		return nil
+	}
+
+	encoding, ok := metadata[MetadataContentEncoding]
+	if !ok {
+		return fmt.Errorf("%w: %s", converter.ErrUnableToDecode, "no content encoding")
 	}
 
 	metadata[converter.MetadataEncoding] = encoding
-	delete(metadata, MetadataWrappedEncoding)
+	delete(metadata, MetadataContentEncoding)
+	delete(metadata, MetadataEncryptionKeyId)
 
-	decryptData, err := decrypt(payload.GetData(), dc.getKey())
+	key := dc.getDecryptionKey(string(keyId))
+	decryptData, err := decrypt(payload.GetData(), key)
 	if err != nil {
 		return fmt.Errorf("%w: %v", converter.ErrUnableToDecode, err)
 	}
 
 	payload.Data = decryptData
+
+	return nil
+}
+
+// FromPayload converts single value from payload.
+func (dc *CryptDataConverter) FromPayload(payload *commonpb.Payload, valuePtr interface{}) error {
+	err := dc.DecryptPayload(payload)
+	if err != nil {
+		return err
+	}
 
 	return dc.dataConverter.FromPayload(payload, valuePtr)
 }
@@ -172,12 +209,10 @@ func (dc *CryptDataConverter) ToStrings(payloads *commonpb.Payloads) []string {
 
 // ToString converts payload object into human readable string.
 func (dc *CryptDataConverter) ToString(payload *commonpb.Payload) string {
-	decryptData, err := decrypt(payload.GetData(), dc.getKey())
-	// No way to return an error here...
+	err := dc.DecryptPayload(payload)
 	if err != nil {
 		return err.Error()
 	}
-	payload.Data = decryptData
 
 	return dc.dataConverter.ToString(payload)
 }
