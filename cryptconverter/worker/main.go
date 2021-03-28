@@ -6,6 +6,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 
 	"github.com/temporalio/samples-go/cryptconverter"
 )
@@ -18,6 +19,7 @@ func main() {
 		DataConverter: cryptconverter.NewCryptDataConverter(
 			converter.GetDefaultDataConverter(),
 		),
+		ContextPropagators: []workflow.ContextPropagator{cryptconverter.NewContextPropagator()},
 	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)

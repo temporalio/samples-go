@@ -9,8 +9,6 @@ import (
 )
 
 // Workflow is a standard workflow definition.
-// Note that the Workflow and Activity don't need to care that
-// their inputs/results are being encrypted/decrypted.
 func Workflow(ctx workflow.Context, name string) (string, error) {
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
