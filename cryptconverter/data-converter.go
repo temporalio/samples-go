@@ -2,7 +2,6 @@ package cryptconverter
 
 import (
 	"fmt"
-	"runtime/debug"
 
 	commonpb "go.temporal.io/api/common/v1"
 
@@ -100,9 +99,6 @@ func (dc *CryptDataConverter) EncryptPayload(payload *commonpb.Payload, keyId st
 // ToPayload converts single value to payload.
 func (dc *CryptDataConverter) ToPayload(value interface{}) (*commonpb.Payload, error) {
 	if dc.context.KeyId == "" {
-		fmt.Printf("Key: no\n")
-		debug.PrintStack()
-
 		return dc.dataConverter.ToPayload(value)
 	}
 
