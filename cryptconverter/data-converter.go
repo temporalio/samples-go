@@ -34,7 +34,7 @@ func (dc *CryptDataConverter) WithValue(v interface{}) converter.DataConverter {
 
 	if val := ctx.Value(PropagateKey); val != nil {
 		return &CryptDataConverter{
-			dataConverter: dc.dataConverter,
+			dataConverter: converter.WithValue(dc.dataConverter, ctx),
 			context:       val.(CryptContext),
 		}
 	}
