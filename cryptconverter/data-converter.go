@@ -26,8 +26,8 @@ type Context interface {
 	Value(interface{}) interface{}
 }
 
-func (dc *CryptDataConverter) WithContext(c interface{}) converter.DataConverter {
-	ctx, ok := c.(Context)
+func (dc *CryptDataConverter) WithValue(v interface{}) converter.DataConverter {
+	ctx, ok := v.(Context)
 	if !ok {
 		return dc
 	}
@@ -47,7 +47,7 @@ func (dc *CryptDataConverter) getKey(keyId string) (key []byte) {
 	return []byte("test-key-test-key-test-key-test!")
 }
 
-// NewCryptDataConverter created new instance of CryptDataConverter wrapping a DataConverter
+// NewCryptDataConverter creates a new instance of CryptDataConverter wrapping a DataConverter
 func NewCryptDataConverter(dataConverter converter.DataConverter) *CryptDataConverter {
 	return &CryptDataConverter{
 		dataConverter: dataConverter,
@@ -56,12 +56,23 @@ func NewCryptDataConverter(dataConverter converter.DataConverter) *CryptDataConv
 
 // ToPayloads converts a list of values.
 func (dc *CryptDataConverter) ToPayloads(values ...interface{}) (*commonpb.Payloads, error) {
+	if dc.context.KeyId == "" {
+		return dc.dataConverter.ToPayloads(values)
+	}
+
 	result := &commonpb.Payloads{}
 
 	for i, value := range values {
-		payload, err := dc.ToPayload(value)
+		payload, err := dc.dataConverter.ToPayload(value)
 		if err != nil {
 			return nil, fmt.Errorf("values[%d]: %w", i, err)
+		}
+
+		if payload != nil {
+			err = dc.encryptPayload(payload, dc.context.KeyId)
+			if err != nil {
+				return nil, fmt.Errorf("values[%d]: %w", i, err)
+			}
 		}
 
 		result.Payloads = append(result.Payloads, payload)
@@ -70,7 +81,7 @@ func (dc *CryptDataConverter) ToPayloads(values ...interface{}) (*commonpb.Paylo
 	return result, nil
 }
 
-func (dc *CryptDataConverter) EncryptPayload(payload *commonpb.Payload, keyId string) error {
+func (dc *CryptDataConverter) encryptPayload(payload *commonpb.Payload, keyId string) error {
 	key := dc.getKey(keyId)
 
 	metadata := payload.GetMetadata()
@@ -98,31 +109,18 @@ func (dc *CryptDataConverter) EncryptPayload(payload *commonpb.Payload, keyId st
 
 // ToPayload converts single value to payload.
 func (dc *CryptDataConverter) ToPayload(value interface{}) (*commonpb.Payload, error) {
-	if dc.context.KeyId == "" {
-		return dc.dataConverter.ToPayload(value)
-	}
-
-	payload, err := dc.dataConverter.ToPayload(value)
-	if err != nil {
-		return nil, err
-	}
-
-	if payload == nil {
-		return payload, nil
-	}
-
-	err = dc.EncryptPayload(payload, dc.context.KeyId)
-	if err != nil {
-		return nil, err
-	}
-
-	return payload, nil
+	return dc.dataConverter.ToPayload(value)
 }
 
 // FromPayloads converts to a list of values of different types.
 func (dc *CryptDataConverter) FromPayloads(payloads *commonpb.Payloads, valuePtrs ...interface{}) error {
 	for i, payload := range payloads.GetPayloads() {
-		err := dc.FromPayload(payload, valuePtrs[i])
+		err := dc.decryptPayload(payload)
+		if err != nil {
+			return fmt.Errorf("args[%d]: %w", i, err)
+		}
+
+		err = dc.dataConverter.FromPayload(payload, valuePtrs[i])
 		if err != nil {
 			return fmt.Errorf("args[%d]: %w", i, err)
 		}
@@ -131,7 +129,7 @@ func (dc *CryptDataConverter) FromPayloads(payloads *commonpb.Payloads, valuePtr
 	return nil
 }
 
-func (dc *CryptDataConverter) DecryptPayload(payload *commonpb.Payload) error {
+func (dc *CryptDataConverter) decryptPayload(payload *commonpb.Payload) error {
 	metadata := payload.GetMetadata()
 	if metadata == nil {
 		return converter.ErrMetadataIsNotSet
@@ -164,11 +162,6 @@ func (dc *CryptDataConverter) DecryptPayload(payload *commonpb.Payload) error {
 
 // FromPayload converts single value from payload.
 func (dc *CryptDataConverter) FromPayload(payload *commonpb.Payload, valuePtr interface{}) error {
-	err := dc.DecryptPayload(payload)
-	if err != nil {
-		return err
-	}
-
 	return dc.dataConverter.FromPayload(payload, valuePtr)
 }
 
@@ -184,7 +177,7 @@ func (dc *CryptDataConverter) ToStrings(payloads *commonpb.Payloads) []string {
 
 // ToString converts payload object into human readable string.
 func (dc *CryptDataConverter) ToString(payload *commonpb.Payload) string {
-	err := dc.DecryptPayload(payload)
+	err := dc.decryptPayload(payload)
 	if err != nil {
 		return err.Error()
 	}
