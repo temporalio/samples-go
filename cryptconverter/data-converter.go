@@ -11,6 +11,9 @@ import (
 const (
 	// MetadataEncryptionKeyId is "encryption-key-id"
 	MetadataEncryptionKeyId = "encryption-key-id"
+
+	// MetadataEncodingEncrypted is "binary/encrypted"
+	MetadataEncodingEncrypted = "binary/encrypted"
 )
 
 // CryptDataConverter implements DataConverter using AES Crypt.
@@ -90,7 +93,7 @@ func (dc *CryptDataConverter) encryptPayload(payload *commonpb.Payload, keyId st
 
 	return &commonpb.Payload{
 		Metadata: map[string][]byte{
-			converter.MetadataEncoding: []byte(converter.MetadataEncodingBinary),
+			converter.MetadataEncoding: []byte(MetadataEncodingEncrypted),
 			MetadataEncryptionKeyId:    []byte(keyId),
 		},
 		Data: encryptedPayload,
@@ -102,16 +105,33 @@ func (dc *CryptDataConverter) ToPayload(value interface{}) (*commonpb.Payload, e
 	return dc.dataConverter.ToPayload(value)
 }
 
+func isEncryptedPayload(payload *commonpb.Payload) bool {
+	metadata := payload.GetMetadata()
+	if metadata == nil {
+		return false
+	}
+
+	if encoding, ok := metadata[converter.MetadataEncoding]; ok {
+		return string(encoding) == MetadataEncodingEncrypted
+	}
+
+	return false
+}
+
 // FromPayloads converts to a list of values of different types.
 func (dc *CryptDataConverter) FromPayloads(payloads *commonpb.Payloads, valuePtrs ...interface{}) error {
 	for i, payload := range payloads.GetPayloads() {
+		var err error
+
 		if i >= len(valuePtrs) {
 			break
 		}
 
-		payload, err := dc.decryptPayload(payload)
-		if err != nil {
-			return fmt.Errorf("args[%d]: %w", i, err)
+		if isEncryptedPayload(payload) {
+			payload, err = dc.decryptPayload(payload)
+			if err != nil {
+				return fmt.Errorf("args[%d]: %w", i, err)
+			}
 		}
 
 		err = dc.dataConverter.FromPayload(payload, valuePtrs[i])
