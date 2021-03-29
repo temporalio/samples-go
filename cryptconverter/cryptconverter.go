@@ -36,5 +36,12 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 func Activity(ctx context.Context, name string) (string, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Activity", "name", name)
+
+	activity.RecordHeartbeat(ctx, "Thinking...")
+	// Uncomment if you'd like to check the heartbeat is encrypted in UI/tctl.
+	// Heartbeat details aren't saved to the history so this state won't be available
+	// once the activity completes.
+	// time.Sleep(30 * time.Second)
+
 	return "Hello " + name + "!", nil
 }
