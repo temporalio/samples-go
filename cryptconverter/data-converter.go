@@ -186,9 +186,12 @@ func (dc *CryptDataConverter) ToStrings(payloads *commonpb.Payloads) []string {
 
 // ToString converts payload object into human readable string.
 func (dc *CryptDataConverter) ToString(payload *commonpb.Payload) string {
-	payload, err := dc.decryptPayload(payload)
-	if err != nil {
-		return err.Error()
+	if isEncryptedPayload(payload) {
+		var err error
+		payload, err = dc.decryptPayload(payload)
+		if err != nil {
+			return err.Error()
+		}
 	}
 
 	return dc.dataConverter.ToString(payload)
