@@ -22,19 +22,21 @@ type CryptDataConverter struct {
 	context       CryptContext
 }
 
-type Context interface {
-	Value(interface{}) interface{}
-}
-
-func (dc *CryptDataConverter) WithValue(v interface{}) converter.DataConverter {
-	ctx, ok := v.(Context)
-	if !ok {
-		return dc
-	}
-
+func (dc *CryptDataConverter) WithWorkflowContext(ctx converter.WorkflowContext) converter.DataConverter {
 	if val := ctx.Value(PropagateKey); val != nil {
 		return &CryptDataConverter{
-			dataConverter: converter.WithValue(dc.dataConverter, ctx),
+			dataConverter: converter.WithWorkflowContext(dc.dataConverter, ctx),
+			context:       val.(CryptContext),
+		}
+	}
+
+	return dc
+}
+
+func (dc *CryptDataConverter) WithActivityContext(ctx converter.ActivityContext) converter.DataConverter {
+	if val := ctx.Value(PropagateKey); val != nil {
+		return &CryptDataConverter{
+			dataConverter: converter.WithActivityContext(dc.dataConverter, ctx),
 			context:       val.(CryptContext),
 		}
 	}

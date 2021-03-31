@@ -4,6 +4,7 @@ import (
 	"github.com/hashicorp/go-plugin"
 	"github.com/temporalio/samples-go/cryptconverter"
 	"go.temporal.io/sdk/converter"
+	"go.temporal.io/server/tools/cli"
 )
 
 var handshakeConfig = plugin.HandshakeConfig{
@@ -14,7 +15,7 @@ var handshakeConfig = plugin.HandshakeConfig{
 
 func main() {
 	var pluginMap = map[string]plugin.Plugin{
-		"DataConverter": &converter.DataConverterPlugin{
+		"DataConverter": &cli.DataConverterPlugin{
 			Impl: cryptconverter.NewCryptDataConverter(
 				converter.GetDefaultDataConverter(),
 			),
