@@ -32,16 +32,15 @@ func Test_DataConverter(t *testing.T) {
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, PropagateKey, CryptContext{KeyId: "test"})
 
-	var cryptDc converter.DataConverter
-	cryptDc = NewCryptDataConverter(
+	cryptDc := NewCryptDataConverter(
 		converter.GetDefaultDataConverter(),
 	)
-	cryptDc = converter.WithValue(cryptDc, ctx)
+	cryptDcWc := cryptDc.WithContext(ctx)
 
 	defaultPayloads, err := defaultDc.ToPayloads("Testing")
 	require.NoError(t, err)
 
-	encryptedPayloads, err := cryptDc.ToPayloads("Testing")
+	encryptedPayloads, err := cryptDcWc.ToPayloads("Testing")
 	require.NoError(t, err)
 
 	require.NotEqual(t, defaultPayloads.Payloads[0].GetData(), encryptedPayloads.Payloads[0].GetData())

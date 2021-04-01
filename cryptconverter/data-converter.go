@@ -1,11 +1,13 @@
 package cryptconverter
 
 import (
+	"context"
 	"fmt"
 
 	commonpb "go.temporal.io/api/common/v1"
 
 	"go.temporal.io/sdk/converter"
+	"go.temporal.io/sdk/workflow"
 )
 
 const (
@@ -16,16 +18,27 @@ const (
 	MetadataEncodingEncrypted = "binary/encrypted"
 )
 
+// Work around ContextAware being internal to SDK
+type ContextAware interface {
+	WithWorkflowContext(ctx workflow.Context) converter.DataConverter
+	WithContext(ctx context.Context) converter.DataConverter
+}
+
 // CryptDataConverter implements DataConverter using AES Crypt.
 type CryptDataConverter struct {
 	dataConverter converter.DataConverter
 	context       CryptContext
 }
 
-func (dc *CryptDataConverter) WithWorkflowContext(ctx converter.WorkflowContext) converter.DataConverter {
+func (dc *CryptDataConverter) WithWorkflowContext(ctx workflow.Context) converter.DataConverter {
 	if val := ctx.Value(PropagateKey); val != nil {
+		dataConverter := dc.dataConverter
+		if dcwc, ok := dc.dataConverter.(ContextAware); ok {
+			dataConverter = dcwc.WithWorkflowContext(ctx)
+		}
+
 		return &CryptDataConverter{
-			dataConverter: converter.WithWorkflowContext(dc.dataConverter, ctx),
+			dataConverter: dataConverter,
 			context:       val.(CryptContext),
 		}
 	}
@@ -33,10 +46,15 @@ func (dc *CryptDataConverter) WithWorkflowContext(ctx converter.WorkflowContext)
 	return dc
 }
 
-func (dc *CryptDataConverter) WithActivityContext(ctx converter.ActivityContext) converter.DataConverter {
+func (dc *CryptDataConverter) WithContext(ctx context.Context) converter.DataConverter {
 	if val := ctx.Value(PropagateKey); val != nil {
+		dataConverter := dc.dataConverter
+		if dcwc, ok := dc.dataConverter.(ContextAware); ok {
+			dataConverter = dcwc.WithContext(ctx)
+		}
+
 		return &CryptDataConverter{
-			dataConverter: converter.WithActivityContext(dc.dataConverter, ctx),
+			dataConverter: dataConverter,
 			context:       val.(CryptContext),
 		}
 	}
