@@ -10,7 +10,7 @@ import (
 
 func main() {
 	var workflowID string
-	flag.StringVar(&workflowID, "wid", "", "workflowID of the workflow to be canceled.")
+	flag.StringVar(&workflowID, "wid", "workflowID-to-cancel", "workflowID of the workflow to be canceled.")
 	flag.Parse()
 
 	if workflowID == "" {
