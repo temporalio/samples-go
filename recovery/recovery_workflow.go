@@ -74,7 +74,6 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 	logger.Info("Recover workflow started.")
 
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: 10 * time.Minute,
 		StartToCloseTimeout:    10 * time.Minute,
 		HeartbeatTimeout:       time.Second * 30,
 	}
@@ -111,7 +110,6 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 		MaximumAttempts:    100,
 	}
 	ao = workflow.ActivityOptions{
-		ScheduleToStartTimeout: expiration,
 		StartToCloseTimeout:    expiration,
 		HeartbeatTimeout:       time.Second * 30,
 		RetryPolicy:            retryPolicy,

@@ -15,7 +15,6 @@ func GreetingSample(ctx workflow.Context) (string, error) {
 
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout:    time.Minute,
-		ScheduleToStartTimeout: time.Minute,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 

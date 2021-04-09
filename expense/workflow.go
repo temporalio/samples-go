@@ -14,9 +14,7 @@ var (
 func SampleExpenseWorkflow(ctx workflow.Context, expenseID string) (result string, err error) {
 	// step 1, create new expense report
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
-		HeartbeatTimeout:       time.Second * 20,
 	}
 	ctx1 := workflow.WithActivityOptions(ctx, ao)
 	logger := workflow.GetLogger(ctx)
@@ -29,7 +27,6 @@ func SampleExpenseWorkflow(ctx workflow.Context, expenseID string) (result strin
 
 	// step 2, wait for the expense report to be approved (or rejected)
 	ao = workflow.ActivityOptions{
-		ScheduleToStartTimeout: 10 * time.Minute,
 		StartToCloseTimeout:    10 * time.Minute,
 	}
 	ctx2 := workflow.WithActivityOptions(ctx, ao)

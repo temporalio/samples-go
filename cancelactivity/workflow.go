@@ -14,7 +14,6 @@ import (
 // Workflow workflow
 func Workflow(ctx workflow.Context) error {
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute * 30,
 		HeartbeatTimeout:       time.Second * 5,
 		WaitForCancellation:    true,

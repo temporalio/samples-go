@@ -23,7 +23,6 @@ func SamplePickFirstWorkflow(ctx workflow.Context) error {
 	// as well.
 	childCtx, cancelHandler := workflow.WithCancel(ctx)
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
 		HeartbeatTimeout:       time.Second * 20,
 		WaitForCancellation:    true, // Wait for cancellation to complete.
