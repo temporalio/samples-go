@@ -14,7 +14,7 @@ func SampleBranchWorkflow(ctx workflow.Context, totalBranches int) (result []str
 	logger.Info("SampleBranchWorkflow begin")
 
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout:    time.Minute,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 

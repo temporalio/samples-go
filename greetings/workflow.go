@@ -14,7 +14,7 @@ func GreetingSample(ctx workflow.Context) (string, error) {
 	logger := workflow.GetLogger(ctx)
 
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout:    time.Minute,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 

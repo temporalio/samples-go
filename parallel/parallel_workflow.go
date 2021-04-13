@@ -17,7 +17,7 @@ func SampleParallelWorkflow(ctx workflow.Context) ([]string, error) {
 	defer logger.Info("Workflow completed.")
 
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout:    time.Minute,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 

@@ -9,7 +9,7 @@ import (
 // CtxPropWorkflow workflow definition
 func CtxPropWorkflow(ctx workflow.Context) (err error) {
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout:    time.Second * 2, // such a short timeout to make sample fail over very fast
+		StartToCloseTimeout: 2 * time.Second, // such a short timeout to make sample fail over very fast
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 

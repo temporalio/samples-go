@@ -12,7 +12,7 @@ import (
 // SampleTimerWorkflow workflow definition
 func SampleTimerWorkflow(ctx workflow.Context, processingTimeThreshold time.Duration) error {
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout:    time.Minute,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 

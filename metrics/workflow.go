@@ -10,7 +10,7 @@ import (
 
 func Workflow(ctx workflow.Context) error {
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout:    time.Minute,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 

@@ -54,7 +54,7 @@ func SimpleDSLWorkflow(ctx workflow.Context, dslWorkflow Workflow) ([]byte, erro
 	}
 
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout:    time.Minute,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 	logger := workflow.GetLogger(ctx)

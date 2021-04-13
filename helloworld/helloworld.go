@@ -11,7 +11,7 @@ import (
 // Workflow is a Hello World workflow definition.
 func Workflow(ctx workflow.Context, name string) (string, error) {
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout:    time.Minute,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
