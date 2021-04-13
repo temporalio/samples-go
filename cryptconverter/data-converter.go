@@ -18,12 +18,6 @@ const (
 	MetadataEncodingEncrypted = "binary/encrypted"
 )
 
-// Work around ContextAware being internal to SDK
-type ContextAware interface {
-	WithWorkflowContext(ctx workflow.Context) converter.DataConverter
-	WithContext(ctx context.Context) converter.DataConverter
-}
-
 // CryptDataConverter implements DataConverter using AES Crypt.
 type CryptDataConverter struct {
 	dataConverter converter.DataConverter
@@ -33,7 +27,7 @@ type CryptDataConverter struct {
 func (dc *CryptDataConverter) WithWorkflowContext(ctx workflow.Context) converter.DataConverter {
 	if val := ctx.Value(PropagateKey); val != nil {
 		dataConverter := dc.dataConverter
-		if dcwc, ok := dc.dataConverter.(ContextAware); ok {
+		if dcwc, ok := dc.dataConverter.(workflow.ContextAware); ok {
 			dataConverter = dcwc.WithWorkflowContext(ctx)
 		}
 
@@ -49,7 +43,7 @@ func (dc *CryptDataConverter) WithWorkflowContext(ctx workflow.Context) converte
 func (dc *CryptDataConverter) WithContext(ctx context.Context) converter.DataConverter {
 	if val := ctx.Value(PropagateKey); val != nil {
 		dataConverter := dc.dataConverter
-		if dcwc, ok := dc.dataConverter.(ContextAware); ok {
+		if dcwc, ok := dc.dataConverter.(workflow.ContextAware); ok {
 			dataConverter = dcwc.WithContext(ctx)
 		}
 
