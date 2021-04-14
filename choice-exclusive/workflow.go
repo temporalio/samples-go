@@ -15,13 +15,12 @@ const (
 
 // ExclusiveChoiceWorkflow Workflow definition.
 func ExclusiveChoiceWorkflow(ctx workflow.Context) error {
-	// Get order.
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Minute,
-		HeartbeatTimeout:       time.Second * 20,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
+
+	// Get order.
 	var orderActivities *OrderActivities // Used to call activities by function pointer
 	var orderChoice string
 	err := workflow.ExecuteActivity(ctx, orderActivities.GetOrder).Get(ctx, &orderChoice)

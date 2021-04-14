@@ -25,7 +25,7 @@ func TestUnitTestSuite(t *testing.T) {
 func (s *UnitTestSuite) Test_CronWorkflow() {
 	testWorkflow := func(ctx workflow.Context) error {
 		ctx1 := workflow.WithChildOptions(ctx, workflow.ChildWorkflowOptions{
-			WorkflowRunTimeout: time.Minute * 10,
+			WorkflowRunTimeout: 10 * time.Minute,
 			CronSchedule:       "0 * * * *", // hourly
 		})
 

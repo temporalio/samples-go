@@ -14,10 +14,9 @@ import (
 // Workflow workflow
 func Workflow(ctx workflow.Context) error {
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Minute * 30,
-		HeartbeatTimeout:       time.Second * 5,
-		WaitForCancellation:    true,
+		StartToCloseTimeout: 30 * time.Minute,
+		HeartbeatTimeout:    5 * time.Second,
+		WaitForCancellation: true,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 	logger := workflow.GetLogger(ctx)
