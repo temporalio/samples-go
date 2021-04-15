@@ -7,7 +7,6 @@ import (
 
 type (
 	EventProcessor struct {
-		ctx     workflow.Context
 		logger  log.Logger
 		eventCh workflow.ReceiveChannel
 
@@ -16,13 +15,13 @@ type (
 
 	EventProcessorState struct {
 		PreviousEventID int
-		Items           map[int]*ResourceEvent
+		Items           map[int]ResourceEvent
 	}
 )
 
 func newEventProcessor(ch workflow.ReceiveChannel, prevState *EventProcessorState) *EventProcessor {
 	prevEventID := 0
-	items := make(map[int]*ResourceEvent)
+	items := make(map[int]ResourceEvent)
 	if prevState != nil {
 		prevEventID = prevState.PreviousEventID
 		if len(prevState.Items) > 0 {
@@ -39,42 +38,43 @@ func newEventProcessor(ch workflow.ReceiveChannel, prevState *EventProcessorStat
 	}
 }
 
-func (p *EventProcessor) start(ctx workflow.Context) workflow.ReceiveChannel {
-	p.logger = workflow.GetLogger(ctx)
-	doneCh := workflow.NewChannel(ctx)
-	workflow.Go(ctx, func(ctx workflow.Context) {
-		p.ctx = ctx
-		p.pump(doneCh)
+func (p *EventProcessor) start(rootCtx workflow.Context) workflow.ReceiveChannel {
+	p.logger = workflow.GetLogger(rootCtx)
+	// doneCh is used to communicate unprocessed events back to the workflow after shutdown
+	// Workflow passes these unprocessed events to the new run so they can be processed after missing events comes in
+	doneCh := workflow.NewChannel(rootCtx)
+	workflow.Go(rootCtx, func(ctx workflow.Context) {
+		p.pump(ctx, doneCh)
 	})
 
 	return doneCh
 }
 
-func (p *EventProcessor) pump(doneCh workflow.SendChannel) {
+func (p *EventProcessor) pump(ctx workflow.Context, doneCh workflow.SendChannel) {
 	done := false
 	for !done {
 		var event ResourceEvent
-		more := p.eventCh.Receive(p.ctx, &event)
+		more := p.eventCh.Receive(ctx, &event)
 		if !more {
 			// Channel is closed.  Workflow wants to shutdown.
 			done = true
 			break
 		}
 
-		p.state.addEvent(&event, p.logger)
-		p.processInOrder()
+		p.state.addEvent(event, p.logger)
+		p.processInOrder(ctx)
 	}
 
-	doneCh.Send(p.ctx, p.state)
+	doneCh.Send(ctx, p.state)
 }
 
-func (p *EventProcessor) processInOrder() {
+func (p *EventProcessor) processInOrder(ctx workflow.Context) {
 	s := p.state
 	nextID := s.PreviousEventID + 1
 	for current, ok := s.Items[nextID]; ok; current, ok = s.Items[nextID] {
 		p.logger.Info("Processing event",
 			"EventID", current.EventID)
-		err := workflow.ExecuteActivity(p.ctx, ProcessEvent, current).Get(p.ctx, nil)
+		err := workflow.ExecuteActivity(ctx, ProcessEvent, current).Get(ctx, nil)
 		if err != nil {
 			p.logger.Error("Failed to process event",
 				"EventID", current.EventID,
@@ -88,7 +88,7 @@ func (p *EventProcessor) processInOrder() {
 	s.PreviousEventID = nextID - 1
 }
 
-func (s *EventProcessorState) addEvent(event *ResourceEvent, logger log.Logger) {
+func (s *EventProcessorState) addEvent(event ResourceEvent, logger log.Logger) {
 	if event.EventID <= s.PreviousEventID {
 		logger.Info("Dedupe already processed event",
 			"LastEventID", s.PreviousEventID,

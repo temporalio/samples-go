@@ -12,7 +12,7 @@ import (
 type (
 	NextRunParams struct {
 		PreviousEventID int
-		Items           map[int]*ResourceEvent
+		Items           map[int]ResourceEvent
 	}
 
 	ResourceEvent struct {
@@ -85,18 +85,11 @@ func ResourceWorkflow(ctx workflow.Context, params NextRunParams) error {
 	)
 
 	// Pump to continue processing events until the close timer fires
-	for !closeWorkflow {
+	for !closeWorkflow || selector.HasPending() {
 		selector.Select(ctx)
 	}
 
 	// Prepare to close this workflow execution
-
-	// First drain all unprocessed signals
-	var newEvent ResourceEvent
-	for eventCh.ReceiveAsync(&newEvent) {
-		// Send new event to the processor
-		ch.Send(ctx, newEvent)
-	}
 
 	// Close event processor
 	ch.Close()
@@ -108,8 +101,9 @@ func ResourceWorkflow(ctx workflow.Context, params NextRunParams) error {
 	// This is a good place to store the Resource State back to long term storage
 
 	// Drain all signals which came during processor shutdown
+	var newEvent ResourceEvent
 	for eventCh.ReceiveAsync(&newEvent) {
-		processorState.addEvent(&newEvent, logger)
+		processorState.addEvent(newEvent, logger)
 	}
 
 	// Check if state has unprocessed events so we can start new run

@@ -4,10 +4,8 @@ import (
 	"context"
 	"log"
 
-	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
-	"go.temporal.io/sdk/workflow"
 
 	"github.com/temporalio/samples-go/serializer"
 )
@@ -27,8 +25,8 @@ func main() {
 		BackgroundActivityContext: ctx,
 	})
 
-	w.RegisterWorkflowWithOptions(serializer.ResourceWorkflow, workflow.RegisterOptions{Name: "ResourceWorkflow"})
-	w.RegisterActivityWithOptions(serializer.ProcessEvent, activity.RegisterOptions{Name: "ProcessEvent"})
+	w.RegisterWorkflow(serializer.ResourceWorkflow)
+	w.RegisterActivity(serializer.ProcessEvent)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

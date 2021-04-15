@@ -56,7 +56,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("Resource signaled.  ID: %v", run.GetID())
+		fmt.Printf("Resource signaled.  ID: %v\n", run.GetID())
 	}
 }
 
