@@ -2,10 +2,6 @@ module github.com/temporalio/samples-go
 
 go 1.16
 
-replace go.temporal.io/sdk => /Users/rob/Code/github.com/robholland/sdk-go
-
-replace go.temporal.io/server => /Users/rob/Code/github.com/robholland/temporal
-
 require (
 	github.com/HdrHistogram/hdrhistogram-go v0.9.0 // indirect
 	github.com/golang/mock v1.5.0
