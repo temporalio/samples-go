@@ -1,6 +1,6 @@
 ### Steps to run this sample:
-1) Before running this, Temporal Server need to run with advanced visibility store. 
-See [https://docs.temporal.io/docs/server-elasticsearch-setup](https://docs.temporal.io/docs/server-elasticsearch-setup)
+1) Before running this, Temporal Server need to run with advanced visibility store.
+See [https://docs.temporal.io/docs/server/elasticsearch-setup](https://docs.temporal.io/docs/server/elasticsearch-setup)
 2) Run the following command to start the worker:
 ```
 go run searchattributes/worker/main.go
