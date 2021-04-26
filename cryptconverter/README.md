@@ -14,6 +14,6 @@ go run starter/main.go
 ```
 5) Run the following command and see the encrypted payloads
 ```
-export TEMPORAL_PLUGIN_DATA_CONVERTER=./cryptconverter-plugin
+export TEMPORAL_CLI_PLUGIN_DATA_CONVERTER=./cryptconverter-plugin
 tctl workflow show --wid cryptconverter_workflowID
 ```
