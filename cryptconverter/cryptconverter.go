@@ -21,8 +21,12 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Encrypted Payloads workflow started", "name", name)
 
+	info := map[string]string{
+		"name": name,
+	}
+
 	var result string
-	err := workflow.ExecuteActivity(ctx, Activity, name).Get(ctx, &result)
+	err := workflow.ExecuteActivity(ctx, Activity, info).Get(ctx, &result)
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
 		return "", err
@@ -33,15 +37,14 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 	return result, nil
 }
 
-func Activity(ctx context.Context, name string) (string, error) {
+func Activity(ctx context.Context, info map[string]string) (string, error) {
 	logger := activity.GetLogger(ctx)
-	logger.Info("Activity", "name", name)
+	logger.Info("Activity", "info", info)
 
-	activity.RecordHeartbeat(ctx, "Thinking...")
-	// Uncomment if you'd like to check the heartbeat is encrypted in UI/tctl.
-	// Heartbeat details aren't saved to the history so this state won't be available
-	// once the activity completes.
-	// time.Sleep(30 * time.Second)
+	name, ok := info["name"]
+	if !ok {
+		name = "someone"
+	}
 
 	return "Hello " + name + "!", nil
 }
