@@ -2,7 +2,7 @@ module github.com/temporalio/samples-go
 
 go 1.16
 
-replace go.temporal.io/server => github.com/robholland/temporal v1.1.1-0.20210427083921-58a07163637e
+replace go.temporal.io/server => github.com/robholland/temporal v1.1.1-0.20210427090742-bc9685c643ea
 
 require (
 	github.com/HdrHistogram/hdrhistogram-go v0.9.0 // indirect

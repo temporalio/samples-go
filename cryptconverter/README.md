@@ -2,7 +2,7 @@
 1) You need a Temporal service running. See details in README.md
 2) Compile the cryptconverter plugin for tctl
 ```
-go build -o ./tctl-dataconverter-plugin-cryptconverter plugin/main.go
+go build -o ./tctl-plugin-dataconverter-cryptconverter plugin/main.go
 ```
 3) Run the following command to start the worker
 ```

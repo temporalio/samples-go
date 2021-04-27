@@ -373,8 +373,8 @@ github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 h1:N/ElC8H3+5X
 github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/robfig/cron v1.2.0 h1:ZjScXvvxeQ63Dbyxy76Fj3AT3Ut0aKsyd2/tl3DTMuQ=
 github.com/robfig/cron v1.2.0/go.mod h1:JGuDeoQd7Z6yL4zQhZ3OPEVHB7fL6Ka6skscFHfmt2k=
-github.com/robholland/temporal v1.1.1-0.20210427083921-58a07163637e h1:XPIcuzFX8Blq4F3lW/Sp94Ls7Fz5LX6xQSQ8lxxUcL8=
-github.com/robholland/temporal v1.1.1-0.20210427083921-58a07163637e/go.mod h1:39zE4wluMGzzNTsWW1SJ7vJakMslOyZytTX4K/G9N7Q=
+github.com/robholland/temporal v1.1.1-0.20210427090742-bc9685c643ea h1:7d6fP+ikYonpRolOd6uCHWBbSQiyFoOo6cUlc8FP/0Y=
+github.com/robholland/temporal v1.1.1-0.20210427090742-bc9685c643ea/go.mod h1:39zE4wluMGzzNTsWW1SJ7vJakMslOyZytTX4K/G9N7Q=
 github.com/rogpeppe/go-internal v1.3.0 h1:RR9dF3JtopPvtkroDZuVD7qquD0bnHlKSqaQhgwt8yk=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
