@@ -37,7 +37,6 @@ func SampleCronWorkflow(ctx workflow.Context) (*CronResult, error) {
 	endTime := workflow.Now(ctx)
 
 	err := workflow.ExecuteActivity(ctx1, DoSomething, startTime, endTime).Get(ctx, nil)
-
 	if err != nil {
 		// Cron job failed
 		// Next cron will still be scheduled by the Server
