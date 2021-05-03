@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-cron-workflow
 package cron
 
 import (
@@ -8,25 +9,15 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-/**
- * This cron sample workflow will schedule job based on given schedule spec. The schedule spec in this sample demo is
- * very simple, but you could have more complicated scheduler logic that meet your needs.
- */
-
-// Cron sample job activity.
-func SampleCronActivity(ctx context.Context, beginTime, endTime time.Time) error {
-	activity.GetLogger(ctx).Info("Cron job running.", "beginTime_exclude", beginTime, "endTime_include", endTime)
-	// ...
-	return nil
+// CronResult is used to return data from one cron run to the next
+type CronResult struct {
+	RunTime time.Time
 }
 
-// SampleCronResult used to return data from one cron run to next cron run.
-type SampleCronResult struct {
-	EndTime time.Time
-}
+// SampleCronWorkflow executes on the given schedule
+// The schedule is provided when starting the Workflow
+func SampleCronWorkflow(ctx workflow.Context) (*CronResult, error) {
 
-// SampleCronWorkflow is the sample cron workflow.
-func SampleCronWorkflow(ctx workflow.Context) (*SampleCronResult, error) {
 	workflow.GetLogger(ctx).Info("Cron workflow started.", "StartTime", workflow.Now(ctx))
 
 	ao := workflow.ActivityOptions{
@@ -34,23 +25,33 @@ func SampleCronWorkflow(ctx workflow.Context) (*SampleCronResult, error) {
 	}
 	ctx1 := workflow.WithActivityOptions(ctx, ao)
 
-	startTime := time.Time{} // start from 0 time for first cron job
+	// Start from 0 for first cron job
+	lastRunTime := time.Time{}
+	// Check to see if there was a previous cron job
 	if workflow.HasLastCompletionResult(ctx) {
-		var lastResult SampleCronResult
+		var lastResult CronResult
 		if err := workflow.GetLastCompletionResult(ctx, &lastResult); err == nil {
-			startTime = lastResult.EndTime
+			lastRunTime = lastResult.RunTime
 		}
 	}
+	thisRunTime := workflow.Now(ctx)
 
-	endTime := workflow.Now(ctx)
-
-	err := workflow.ExecuteActivity(ctx1, SampleCronActivity, startTime, endTime).Get(ctx, nil)
-
+	err := workflow.ExecuteActivity(ctx1, DoSomething, lastRunTime, thisRunTime).Get(ctx, nil)
 	if err != nil {
-		// cron job failed. but next cron should continue to be scheduled by server
+		// Cron job failed
+		// Next cron will still be scheduled by the Server
 		workflow.GetLogger(ctx).Error("Cron job failed.", "Error", err)
 		return nil, err
 	}
 
-	return &SampleCronResult{EndTime: endTime}, nil
+	return &CronResult{RunTime: thisRunTime}, nil
 }
+
+// DoSomething is an Activity
+func DoSomething(ctx context.Context, lastRunTime, thisRunTime time.Time) error {
+	activity.GetLogger(ctx).Info("Cron job running.", "lastRunTime_exclude", lastRunTime, "thisRunTime_include", thisRunTime)
+	// Query database, call external API, or do any other non-deterministic action.
+	return nil
+}
+
+// @@@SNIPEND

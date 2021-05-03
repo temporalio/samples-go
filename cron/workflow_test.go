@@ -41,9 +41,9 @@ func (s *UnitTestSuite) Test_CronWorkflow() {
 
 	env.RegisterWorkflow(testWorkflow)
 	env.RegisterWorkflow(SampleCronWorkflow)
-	env.RegisterActivity(SampleCronActivity)
+	env.RegisterActivity(DoSomething)
 
-	env.OnActivity(SampleCronActivity, mock.Anything, mock.Anything, mock.Anything).Return(nil).Times(3)
+	env.OnActivity(DoSomething, mock.Anything, mock.Anything, mock.Anything).Return(nil).Times(3)
 
 	var startTimeList, endTimeList []time.Time
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args converter.EncodedValues) {
