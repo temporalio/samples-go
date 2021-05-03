@@ -22,7 +22,7 @@ func main() {
 	w := worker.New(c, "cron", worker.Options{})
 
 	w.RegisterWorkflow(cron.SampleCronWorkflow)
-	w.RegisterActivity(cron.SampleCronActivity)
+	w.RegisterActivity(cron.DoSomething)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
