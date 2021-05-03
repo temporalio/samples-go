@@ -11,7 +11,7 @@ import (
 
 // CronResult is used to return data from one cron run to the next
 type CronResult struct {
-	EndTime time.Time
+	RunTime time.Time
 }
 
 // SampleCronWorkflow executes on the given schedule
@@ -26,17 +26,17 @@ func SampleCronWorkflow(ctx workflow.Context) (*CronResult, error) {
 	ctx1 := workflow.WithActivityOptions(ctx, ao)
 
 	// Start from 0 for first cron job
-	startTime := time.Time{}
+	lastRunTime := time.Time{}
 	// Check to see if there was a previous cron job
 	if workflow.HasLastCompletionResult(ctx) {
 		var lastResult CronResult
 		if err := workflow.GetLastCompletionResult(ctx, &lastResult); err == nil {
-			startTime = lastResult.EndTime
+			lastRunTime = lastResult.RunTime
 		}
 	}
-	endTime := workflow.Now(ctx)
+	thisRunTime := workflow.Now(ctx)
 
-	err := workflow.ExecuteActivity(ctx1, DoSomething, startTime, endTime).Get(ctx, nil)
+	err := workflow.ExecuteActivity(ctx1, DoSomething, lastRunTime, thisRunTime).Get(ctx, nil)
 	if err != nil {
 		// Cron job failed
 		// Next cron will still be scheduled by the Server
@@ -44,12 +44,12 @@ func SampleCronWorkflow(ctx workflow.Context) (*CronResult, error) {
 		return nil, err
 	}
 
-	return &CronResult{EndTime: endTime}, nil
+	return &CronResult{RunTime: thisRunTime}, nil
 }
 
 // DoSomething is an Activity
-func DoSomething(ctx context.Context, beginTime, endTime time.Time) error {
-	activity.GetLogger(ctx).Info("Cron job running.", "beginTime_exclude", beginTime, "endTime_include", endTime)
+func DoSomething(ctx context.Context, lastRunTime, thisRunTime time.Time) error {
+	activity.GetLogger(ctx).Info("Cron job running.", "lastRunTime_exclude", lastRunTime, "thisRunTime_include", thisRunTime)
 	// Query database, call external API, or do any other non-deterministic action.
 	return nil
 }
