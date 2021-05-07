@@ -19,7 +19,7 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "retry-activity", worker.Options{})
+	w := worker.New(c, "open-n-closed", worker.Options{})
 
 	w.RegisterWorkflow(openNclosed.Workflow)
 	w.RegisterActivity(openNclosed.Activity)
