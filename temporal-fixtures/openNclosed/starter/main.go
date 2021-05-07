@@ -29,7 +29,7 @@ func main() {
 
 		workflowOptions := client.StartWorkflowOptions{
 			ID:        id,
-			TaskQueue: "hello-world",
+			TaskQueue: "open-n-closed",
 		}
 
 		_, err := c.ExecuteWorkflow(context.Background(), workflowOptions, openNclosed.Workflow,
