@@ -57,7 +57,8 @@ func (dc *CryptDataConverter) WithContext(ctx context.Context) converter.DataCon
 }
 
 func (dc *CryptDataConverter) getKey(keyId string) (key []byte) {
-	// Key can be fetched from KMS or other secure storage.
+	// Key must be fetched from secure storage in production (such as a KMS).
+	// For testing here we just hard code a key.
 	return []byte("test-key-test-key-test-key-test!")
 }
 
