@@ -18,9 +18,7 @@ const (
 func MultiChoiceWorkflow(ctx workflow.Context) error {
 	// Get basket order.
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Minute,
-		HeartbeatTimeout:       time.Second * 20,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 	var orderActivities *OrderActivities // Used to call activities by function pointer

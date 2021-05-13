@@ -1,4 +1,4 @@
-package helloworld
+package cryptconverter
 
 import (
 	"context"
@@ -8,15 +8,18 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-// Workflow is a Hello World workflow definition.
+// Workflow is a standard workflow definition.
+// Note that the Workflow and Activity don't need to care that
+// their inputs/results are being encrypted/decrypted.
 func Workflow(ctx workflow.Context, name string) (string, error) {
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout: 10 * time.Second,
+		ScheduleToStartTimeout: time.Minute,
+		StartToCloseTimeout:    time.Minute,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	logger := workflow.GetLogger(ctx)
-	logger.Info("HelloWorld workflow started", "name", name)
+	logger.Info("Encrypted Payloads workflow started", "name", name)
 
 	var result string
 	err := workflow.ExecuteActivity(ctx, Activity, name).Get(ctx, &result)
@@ -25,7 +28,7 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 		return "", err
 	}
 
-	logger.Info("HelloWorld workflow completed.", "result", result)
+	logger.Info("Encrypted Payloads workflow completed.", "result", result)
 
 	return result, nil
 }

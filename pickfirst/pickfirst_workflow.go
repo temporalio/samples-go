@@ -23,10 +23,9 @@ func SamplePickFirstWorkflow(ctx workflow.Context) error {
 	// as well.
 	childCtx, cancelHandler := workflow.WithCancel(ctx)
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Minute,
-		HeartbeatTimeout:       time.Second * 20,
-		WaitForCancellation:    true, // Wait for cancellation to complete.
+		StartToCloseTimeout: 2 * time.Minute,
+		HeartbeatTimeout:    10 * time.Second,
+		WaitForCancellation: true, // Wait for cancellation to complete.
 	}
 	childCtx = workflow.WithActivityOptions(childCtx, ao)
 
@@ -34,8 +33,8 @@ func SamplePickFirstWorkflow(ctx workflow.Context) error {
 	// you might not care about them and could set WaitForCancellation to false (which is default value).
 
 	// starts 2 activities in parallel
-	f1 := workflow.ExecuteActivity(childCtx, SampleActivity, 0, time.Second*2)
-	f2 := workflow.ExecuteActivity(childCtx, SampleActivity, 1, time.Second*10)
+	f1 := workflow.ExecuteActivity(childCtx, SampleActivity, 0, 2*time.Second)
+	f2 := workflow.ExecuteActivity(childCtx, SampleActivity, 1, 1*time.Second)
 	pendingFutures := []workflow.Future{f1, f2}
 	selector.AddFuture(f1, func(f workflow.Future) {
 		_ = f.Get(ctx, &firstResponse)

@@ -26,9 +26,7 @@ type (
 func SampleSplitMergeWorkflow(ctx workflow.Context, workerCount int) (ChunkResult, error) {
 	chunkResultChannel := workflow.NewChannel(ctx)
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Minute,
-		HeartbeatTimeout:       time.Second * 20,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 

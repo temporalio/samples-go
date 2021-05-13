@@ -25,7 +25,7 @@ func TestUnitTestSuite(t *testing.T) {
 func (s *UnitTestSuite) Test_CronWorkflow() {
 	testWorkflow := func(ctx workflow.Context) error {
 		ctx1 := workflow.WithChildOptions(ctx, workflow.ChildWorkflowOptions{
-			WorkflowRunTimeout: time.Minute * 10,
+			WorkflowRunTimeout: 10 * time.Minute,
 			CronSchedule:       "0 * * * *", // hourly
 		})
 
@@ -41,9 +41,9 @@ func (s *UnitTestSuite) Test_CronWorkflow() {
 
 	env.RegisterWorkflow(testWorkflow)
 	env.RegisterWorkflow(SampleCronWorkflow)
-	env.RegisterActivity(SampleCronActivity)
+	env.RegisterActivity(DoSomething)
 
-	env.OnActivity(SampleCronActivity, mock.Anything, mock.Anything, mock.Anything).Return(nil).Times(3)
+	env.OnActivity(DoSomething, mock.Anything, mock.Anything, mock.Anything).Return(nil).Times(3)
 
 	var startTimeList, endTimeList []time.Time
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args converter.EncodedValues) {

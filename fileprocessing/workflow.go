@@ -12,7 +12,7 @@ import (
 func SampleFileProcessingWorkflow(ctx workflow.Context, fileName string) (err error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: time.Minute,
-		HeartbeatTimeout:    time.Second * 2, // such a short timeout to make sample fail over very fast
+		HeartbeatTimeout:    2 * time.Second, // such a short timeout to make sample fail over very fast
 		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:    time.Second,
 			BackoffCoefficient: 2.0,

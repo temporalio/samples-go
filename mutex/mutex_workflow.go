@@ -46,7 +46,7 @@ func (s *Mutex) Lock(ctx workflow.Context,
 	resourceID string, unlockTimeout time.Duration) (UnlockFunc, error) {
 
 	activityCtx := workflow.WithLocalActivityOptions(ctx, workflow.LocalActivityOptions{
-		ScheduleToCloseTimeout: time.Minute * 1,
+		ScheduleToCloseTimeout: time.Minute,
 		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:    time.Second,
 			BackoffCoefficient: 2.0,

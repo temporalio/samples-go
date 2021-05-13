@@ -94,9 +94,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 
 	// List workflow from Elasticsearch.
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: 2 * time.Minute,
-		StartToCloseTimeout:    2 * time.Minute,
-		HeartbeatTimeout:       time.Second * 20,
+		StartToCloseTimeout: 20 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 	query := "CustomIntField=2 and CustomKeywordField='Update2' order by CustomDatetimeField DESC"

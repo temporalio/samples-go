@@ -32,8 +32,8 @@ func Test_Workflow(t *testing.T) {
 	var dataConverter = NewJSONDataConverter()
 	env.SetDataConverter(dataConverter)
 
-	// env.SetWorkflowTimeout(time.Minute * 5)
-	// env.SetTestTimeout(time.Minute * 5)
+	// env.SetWorkflowTimeout(5 * time.Minute)
+	// env.SetTestTimeout(5 * time.Minute)
 
 	env.SetOnActivityStartedListener(func(activityInfo *activity.Info, ctx context.Context, args converter.EncodedValues) {
 		activityType := activityInfo.ActivityType.Name

@@ -1,4 +1,4 @@
-package helloworld
+package openNclosed
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 )
 
 // Workflow is a Hello World workflow definition.
-func Workflow(ctx workflow.Context, name string) (string, error) {
+func Workflow(ctx workflow.Context, name string, keep bool) (string, error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
 	}
@@ -19,7 +19,7 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 	logger.Info("HelloWorld workflow started", "name", name)
 
 	var result string
-	err := workflow.ExecuteActivity(ctx, Activity, name).Get(ctx, &result)
+	err := workflow.ExecuteActivity(ctx, Activity, name, keep).Get(ctx, &result)
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
 		return "", err
@@ -30,8 +30,11 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 	return result, nil
 }
 
-func Activity(ctx context.Context, name string) (string, error) {
+func Activity(ctx context.Context, name string, keep bool) (string, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Activity", "name", name)
+	if keep {
+		time.Sleep(10 * time.Minute)
+	}
 	return "Hello " + name + "!", nil
 }

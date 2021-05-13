@@ -17,9 +17,8 @@ type WorkflowResult struct {
 
 // ActivityOptions can be reused
 var ActivityOptions = workflow.ActivityOptions{
-	ScheduleToStartTimeout: time.Second * 5,
-	StartToCloseTimeout:    time.Minute * 10,
-	HeartbeatTimeout:       time.Second * 2, // such a short timeout to make sample fail over very fast
+	StartToCloseTimeout: 10 * time.Minute,
+	HeartbeatTimeout:    2 * time.Second, // such a short timeout to make sample fail over very fast
 	RetryPolicy: &temporal.RetryPolicy{
 		InitialInterval:    time.Second,
 		BackoffCoefficient: 2.0,
