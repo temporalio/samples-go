@@ -13,6 +13,11 @@ import (
 	"go.temporal.io/sdk/client"
 )
 
+var (
+	NumberOfWorkflows = 5
+	KeepOpen          = true
+)
+
 func main() {
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{Namespace: "default"})
@@ -23,7 +28,7 @@ func main() {
 
 	uuidvar := uuid.New()
 	i := 1
-	for i <= 20 {
+	for i <= NumberOfWorkflows {
 		id := uuidvar[:8] + "###___" + strconv.Itoa(i)
 		i++
 
@@ -33,7 +38,7 @@ func main() {
 		}
 
 		_, err := c.ExecuteWorkflow(context.Background(), workflowOptions, openNclosed.Workflow,
-			"Temporal", true)
+			"Temporal", KeepOpen)
 		if err != nil {
 			log.Fatalln("Unable to execute workflow", err)
 		}
