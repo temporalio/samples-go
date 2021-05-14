@@ -13,19 +13,16 @@ import (
 // their inputs/results are being encrypted/decrypted.
 func Workflow(ctx workflow.Context, name string) (string, error) {
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout: 10 * time.Second,
+		ScheduleToStartTimeout: time.Minute,
+		StartToCloseTimeout:    time.Minute,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Encrypted Payloads workflow started", "name", name)
 
-	info := map[string]string{
-		"name": name,
-	}
-
 	var result string
-	err := workflow.ExecuteActivity(ctx, Activity, info).Get(ctx, &result)
+	err := workflow.ExecuteActivity(ctx, Activity, name).Get(ctx, &result)
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
 		return "", err
@@ -36,14 +33,8 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 	return result, nil
 }
 
-func Activity(ctx context.Context, info map[string]string) (string, error) {
+func Activity(ctx context.Context, name string) (string, error) {
 	logger := activity.GetLogger(ctx)
-	logger.Info("Activity", "info", info)
-
-	name, ok := info["name"]
-	if !ok {
-		name = "someone"
-	}
-
+	logger.Info("Activity", "name", name)
 	return "Hello " + name + "!", nil
 }
