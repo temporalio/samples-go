@@ -6,9 +6,8 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/worker"
-	"go.temporal.io/sdk/workflow"
 
-	"github.com/temporalio/samples-go/cryptconverter"
+	cryptconverter "github.com/temporalio/samples-go/encrypted-payloads"
 )
 
 func main() {
@@ -19,14 +18,13 @@ func main() {
 		DataConverter: cryptconverter.NewCryptDataConverter(
 			converter.GetDefaultDataConverter(),
 		),
-		ContextPropagators: []workflow.ContextPropagator{cryptconverter.NewContextPropagator()},
 	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
 
-	w := worker.New(c, "cryptconverter", worker.Options{})
+	w := worker.New(c, "encrypted-payloads", worker.Options{})
 
 	w.RegisterWorkflow(cryptconverter.Workflow)
 	w.RegisterActivity(cryptconverter.Activity)

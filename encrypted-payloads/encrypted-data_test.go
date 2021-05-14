@@ -1,7 +1,6 @@
 package cryptconverter
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
@@ -29,24 +28,20 @@ func Test_Workflow(t *testing.T) {
 func Test_DataConverter(t *testing.T) {
 	defaultDc := converter.GetDefaultDataConverter()
 
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, PropagateKey, CryptContext{KeyId: "test"})
-
 	cryptDc := NewCryptDataConverter(
 		converter.GetDefaultDataConverter(),
 	)
-	cryptDcWc := cryptDc.WithContext(ctx)
 
-	defaultPayloads, err := defaultDc.ToPayloads("Testing")
+	defaultPayload, err := defaultDc.ToPayload("Testing")
 	require.NoError(t, err)
 
-	encryptedPayloads, err := cryptDcWc.ToPayloads("Testing")
+	encryptedPayload, err := cryptDc.ToPayload("Testing")
 	require.NoError(t, err)
 
-	require.NotEqual(t, defaultPayloads.Payloads[0].GetData(), encryptedPayloads.Payloads[0].GetData())
+	require.NotEqual(t, defaultPayload.GetData(), encryptedPayload.GetData())
 
 	var result string
-	err = cryptDc.FromPayloads(encryptedPayloads, &result)
+	err = cryptDc.FromPayload(encryptedPayload, &result)
 	require.NoError(t, err)
 
 	require.Equal(t, "Testing", result)
