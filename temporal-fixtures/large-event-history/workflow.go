@@ -1,7 +1,10 @@
-package largepayload
+package largeeventhistory
 
 import (
+	"errors"
 	"time"
+
+	"context"
 
 	"go.temporal.io/sdk/workflow"
 )
@@ -14,16 +17,20 @@ func Workflow(ctx workflow.Context, LengthOfHistory int, WillFailOrNot bool) (er
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	var data []byte
-	var a *Activities
 	i := 1
 	for i <= LengthOfHistory {
-		err = workflow.ExecuteActivity(ctx, a.Activity, data).Get(ctx, nil)
+		err = workflow.ExecuteActivity(ctx, Activity, data).Get(ctx, nil)
+	}
+	if err != nil {
+		return errors.New("unexpected Activity failure")
 	}
 
-	if err != nil {
-		workflow.GetLogger(ctx).Error("Workflow failed.", "Error", err.Error())
-	} else {
-		workflow.GetLogger(ctx).Info("Workflow completed.")
+	if WillFailOrNot {
+		return errors.New("intentional workflow failure due to WillFailOrNot parameter")
 	}
-	return err
+	return nil
+}
+
+func Activity(ctx context.Context, input []byte) error {
+	return nil
 }

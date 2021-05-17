@@ -21,7 +21,7 @@ func main() {
 	w := worker.New(c, "largepayload", worker.Options{})
 
 	w.RegisterWorkflow(largeeventhistory.Workflow)
-	w.RegisterActivity(&largeeventhistory.Activities{})
+	w.RegisterActivity(largeeventhistory.Activity)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
