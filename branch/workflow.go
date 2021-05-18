@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-branch-workflow-type
 package branch
 
 import (
@@ -7,8 +8,9 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-// SampleBranchWorkflow workflow definition
-// This workflow executes multiple activities in parallel. The number of branches is controlled by a passed in parameter.
+// SampleBranchWorkflow is a Temporal Workflow Type
+// This Workflow type calls multiple Activities in parallel.
+// The number of branches is controlled by a passed in parameter.
 func SampleBranchWorkflow(ctx workflow.Context, totalBranches int) (result []string, err error) {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("SampleBranchWorkflow begin")
@@ -40,9 +42,4 @@ func SampleBranchWorkflow(ctx workflow.Context, totalBranches int) (result []str
 	logger.Info("SampleBranchWorkflow end")
 	return
 }
-
-func SampleActivity(input string) (string, error) {
-	name := "sampleActivity"
-	fmt.Printf("Run %s with input %v \n", name, input)
-	return "Result_" + input, nil
-}
+// @@@SNIPEND

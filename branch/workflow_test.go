@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-branch-workflow-type-test
 package branch
 
 import (
@@ -35,3 +36,4 @@ func (s *UnitTestSuite) Test_BranchWorkflow() {
 	sort.Strings(expected)
 	s.Equal(expected, result)
 }
+// @@@SNIPEND

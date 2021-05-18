@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-branch-workflow-execution-starter
 package main
 
 import (
@@ -36,3 +37,4 @@ func main() {
 	}
 	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 }
+// @@@SNIPEND

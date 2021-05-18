@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-branch-worker-starter
 package main
 
 import (
@@ -29,3 +30,4 @@ func main() {
 		log.Fatalln("Unable to start worker", err)
 	}
 }
+// @@@SNIPEND
