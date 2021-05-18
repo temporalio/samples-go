@@ -15,7 +15,7 @@ func Test_Workflow(t *testing.T) {
 	env := testSuite.NewTestWorkflowEnvironment()
 
 	// Mock activity implementation
-	env.OnActivity(Activity, mock.Anything, "Temporal").Return("Hello Temporal!", nil)
+	env.OnActivity(Activity, mock.Anything, mock.Anything).Return("Hello Temporal!", nil)
 
 	env.ExecuteWorkflow(Workflow, "Temporal")
 
