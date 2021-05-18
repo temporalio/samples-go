@@ -1,4 +1,5 @@
-package cancelactivity
+// @@@SNIPSTART samples-go-cancellation-activity-types
+package cancellation
 
 import (
 	"context"
@@ -7,13 +8,12 @@ import (
 	"go.temporal.io/sdk/activity"
 )
 
-type Activities struct {
-}
+type Activities struct {}
 
 func (a *Activities) ActivityToBeCanceled(ctx context.Context) (string, error) {
 	logger := activity.GetLogger(ctx)
-	logger.Info("activity started, to cancel workflow, use 'go run cancelactivity/cancel/main.go " +
-		"-w <WorkflowID>' or CLI: 'tctl wf cancel -w <WorkflowID>' to cancel")
+	logger.Info("activity started, to cancel the Workflow Execution, use 'go run cancellation/cancel/main.go " +
+		"-w <WorkflowID>' or use the CLI: 'tctl wf cancel -w <WorkflowID>'")
 	for {
 		select {
 		case <-time.After(1 * time.Second):
@@ -28,12 +28,13 @@ func (a *Activities) ActivityToBeCanceled(ctx context.Context) (string, error) {
 
 func (a *Activities) CleanupActivity(ctx context.Context) error {
 	logger := activity.GetLogger(ctx)
-	logger.Info("cleanupActivity started")
+	logger.Info("Cleanup Activity started")
 	return nil
 }
 
 func (a *Activities) ActivityToBeSkipped(ctx context.Context) error {
 	logger := activity.GetLogger(ctx)
-	logger.Info("this activity will be skipped due to cancellation")
+	logger.Info("this Activity will be skipped due to cancellation")
 	return nil
 }
+// @@@SNIPEND

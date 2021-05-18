@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-child-workflow-example-worker-starter
 package main
 
 import (
@@ -10,7 +11,7 @@ import (
 )
 
 func main() {
-	// The client and worker are heavyweight objects that should be created once per process.
+	// The client is a heavyweight object that should be created only once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
 	})

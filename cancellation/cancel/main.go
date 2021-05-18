@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-cancellation-cancel-workflow-trigger
 package main
 
 import (
@@ -10,7 +11,7 @@ import (
 
 func main() {
 	var workflowID string
-	flag.StringVar(&workflowID, "wid", "workflowID-to-cancel", "workflowID of the workflow to be canceled.")
+	flag.StringVar(&workflowID, "wid", "workflowID-to-cancel", "workflowID of the Workflow Execution to be canceled.")
 	flag.Parse()
 
 	if workflowID == "" {
@@ -29,7 +30,8 @@ func main() {
 
 	err = c.CancelWorkflow(context.Background(), workflowID, "")
 	if err != nil {
-		log.Fatalln("Unable to cancel workflow", err)
+		log.Fatalln("Unable to cancel Workflow Execution", err)
 	}
-	log.Println("Workflow cancelled", "WorkflowID", workflowID)
+	log.Println("Workflow Execution cancelled", "WorkflowID", workflowID)
 }
+// @@@SNIPEND

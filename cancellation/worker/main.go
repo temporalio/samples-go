@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-cancellation-worker-starter
 package main
 
 import (
@@ -6,7 +7,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	"github.com/temporalio/samples-go/cancelactivity"
+	"github.com/temporalio/samples-go/cancellation"
 )
 
 func main() {
@@ -21,11 +22,12 @@ func main() {
 
 	w := worker.New(c, "cancel-activity", worker.Options{})
 
-	w.RegisterWorkflow(cancelactivity.Workflow)
-	w.RegisterActivity(&cancelactivity.Activities{})
+	w.RegisterWorkflow(cancellation.Workflow)
+	w.RegisterActivity(&cancellation.Activities{})
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
 		log.Fatalln("Unable to start worker", err)
 	}
 }
+// @@@SNIPEND

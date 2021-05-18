@@ -1,4 +1,5 @@
-package cancelactivity
+// @@@SNIPSTART samples-go-cancellation-workflow-type
+package cancellation
 
 import (
 	"fmt"
@@ -7,12 +8,8 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-/**
- * This is the cancel activity workflow sample.
- */
-
-// Workflow workflow
-func Workflow(ctx workflow.Context) error {
+// YourWorkflow is a Workflow Type that can be canceled.
+func YourWorkflow(ctx workflow.Context) error {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 30 * time.Minute,
 		HeartbeatTimeout:    5 * time.Second,
@@ -21,24 +18,24 @@ func Workflow(ctx workflow.Context) error {
 	ctx = workflow.WithActivityOptions(ctx, ao)
 	logger := workflow.GetLogger(ctx)
 	logger.Info("cancel workflow started")
-	var a *Activities // Used to call activities by function pointer
+	var a *Activities // Used to call Activities by function pointer
 	defer func() {
-		// When workflow is canceled, it has to get a new disconnected context to execute any activities
+		// When the Workflow is canceled, it has to get a new disconnected context to execute any Activities
 		newCtx, _ := workflow.NewDisconnectedContext(ctx)
 		err := workflow.ExecuteActivity(newCtx, a.CleanupActivity).Get(ctx, nil)
 		if err != nil {
-			logger.Error("Cleanup activity failed", "Error", err)
+			logger.Error("CleanupActivity failed", "Error", err)
 		}
 	}()
 
 	var result string
 	err := workflow.ExecuteActivity(ctx, a.ActivityToBeCanceled).Get(ctx, &result)
-	logger.Info(fmt.Sprintf("activityToBeCanceled returns %v, %v", result, err))
+	logger.Info(fmt.Sprintf("ActivityToBeCanceled returns %v, %v", result, err))
 
 	err = workflow.ExecuteActivity(ctx, a.ActivityToBeSkipped).Get(ctx, nil)
-	logger.Error("Error from activityToBeSkipped", "Error", err)
+	logger.Error("Error from ActivityToBeSkipped", "Error", err)
 
-	logger.Info("Workflow completed.")
+	logger.Info("Workflow Execution complete.")
 
 	return nil
 }
