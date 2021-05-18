@@ -1,4 +1,4 @@
-// @@@SNIPSTART samples-go-cancellation-workflow-type
+// @@@SNIPSTART samples-go-cancellation-workflow-definition
 package cancellation
 
 import (
@@ -8,7 +8,7 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-// YourWorkflow is a Workflow Type that can be canceled.
+// YourWorkflow is a Workflow Definition that shows how it can be canceled.
 func YourWorkflow(ctx workflow.Context) error {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 30 * time.Minute,

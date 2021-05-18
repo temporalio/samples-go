@@ -1,4 +1,4 @@
-// @@@SNIPSTART samples-go-branch-workflow-type-test
+// @@@SNIPSTART samples-go-branch-workflow-definition-test
 package branch
 
 import (

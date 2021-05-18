@@ -1,4 +1,4 @@
-// @@@SNIPSTART samples-go-cancellation-activity-types
+// @@@SNIPSTART samples-go-cancellation-activity-definition
 package cancellation
 
 import (

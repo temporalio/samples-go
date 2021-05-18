@@ -1,4 +1,4 @@
-// @@@SNIPSTART samples-go-cancellation-cancel-workflow-trigger
+// @@@SNIPSTART samples-go-cancellation-cancel-workflow-execution-trigger
 package main
 
 import (
