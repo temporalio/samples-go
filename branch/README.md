@@ -1,4 +1,4 @@
-<!--@@@SNIPSTART samples-go-branch-readme-->
+<!-- @@@SNIPSTART samples-go-branch-readme -->
 
 Make sure the [Temporal Server is running locally](https://docs.temporal.io/docs/server/quick-install).
 
@@ -13,4 +13,4 @@ Start the Workflow Execution
 ```bash
 go run branch/starter/main.go
 ```
-<!--@@@SNIPEND-->
+<!-- @@@SNIPEND -->

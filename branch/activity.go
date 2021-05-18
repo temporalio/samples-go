@@ -11,4 +11,4 @@ func SampleActivity(input string) (string, error) {
 	fmt.Printf("Run %s with input %v \n", name, input)
 	return "Result_" + input, nil
 }
-// @@SNIPEND
+// @@@SNIPEND
