@@ -3,22 +3,11 @@ steps:
     agents:
       queue: "default"
       docker: "*"
-    command: "make bins"
+    command: "make ci-build"
     plugins:
       - docker-compose#v3.1.0:
           run: all
           config: ./.buildkite/docker-compose.yml
-          
-  - label: ":golang: test"
-    agents:
-      queue: "default"
-      docker: "*"
-    command: "make test"
-    plugins:
-      - docker-compose#v3.1.0:
-          run: all
-          config: ./.buildkite/docker-compose.yml
-          
           
   - label: ":alien: Fossa scan"
     agents:

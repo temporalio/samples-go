@@ -47,6 +47,9 @@ update-sdk:
 
 clean:
 	rm -rf bin
+	
+ci-build: staticcheck errcheck bins test
+
 
 ##### Fossa #####
 fossa-install:
