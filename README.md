@@ -17,12 +17,14 @@ The [helloworld](helloworld/README.md) sample is a good place to start.
 You can learn more about running the Server locally in the [temporalio/docker-compose README](https://github.com/temporalio/docker-compose/blob/main/README.md).
 And you can learn more about the Temporal Server technology in general via our [documentation](https://docs.temporal.io/).
 
-## Samples
+## Samples Directory
 
-Each Hello World sample demonstrates one feature of the SDK, together with tests.
+Each sample demonstrates one feature of the SDK, together with tests.
 
 - [Hello World](https://github.com/temporalio/samples-go/tree/master/helloworld): Simple example of a Workflow and an Activity.
-- **Basic API demonstrations**
+
+### API demonstrations
+
   - Async activity completion: Can be observed in the [Expense Report](https://github.com/temporalio/samples-go/tree/master/expense) example - [Docs](https://docs.temporal.io/docs/go/activities#asynchronous-activity-completion)
   - [Retry Activity](https://github.com/temporalio/samples-go/tree/master/retryactivity): This sample workflow executes an unreliable activity **with retry policy**. If activity execution failed, server will schedule retry based on retry policy configuration. The activity also **heartbeats progress** so it could resume from reported progress in retry attempt.
   - [Child Workflow](https://github.com/temporalio/samples-go/tree/master/child-workflow): This sample workflow demonstrates how to use invoke child workflow from parent workflow execution.  Each child workflow execution is starting a new run and parent execution is notified only after the completion of last run.
@@ -47,21 +49,27 @@ Each Hello World sample demonstrates one feature of the SDK, together with tests
   - [Parallel workflow](https://github.com/temporalio/samples-go/tree/master/parallel): This sample workflow executes multiple branches in parallel using `workflow.Go()` method.
   - [Pick First](https://github.com/temporalio/samples-go/tree/master/pickfirst): This sample workflow execute activities in parallel branches, pick the result of the branch that completes first, and then cancels other activities that are not finished yet.
   - [Split/Merge](https://github.com/temporalio/samples-go/tree/master/splitmerge): This sample workflow demonstrates how to use multiple Temporal coroutines (instead of native goroutine) to process a chunk of a large work item in parallel, and then merge the intermediate result to generate the final result. In Temporal workflow, you should not use go routine. Instead, you use corotinue via workflow.Go method.
-- **Concrete Examples**
+
+### Concrete Examples
+
+  - [DSL Workflow](https://github.com/temporalio/samples-go/tree/master/dsl): This sample demonstrates how to implement a DSL workflow. In this sample, we provide 2 sample yaml files each defines a custom workflow that can be processed by this DSL workflow sample code. Useful if you want to build your own low code
   - [Expense Request](https://github.com/temporalio/samples-go/tree/master/expense): This sample workflow process an expense request. The key part of this sample is to show how to complete an activity asynchronously.
   - [File Processing](https://github.com/temporalio/samples-go/tree/master/fileprocessing): This sample workflow demos a file processing process. The workflow first starts an activity to download a requested resource file from web and store it locally on the host where it runs the download activity. Then, the workflow will start more activities to process the downloaded resource file. The key part is the following activities have to be run on the same host as the initial downloading activity. This is achieved by using the session API.
   - [Particle Swarm Optimization](https://github.com/temporalio/samples-go/tree/master/pso): This sample workflow demos a long iterative math optimization process using particle swarm optimization (PSO). It demonstrates usage of parallel execution, `ContinueAsNew` for long histories, a query API, and custom `DataConverter` serialization.
   - [Prometheus Metrics](https://github.com/temporalio/samples-go/tree/master/metrics): Demonstrates how to instrument Temporal with Prometheus and Uber's Tally library.
-- Misc
+
+### Misc/Pending Examples
+
+Mostly examples we haven't yet ported from https://github.com/temporalio/samples-java/
+
   - Async activity calling: *Example to be completed*
   - Async lambda:  *Example to be completed*
-  - [DSL Workflow](https://github.com/temporalio/samples-go/tree/master/dsl): This sample demonstrates how to implement a DSL workflow. In this sample, we provide 2 sample yaml files each defines a custom workflow that can be processed by this DSL workflow sample code.
   - Periodic Workflow: Workflow that executes some logic periodically. *Example to be completed*
   - Exception propagation and wrapping: *Example to be completed*
   - Polymorphic activity: *Example to be completed*
   - SAGA pattern:  *Example to be completed*
   - Side Effect:  *Example to be completed* - [Docs](https://docs.temporal.io/docs/go/side-effect)
 
-## Fixtures
+### Fixtures
 
-These are edge case examples useful for Temporal development and bug reporting. [See their readme for more details](https://github.com/temporalio/samples-go/tree/master/temporal-fixtures).
+These are edge case examples useful for Temporal internal development and bug reporting. [See their readme for more details](https://github.com/temporalio/samples-go/tree/master/temporal-fixtures).
