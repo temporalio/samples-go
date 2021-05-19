@@ -50,7 +50,7 @@ Each Hello World sample demonstrates one feature of the SDK, together with tests
 - **Concrete Examples**
   - [Expense Request](https://github.com/temporalio/samples-go/tree/master/expense): This sample workflow process an expense request. The key part of this sample is to show how to complete an activity asynchronously.
   - [File Processing](https://github.com/temporalio/samples-go/tree/master/fileprocessing): This sample workflow demos a file processing process. The workflow first starts an activity to download a requested resource file from web and store it locally on the host where it runs the download activity. Then, the workflow will start more activities to process the downloaded resource file. The key part is the following activities have to be run on the same host as the initial downloading activity. This is achieved by using the session API.
-  - [Particle Swarm Optimization](https://github.com/temporalio/samples-go/tree/master/pso)
+  - [Particle Swarm Optimization](https://github.com/temporalio/samples-go/tree/master/pso): This sample workflow demos a long iterative math optimization process using particle swarm optimization (PSO). It demonstrates usage of parallel execution, `ContinueAsNew` for long histories, a query API, and custom `DataConverter` serialization.
   - [Prometheus Metrics](https://github.com/temporalio/samples-go/tree/master/metrics): Demonstrates how to instrument Temporal with Prometheus and Uber's Tally library.
 - Misc
   - Async activity calling: *Example to be completed*
