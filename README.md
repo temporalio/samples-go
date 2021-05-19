@@ -40,7 +40,11 @@ Each sample demonstrates one feature of the SDK, together with tests.
   - [Search Attributes](https://github.com/temporalio/samples-go/tree/master/searchattributes): Custom search attributes that can be used to find workflows using predicates (must use with Elasticsearch)
   - [Timer Futures](https://github.com/temporalio/samples-go/tree/master/timer): Workflow starts a long running order processing operation and in the case that the processing takes too long, we want to send out a notification email to user about the delay, but we won't cancel the operation. If the operation finishes before the timer fires, then we want to cancel the timer. Using `workflow.NewTimer`
   - [Tracing and Context Propagation](https://github.com/temporalio/samples-go/tree/master/ctxpropagation): The sample Workflow initializes the client with a context propagator which propagates specific information in the `context.Context` object across the Workflow. The `context.Context` object is populated with the information prior to calling `StartWorkflow`. The Workflow demonstrates that the information is available in the Workflow and any activities executed. [Docs](https://docs.temporal.io/docs/go/tracing/).
-- **Dynamic Workflow Logic Examples**: Demonstrating common control flow patterns combined with Temporal's API
+
+### Dynamic Workflow Logic Examples
+
+Demonstrating common control flow patterns used together with Temporal's API
+
   - [Dynamic Invocation](https://github.com/temporalio/samples-go/tree/master/dynamic): This demonstrates invocation of workflows and activities using name rather than strongly typed function.
   - [Branching Workflow](https://github.com/temporalio/samples-go/blob/master/branch): This workflow executes multiple activities in parallel. The number of branches is controlled by a passed in parameter.
   - [Exclusive Choice](https://github.com/temporalio/samples-go/tree/master/choice-exclusive): How to execute activities based on dynamic input
