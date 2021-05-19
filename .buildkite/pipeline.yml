@@ -1,0 +1,22 @@
+steps:
+  - label: ":golang: build"
+    agents:
+      queue: "default"
+      docker: "*"
+    command: "make ci-build"
+    plugins:
+      - docker-compose#v3.1.0:
+          run: all
+          config: ./.buildkite/docker-compose.yml
+          
+  - label: ":alien: Fossa scan"
+    agents:
+      queue: "default"
+      docker: "*"
+    command: "make fossa-init fossa-analyze fossa-test"
+    plugins:
+      - docker-compose#v3.1.0:
+          run: all
+          config: ./.buildkite/docker-compose.yml
+
+  - wait
