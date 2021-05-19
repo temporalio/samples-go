@@ -1,4 +1,25 @@
 steps:
+  - label: ":golang: build"
+    agents:
+      queue: "default"
+      docker: "*"
+    command: "make bins"
+    plugins:
+      - docker-compose#v3.1.0:
+          run: all
+          config: ./.buildkite/docker-compose.yml
+          
+  - label: ":golang: test"
+    agents:
+      queue: "default"
+      docker: "*"
+    command: "make test"
+    plugins:
+      - docker-compose#v3.1.0:
+          run: all
+          config: ./.buildkite/docker-compose.yml
+          
+          
   - label: ":alien: Fossa scan"
     agents:
       queue: "default"
@@ -6,7 +27,7 @@ steps:
     command: "make fossa-init fossa-analyze fossa-test"
     plugins:
       - docker-compose#v3.1.0:
-          run: fossa
+          run: all
           config: ./.buildkite/docker-compose.yml
 
   - wait

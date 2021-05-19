@@ -1,7 +1,7 @@
 version: "3.5"
 
 services:
-  fossa:
+  all:
     build:
       context: ../
       dockerfile: ./.buildkite/Dockerfile
