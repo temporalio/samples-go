@@ -9,3 +9,5 @@ services:
       - "GO111MODULE=on"
       - BUILDKITE_BRANCH
       - FOSSA_API_KEY
+    volumes:
+      - ..:/samples-go
