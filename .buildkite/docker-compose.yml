@@ -11,3 +11,4 @@ services:
       - FOSSA_API_KEY
     volumes:
       - ..:/samples-go
+
