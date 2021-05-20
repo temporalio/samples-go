@@ -6,7 +6,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	"github.com/temporalio/samples-go/cron"
+	"github.com/temporalio/samples-go/temporal-fixtures/largepayload"
 )
 
 func main() {
@@ -19,10 +19,10 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "cron", worker.Options{})
+	w := worker.New(c, "largepayload", worker.Options{})
 
-	w.RegisterWorkflow(cron.SampleCronWorkflow)
-	w.RegisterActivity(cron.DoSomething)
+	w.RegisterWorkflow(largepayload.LargePayloadWorkflow)
+	w.RegisterActivity(&largepayload.Activities{})
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
