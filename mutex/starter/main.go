@@ -2,52 +2,47 @@ package main
 
 import (
 	"context"
+	"log"
 
 	"github.com/pborman/uuid"
-	"go.temporal.io/temporal/client"
-	"go.uber.org/zap"
+	"go.temporal.io/sdk/client"
 
-	"github.com/temporalio/temporal-go-samples/mutex"
+	"github.com/temporalio/samples-go/mutex"
 )
 
 func main() {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
-
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
 	if err != nil {
-		logger.Fatal("Unable to create client", zap.Error(err))
+		log.Fatalln("Unable to create client", err)
 	}
-	defer c.CloseConnection()
+	defer c.Close()
 
 	// This workflow ID can be user business logic identifier as well.
 	resourceID := uuid.New()
 	workflow1Options := client.StartWorkflowOptions{
-		ID:       "SampleWorkflow1WithMutex_" + uuid.New(),
-		TaskList: "mutex",
+		ID:        "SampleWorkflow1WithMutex_" + uuid.New(),
+		TaskQueue: "mutex",
 	}
 
 	workflow2Options := client.StartWorkflowOptions{
-		ID:       "SampleWorkflow2WithMutex_" + uuid.New(),
-		TaskList: "mutex",
+		ID:        "SampleWorkflow2WithMutex_" + uuid.New(),
+		TaskQueue: "mutex",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflow1Options, mutex.SampleWorkflowWithMutex, resourceID)
 	if err != nil {
-		logger.Error("Unable to execute workflow1", zap.Error(err))
+		log.Fatalln("Unable to execute workflow1", err)
 	} else {
-		logger.Info("Started workflow1", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+		log.Println("Started workflow1", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 	}
 
 	we, err = c.ExecuteWorkflow(context.Background(), workflow2Options, mutex.SampleWorkflowWithMutex, resourceID)
 	if err != nil {
-		logger.Error("Unable to execute workflow2", zap.Error(err))
+		log.Fatalln("Unable to execute workflow2", err)
 	} else {
-		logger.Info("Started workflow2", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+		log.Println("Started workflow2", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 	}
 }

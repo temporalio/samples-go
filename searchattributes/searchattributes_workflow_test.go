@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	executionpb "go.temporal.io/temporal-proto/execution"
-	"go.temporal.io/temporal/testsuite"
+	workflowpb "go.temporal.io/api/workflow/v1"
+	"go.temporal.io/sdk/testsuite"
 )
 
 func Test_Workflow(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_Workflow(t *testing.T) {
 		"CustomKeywordField":  "Update1",
 		"CustomBoolField":     true,
 		"CustomDoubleField":   3.14,
-		"CustomDatetimeField": time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local),
+		"CustomDatetimeField": time.Date(2019, 8, 22, 0, 0, 0, 0, time.Local),
 		"CustomStringField":   "String field is for text. When query, it will be tokenized for partial match. StringTypeField cannot be used in Order By",
 	}
 	env.OnUpsertSearchAttributes(attributes).Return(nil).Once()
@@ -35,7 +35,7 @@ func Test_Workflow(t *testing.T) {
 	env.OnUpsertSearchAttributes(attributes).Return(nil).Once()
 
 	// mock activity
-	env.OnActivity(ListExecutions, mock.Anything, mock.Anything).Return([]*executionpb.WorkflowExecutionInfo{{}}, nil).Once()
+	env.OnActivity(ListExecutions, mock.Anything, mock.Anything).Return([]*workflowpb.WorkflowExecutionInfo{{}}, nil).Once()
 
 	env.ExecuteWorkflow(SearchAttributesWorkflow)
 	require.True(t, env.IsWorkflowCompleted())

@@ -1,52 +1,34 @@
 package main
 
 import (
-	"os"
-	"os/signal"
+	"log"
 
-	"go.temporal.io/temporal/client"
-	"go.temporal.io/temporal/worker"
-	"go.uber.org/zap"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/worker"
 
-	"github.com/temporalio/temporal-go-samples/fileprocessing"
+	"github.com/temporalio/samples-go/fileprocessing"
 )
 
 func main() {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
-
 	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
-		Logger:   logger,
 	})
 	if err != nil {
-		logger.Fatal("Unable to create client", zap.Error(err))
+		log.Fatalln("Unable to create client", err)
 	}
-	defer c.CloseConnection()
+	defer c.Close()
 
 	workerOptions := worker.Options{
 		EnableSessionWorker: true, // Important for a worker to participate in the session
 	}
 	w := worker.New(c, "fileprocessing", workerOptions)
-	defer w.Stop()
 
 	w.RegisterWorkflow(fileprocessing.SampleFileProcessingWorkflow)
 	w.RegisterActivity(&fileprocessing.Activities{BlobStore: &fileprocessing.BlobStore{}})
 
-	err = w.Start()
+	err = w.Run(worker.InterruptCh())
 	if err != nil {
-		logger.Fatal("Unable to start worker", zap.Error(err))
+		log.Fatalln("Unable to start worker", err)
 	}
-
-	// The workers are supposed to be long running process that should not exit.
-	waitCtrlC()
-}
-
-func waitCtrlC() {
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, os.Interrupt)
-	<-ch
 }

@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"go.uber.org/zap"
-
-	"go.temporal.io/temporal/workflow"
+	"go.temporal.io/sdk/workflow"
 )
 
 // SampleBranchWorkflow workflow definition
@@ -16,9 +14,7 @@ func SampleBranchWorkflow(ctx workflow.Context, totalBranches int) (result []str
 	logger.Info("SampleBranchWorkflow begin")
 
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Minute,
-		HeartbeatTimeout:       time.Second * 20,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
@@ -34,7 +30,7 @@ func SampleBranchWorkflow(ctx workflow.Context, totalBranches int) (result []str
 	for _, future := range futures {
 		var singleResult string
 		err = future.Get(ctx, &singleResult)
-		logger.Info("Activity returned with result", zap.String("resutl", singleResult))
+		logger.Info("Activity returned with result", "resutl", singleResult)
 		if err != nil {
 			return
 		}

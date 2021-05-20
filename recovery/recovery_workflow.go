@@ -6,17 +6,17 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
-	"go.temporal.io/temporal"
-	eventpb "go.temporal.io/temporal-proto/event"
-	executionpb "go.temporal.io/temporal-proto/execution"
-	filterpb "go.temporal.io/temporal-proto/filter"
-	"go.temporal.io/temporal-proto/workflowservice"
-	"go.temporal.io/temporal/activity"
-	"go.temporal.io/temporal/client"
-	"go.temporal.io/temporal/workflow"
-	"go.uber.org/zap"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	filterpb "go.temporal.io/api/filter/v1"
+	historypb "go.temporal.io/api/history/v1"
+	"go.temporal.io/api/workflowservice/v1"
+	"go.temporal.io/sdk/activity"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/temporal"
+	"go.temporal.io/sdk/workflow"
 
-	"github.com/temporalio/temporal-go-samples/recovery/cache"
+	"github.com/temporalio/samples-go/recovery/cache"
 )
 
 type (
@@ -74,16 +74,15 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 	logger.Info("Recover workflow started.")
 
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: 10 * time.Minute,
-		StartToCloseTimeout:    10 * time.Minute,
-		HeartbeatTimeout:       time.Second * 30,
+		StartToCloseTimeout: 10 * time.Minute,
+		HeartbeatTimeout:    30 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	var result ListOpenExecutionsResult
 	err := workflow.ExecuteActivity(ctx, ListOpenExecutions, params.Type).Get(ctx, &result)
 	if err != nil {
-		logger.Error("Failed to list open workflow executions.", zap.Error(err))
+		logger.Error("Failed to list open workflow executions.", "Error", err)
 		return err
 	}
 
@@ -103,7 +102,7 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 
 	// Setup retry policy for recovery activity
 	info := workflow.GetInfo(ctx)
-	expiration := time.Duration(info.WorkflowExecutionTimeoutSeconds) * time.Second
+	expiration := info.WorkflowExecutionTimeout
 	retryPolicy := &temporal.RetryPolicy{
 		InitialInterval:    time.Second,
 		BackoffCoefficient: 2,
@@ -111,10 +110,9 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 		MaximumAttempts:    100,
 	}
 	ao = workflow.ActivityOptions{
-		ScheduleToStartTimeout: expiration,
-		StartToCloseTimeout:    expiration,
-		HeartbeatTimeout:       time.Second * 30,
-		RetryPolicy:            retryPolicy,
+		StartToCloseTimeout: expiration,
+		HeartbeatTimeout:    30 * time.Second,
+		RetryPolicy:         retryPolicy,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
@@ -125,9 +123,9 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 		workflow.Go(ctx, func(ctx workflow.Context) {
 			err = workflow.ExecuteActivity(ctx, RecoverExecutions, result.ID, startIndex, batchSize).Get(ctx, nil)
 			if err != nil {
-				logger.Error("Recover executions failed.", zap.Int("StartIndex", startIndex), zap.Error(err))
+				logger.Error("Recover executions failed.", "StartIndex", startIndex, "Error", err)
 			} else {
-				logger.Info("Recover executions completed.", zap.Int("StartIndex", startIndex))
+				logger.Info("Recover executions completed.", "StartIndex", startIndex)
 			}
 
 			doneCh.Send(ctx, "done")
@@ -138,7 +136,7 @@ func RecoverWorkflow(ctx workflow.Context, params Params) error {
 		doneCh.Receive(ctx, nil)
 	}
 
-	logger.Info("Workflow completed.", zap.Int("Result", result.Count))
+	logger.Info("Workflow completed.", "Result", result.Count)
 
 	return nil
 }
@@ -147,8 +145,8 @@ func ListOpenExecutions(ctx context.Context, workflowType string) (*ListOpenExec
 	key := uuid.New()
 	logger := activity.GetLogger(ctx)
 	logger.Info("List all open executions of type.",
-		zap.String("WorkflowType", workflowType),
-		zap.String("HostID", HostID))
+		"WorkflowType", workflowType,
+		"HostID", HostID)
 
 	c, err := getClientFromContext(ctx)
 	if err != nil {
@@ -177,10 +175,10 @@ func ListOpenExecutions(ctx context.Context, workflowType string) (*ListOpenExec
 func RecoverExecutions(ctx context.Context, key string, startIndex, batchSize int) error {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Starting execution recovery.",
-		zap.String("HostID", HostID),
-		zap.String("Key", key),
-		zap.Int("StartIndex", startIndex),
-		zap.Int("BatchSize", batchSize))
+		"HostID", HostID,
+		"Key", key,
+		"StartIndex", startIndex,
+		"BatchSize", batchSize)
 
 	executionsCache := ctx.Value(WorkflowExecutionCacheKey).(cache.Cache)
 	if executionsCache == nil {
@@ -188,7 +186,7 @@ func RecoverExecutions(ctx context.Context, key string, startIndex, batchSize in
 		return ErrExecutionCacheNotFound
 	}
 
-	openExecutions := executionsCache.Get(key).([]*executionpb.WorkflowExecution)
+	openExecutions := executionsCache.Get(key).([]*commonpb.WorkflowExecution)
 	endIndex := startIndex + batchSize
 
 	// Check if this activity has previous heartbeat to retrieve progress from it
@@ -204,8 +202,8 @@ func RecoverExecutions(ctx context.Context, key string, startIndex, batchSize in
 		execution := openExecutions[index]
 		if err := recoverSingleExecution(ctx, execution.GetWorkflowId()); err != nil {
 			logger.Error("Failed to recover execution.",
-				zap.String("WorkflowID", execution.GetWorkflowId()),
-				zap.Error(err))
+				"WorkflowID", execution.GetWorkflowId(),
+				"Error", err)
 			return err
 		}
 
@@ -223,7 +221,7 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 		return err
 	}
 
-	execution := &executionpb.WorkflowExecution{
+	execution := &commonpb.WorkflowExecution{
 		WorkflowId: workflowID,
 	}
 	history, err := getHistory(ctx, execution)
@@ -271,15 +269,15 @@ func recoverSingleExecution(ctx context.Context, workflowID string) error {
 	}
 
 	logger.Info("Successfully restarted workflow.",
-		zap.String("WorkflowID", execution.GetWorkflowId()),
-		zap.String("NewRunID", newRun.GetRunID()))
+		"WorkflowID", execution.GetWorkflowId(),
+		"NewRunID", newRun.GetRunID())
 
 	return nil
 }
 
-func extractStateFromEvent(workflowID string, event *eventpb.HistoryEvent) (*RestartParams, error) {
+func extractStateFromEvent(workflowID string, event *historypb.HistoryEvent) (*RestartParams, error) {
 	switch event.GetEventType() {
-	case eventpb.EventType_WorkflowExecutionStarted:
+	case enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_STARTED:
 		attr := event.GetWorkflowExecutionStartedEventAttributes()
 		state, err := deserializeUserState(attr.GetInput())
 		if err != nil {
@@ -289,8 +287,8 @@ func extractStateFromEvent(workflowID string, event *eventpb.HistoryEvent) (*Res
 		return &RestartParams{
 			Options: client.StartWorkflowOptions{
 				ID:                  workflowID,
-				TaskList:            attr.TaskList.GetName(),
-				WorkflowTaskTimeout: time.Second * time.Duration(attr.GetWorkflowTaskTimeoutSeconds()),
+				TaskQueue:           attr.TaskQueue.GetName(),
+				WorkflowTaskTimeout: *attr.GetWorkflowTaskTimeout(),
 				// RetryPolicy: attr.RetryPolicy,
 			},
 			State: state,
@@ -300,10 +298,10 @@ func extractStateFromEvent(workflowID string, event *eventpb.HistoryEvent) (*Res
 	}
 }
 
-func extractSignals(events []*eventpb.HistoryEvent) ([]*SignalParams, error) {
+func extractSignals(events []*historypb.HistoryEvent) ([]*SignalParams, error) {
 	var signals []*SignalParams
 	for _, event := range events {
-		if event.GetEventType() == eventpb.EventType_WorkflowExecutionSignaled {
+		if event.GetEventType() == enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_SIGNALED {
 			attr := event.GetWorkflowExecutionSignaledEventAttributes()
 			if attr.GetSignalName() == TripSignalName && attr.GetInput() != nil {
 				signalData, err := deserializeTripEvent(attr.GetInput())
@@ -324,28 +322,30 @@ func extractSignals(events []*eventpb.HistoryEvent) ([]*SignalParams, error) {
 	return signals, nil
 }
 
-func isExecutionCompleted(event *eventpb.HistoryEvent) bool {
+func isExecutionCompleted(event *historypb.HistoryEvent) bool {
 	switch event.GetEventType() {
-	case eventpb.EventType_WorkflowExecutionCompleted, eventpb.EventType_WorkflowExecutionTerminated,
-		eventpb.EventType_WorkflowExecutionCanceled, eventpb.EventType_WorkflowExecutionFailed,
-		eventpb.EventType_WorkflowExecutionTimedOut:
+	case enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_COMPLETED, enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_TERMINATED,
+		enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_CANCELED, enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_FAILED,
+		enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_TIMED_OUT:
 		return true
 	default:
 		return false
 	}
 }
 
-func getAllExecutionsOfType(ctx context.Context, c client.Client, workflowType string) ([]*executionpb.WorkflowExecution, error) {
-	var openExecutions []*executionpb.WorkflowExecution
+func getAllExecutionsOfType(ctx context.Context, c client.Client, workflowType string) ([]*commonpb.WorkflowExecution, error) {
+	var openExecutions []*commonpb.WorkflowExecution
 	var nextPageToken []byte
 	for hasMore := true; hasMore; hasMore = len(nextPageToken) > 0 {
+		zeroTime := time.Time{}
+		now := time.Now()
 		resp, err := c.ListOpenWorkflow(ctx, &workflowservice.ListOpenWorkflowExecutionsRequest{
 			Namespace:       client.DefaultNamespace,
 			MaximumPageSize: 10,
 			NextPageToken:   nextPageToken,
 			StartTimeFilter: &filterpb.StartTimeFilter{
-				EarliestTime: 0,
-				LatestTime:   time.Now().UnixNano(),
+				EarliestTime: &zeroTime,
+				LatestTime:   &now,
 			},
 			Filters: &workflowservice.ListOpenWorkflowExecutionsRequest_TypeFilter{TypeFilter: &filterpb.WorkflowTypeFilter{
 				Name: workflowType,
@@ -366,14 +366,14 @@ func getAllExecutionsOfType(ctx context.Context, c client.Client, workflowType s
 	return openExecutions, nil
 }
 
-func getHistory(ctx context.Context, execution *executionpb.WorkflowExecution) ([]*eventpb.HistoryEvent, error) {
+func getHistory(ctx context.Context, execution *commonpb.WorkflowExecution) ([]*historypb.HistoryEvent, error) {
 	c, err := getClientFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	iter := c.GetWorkflowHistory(ctx, execution.GetWorkflowId(), execution.GetRunId(), false, filterpb.HistoryEventFilterType_AllEvent)
-	var events []*eventpb.HistoryEvent
+	iter := c.GetWorkflowHistory(ctx, execution.GetWorkflowId(), execution.GetRunId(), false, enumspb.HISTORY_EVENT_FILTER_TYPE_ALL_EVENT)
+	var events []*historypb.HistoryEvent
 	for iter.HasNext() {
 		event, err := iter.Next()
 		if err != nil {

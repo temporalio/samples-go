@@ -3,23 +3,20 @@ package fileprocessing
 import (
 	"time"
 
-	"go.temporal.io/temporal"
+	"go.temporal.io/sdk/temporal"
 
-	"go.temporal.io/temporal/workflow"
-	"go.uber.org/zap"
+	"go.temporal.io/sdk/workflow"
 )
 
 // SampleFileProcessingWorkflow workflow definition
 func SampleFileProcessingWorkflow(ctx workflow.Context, fileName string) (err error) {
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout:    time.Minute,
-		ScheduleToStartTimeout: time.Minute,
-		HeartbeatTimeout:       time.Second * 2, // such a short timeout to make sample fail over very fast
+		StartToCloseTimeout: time.Minute,
+		HeartbeatTimeout:    2 * time.Second, // such a short timeout to make sample fail over very fast
 		RetryPolicy: &temporal.RetryPolicy{
-			InitialInterval:          time.Second,
-			BackoffCoefficient:       2.0,
-			MaximumInterval:          time.Minute,
-			NonRetriableErrorReasons: []string{"bad-argument"},
+			InitialInterval:    time.Second,
+			BackoffCoefficient: 2.0,
+			MaximumInterval:    time.Minute,
 		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
@@ -35,7 +32,7 @@ func SampleFileProcessingWorkflow(ctx workflow.Context, fileName string) (err er
 		}
 	}
 	if err != nil {
-		workflow.GetLogger(ctx).Error("Workflow failed.", zap.String("Error", err.Error()))
+		workflow.GetLogger(ctx).Error("Workflow failed.", "Error", err.Error())
 	} else {
 		workflow.GetLogger(ctx).Info("Workflow completed.")
 	}
@@ -47,8 +44,6 @@ func processFile(ctx workflow.Context, fileName string) (err error) {
 		CreationTimeout:  time.Minute,
 		ExecutionTimeout: time.Minute,
 	}
-	var a *Activities
-
 	sessionCtx, err := workflow.CreateSession(ctx, so)
 	if err != nil {
 		return err
@@ -56,6 +51,7 @@ func processFile(ctx workflow.Context, fileName string) (err error) {
 	defer workflow.CompleteSession(sessionCtx)
 
 	var downloadedName string
+	var a *Activities
 	err = workflow.ExecuteActivity(sessionCtx, a.DownloadFileActivity, fileName).Get(sessionCtx, &downloadedName)
 	if err != nil {
 		return err

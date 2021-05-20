@@ -3,8 +3,7 @@ package greetings
 import (
 	"time"
 
-	"go.temporal.io/temporal/workflow"
-	"go.uber.org/zap"
+	"go.temporal.io/sdk/workflow"
 )
 
 // GreetingSample workflow definition.
@@ -15,8 +14,7 @@ func GreetingSample(ctx workflow.Context) (string, error) {
 	logger := workflow.GetLogger(ctx)
 
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout:    time.Minute,
-		ScheduleToStartTimeout: time.Minute,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
@@ -25,7 +23,7 @@ func GreetingSample(ctx workflow.Context) (string, error) {
 	var greetResult string
 	err := workflow.ExecuteActivity(ctx, a.GetGreeting).Get(ctx, &greetResult)
 	if err != nil {
-		logger.Error("Get greeting failed.", zap.Error(err))
+		logger.Error("Get greeting failed.", "Error", err)
 		return "", err
 	}
 
@@ -33,7 +31,7 @@ func GreetingSample(ctx workflow.Context) (string, error) {
 	var nameResult string
 	err = workflow.ExecuteActivity(ctx, a.GetName).Get(ctx, &nameResult)
 	if err != nil {
-		logger.Error("Get name failed.", zap.Error(err))
+		logger.Error("Get name failed.", "Error", err)
 		return "", err
 	}
 
@@ -41,10 +39,10 @@ func GreetingSample(ctx workflow.Context) (string, error) {
 	var sayResult string
 	err = workflow.ExecuteActivity(ctx, a.SayGreeting, greetResult, nameResult).Get(ctx, &sayResult)
 	if err != nil {
-		logger.Error("Marshalling failed with error.", zap.Error(err))
+		logger.Error("Marshalling failed with error.", "Error", err)
 		return "", err
 	}
 
-	logger.Info("GreetingSample completed.", zap.String("Result", sayResult))
+	logger.Info("GreetingSample completed.", "Result", sayResult)
 	return sayResult, nil
 }

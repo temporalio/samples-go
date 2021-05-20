@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
+	"log"
 
-	"go.temporal.io/temporal/client"
-	"go.uber.org/zap"
+	"go.temporal.io/sdk/client"
 
-	"github.com/temporalio/temporal-go-samples/recovery"
+	"github.com/temporalio/samples-go/recovery"
 )
 
 func main() {
@@ -18,19 +18,14 @@ func main() {
 	flag.StringVar(&workflowType, "wt", "tripworkflow", "Workflow type (tripworkflow|recoveryworkflow).")
 	flag.Parse()
 
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
-
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
 	if err != nil {
-		logger.Fatal("Unable to create client", zap.Error(err))
+		log.Fatalln("Unable to create client", err)
 	}
-	defer c.CloseConnection()
+	defer c.Close()
 
 	var we client.WorkflowRun
 	var weError error
@@ -38,22 +33,22 @@ func main() {
 	case "tripworkflow":
 		var userState recovery.UserState
 		if err := json.Unmarshal([]byte(input), &userState); err != nil {
-			logger.Fatal("Unable to unmarshal workflow input parameters", zap.Error(err))
+			log.Fatalln("Unable to unmarshal workflow input parameters", err)
 		}
 		workflowOptions := client.StartWorkflowOptions{
-			ID:       workflowID,
-			TaskList: "recovery",
+			ID:        workflowID,
+			TaskQueue: "recovery",
 		}
 		we, weError = c.ExecuteWorkflow(context.Background(), workflowOptions, recovery.TripWorkflow, userState)
 	case "recoveryworkflow":
 		var params recovery.Params
 		if err := json.Unmarshal([]byte(input), &params); err != nil {
-			logger.Fatal("Unable to unmarshal workflow input parameters", zap.Error(err))
+			log.Fatalln("Unable to unmarshal workflow input parameters", err)
 		}
 
 		workflowOptions := client.StartWorkflowOptions{
-			ID:       workflowID,
-			TaskList: "recovery",
+			ID:        workflowID,
+			TaskQueue: "recovery",
 		}
 		we, weError = c.ExecuteWorkflow(context.Background(), workflowOptions, recovery.RecoverWorkflow, params)
 	default:
@@ -62,8 +57,8 @@ func main() {
 	}
 
 	if weError != nil {
-		logger.Error("Unable to execute workflow", zap.Error(err))
+		log.Fatalln("Unable to execute workflow", err)
 	} else {
-		logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+		log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 	}
 }

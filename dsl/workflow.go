@@ -3,8 +3,7 @@ package dsl
 import (
 	"time"
 
-	"go.temporal.io/temporal/workflow"
-	"go.uber.org/zap"
+	"go.temporal.io/sdk/workflow"
 )
 
 type (
@@ -55,16 +54,14 @@ func SimpleDSLWorkflow(ctx workflow.Context, dslWorkflow Workflow) ([]byte, erro
 	}
 
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Minute,
-		HeartbeatTimeout:       time.Second * 20,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 	logger := workflow.GetLogger(ctx)
 
 	err := dslWorkflow.Root.execute(ctx, bindings)
 	if err != nil {
-		logger.Error("DSL Workflow failed.", zap.Error(err))
+		logger.Error("DSL Workflow failed.", "Error", err)
 		return nil, err
 	}
 

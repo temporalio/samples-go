@@ -1,48 +1,29 @@
 package main
 
 import (
-	"os"
-	"os/signal"
+	"log"
 
-	"go.temporal.io/temporal/client"
-	"go.temporal.io/temporal/worker"
-	"go.uber.org/zap"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/worker"
 
-	"github.com/temporalio/temporal-go-samples/helloworld"
+	"github.com/temporalio/samples-go/helloworld"
 )
 
 func main() {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
-
 	// The client and worker are heavyweight objects that should be created once per process.
-	c, err := client.NewClient(client.Options{
-		Logger: logger,
-	})
+	c, err := client.NewClient(client.Options{})
 	if err != nil {
-		logger.Fatal("Unable to create client", zap.Error(err))
+		log.Fatalln("Unable to create client", err)
 	}
-	defer c.CloseConnection()
+	defer c.Close()
 
 	w := worker.New(c, "hello-world", worker.Options{})
-	defer w.Stop()
 
 	w.RegisterWorkflow(helloworld.Workflow)
 	w.RegisterActivity(helloworld.Activity)
 
-	err = w.Start()
+	err = w.Run(worker.InterruptCh())
 	if err != nil {
-		logger.Fatal("Unable to start worker", zap.Error(err))
+		log.Fatalln("Unable to start worker", err)
 	}
-
-	// The workers are supposed to be long running process that should not exit.
-	waitCtrlC()
-}
-
-func waitCtrlC() {
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, os.Interrupt)
-	<-ch
 }

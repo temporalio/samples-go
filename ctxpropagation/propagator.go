@@ -3,9 +3,8 @@ package ctxpropagation
 import (
 	"context"
 
-	commonpb "go.temporal.io/temporal-proto/common"
-	"go.temporal.io/temporal/encoded"
-	"go.temporal.io/temporal/workflow"
+	"go.temporal.io/sdk/converter"
+	"go.temporal.io/sdk/workflow"
 )
 
 type (
@@ -28,7 +27,7 @@ var PropagateKey = contextKey{}
 
 // propagationKey is the key used by the propagator to pass values through the
 // Temporal server headers
-const propagationKey = "_prop"
+const propagationKey = "custom-header"
 
 // NewContextPropagator returns a context propagator that propagates a set of
 // string key-value pairs across a workflow
@@ -39,7 +38,7 @@ func NewContextPropagator() workflow.ContextPropagator {
 // Inject injects values from context into headers for propagation
 func (s *propagator) Inject(ctx context.Context, writer workflow.HeaderWriter) error {
 	value := ctx.Value(PropagateKey)
-	payload, err := encoded.GetDefaultPayloadConverter().ToData(value)
+	payload, err := converter.GetDefaultDataConverter().ToPayload(value)
 	if err != nil {
 		return err
 	}
@@ -50,7 +49,7 @@ func (s *propagator) Inject(ctx context.Context, writer workflow.HeaderWriter) e
 // InjectFromWorkflow injects values from context into headers for propagation
 func (s *propagator) InjectFromWorkflow(ctx workflow.Context, writer workflow.HeaderWriter) error {
 	value := ctx.Value(PropagateKey)
-	payload, err := encoded.GetDefaultPayloadConverter().ToData(value)
+	payload, err := converter.GetDefaultDataConverter().ToPayload(value)
 	if err != nil {
 		return err
 	}
@@ -60,34 +59,26 @@ func (s *propagator) InjectFromWorkflow(ctx workflow.Context, writer workflow.He
 
 // Extract extracts values from headers and puts them into context
 func (s *propagator) Extract(ctx context.Context, reader workflow.HeaderReader) (context.Context, error) {
-	if err := reader.ForEachKey(func(key string, value *commonpb.Payload) error {
-		if key == propagationKey {
-			var values Values
-			if err := encoded.GetDefaultPayloadConverter().FromData(value, &values); err != nil {
-				return err
-			}
-			ctx = context.WithValue(ctx, PropagateKey, values)
+	if value, ok := reader.Get(propagationKey); ok {
+		var values Values
+		if err := converter.GetDefaultDataConverter().FromPayload(value, &values); err != nil {
+			return ctx, nil
 		}
-		return nil
-	}); err != nil {
-		return nil, err
+		ctx = context.WithValue(ctx, PropagateKey, values)
 	}
+
 	return ctx, nil
 }
 
 // ExtractToWorkflow extracts values from headers and puts them into context
 func (s *propagator) ExtractToWorkflow(ctx workflow.Context, reader workflow.HeaderReader) (workflow.Context, error) {
-	if err := reader.ForEachKey(func(key string, value *commonpb.Payload) error {
-		if key == propagationKey {
-			var values Values
-			if err := encoded.GetDefaultPayloadConverter().FromData(value, &values); err != nil {
-				return err
-			}
-			ctx = workflow.WithValue(ctx, PropagateKey, values)
+	if value, ok := reader.Get(propagationKey); ok {
+		var values Values
+		if err := converter.GetDefaultDataConverter().FromPayload(value, &values); err != nil {
+			return ctx, nil
 		}
-		return nil
-	}); err != nil {
-		return nil, err
+		ctx = workflow.WithValue(ctx, PropagateKey, values)
 	}
+
 	return ctx, nil
 }

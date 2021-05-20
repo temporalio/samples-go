@@ -4,9 +4,8 @@ import (
 	"context"
 	"time"
 
-	"go.temporal.io/temporal/activity"
-	"go.temporal.io/temporal/workflow"
-	"go.uber.org/zap"
+	"go.temporal.io/sdk/activity"
+	"go.temporal.io/sdk/workflow"
 )
 
 /**
@@ -27,9 +26,7 @@ type (
 func SampleSplitMergeWorkflow(ctx workflow.Context, workerCount int) (ChunkResult, error) {
 	chunkResultChannel := workflow.NewChannel(ctx)
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Minute,
-		HeartbeatTimeout:       time.Second * 20,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
@@ -70,6 +67,6 @@ func ChunkProcessingActivity(ctx context.Context, chunkID int) (result ChunkResu
 	numberOfItemsInChunk := chunkID
 	sumInChunk := chunkID * chunkID
 
-	activity.GetLogger(ctx).Info("Chunk processed", zap.Int("chunkID", chunkID))
+	activity.GetLogger(ctx).Info("Chunk processed", "chunkID", chunkID)
 	return ChunkResult{numberOfItemsInChunk, sumInChunk}, nil
 }

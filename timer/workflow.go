@@ -5,17 +5,14 @@ import (
 	"math/rand"
 	"time"
 
-	"go.temporal.io/temporal/activity"
-	"go.temporal.io/temporal/workflow"
-	"go.uber.org/zap"
+	"go.temporal.io/sdk/activity"
+	"go.temporal.io/sdk/workflow"
 )
 
 // SampleTimerWorkflow workflow definition
 func SampleTimerWorkflow(ctx workflow.Context, processingTimeThreshold time.Duration) error {
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Minute,
-		HeartbeatTimeout:       time.Second * 20,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
@@ -62,7 +59,7 @@ func OrderProcessingActivity(ctx context.Context) error {
 	logger.Info("OrderProcessingActivity processing started.")
 	timeNeededToProcess := time.Second * time.Duration(rand.Intn(10))
 	time.Sleep(timeNeededToProcess)
-	logger.Info("OrderProcessingActivity done.", zap.Duration("duration", timeNeededToProcess))
+	logger.Info("OrderProcessingActivity done.", "duration", timeNeededToProcess)
 	return nil
 }
 

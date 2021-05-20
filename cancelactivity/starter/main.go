@@ -3,19 +3,14 @@ package main
 import (
 	"context"
 	"flag"
+	"log"
 
-	"go.temporal.io/temporal/client"
-	"go.uber.org/zap"
+	"go.temporal.io/sdk/client"
 
-	"github.com/temporalio/temporal-go-samples/cancelactivity"
+	"github.com/temporalio/samples-go/cancelactivity"
 )
 
 func main() {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
-
 	var workflowID string
 	flag.StringVar(&workflowID, "w", "workflowID-to-cancel", "w is the workflowID of the workflow to be canceled.")
 	flag.Parse()
@@ -25,18 +20,18 @@ func main() {
 		HostPort: client.DefaultHostPort,
 	})
 	if err != nil {
-		logger.Fatal("Unable to create client", zap.Error(err))
+		log.Fatalln("Unable to create client", err)
 	}
-	defer c.CloseConnection()
+	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:       workflowID,
-		TaskList: "cancel-activity",
+		ID:        workflowID,
+		TaskQueue: "cancel-activity",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, cancelactivity.Workflow)
 	if err != nil {
-		logger.Fatal("Unable to execute workflow", zap.Error(err))
+		log.Fatalln("Unable to execute workflow", err)
 	}
-	logger.Info("Started workflow", zap.String("WorkflowID", we.GetID()), zap.String("RunID", we.GetRunID()))
+	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 }

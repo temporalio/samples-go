@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"go.temporal.io/temporal/activity"
-	"go.uber.org/zap"
+	"go.temporal.io/sdk/activity"
 )
 
 type OrderActivities struct {
@@ -53,6 +52,6 @@ func (a *OrderActivities) GetBasketOrder(ctx context.Context) ([]string, error) 
 		basket = append(basket, a.OrderChoices[rand.Intn(len(a.OrderChoices))])
 	}
 
-	activity.GetLogger(ctx).Info("Get basket order.", zap.Strings("Orders", basket))
+	activity.GetLogger(ctx).Info("Get basket order.", "Orders", basket)
 	return basket, nil
 }

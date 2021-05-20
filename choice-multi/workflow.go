@@ -4,8 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"go.temporal.io/temporal/workflow"
-	"go.uber.org/zap"
+	"go.temporal.io/sdk/workflow"
 )
 
 const (
@@ -19,9 +18,7 @@ const (
 func MultiChoiceWorkflow(ctx workflow.Context) error {
 	// Get basket order.
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Minute,
-		HeartbeatTimeout:       time.Second * 20,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 	var orderActivities *OrderActivities // Used to call activities by function pointer
@@ -47,7 +44,7 @@ func MultiChoiceWorkflow(ctx workflow.Context) error {
 		case OrderChoiceOrange:
 			f = workflow.ExecuteActivity(ctx, orderActivities.OrderOrange, item)
 		default:
-			logger.Error("Unexpected order.", zap.String("Order", item))
+			logger.Error("Unexpected order.", "Order", item)
 			return errors.New("invalid choice-multi")
 		}
 		futures = append(futures, f)

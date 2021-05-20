@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
-	"go.temporal.io/temporal"
-	"go.temporal.io/temporal/workflow"
+	"go.temporal.io/sdk/temporal"
+	"go.temporal.io/sdk/workflow"
 )
 
 type WorkflowResult struct {
@@ -17,15 +17,13 @@ type WorkflowResult struct {
 
 // ActivityOptions can be reused
 var ActivityOptions = workflow.ActivityOptions{
-	ScheduleToStartTimeout: time.Second * 5,
-	StartToCloseTimeout:    time.Minute * 10,
-	HeartbeatTimeout:       time.Second * 2, // such a short timeout to make sample fail over very fast
+	StartToCloseTimeout: 10 * time.Minute,
+	HeartbeatTimeout:    2 * time.Second, // such a short timeout to make sample fail over very fast
 	RetryPolicy: &temporal.RetryPolicy{
-		InitialInterval:          time.Second,
-		BackoffCoefficient:       2.0,
-		MaximumInterval:          time.Minute,
-		MaximumAttempts:          5,
-		NonRetriableErrorReasons: []string{"bad-error"},
+		InitialInterval:    time.Second,
+		BackoffCoefficient: 2.0,
+		MaximumInterval:    time.Minute,
+		MaximumAttempts:    5,
 	},
 }
 

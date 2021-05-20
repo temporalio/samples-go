@@ -4,10 +4,9 @@ import (
 	"context"
 	"time"
 
-	"go.temporal.io/temporal"
-	"go.temporal.io/temporal/activity"
-	"go.temporal.io/temporal/workflow"
-	"go.uber.org/zap"
+	"go.temporal.io/sdk/activity"
+	"go.temporal.io/sdk/temporal"
+	"go.temporal.io/sdk/workflow"
 )
 
 /**
@@ -19,22 +18,20 @@ import (
 // RetryWorkflow workflow definition
 func RetryWorkflow(ctx workflow.Context) error {
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Minute * 10,
-		HeartbeatTimeout:       time.Second * 10,
+		StartToCloseTimeout: 2 * time.Minute,
+		HeartbeatTimeout:    10 * time.Second,
 		RetryPolicy: &temporal.RetryPolicy{
-			InitialInterval:          time.Second,
-			BackoffCoefficient:       2.0,
-			MaximumInterval:          time.Minute,
-			MaximumAttempts:          5,
-			NonRetriableErrorReasons: []string{"bad-error"},
+			InitialInterval:    time.Second,
+			BackoffCoefficient: 2.0,
+			MaximumInterval:    time.Minute,
+			MaximumAttempts:    5,
 		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	err := workflow.ExecuteActivity(ctx, BatchProcessingActivity, 0, 20, time.Second).Get(ctx, nil)
 	if err != nil {
-		workflow.GetLogger(ctx).Info("Workflow completed with error.", zap.Error(err))
+		workflow.GetLogger(ctx).Info("Workflow completed with error.", "Error", err)
 		return err
 	}
 	workflow.GetLogger(ctx).Info("Workflow completed.")
@@ -52,14 +49,14 @@ func BatchProcessingActivity(ctx context.Context, firstTaskID, batchSize int, pr
 		var completedIdx int
 		if err := activity.GetHeartbeatDetails(ctx, &completedIdx); err == nil {
 			i = completedIdx + 1
-			logger.Info("Resuming from failed attempt", zap.Int("ReportedProgress", completedIdx))
+			logger.Info("Resuming from failed attempt", "ReportedProgress", completedIdx)
 		}
 	}
 
 	taskProcessedInThisAttempt := 0 // used to determine when to fail (simulate failure)
 	for ; i < firstTaskID+batchSize; i++ {
 		// process task i
-		logger.Info("processing task", zap.Int("TaskID", i))
+		logger.Info("processing task", "TaskID", i)
 		time.Sleep(processDelay) // simulate time spend on processing each task
 		activity.RecordHeartbeat(ctx, i)
 		taskProcessedInThisAttempt++
@@ -67,9 +64,9 @@ func BatchProcessingActivity(ctx context.Context, firstTaskID, batchSize int, pr
 		// simulate failure after process 1/3 of the tasks
 		if taskProcessedInThisAttempt >= batchSize/3 && i < firstTaskID+batchSize-1 {
 			logger.Info("Activity failed, will retry...")
-			// Activity could return different error types for different failures so workflow could handle them differently.
-			// For example, decide to retry or not based on error reasons.
-			return temporal.NewCustomError("some-retryable-error")
+			// Activity could return *ApplicationError which is always retryable.
+			// To return non-retryable error use temporal.NewNonRetryableApplicationError() constructor.
+			return temporal.NewApplicationError("some retryable error", "SomeType")
 		}
 	}
 

@@ -1,8 +1,13 @@
-all: clean staticcheck errcheck bins test
+############################# Main targets #############################
+# Run all checks, build, and test.
+install: clean staticcheck errcheck bins test
+########################################################################
 
-# all directories with *_test.go files in them
-TEST_DIRS := $(sort $(dir $(shell find . -name "*_test.go")))
+##### Variables ######
+UNIT_TEST_DIRS := $(sort $(dir $(shell find . -name "*_test.go")))
 MAIN_FILES := $(shell find . -name "main.go")
+TEST_TIMEOUT := 20s
+COLOR := "\e[1;36m%s\e[0m\n"
 
 dir_no_slash = $(patsubst %/,%,$(dir $(1)))
 dirname = $(notdir $(call dir_no_slash,$(1)))
@@ -12,23 +17,50 @@ define NEWLINE
 
 endef
 
+##### Targets ######
 bins:
-	@echo Building samples...
+	@printf $(COLOR) "Build samples..."
 	$(foreach MAIN_FILE,$(MAIN_FILES), go build -o bin/$(call parentdirname,$(MAIN_FILE))/$(call dirname,$(MAIN_FILE)) $(MAIN_FILE)$(NEWLINE))
 
 test:
-	@rm -f test
+	@printf $(COLOR) "Run unit tests..."
 	@rm -f test.log
-	@echo Runing unit tests...
-	$(foreach TEST_DIR,$(TEST_DIRS), @go test $(TEST_DIR) | tee -a test.log$(NEWLINE))
+	$(foreach UNIT_TEST_DIR,$(UNIT_TEST_DIRS),\
+		@go test -timeout $(TEST_TIMEOUT) -race $(UNIT_TEST_DIR) | tee -a test.log \
+	$(NEWLINE))
+	@! grep -q "^--- FAIL" test.log
 
 staticcheck:
-	GO111MODULE=off go get -u honnef.co/go/tools/cmd/staticcheck
-	staticcheck ./...
+	@printf $(COLOR) "Run static check..."
+	@GO111MODULE=off go get -u honnef.co/go/tools/cmd/staticcheck
+	@staticcheck ./...
 
 errcheck:
-	GO111MODULE=off go get -u github.com/kisielk/errcheck
-	errcheck ./...
+	@printf $(COLOR) "Run error check..."
+	@GO111MODULE=off go get -u github.com/kisielk/errcheck
+	@errcheck ./...
+
+update-sdk:
+	go get -u go.temporal.io/api@master
+	go get -u go.temporal.io/sdk@master
+	go mod tidy
 
 clean:
 	rm -rf bin
+	
+ci-build: staticcheck errcheck bins test
+
+
+##### Fossa #####
+fossa-install:
+	curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
+
+fossa-init:
+	fossa init --include-all --no-ansi
+
+fossa-analyze:
+	fossa analyze --no-ansi -b $${BUILDKITE_BRANCH:-$$(git branch --show-current)}	
+
+fossa-test:
+	fossa test --timeout 1800 --no-ansi
+

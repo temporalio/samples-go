@@ -2,29 +2,30 @@
   "events": [
     {
       "eventId": "1",
-      "timestamp": "1589493706813852514",
+      "eventType": "WorkflowExecutionStarted",
+      "eventTime": "2020-07-30T00:30:03.082421843Z",
       "version": "-24",
       "taskId": "2097152",
       "workflowExecutionStartedEventAttributes": {
         "workflowType": {
           "name": "Workflow"
         },
-        "taskList": {
+        "taskQueue": {
           "name": "hello-world"
         },
         "input": {
           "payloads": [
             {
               "metadata": {
-                "encoding": "anNvbg=="
+                "encoding": "anNvbi9wbGFpbg=="
               },
               "data": "IlRlbXBvcmFsIg=="
             }
           ]
         },
-        "workflowExecutionTimeoutSeconds": 315360000,
-        "workflowRunTimeoutSeconds": 60,
-        "workflowTaskTimeoutSeconds": 10,
+        "workflowExecutionTimeout": "315360000s",
+        "workflowRunTimeout": "60s",
+        "workflowTaskTimeout": "10s",
         "originalExecutionRunId": "b0b495a5-0428-412b-875a-0a941998f773",
         "identity": "29071@Host@",
         "firstExecutionRunId": "b0b495a5-0428-412b-875a-0a941998f773",
@@ -33,24 +34,24 @@
     },
     {
       "eventId": "2",
-      "timestamp": "1589493706813874131",
-      "eventType": "DecisionTaskScheduled",
+      "eventTime": "2020-07-30T00:30:03.082421843Z",
+      "eventType": "WorkflowTaskScheduled",
       "version": "-24",
       "taskId": "2097153",
-      "decisionTaskScheduledEventAttributes": {
-        "taskList": {
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
           "name": "hello-world"
         },
-        "startToCloseTimeoutSeconds": 10
+        "startToCloseTimeout": "10s"
       }
     },
     {
       "eventId": "3",
-      "timestamp": "1589493706830752109",
-      "eventType": "DecisionTaskStarted",
+      "eventTime": "2020-07-30T00:30:03.082421843Z",
+      "eventType": "WorkflowTaskStarted",
       "version": "-24",
       "taskId": "2097158",
-      "decisionTaskStartedEventAttributes": {
+      "workflowTaskStartedEventAttributes": {
         "scheduledEventId": "2",
         "identity": "28867@Host@",
         "requestId": "c8c04492-1a8a-414d-947e-430bd79cdb73"
@@ -58,11 +59,11 @@
     },
     {
       "eventId": "4",
-      "timestamp": "1589493706844221544",
-      "eventType": "DecisionTaskCompleted",
+      "eventTime": "2020-07-30T00:30:03.082421843Z",
+      "eventType": "WorkflowTaskCompleted",
       "version": "-24",
       "taskId": "2097161",
-      "decisionTaskCompletedEventAttributes": {
+      "workflowTaskCompletedEventAttributes": {
         "scheduledEventId": "2",
         "startedEventId": "3",
         "identity": "28867@Host@",
@@ -71,7 +72,7 @@
     },
     {
       "eventId": "5",
-      "timestamp": "1589493706844531471",
+      "eventTime": "2020-07-30T00:30:03.082421843Z",
       "eventType": "ActivityTaskScheduled",
       "version": "-24",
       "taskId": "2097162",
@@ -80,7 +81,7 @@
         "activityType": {
           "name": "Activity"
         },
-        "taskList": {
+        "taskQueue": {
           "name": "hello-world"
         },
         "header": {},
@@ -88,21 +89,21 @@
           "payloads": [
             {
               "metadata": {
-                "encoding": "anNvbg=="
+                "encoding": "anNvbi9wbGFpbg=="
               },
               "data": "IlRlbXBvcmFsIg=="
             }
           ]
         },
-        "scheduleToCloseTimeoutSeconds": 60,
-        "scheduleToStartTimeoutSeconds": 60,
-        "startToCloseTimeoutSeconds": 60,
-        "decisionTaskCompletedEventId": "4"
+        "scheduleToCloseTimeout": "60s",
+        "scheduleToStartTimeout": "60s",
+        "startToCloseTimeout": "60s",
+        "workflowTaskCompletedEventId": "4"
       }
     },
     {
       "eventId": "6",
-      "timestamp": "1589493706855995334",
+      "eventTime": "2020-07-30T00:30:03.082421843Z",
       "eventType": "ActivityTaskStarted",
       "version": "-24",
       "taskId": "2097166",
@@ -114,7 +115,7 @@
     },
     {
       "eventId": "7",
-      "timestamp": "1589493706864354394",
+      "eventTime": "2020-07-30T00:30:03.082421843Z",
       "eventType": "ActivityTaskCompleted",
       "version": "-24",
       "taskId": "2097169",
@@ -123,7 +124,7 @@
           "payloads": [
             {
               "metadata": {
-                "encoding": "anNvbg=="
+                "encoding": "anNvbi9wbGFpbg=="
               },
               "data": "IkhlbGxvIFRlbXBvcmFsISI="
             }
@@ -136,24 +137,24 @@
     },
     {
       "eventId": "8",
-      "timestamp": "1589493706864493809",
-      "eventType": "DecisionTaskScheduled",
+      "eventTime": "2020-07-30T00:30:03.082421843Z",
+      "eventType": "WorkflowTaskScheduled",
       "version": "-24",
       "taskId": "2097171",
-      "decisionTaskScheduledEventAttributes": {
-        "taskList": {
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
           "name": "Host:34cb98ff-1832-4ffa-a917-dd111f7fff1c"
         },
-        "startToCloseTimeoutSeconds": 10
+        "startToCloseTimeout": "10s"
       }
     },
     {
       "eventId": "9",
-      "timestamp": "1589493706874689934",
-      "eventType": "DecisionTaskStarted",
+      "eventTime": "2020-07-30T00:30:03.082421843Z",
+      "eventType": "WorkflowTaskStarted",
       "version": "-24",
       "taskId": "2097175",
-      "decisionTaskStartedEventAttributes": {
+      "workflowTaskStartedEventAttributes": {
         "scheduledEventId": "8",
         "identity": "28867@Host@",
         "requestId": "6725ef97-497f-4e93-8ea3-77b4f5cbbeff"
@@ -161,11 +162,11 @@
     },
     {
       "eventId": "10",
-      "timestamp": "1589493706883378863",
-      "eventType": "DecisionTaskCompleted",
+      "eventTime": "2020-07-30T00:30:03.082421843Z",
+      "eventType": "WorkflowTaskCompleted",
       "version": "-24",
       "taskId": "2097178",
-      "decisionTaskCompletedEventAttributes": {
+      "workflowTaskCompletedEventAttributes": {
         "scheduledEventId": "8",
         "startedEventId": "9",
         "identity": "28867@Host@",
@@ -174,7 +175,7 @@
     },
     {
       "eventId": "11",
-      "timestamp": "1589493706883433200",
+      "eventTime": "2020-07-30T00:30:03.082421843Z",
       "eventType": "WorkflowExecutionCompleted",
       "version": "-24",
       "taskId": "2097179",
@@ -183,13 +184,13 @@
           "payloads": [
             {
               "metadata": {
-                "encoding": "anNvbg=="
+                "encoding": "anNvbi9wbGFpbg=="
               },
               "data": "IkhlbGxvIFRlbXBvcmFsISI="
             }
           ]
         },
-        "decisionTaskCompletedEventId": "10"
+        "workflowTaskCompletedEventId": "10"
       }
     }
   ]

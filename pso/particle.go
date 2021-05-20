@@ -1,6 +1,9 @@
 package pso
 
-import "math/rand"
+import (
+	"math/rand"
+	"time"
+)
 
 type Particle struct {
 	Position *Position
@@ -8,7 +11,8 @@ type Particle struct {
 	Velocity Vector
 }
 
-func NewParticle(swarm *Swarm, rng *rand.Rand) *Particle {
+func NewParticle(swarm *Swarm) *Particle {
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	particle := new(Particle)
 	particle.Position = RandomPosition(swarm.Settings.function, rng)
 
@@ -26,7 +30,9 @@ func NewParticle(swarm *Swarm, rng *rand.Rand) *Particle {
 	return particle
 }
 
-func (particle *Particle) UpdateLocation(swarm *Swarm, rng *rand.Rand) {
+func (particle *Particle) UpdateLocation(swarm *Swarm) {
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+
 	for i := 0; i < swarm.Settings.function.dim; i++ {
 		// calculate stochastic coefficients
 		rho1 := swarm.Settings.C1 * rng.Float64()

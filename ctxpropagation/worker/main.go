@@ -1,55 +1,41 @@
 package main
 
 import (
-	"os"
-	"os/signal"
+	"log"
 
-	"go.temporal.io/temporal/client"
-	"go.temporal.io/temporal/worker"
-	"go.temporal.io/temporal/workflow"
-	"go.uber.org/zap"
+	"github.com/opentracing/opentracing-go"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 
-	"github.com/temporalio/temporal-go-samples/ctxpropagation"
+	"github.com/temporalio/samples-go/ctxpropagation"
 )
 
 func main() {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
+	// Set tracer which will be returned by opentracing.GlobalTracer().
+	closer := ctxpropagation.SetJaegerGlobalTracer()
+	defer func() { _ = closer.Close() }()
 
 	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.NewClient(client.Options{
-		HostPort: client.DefaultHostPort,
-		ContextPropagators: []workflow.ContextPropagator{
-			ctxpropagation.NewContextPropagator(),
-		},
-		Logger: logger,
+		HostPort:           client.DefaultHostPort,
+		ContextPropagators: []workflow.ContextPropagator{ctxpropagation.NewContextPropagator()},
+		Tracer:             opentracing.GlobalTracer(),
 	})
 	if err != nil {
-		logger.Fatal("Unable to create client", zap.Error(err))
+		log.Fatalln("Unable to create client", err)
 	}
-	defer c.CloseConnection()
+	defer c.Close()
 
 	w := worker.New(c, "ctx-propagation", worker.Options{
 		EnableLoggingInReplay: true,
 	})
-	defer w.Stop()
 
 	w.RegisterWorkflow(ctxpropagation.CtxPropWorkflow)
 	w.RegisterActivity(ctxpropagation.SampleActivity)
 
-	err = w.Start()
+	err = w.Run(worker.InterruptCh())
 	if err != nil {
-		logger.Fatal("Unable to start worker", zap.Error(err))
+		log.Fatalln("Unable to start worker", err)
 	}
-
-	// The workers are supposed to be long running process that should not exit.
-	waitCtrlC()
-}
-
-func waitCtrlC() {
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, os.Interrupt)
-	<-ch
 }
