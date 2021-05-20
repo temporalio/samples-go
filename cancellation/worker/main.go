@@ -22,7 +22,7 @@ func main() {
 
 	w := worker.New(c, "cancel-activity", worker.Options{})
 
-	w.RegisterWorkflow(cancellation.Workflow)
+	w.RegisterWorkflow(cancellation.YourWorkflow)
 	w.RegisterActivity(&cancellation.Activities{})
 
 	err = w.Run(worker.InterruptCh())
