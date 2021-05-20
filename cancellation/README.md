@@ -1,23 +1,21 @@
-<!--@@@SNIPSTART samples-go-cancellation-readme-->
-### Run sample
+<!-- @@@SNIPSTART samples-go-cancellation-readme -->
+Make sure the [Temporal Server is running locally](https://docs.temporal.io/docs/server/quick-install).
 
-1. Make sure the [Temporal Server is running locally](https://docs.temporal.io/docs/server/quick-install).
-
-2. From the root of the project, start the Worker:
+From the root of the project, start a Worker:
 
 ```bash
 go run cancellation/worker/main.go
 ```
 
-3. Start the Workflow Execution:
+Start the Workflow Execution:
 
 ```bash
 go run cancellation/starter/main.go
 ```
 
-4. Cancel the Workflow Execution:
+Cancel the Workflow Execution:
 
 ```bash
 go run cancellation/cancel/main.go
 ```
-<!--@@@SNIPEND-->
+<!-- @@@SNIPEND -->

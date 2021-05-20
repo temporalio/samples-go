@@ -1,17 +1,15 @@
-<!--@@@SNIPSTART samples-go-child-workflow-example-readme-->
-### Run sample
+<!-- @@@SNIPSTART samples-go-child-workflow-example-readme -->
+Make sure the [Temporal Server is running locally](https://docs.temporal.io/docs/server/quick-install).
 
-1. 1. Make sure the [Temporal Server is running locally](https://docs.temporal.io/docs/server/quick-install).
+From the root of the project, start a Worker:
 
-2. From the root of the project, start the Worker:
-
-```
+```bash
 go run child-workflow/worker/main.go
 ```
 
-3. Start the Workflow Execution
+Start the Workflow Execution:
 
-```
+```bash
 go run child-workflow/starter/main.go
 ```
-<!--@@@SNIPEND-->
+<!-- @@@SNIPEND -->
