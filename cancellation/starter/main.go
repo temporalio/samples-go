@@ -8,7 +8,7 @@ import (
 
 	"go.temporal.io/sdk/client"
 
-	"github.com/temporalio/samples-go/cancelactivity"
+	"github.com/temporalio/samples-go/cancellation"
 )
 
 func main() {
