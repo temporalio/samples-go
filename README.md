@@ -1,5 +1,7 @@
 # Temporal Go SDK Samples
 
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B18405%2Fgithub.com%2Ftemporalio%2Fsamples-go.svg?type=shield)](https://app.fossa.com/projects/custom%2B18405%2Fgithub.com%2Ftemporalio%2Fsamples-go?ref=badge_shield)
+
 This repository contains several sample Workflow applications that demonstrate the various capabilities of the Temporal Server via the Temporal Go SDK.
 
 ## How to use
