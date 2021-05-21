@@ -6,7 +6,7 @@ import (
 )
 
 // SampleParentWorkflow is a Workflow Definition
-// This Workflow Type demonstrates how to start a Child Workflow Execution from a Parent Workflow Execution.
+// This Workflow Definition demonstrates how to start a Child Workflow Execution from a Parent Workflow Execution.
 // Each Child Workflow Execution starts a new Run.
 // The Parent Workflow Execution is notified only after the completion of last Run of the Child Workflow Execution.
 func SampleParentWorkflow(ctx workflow.Context) (string, error) {
