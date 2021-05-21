@@ -1,4 +1,4 @@
-// @@@SNIPSTART samples-go-child-workflow-example-child-workflow-type
+// @@@SNIPSTART samples-go-child-workflow-example-child-workflow-definition
 package child_workflow
 
 import (
