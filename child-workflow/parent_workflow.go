@@ -12,7 +12,9 @@ import (
 func SampleParentWorkflow(ctx workflow.Context) (string, error) {
 	logger := workflow.GetLogger(ctx)
 
-	cwo := workflow.ChildWorkflowOptions{}
+	cwo := workflow.ChildWorkflowOptions{
+		WorkflowID: "ABC-SIMPLE-CHILD-WORKFLOW-ID"
+	}
 	ctx = workflow.WithChildOptions(ctx, cwo)
 
 	var result string
@@ -21,6 +23,7 @@ func SampleParentWorkflow(ctx workflow.Context) (string, error) {
 		logger.Error("Parent execution received child execution failure.", "Error", err)
 		return "", err
 	}
+	
 	logger.Info("Parent execution completed.", "Result", result)
 	return result, nil
 }
