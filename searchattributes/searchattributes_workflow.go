@@ -58,7 +58,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 		"CustomKeywordField":  "Update1",
 		"CustomBoolField":     true,
 		"CustomDoubleField":   3.14,
-		"CustomDatetimeField": time.Now().UTC(),
+		"CustomDatetimeField": workflow.Now(ctx).UTC(),
 		"CustomStringField":   "String field is for text. When query, it will be tokenized for partial match. StringTypeField cannot be used in Order By",
 	}
 	// This won't persist search attributes on server because commands are not sent to server,

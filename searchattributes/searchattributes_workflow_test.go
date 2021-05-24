@@ -2,7 +2,6 @@ package searchattributes
 
 import (
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -24,7 +23,7 @@ func Test_Workflow(t *testing.T) {
 		"CustomKeywordField":  "Update1",
 		"CustomBoolField":     true,
 		"CustomDoubleField":   3.14,
-		"CustomDatetimeField": time.Date(2019, 8, 22, 0, 0, 0, 0, time.Local),
+		"CustomDatetimeField": env.Now().UTC(),
 		"CustomStringField":   "String field is for text. When query, it will be tokenized for partial match. StringTypeField cannot be used in Order By",
 	}
 	env.OnUpsertSearchAttributes(attributes).Return(nil).Once()
