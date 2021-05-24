@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-cancellation-workflow-execution-starter
 package main
 
 import (
@@ -7,7 +8,7 @@ import (
 
 	"go.temporal.io/sdk/client"
 
-	"github.com/temporalio/samples-go/cancelactivity"
+	"github.com/temporalio/samples-go/cancellation"
 )
 
 func main() {
@@ -29,9 +30,10 @@ func main() {
 		TaskQueue: "cancel-activity",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, cancelactivity.Workflow)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, cancellation.YourWorkflow)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
 	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 }
+// @@@SNIPEND

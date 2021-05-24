@@ -1,10 +1,15 @@
-### Steps to run this sample:
-1) You need a Temporal service running. See details in README.md
-2) Run the following command to start the worker
-```shell script
+<!-- @@@SNIPSTART samples-go-branch-readme -->
+Make sure the [Temporal Server is running locally](https://docs.temporal.io/docs/server/quick-install).
+
+From the root of the project, start a Worker:
+
+```bash
 go run branch/worker/main.go
 ```
-3) Run the following command to start branch workflow
-```shell script
+
+Start the Workflow Execution:
+
+```bash
 go run branch/starter/main.go
 ```
+<!-- @@@SNIPEND -->

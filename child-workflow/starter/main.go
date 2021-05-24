@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-child-workflow-example-execution-starter
 package main
 
 import (
@@ -11,7 +12,7 @@ import (
 )
 
 func main() {
-	// The client is a heavyweight object that should be created once per process.
+	// The client is a heavyweight object that should be created only once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
@@ -20,7 +21,7 @@ func main() {
 	}
 	defer c.Close()
 
-	// This workflow ID can be user business logic identifier as well.
+	// This Workflow ID can be a user supplied business logic identifier.
 	workflowID := "parent-workflow_" + uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        workflowID,
@@ -34,9 +35,10 @@ func main() {
 	log.Println("Started workflow",
 		"WorkflowID", workflowRun.GetID(), "RunID", workflowRun.GetRunID())
 
-	// Synchronously wait for the workflow completion. Behind the scenes the SDK performs a long poll operation.
-	// If you need to wait for the workflow completion from another process use
-	// Client.GetWorkflow API to get an instance of a WorkflowRun.
+	// Synchronously wait for the Workflow Execution to complete.
+	// Behind the scenes the SDK performs a long poll operation.
+	// If you need to wait for the Workflow Execution to complete from another process use
+	// Client.GetWorkflow API to get an instance of the WorkflowRun.
 	var result string
 	err = workflowRun.Get(context.Background(), &result)
 	if err != nil {
@@ -44,3 +46,4 @@ func main() {
 	}
 	log.Println("Workflow result: %v", "result", result)
 }
+// @@@SNIPEND

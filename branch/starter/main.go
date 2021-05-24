@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-branch-workflow-execution-starter
 package main
 
 import (
@@ -10,7 +11,7 @@ import (
 )
 
 func main() {
-	// The client is a heavyweight object that should be created once per process.
+	// The client is a heavyweight object that should be created only once per process.
 	c, err := client.NewClient(client.Options{})
 	if err != nil {
 		panic(err)
@@ -25,10 +26,10 @@ func main() {
 	if err != nil {
 		log.Fatalln("Failure starting workflow", err)
 	}
-	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
+	log.Println("Started Workflow Execution", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 
-	// Wait for workflow completion. This is rarely needed in real use cases
-	// when workflows are potentially long running
+	// Wait for Workflow Execution completion.
+	// This is rarely needed in real use cases when Workflow Executions are potentially long running.
 	var result []string
 	err = we.Get(ctx, &result)
 	if err != nil {
@@ -36,3 +37,4 @@ func main() {
 	}
 	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 }
+// @@@SNIPEND
