@@ -50,7 +50,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 		logger.Error("Get search attribute failed.", "Error", err)
 		return err
 	}
-	logger.Info("Current search attribute.", "CustomIntField", currentIntValue)
+	logger.Info("Current search attribute value.", "CustomIntField", currentIntValue)
 
 	// Upsert search attributes.
 	attributes := map[string]interface{}{
@@ -58,15 +58,17 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 		"CustomKeywordField":  "Update1",
 		"CustomBoolField":     true,
 		"CustomDoubleField":   3.14,
-		"CustomDatetimeField": time.Date(2019, 8, 22, 0, 0, 0, 0, time.Local),
+		"CustomDatetimeField": workflow.Now(ctx).UTC(),
 		"CustomStringField":   "String field is for text. When query, it will be tokenized for partial match. StringTypeField cannot be used in Order By",
 	}
+	// This won't persist search attributes on server because commands are not sent to server,
+	// but local cache will be updated.
 	err = workflow.UpsertSearchAttributes(ctx, attributes)
 	if err != nil {
 		return err
 	}
 
-	// Print current search attributes.
+	// Print current search attributes with modifications above.
 	info = workflow.GetInfo(ctx)
 	err = printSearchAttributes(info.SearchAttributes, logger)
 	if err != nil {
@@ -89,15 +91,15 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 		return err
 	}
 
-	// Send commands to the server and wait for Elasticsearch update.
-	_ = workflow.Sleep(ctx, 2*time.Second)
+	// Now send commands to the server and let Elasticsearch update the index.
+	_ = workflow.Sleep(ctx, 1*time.Second)
 
-	// List workflow from Elasticsearch.
+	// After Elasticsearch index is updated we can query it.
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout: 20 * time.Second,
+		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
-	query := "CustomIntField=2 and CustomKeywordField='Update2' order by CustomDatetimeField DESC"
+	query := "CustomIntField=2 AND CustomKeywordField='Update2' ORDER BY CustomDatetimeField DESC"
 	var listResults []*workflowpb.WorkflowExecutionInfo
 	err = workflow.ExecuteActivity(ctx, ListExecutions, query).Get(ctx, &listResults)
 	if err != nil {
@@ -105,12 +107,17 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 		return err
 	}
 
-	logger.Info("Workflow completed.", "Execution", listResults[0].GetExecution().String())
-	err = printSearchAttributes(listResults[0].GetSearchAttributes(), logger)
+	// Last execution on top should be the current one because they are ordered by CustomDatetimeField (which is set as time.Now).
+	lastExecution := listResults[0]
+	logger.Info("WorkflowID must be the same", "info.WorkflowID", info.WorkflowExecution.ID, "lastExecution.WorkflowId", lastExecution.GetExecution().GetWorkflowId())
+	logger.Info("RunID must be the same", "info.RunID", info.WorkflowExecution.RunID, "lastExecution.RunId", lastExecution.GetExecution().GetRunId())
+
+	err = printSearchAttributes(lastExecution.GetSearchAttributes(), logger)
 	if err != nil {
 		return err
 	}
 
+	logger.Info("Workflow completed.")
 	return nil
 }
 
@@ -130,7 +137,7 @@ func printSearchAttributes(searchAttributes *common.SearchAttributes, logger log
 		}
 		builder.WriteString(fmt.Sprintf("%s=%v\n", k, currentVal))
 	}
-	logger.Info(fmt.Sprintf("Current search attributes:\n%s", builder.String()))
+	logger.Info(fmt.Sprintf("Current search attribute values:\n%s", builder.String()))
 	return nil
 }
 
