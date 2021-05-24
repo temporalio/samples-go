@@ -26,6 +26,9 @@ func main() {
 		SearchAttributes: map[string]interface{}{ // optional search attributes when start workflow
 			"CustomIntField": 1,
 		},
+		Memo: map[string]interface{}{
+			"description": "Test search attributes workflow",
+		},
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, searchattributes.SearchAttributesWorkflow)
