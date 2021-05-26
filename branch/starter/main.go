@@ -1,4 +1,3 @@
-// @@@SNIPSTART samples-go-branch-workflow-execution-starter
 package main
 
 import (
@@ -9,7 +8,7 @@ import (
 
 	"github.com/temporalio/samples-go/branch"
 )
-
+// @@@SNIPSTART samples-go-branch-workflow-execution-starter
 func main() {
 	// The client is a heavyweight object that should be created only once per process.
 	c, err := client.NewClient(client.Options{})

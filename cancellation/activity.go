@@ -1,4 +1,3 @@
-// @@@SNIPSTART samples-go-cancellation-activity-definition
 package cancellation
 
 import (
@@ -7,7 +6,7 @@ import (
 
 	"go.temporal.io/sdk/activity"
 )
-
+// @@@SNIPSTART samples-go-cancellation-activity-definition
 type Activities struct {}
 
 func (a *Activities) ActivityToBeCanceled(ctx context.Context) (string, error) {
