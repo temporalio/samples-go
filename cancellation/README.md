@@ -1,3 +1,4 @@
+## Cancellation
 <!-- @@@SNIPSTART samples-go-cancellation-readme -->
 Make sure the [Temporal Server is running locally](https://docs.temporal.io/docs/server/quick-install).
 
