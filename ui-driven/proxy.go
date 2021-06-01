@@ -46,7 +46,7 @@ func SendRequestToOrderWorkflow(ctx workflow.Context, orderWorkflowID string, st
 		UIRequestSignalName,
 		UISignalRequest{
 			CallingWorkflowId: workflowID,
-			Stage:             stage,ß
+			Stage:             stage,
 			Value:             value,
 		},
 	).Get(ctx, nil)
