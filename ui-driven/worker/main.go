@@ -6,7 +6,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	"github.com/temporalio/samples-go/helloworld"
+	uidriven "github.com/temporalio/samples-go/ui-driven"
 )
 
 func main() {
@@ -17,10 +17,15 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "hello-world", worker.Options{})
+	w := worker.New(c, "ui-driven", worker.Options{})
 
-	w.RegisterWorkflow(helloworld.Workflow)
-	w.RegisterActivity(helloworld.Activity)
+	w.RegisterWorkflow(uidriven.OrderWorkflow)
+	w.RegisterWorkflow(uidriven.StartOrderWorkflow)
+	w.RegisterWorkflow(uidriven.RecordSizeWorkflow)
+	w.RegisterWorkflow(uidriven.RecordColorWorkflow)
+	w.RegisterActivity(uidriven.RegisterEmail)
+	w.RegisterActivity(uidriven.ValidateSize)
+	w.RegisterActivity(uidriven.ValidateColor)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

@@ -18,10 +18,15 @@ const (
 	CompleteStage = "complete"
 )
 
-type TShirtOrder struct {
+type tshirtOrder struct {
 	Email string
 	Size  string
 	Color string
+}
+
+type OrderStatus struct {
+	OrderID string
+	Stage   string
 }
 
 // Workflow is a workflow driven by interaction from a UI.
@@ -31,7 +36,7 @@ func OrderWorkflow(ctx workflow.Context, email string) (string, error) {
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	order := TShirtOrder{}
+	order := tshirtOrder{}
 
 	err := order.execute(ctx)
 	if err != nil {
@@ -41,27 +46,38 @@ func OrderWorkflow(ctx workflow.Context, email string) (string, error) {
 	return fmt.Sprintf("%v", order), nil
 }
 
-func (order *TShirtOrder) execute(ctx workflow.Context) error {
-	req := ReceiveRequestFromUI(ctx)
+func (order *tshirtOrder) execute(ctx workflow.Context) error {
+	// Loop until we receive a valid email
+	for {
+		req := ReceiveRequestFromUI(ctx)
 
-	if req.Stage != RegisterStage {
-		err := SendErrorResponseToUI(ctx, req, fmt.Errorf("unexpected stage: %v", req.Stage))
+		if req.Stage != RegisterStage {
+			err := SendErrorResponseToUI(ctx, req, fmt.Errorf("unexpected stage: %v", req.Stage))
+			if err != nil {
+				return err
+			}
+
+			continue
+		}
+
+		err := workflow.ExecuteActivity(ctx, RegisterEmail, req.Value).Get(ctx, nil)
+		if err != nil {
+			err := SendErrorResponseToUI(ctx, req, err)
+			if err != nil {
+				return err
+			}
+
+			continue
+		}
+
+		order.Email = req.Value
+
+		err = SendResponseToUI(ctx, req, SizeStage)
 		if err != nil {
 			return err
 		}
-	}
 
-	err := workflow.ExecuteActivity(ctx, RegisterEmail, req.Value).Get(ctx, nil)
-	if err != nil {
-		err := SendErrorResponseToUI(ctx, req, err)
-		return err
-	}
-
-	order.Email = req.Value
-
-	err = SendResponseToUI(ctx, req, SizeStage)
-	if err != nil {
-		return err
+		break
 	}
 
 	// Loop until we receive a valid size
@@ -77,12 +93,14 @@ func (order *TShirtOrder) execute(ctx workflow.Context) error {
 			continue
 		}
 
-		err = workflow.ExecuteActivity(ctx, ValidateSize, req.Value).Get(ctx, nil)
+		err := workflow.ExecuteActivity(ctx, ValidateSize, req.Value).Get(ctx, nil)
 		if err != nil {
 			err := SendErrorResponseToUI(ctx, req, err)
 			if err != nil {
 				return err
 			}
+
+			continue
 		}
 
 		order.Size = req.Value
@@ -108,12 +126,14 @@ func (order *TShirtOrder) execute(ctx workflow.Context) error {
 			continue
 		}
 
-		err = workflow.ExecuteActivity(ctx, ValidateColor, req.Value).Get(ctx, nil)
+		err := workflow.ExecuteActivity(ctx, ValidateColor, req.Value).Get(ctx, nil)
 		if err != nil {
 			err := SendErrorResponseToUI(ctx, req, err)
 			if err != nil {
 				return err
 			}
+
+			continue
 		}
 
 		order.Color = req.Value
@@ -158,8 +178,9 @@ func ValidateColor(ctx context.Context, color string) error {
 	return nil
 }
 
-func StartOrderWorkflow(ctx workflow.Context, email string) (string, string, error) {
+func StartOrderWorkflow(ctx workflow.Context, email string) (OrderStatus, error) {
 	orderWorkflowID := WorkflowNameForEmail(email)
+	status := OrderStatus{OrderID: orderWorkflowID}
 
 	cwo := workflow.ChildWorkflowOptions{
 		// Here we force a consistent workflow ID for a given email address
@@ -171,48 +192,58 @@ func StartOrderWorkflow(ctx workflow.Context, email string) (string, string, err
 	ctx = workflow.WithChildOptions(ctx, cwo)
 
 	orderWorkflow := workflow.ExecuteChildWorkflow(ctx, OrderWorkflow, email)
-	err := orderWorkflow.Get(ctx, nil)
+	err := orderWorkflow.GetChildWorkflowExecution().Get(ctx, nil)
 	if err != nil && !temporal.IsWorkflowExecutionAlreadyStartedError(err) {
-		return "", "", err
+		return status, err
 	}
 
 	err = SendRequestToOrderWorkflow(ctx, orderWorkflowID, RegisterStage, email)
 	if err != nil {
-		return "", "", err
+		return status, err
 	}
 
 	res, err := ReceiveResponseFromOrderWorkflow(ctx)
 	if err != nil {
-		return "", "", err
+		return status, err
 	}
 
-	return orderWorkflowID, res.Stage, err
+	status.Stage = res.Stage
+
+	return status, err
 }
 
-func RecordSizeWorkflow(ctx workflow.Context, orderWorkflowID string, size string) (string, error) {
+func RecordSizeWorkflow(ctx workflow.Context, orderWorkflowID string, size string) (OrderStatus, error) {
+	status := OrderStatus{OrderID: orderWorkflowID, Stage: SizeStage}
+
 	err := SendRequestToOrderWorkflow(ctx, orderWorkflowID, SizeStage, size)
 	if err != nil {
-		return SizeStage, err
+		return status, err
 	}
 
 	res, err := ReceiveResponseFromOrderWorkflow(ctx)
 	if err != nil {
-		return SizeStage, res.Error
+		return status, res.Error
 	}
 
-	return res.Stage, nil
+	status.Stage = res.Stage
+
+	return status, nil
 }
 
-func RecordColorWorkflow(ctx workflow.Context, orderWorkflowID string, color string) (string, error) {
+func RecordColorWorkflow(ctx workflow.Context, orderWorkflowID string, color string) (OrderStatus, error) {
+	status := OrderStatus{OrderID: orderWorkflowID, Stage: ColorStage}
+
 	err := SendRequestToOrderWorkflow(ctx, orderWorkflowID, ColorStage, color)
 	if err != nil {
-		return ColorStage, err
+		return status, err
 	}
 
 	res, err := ReceiveResponseFromOrderWorkflow(ctx)
 	if err != nil {
-		return ColorStage, res.Error
+		return status, res.Error
 	}
 
-	return res.Stage, nil
+	status.Stage = res.Stage
+
+	return status, nil
 }

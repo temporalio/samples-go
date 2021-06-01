@@ -1,6 +1,8 @@
 package uidriven
 
-import "go.temporal.io/sdk/workflow"
+import (
+	"go.temporal.io/sdk/workflow"
+)
 
 const UIRequestSignalName = "ui-request-signal"
 const UIResponseSignalName = "ui-response-signal"
@@ -17,27 +19,39 @@ type UISignalResponse struct {
 }
 
 func SendErrorResponseToUI(ctx workflow.Context, req UISignalRequest, err error) error {
+	logger := workflow.GetLogger(ctx)
+
+	logger.Info("Sending error to UI workflow", req.CallingWorkflowId)
+
 	return workflow.SignalExternalWorkflow(
 		ctx,
 		req.CallingWorkflowId,
 		"",
-		UIRequestSignalName,
+		UIResponseSignalName,
 		UISignalResponse{Error: err},
 	).Get(ctx, nil)
 }
 
 func SendResponseToUI(ctx workflow.Context, req UISignalRequest, stage string) error {
+	logger := workflow.GetLogger(ctx)
+
+	logger.Info("Sending response to UI workflow", req.CallingWorkflowId)
+
 	return workflow.SignalExternalWorkflow(
 		ctx,
 		req.CallingWorkflowId,
 		"",
-		UIRequestSignalName,
+		UIResponseSignalName,
 		UISignalResponse{Stage: stage},
 	).Get(ctx, nil)
 }
 
 func SendRequestToOrderWorkflow(ctx workflow.Context, orderWorkflowID string, stage string, value string) error {
+	logger := workflow.GetLogger(ctx)
+
 	workflowID := workflow.GetInfo(ctx).WorkflowExecution.ID
+
+	logger.Info("Sending request to order workflow", orderWorkflowID, workflowID)
 
 	return workflow.SignalExternalWorkflow(
 		ctx,
@@ -53,21 +67,33 @@ func SendRequestToOrderWorkflow(ctx workflow.Context, orderWorkflowID string, st
 }
 
 func ReceiveResponseFromOrderWorkflow(ctx workflow.Context) (UISignalResponse, error) {
+	logger := workflow.GetLogger(ctx)
+
 	var res UISignalResponse
 
 	uiCh := workflow.GetSignalChannel(ctx, UIResponseSignalName)
 
+	logger.Info("Waiting for response from order workflow")
+
 	uiCh.Receive(ctx, &res)
+
+	logger.Info("Received response from order workflow")
 
 	return res, res.Error
 }
 
 func ReceiveRequestFromUI(ctx workflow.Context) UISignalRequest {
+	logger := workflow.GetLogger(ctx)
+
 	var req UISignalRequest
 
 	uiCh := workflow.GetSignalChannel(ctx, UIRequestSignalName)
 
+	logger.Info("Waiting for response from UI workflow")
+
 	uiCh.Receive(ctx, &req)
+
+	logger.Info("Received response from UI workflow")
 
 	return req
 }
