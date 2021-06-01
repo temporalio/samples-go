@@ -91,7 +91,7 @@ func RecordSize(c client.Client, orderID string, size string) (uidriven.OrderSta
 		TaskQueue: "ui-driven",
 	}
 	ctx := context.Background()
-	var status uidriven.OrderStatus
+	status := uidriven.OrderStatus{OrderID: orderID}
 
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, uidriven.RecordSizeWorkflow, orderID, size)
 	if err != nil {
@@ -110,7 +110,7 @@ func RecordColor(c client.Client, orderID string, color string) (uidriven.OrderS
 		TaskQueue: "ui-driven",
 	}
 	ctx := context.Background()
-	var status uidriven.OrderStatus
+	status := uidriven.OrderStatus{OrderID: orderID}
 
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, uidriven.RecordColorWorkflow, orderID, color)
 	if err != nil {

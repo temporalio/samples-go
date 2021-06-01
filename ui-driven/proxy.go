@@ -95,11 +95,11 @@ func ReceiveRequestFromUI(ctx workflow.Context) UISignalRequest {
 
 	uiCh := workflow.GetSignalChannel(ctx, UIRequestSignalName)
 
-	logger.Info("Waiting for response from UI workflow")
+	logger.Info("Waiting for request from UI workflow")
 
 	uiCh.Receive(ctx, &req)
 
-	logger.Info("Received response from UI workflow")
+	logger.Info("Received request from UI workflow")
 
 	return req
 }
