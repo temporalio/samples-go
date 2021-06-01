@@ -1,6 +1,8 @@
 package uidriven
 
 import (
+	"fmt"
+
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -14,7 +16,7 @@ type UISignalRequest struct {
 }
 
 type UISignalResponse struct {
-	Error error
+	Error string
 	Stage string
 }
 
@@ -28,7 +30,7 @@ func SendErrorResponseToUI(ctx workflow.Context, req UISignalRequest, err error)
 		req.CallingWorkflowId,
 		"",
 		UIResponseSignalName,
-		UISignalResponse{Error: err},
+		UISignalResponse{Error: err.Error()},
 	).Get(ctx, nil)
 }
 
@@ -79,7 +81,11 @@ func ReceiveResponseFromOrderWorkflow(ctx workflow.Context) (UISignalResponse, e
 
 	logger.Info("Received response from order workflow")
 
-	return res, res.Error
+	if res.Error != "" {
+		return res, fmt.Errorf("%s", res.Error)
+	}
+
+	return res, nil
 }
 
 func ReceiveRequestFromUI(ctx workflow.Context) UISignalRequest {

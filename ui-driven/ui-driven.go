@@ -164,7 +164,12 @@ func RegisterEmail(ctx context.Context, email string) error {
 
 func ValidateSize(ctx context.Context, size string) error {
 	if size != "small" && size != "medium" && size != "large" {
-		return fmt.Errorf("size: %s is not valid", size)
+		return temporal.NewNonRetryableApplicationError(
+			fmt.Sprintf("size: %s is not valid", size),
+			"InvalidSize",
+			nil,
+			nil,
+		)
 	}
 
 	return nil
@@ -172,7 +177,12 @@ func ValidateSize(ctx context.Context, size string) error {
 
 func ValidateColor(ctx context.Context, color string) error {
 	if color != "red" && color != "blue" {
-		return fmt.Errorf("color: %s is not valid", color)
+		return temporal.NewNonRetryableApplicationError(
+			fmt.Sprintf("color: %s is not valid", color),
+			"InvalidColor",
+			nil,
+			nil,
+		)
 	}
 
 	return nil
@@ -222,7 +232,7 @@ func RecordSizeWorkflow(ctx workflow.Context, orderWorkflowID string, size strin
 
 	res, err := ReceiveResponseFromOrderWorkflow(ctx)
 	if err != nil {
-		return status, res.Error
+		return status, err
 	}
 
 	status.Stage = res.Stage
@@ -240,7 +250,7 @@ func RecordColorWorkflow(ctx workflow.Context, orderWorkflowID string, color str
 
 	res, err := ReceiveResponseFromOrderWorkflow(ctx)
 	if err != nil {
-		return status, res.Error
+		return status, err
 	}
 
 	status.Stage = res.Stage
