@@ -36,7 +36,7 @@ func main() {
 
 	for {
 		size := PromptAndReadInput("Please enter your requested size:")
-		status, err = RecordSize(c, status.OrderID, size)
+		status, err = UpdateOrder(c, status.OrderID, uidriven.SizeStage, size)
 		if err != nil {
 			log.Println("invalid size", err)
 			continue
@@ -47,7 +47,7 @@ func main() {
 
 	for {
 		color := PromptAndReadInput("Please enter your required tshirt color:")
-		status, err = RecordColor(c, status.OrderID, color)
+		status, err = UpdateOrder(c, status.OrderID, uidriven.ColorStage, color)
 		if err != nil {
 			log.Println("invalid color", err)
 			continue
@@ -86,33 +86,14 @@ func StartOrder(c client.Client, email string) (uidriven.OrderStatus, error) {
 	return status, nil
 }
 
-func RecordSize(c client.Client, orderID string, size string) (uidriven.OrderStatus, error) {
+func UpdateOrder(c client.Client, orderID string, stage string, value string) (uidriven.OrderStatus, error) {
 	workflowOptions := client.StartWorkflowOptions{
 		TaskQueue: "ui-driven",
 	}
 	ctx := context.Background()
 	status := uidriven.OrderStatus{OrderID: orderID}
 
-	we, err := c.ExecuteWorkflow(ctx, workflowOptions, uidriven.RecordSizeWorkflow, orderID, size)
-	if err != nil {
-		log.Fatalln("Unable to execute workflow", err)
-	}
-	err = we.Get(ctx, &status)
-	if err != nil {
-		return status, err
-	}
-
-	return status, nil
-}
-
-func RecordColor(c client.Client, orderID string, color string) (uidriven.OrderStatus, error) {
-	workflowOptions := client.StartWorkflowOptions{
-		TaskQueue: "ui-driven",
-	}
-	ctx := context.Background()
-	status := uidriven.OrderStatus{OrderID: orderID}
-
-	we, err := c.ExecuteWorkflow(ctx, workflowOptions, uidriven.RecordColorWorkflow, orderID, color)
+	we, err := c.ExecuteWorkflow(ctx, workflowOptions, uidriven.UpdateOrderWorkflow, orderID, stage, value)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}

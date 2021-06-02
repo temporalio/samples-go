@@ -21,8 +21,7 @@ func main() {
 
 	w.RegisterWorkflow(uidriven.OrderWorkflow)
 	w.RegisterWorkflow(uidriven.StartOrderWorkflow)
-	w.RegisterWorkflow(uidriven.RecordSizeWorkflow)
-	w.RegisterWorkflow(uidriven.RecordColorWorkflow)
+	w.RegisterWorkflow(uidriven.UpdateOrderWorkflow)
 	w.RegisterActivity(uidriven.RegisterEmail)
 	w.RegisterActivity(uidriven.ValidateSize)
 	w.RegisterActivity(uidriven.ValidateColor)

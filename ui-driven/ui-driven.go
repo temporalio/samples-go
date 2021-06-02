@@ -1,12 +1,10 @@
 package uidriven
 
 import (
-	"context"
-	"fmt"
 	"time"
 
+	"github.com/temporalio/samples-go/ui-driven/proxy"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
@@ -18,7 +16,7 @@ const (
 	CompleteStage = "complete"
 )
 
-type tshirtOrder struct {
+type TShirtOrder struct {
 	Email string
 	Size  string
 	Color string
@@ -30,39 +28,21 @@ type OrderStatus struct {
 }
 
 // Workflow is a workflow driven by interaction from a UI.
-func OrderWorkflow(ctx workflow.Context, email string) (string, error) {
+func OrderWorkflow(ctx workflow.Context, email string) error {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 5 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	order := tshirtOrder{}
+	order := TShirtOrder{}
 
-	err := order.execute(ctx)
-	if err != nil {
-		return "", err
-	}
-
-	return fmt.Sprintf("%v", order), nil
-}
-
-func (order *tshirtOrder) execute(ctx workflow.Context) error {
 	// Loop until we receive a valid email
 	for {
-		req := ReceiveRequestFromUI(ctx)
+		id, _, email := proxy.ReceiveRequest(ctx)
 
-		if req.Stage != RegisterStage {
-			err := SendErrorResponseToUI(ctx, req, fmt.Errorf("unexpected stage: %v", req.Stage))
-			if err != nil {
-				return err
-			}
-
-			continue
-		}
-
-		err := workflow.ExecuteActivity(ctx, RegisterEmail, req.Value).Get(ctx, nil)
+		err := workflow.ExecuteActivity(ctx, RegisterEmail, email).Get(ctx, nil)
 		if err != nil {
-			err := SendErrorResponseToUI(ctx, req, err)
+			err := proxy.SendErrorResponse(ctx, id, err)
 			if err != nil {
 				return err
 			}
@@ -70,9 +50,9 @@ func (order *tshirtOrder) execute(ctx workflow.Context) error {
 			continue
 		}
 
-		order.Email = req.Value
+		order.Email = email
 
-		err = SendResponseToUI(ctx, req, SizeStage)
+		err = proxy.SendResponse(ctx, id, SizeStage, "")
 		if err != nil {
 			return err
 		}
@@ -82,20 +62,11 @@ func (order *tshirtOrder) execute(ctx workflow.Context) error {
 
 	// Loop until we receive a valid size
 	for {
-		req := ReceiveRequestFromUI(ctx)
+		id, _, size := proxy.ReceiveRequest(ctx)
 
-		if req.Stage != SizeStage {
-			err := SendErrorResponseToUI(ctx, req, fmt.Errorf("unexpected stage: %v", req.Stage))
-			if err != nil {
-				return err
-			}
-
-			continue
-		}
-
-		err := workflow.ExecuteActivity(ctx, ValidateSize, req.Value).Get(ctx, nil)
+		err := workflow.ExecuteActivity(ctx, ValidateSize, size).Get(ctx, nil)
 		if err != nil {
-			err := SendErrorResponseToUI(ctx, req, err)
+			err := proxy.SendErrorResponse(ctx, id, err)
 			if err != nil {
 				return err
 			}
@@ -103,9 +74,9 @@ func (order *tshirtOrder) execute(ctx workflow.Context) error {
 			continue
 		}
 
-		order.Size = req.Value
+		order.Size = size
 
-		err = SendResponseToUI(ctx, req, ColorStage)
+		err = proxy.SendResponse(ctx, id, ColorStage, "")
 		if err != nil {
 			return err
 		}
@@ -115,20 +86,11 @@ func (order *tshirtOrder) execute(ctx workflow.Context) error {
 
 	// Loop until we receive a valid color
 	for {
-		req := ReceiveRequestFromUI(ctx)
+		id, _, color := proxy.ReceiveRequest(ctx)
 
-		if req.Stage != ColorStage {
-			err := SendErrorResponseToUI(ctx, req, fmt.Errorf("unexpected stage: %v", req.Stage))
-			if err != nil {
-				return err
-			}
-
-			continue
-		}
-
-		err := workflow.ExecuteActivity(ctx, ValidateColor, req.Value).Get(ctx, nil)
+		err := workflow.ExecuteActivity(ctx, ValidateColor, color).Get(ctx, nil)
 		if err != nil {
-			err := SendErrorResponseToUI(ctx, req, err)
+			err := proxy.SendErrorResponse(ctx, id, err)
 			if err != nil {
 				return err
 			}
@@ -136,10 +98,10 @@ func (order *tshirtOrder) execute(ctx workflow.Context) error {
 			continue
 		}
 
-		order.Color = req.Value
+		order.Color = color
 
 		// Tell the UI the order is complete
-		err = SendResponseToUI(ctx, req, CompleteStage)
+		err = proxy.SendResponse(ctx, id, CompleteStage, "")
 		if err != nil {
 			return err
 		}
@@ -147,45 +109,16 @@ func (order *tshirtOrder) execute(ctx workflow.Context) error {
 		break
 	}
 
+	err := workflow.ExecuteActivity(ctx, ProcessOrder, order).Get(ctx, nil)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func WorkflowNameForEmail(email string) string {
 	return "ui-workflow-" + email
-}
-
-func RegisterEmail(ctx context.Context, email string) error {
-	logger := activity.GetLogger(ctx)
-
-	logger.Info("activity: registering email", email)
-
-	return nil
-}
-
-func ValidateSize(ctx context.Context, size string) error {
-	if size != "small" && size != "medium" && size != "large" {
-		return temporal.NewNonRetryableApplicationError(
-			fmt.Sprintf("size: %s is not valid", size),
-			"InvalidSize",
-			nil,
-			nil,
-		)
-	}
-
-	return nil
-}
-
-func ValidateColor(ctx context.Context, color string) error {
-	if color != "red" && color != "blue" {
-		return temporal.NewNonRetryableApplicationError(
-			fmt.Sprintf("color: %s is not valid", color),
-			"InvalidColor",
-			nil,
-			nil,
-		)
-	}
-
-	return nil
 }
 
 func StartOrderWorkflow(ctx workflow.Context, email string) (OrderStatus, error) {
@@ -207,53 +140,35 @@ func StartOrderWorkflow(ctx workflow.Context, email string) (OrderStatus, error)
 		return status, err
 	}
 
-	err = SendRequestToOrderWorkflow(ctx, orderWorkflowID, RegisterStage, email)
+	err = proxy.SendRequest(ctx, orderWorkflowID, RegisterStage, email)
 	if err != nil {
 		return status, err
 	}
 
-	res, err := ReceiveResponseFromOrderWorkflow(ctx)
+	stage, _, err := proxy.ReceiveResponse(ctx)
 	if err != nil {
 		return status, err
 	}
 
-	status.Stage = res.Stage
+	status.Stage = stage
 
 	return status, err
 }
 
-func RecordSizeWorkflow(ctx workflow.Context, orderWorkflowID string, size string) (OrderStatus, error) {
-	status := OrderStatus{OrderID: orderWorkflowID, Stage: SizeStage}
+func UpdateOrderWorkflow(ctx workflow.Context, orderWorkflowID string, stage string, value string) (OrderStatus, error) {
+	status := OrderStatus{OrderID: orderWorkflowID, Stage: stage}
 
-	err := SendRequestToOrderWorkflow(ctx, orderWorkflowID, SizeStage, size)
+	err := proxy.SendRequest(ctx, orderWorkflowID, stage, value)
 	if err != nil {
 		return status, err
 	}
 
-	res, err := ReceiveResponseFromOrderWorkflow(ctx)
+	nextStage, _, err := proxy.ReceiveResponse(ctx)
 	if err != nil {
 		return status, err
 	}
 
-	status.Stage = res.Stage
-
-	return status, nil
-}
-
-func RecordColorWorkflow(ctx workflow.Context, orderWorkflowID string, color string) (OrderStatus, error) {
-	status := OrderStatus{OrderID: orderWorkflowID, Stage: ColorStage}
-
-	err := SendRequestToOrderWorkflow(ctx, orderWorkflowID, ColorStage, color)
-	if err != nil {
-		return status, err
-	}
-
-	res, err := ReceiveResponseFromOrderWorkflow(ctx)
-	if err != nil {
-		return status, err
-	}
-
-	status.Stage = res.Stage
+	status.Stage = nextStage
 
 	return status, nil
 }
