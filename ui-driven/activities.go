@@ -17,29 +17,33 @@ func RegisterEmail(ctx context.Context, email string) error {
 }
 
 func ValidateSize(ctx context.Context, size string) error {
-	if size != "small" && size != "medium" && size != "large" {
-		return temporal.NewNonRetryableApplicationError(
-			fmt.Sprintf("size: %s is not valid", size),
-			"InvalidSize",
-			nil,
-			nil,
-		)
+	for _, key := range TShirtSizes {
+		if key == size {
+			return nil
+		}
 	}
 
-	return nil
+	return temporal.NewNonRetryableApplicationError(
+		fmt.Sprintf("size: %s is not valid (%v)", size, TShirtSizes),
+		"InvalidSize",
+		nil,
+		nil,
+	)
 }
 
 func ValidateColor(ctx context.Context, color string) error {
-	if color != "red" && color != "blue" {
-		return temporal.NewNonRetryableApplicationError(
-			fmt.Sprintf("color: %s is not valid", color),
-			"InvalidColor",
-			nil,
-			nil,
-		)
+	for _, key := range TShirtColors {
+		if key == color {
+			return nil
+		}
 	}
 
-	return nil
+	return temporal.NewNonRetryableApplicationError(
+		fmt.Sprintf("color: %s is not valid (%v)", color, TShirtColors),
+		"InvalidColor",
+		nil,
+		nil,
+	)
 }
 
 func ProcessOrder(ctx context.Context, order TShirtOrder) error {

@@ -15,6 +15,20 @@ const (
 	CompleteStage = "complete"
 )
 
+var (
+	TShirtSizes = []string{
+		"small",
+		"medium",
+		"large",
+	}
+
+	TShirtColors = []string{
+		"red",
+		"blue",
+		"black",
+	}
+)
+
 type TShirtOrder struct {
 	Email string
 	Size  string
