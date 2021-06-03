@@ -5,7 +5,6 @@ import (
 
 	"github.com/temporalio/samples-go/ui-driven/proxy"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -28,7 +27,7 @@ type OrderStatus struct {
 }
 
 // Workflow is a workflow driven by interaction from a UI.
-func OrderWorkflow(ctx workflow.Context, email string) error {
+func OrderWorkflow(ctx workflow.Context) error {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 5 * time.Second,
 	}
@@ -117,30 +116,25 @@ func OrderWorkflow(ctx workflow.Context, email string) error {
 	return nil
 }
 
-func WorkflowNameForEmail(email string) string {
-	return "ui-workflow-" + email
-}
-
 func StartOrderWorkflow(ctx workflow.Context, email string) (OrderStatus, error) {
-	orderWorkflowID := WorkflowNameForEmail(email)
-	status := OrderStatus{OrderID: orderWorkflowID}
+	status := OrderStatus{}
 
 	cwo := workflow.ChildWorkflowOptions{
-		// Here we force a consistent workflow ID for a given email address
-		// This prevents multiple concurrent orders for the same email
-		WorkflowID:               orderWorkflowID,
 		ParentClosePolicy:        enumspb.PARENT_CLOSE_POLICY_ABANDON,
 		WorkflowExecutionTimeout: time.Minute * 30,
 	}
 	ctx = workflow.WithChildOptions(ctx, cwo)
 
-	orderWorkflow := workflow.ExecuteChildWorkflow(ctx, OrderWorkflow, email)
-	err := orderWorkflow.GetChildWorkflowExecution().Get(ctx, nil)
-	if err != nil && !temporal.IsWorkflowExecutionAlreadyStartedError(err) {
+	orderWorkflow := workflow.ExecuteChildWorkflow(ctx, OrderWorkflow)
+	var workflowExecution workflow.Execution
+	err := orderWorkflow.GetChildWorkflowExecution().Get(ctx, &workflowExecution)
+	if err != nil {
 		return status, err
 	}
 
-	err = proxy.SendRequest(ctx, orderWorkflowID, RegisterStage, email)
+	status.OrderID = workflowExecution.ID
+
+	err = proxy.SendRequest(ctx, status.OrderID, RegisterStage, email)
 	if err != nil {
 		return status, err
 	}
