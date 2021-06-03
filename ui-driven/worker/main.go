@@ -25,6 +25,7 @@ func main() {
 	w.RegisterActivity(uidriven.RegisterEmail)
 	w.RegisterActivity(uidriven.ValidateSize)
 	w.RegisterActivity(uidriven.ValidateColor)
+	w.RegisterActivity(uidriven.ProcessOrder)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
