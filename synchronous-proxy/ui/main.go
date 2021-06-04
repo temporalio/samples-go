@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	uidriven "github.com/temporalio/samples-go/ui-driven"
+	synchronousproxy "github.com/temporalio/samples-go/synchronous-proxy"
 	"go.temporal.io/sdk/client"
 )
 
@@ -28,7 +28,7 @@ func main() {
 
 	for {
 		email := PromptAndReadInput("Please enter you email address:")
-		status, err = UpdateOrder(c, status.OrderID, uidriven.RegisterStage, email)
+		status, err = UpdateOrder(c, status.OrderID, synchronousproxy.RegisterStage, email)
 		if err != nil {
 			log.Println("invalid email", err)
 			continue
@@ -39,7 +39,7 @@ func main() {
 
 	for {
 		size := PromptAndReadInput("Please enter your requested size:")
-		status, err = UpdateOrder(c, status.OrderID, uidriven.SizeStage, size)
+		status, err = UpdateOrder(c, status.OrderID, synchronousproxy.SizeStage, size)
 		if err != nil {
 			log.Println("invalid size", err)
 			continue
@@ -50,7 +50,7 @@ func main() {
 
 	for {
 		color := PromptAndReadInput("Please enter your required tshirt color:")
-		status, err = UpdateOrder(c, status.OrderID, uidriven.ColorStage, color)
+		status, err = UpdateOrder(c, status.OrderID, synchronousproxy.ColorStage, color)
 		if err != nil {
 			log.Println("invalid color", err)
 			continue
@@ -71,14 +71,14 @@ func PromptAndReadInput(prompt string) string {
 	return strings.TrimSpace(text)
 }
 
-func CreateOrder(c client.Client) (uidriven.OrderStatus, error) {
+func CreateOrder(c client.Client) (synchronousproxy.OrderStatus, error) {
 	workflowOptions := client.StartWorkflowOptions{
 		TaskQueue: "ui-driven",
 	}
 	ctx := context.Background()
-	var status uidriven.OrderStatus
+	var status synchronousproxy.OrderStatus
 
-	we, err := c.ExecuteWorkflow(ctx, workflowOptions, uidriven.OrderWorkflow)
+	we, err := c.ExecuteWorkflow(ctx, workflowOptions, synchronousproxy.OrderWorkflow)
 	if err != nil {
 		return status, fmt.Errorf("unable to execute order workflow: %w", err)
 	}
@@ -88,14 +88,14 @@ func CreateOrder(c client.Client) (uidriven.OrderStatus, error) {
 	return status, nil
 }
 
-func UpdateOrder(c client.Client, orderID string, stage string, value string) (uidriven.OrderStatus, error) {
+func UpdateOrder(c client.Client, orderID string, stage string, value string) (synchronousproxy.OrderStatus, error) {
 	workflowOptions := client.StartWorkflowOptions{
 		TaskQueue: "ui-driven",
 	}
 	ctx := context.Background()
-	status := uidriven.OrderStatus{OrderID: orderID}
+	status := synchronousproxy.OrderStatus{OrderID: orderID}
 
-	we, err := c.ExecuteWorkflow(ctx, workflowOptions, uidriven.UpdateOrderWorkflow, orderID, stage, value)
+	we, err := c.ExecuteWorkflow(ctx, workflowOptions, synchronousproxy.UpdateOrderWorkflow, orderID, stage, value)
 	if err != nil {
 		return status, fmt.Errorf("unable to execute workflow: %w", err)
 	}

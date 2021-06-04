@@ -1,9 +1,9 @@
-package uidriven
+package synchronousproxy
 
 import (
 	"time"
 
-	"github.com/temporalio/samples-go/ui-driven/proxy"
+	"github.com/temporalio/samples-go/synchronous-proxy/proxy"
 	"go.temporal.io/sdk/workflow"
 )
 

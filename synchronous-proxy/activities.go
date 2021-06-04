@@ -1,4 +1,4 @@
-package uidriven
+package synchronousproxy
 
 import (
 	"context"
