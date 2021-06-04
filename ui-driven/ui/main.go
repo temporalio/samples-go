@@ -60,6 +60,7 @@ func main() {
 	}
 
 	fmt.Println("Thanks for your order!")
+	fmt.Println("You will receive an email with shipping details shortly")
 }
 
 func PromptAndReadInput(prompt string) string {
@@ -96,7 +97,7 @@ func UpdateOrder(c client.Client, orderID string, stage string, value string) (u
 
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, uidriven.UpdateOrderWorkflow, orderID, stage, value)
 	if err != nil {
-		log.Fatalln("Unable to execute workflow", err)
+		return status, fmt.Errorf("unable to execute workflow: %w", err)
 	}
 	err = we.Get(ctx, &status)
 	if err != nil {

@@ -11,7 +11,7 @@ const (
 	RegisterStage = "register"
 	SizeStage     = "size"
 	ColorStage    = "color"
-	CompleteStage = "complete"
+	ShippingStage = "shipping"
 )
 
 var (
@@ -112,8 +112,8 @@ func OrderWorkflow(ctx workflow.Context) error {
 
 		order.Color = color
 
-		// Tell the UI the order is complete
-		err = proxy.SendResponse(ctx, id, CompleteStage, "")
+		// Tell the UI the order is pending shipping
+		err = proxy.SendResponse(ctx, id, ShippingStage, "")
 		if err != nil {
 			return err
 		}
@@ -121,7 +121,29 @@ func OrderWorkflow(ctx workflow.Context) error {
 		break
 	}
 
-	err := workflow.ExecuteActivity(ctx, ProcessOrder, order).Get(ctx, nil)
+	cw := workflow.ExecuteChildWorkflow(ctx, ShippingWorkflow, order)
+	err := cw.Get(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func ShippingWorkflow(ctx workflow.Context, order TShirtOrder) error {
+	ao := workflow.ActivityOptions{
+		StartToCloseTimeout: 5 * time.Second,
+	}
+	ctx = workflow.WithActivityOptions(ctx, ao)
+
+	var deliveryDate time.Time
+
+	err := workflow.ExecuteActivity(ctx, ScheduleDelivery, order).Get(ctx, &deliveryDate)
+	if err != nil {
+		return err
+	}
+
+	err = workflow.ExecuteActivity(ctx, SendDeliveryEmail, order, deliveryDate).Get(ctx, nil)
 	if err != nil {
 		return err
 	}

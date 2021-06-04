@@ -21,10 +21,12 @@ func main() {
 
 	w.RegisterWorkflow(uidriven.OrderWorkflow)
 	w.RegisterWorkflow(uidriven.UpdateOrderWorkflow)
+	w.RegisterWorkflow(uidriven.ShippingWorkflow)
 	w.RegisterActivity(uidriven.RegisterEmail)
 	w.RegisterActivity(uidriven.ValidateSize)
 	w.RegisterActivity(uidriven.ValidateColor)
-	w.RegisterActivity(uidriven.ProcessOrder)
+	w.RegisterActivity(uidriven.ScheduleDelivery)
+	w.RegisterActivity(uidriven.SendDeliveryEmail)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

@@ -3,6 +3,7 @@ package uidriven
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/temporal"
@@ -46,10 +47,20 @@ func ValidateColor(ctx context.Context, color string) error {
 	)
 }
 
-func ProcessOrder(ctx context.Context, order TShirtOrder) error {
+func ScheduleDelivery(ctx context.Context, order TShirtOrder) (time.Time, error) {
 	logger := activity.GetLogger(ctx)
 
-	logger.Info("activity: processed order", order)
+	deliveryDate := time.Now().Add(time.Hour * 48)
+
+	logger.Info("activity: scheduled delivery", order, deliveryDate)
+
+	return deliveryDate, nil
+}
+
+func SendDeliveryEmail(ctx context.Context, order TShirtOrder, deliveryDate time.Time) error {
+	logger := activity.GetLogger(ctx)
+
+	logger.Info(fmt.Sprintf("email to: %s order: %v scheduled delivery: %v", order.Email, order, deliveryDate))
 
 	return nil
 }
