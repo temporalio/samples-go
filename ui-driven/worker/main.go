@@ -20,7 +20,6 @@ func main() {
 	w := worker.New(c, "ui-driven", worker.Options{})
 
 	w.RegisterWorkflow(uidriven.OrderWorkflow)
-	w.RegisterWorkflow(uidriven.StartOrderWorkflow)
 	w.RegisterWorkflow(uidriven.UpdateOrderWorkflow)
 	w.RegisterActivity(uidriven.RegisterEmail)
 	w.RegisterActivity(uidriven.ValidateSize)

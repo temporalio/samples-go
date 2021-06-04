@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/temporalio/samples-go/ui-driven/proxy"
-	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -128,39 +127,6 @@ func OrderWorkflow(ctx workflow.Context) error {
 	}
 
 	return nil
-}
-
-func StartOrderWorkflow(ctx workflow.Context, email string) (OrderStatus, error) {
-	status := OrderStatus{}
-
-	cwo := workflow.ChildWorkflowOptions{
-		ParentClosePolicy:        enumspb.PARENT_CLOSE_POLICY_ABANDON,
-		WorkflowExecutionTimeout: time.Minute * 30,
-	}
-	ctx = workflow.WithChildOptions(ctx, cwo)
-
-	orderWorkflow := workflow.ExecuteChildWorkflow(ctx, OrderWorkflow)
-	var workflowExecution workflow.Execution
-	err := orderWorkflow.GetChildWorkflowExecution().Get(ctx, &workflowExecution)
-	if err != nil {
-		return status, err
-	}
-
-	status.OrderID = workflowExecution.ID
-
-	err = proxy.SendRequest(ctx, status.OrderID, RegisterStage, email)
-	if err != nil {
-		return status, err
-	}
-
-	stage, _, err := proxy.ReceiveResponse(ctx)
-	if err != nil {
-		return status, err
-	}
-
-	status.Stage = stage
-
-	return status, err
 }
 
 func UpdateOrderWorkflow(ctx workflow.Context, orderWorkflowID string, stage string, value string) (OrderStatus, error) {

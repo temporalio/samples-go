@@ -21,11 +21,14 @@ func main() {
 
 	fmt.Println("T-Shirt Order")
 
-	var status uidriven.OrderStatus
+	status, err := CreateOrder(c)
+	if err != nil {
+		log.Fatalln("Unable to create order", err)
+	}
 
 	for {
 		email := PromptAndReadInput("Please enter you email address:")
-		status, err = StartOrder(c, email)
+		status, err = UpdateOrder(c, status.OrderID, uidriven.RegisterStage, email)
 		if err != nil {
 			log.Println("invalid email", err)
 			continue
@@ -67,21 +70,19 @@ func PromptAndReadInput(prompt string) string {
 	return strings.TrimSpace(text)
 }
 
-func StartOrder(c client.Client, email string) (uidriven.OrderStatus, error) {
+func CreateOrder(c client.Client) (uidriven.OrderStatus, error) {
 	workflowOptions := client.StartWorkflowOptions{
 		TaskQueue: "ui-driven",
 	}
 	ctx := context.Background()
 	var status uidriven.OrderStatus
 
-	we, err := c.ExecuteWorkflow(ctx, workflowOptions, uidriven.StartOrderWorkflow, email)
+	we, err := c.ExecuteWorkflow(ctx, workflowOptions, uidriven.OrderWorkflow)
 	if err != nil {
-		log.Fatalln("Unable to execute workflow", err)
+		return status, fmt.Errorf("unable to execute order workflow: %w", err)
 	}
-	err = we.Get(ctx, &status)
-	if err != nil {
-		return status, err
-	}
+
+	status.OrderID = we.GetID()
 
 	return status, nil
 }
