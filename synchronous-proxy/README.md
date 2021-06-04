@@ -1,4 +1,4 @@
-## UI-Driven Sample
+## Synchronous Proxy Sample
 
 This sample demonstrates how to achieve synchronous interaction with a main workflow.
 
