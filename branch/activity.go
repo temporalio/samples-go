@@ -1,10 +1,9 @@
-// @@@SNIPSTART samples-go-branch-activity-definition
 package branch
 
 import (
 	"fmt"
 )
-
+// @@@SNIPSTART samples-go-branch-activity-definition
 // SampleActivity is a Temporal Activity Definition
 func SampleActivity(input string) (string, error) {
 	name := "sampleActivity"

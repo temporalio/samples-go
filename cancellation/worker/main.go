@@ -1,4 +1,3 @@
-// @@@SNIPSTART samples-go-cancellation-worker-starter
 package main
 
 import (
@@ -9,7 +8,7 @@ import (
 
 	"github.com/temporalio/samples-go/cancellation"
 )
-
+// @@@SNIPSTART samples-go-cancellation-worker-starter
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.NewClient(client.Options{

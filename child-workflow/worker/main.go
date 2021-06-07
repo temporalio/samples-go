@@ -1,4 +1,3 @@
-// @@@SNIPSTART samples-go-child-workflow-example-worker-starter
 package main
 
 import (
@@ -9,7 +8,7 @@ import (
 
 	child_workflow "github.com/temporalio/samples-go/child-workflow"
 )
-
+// @@@SNIPSTART samples-go-child-workflow-example-worker-starter
 func main() {
 	// The client is a heavyweight object that should be created only once per process.
 	c, err := client.NewClient(client.Options{

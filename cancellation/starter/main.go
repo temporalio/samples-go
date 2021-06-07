@@ -1,4 +1,3 @@
-// @@@SNIPSTART samples-go-cancellation-workflow-execution-starter
 package main
 
 import (
@@ -10,7 +9,7 @@ import (
 
 	"github.com/temporalio/samples-go/cancellation"
 )
-
+// @@@SNIPSTART samples-go-cancellation-workflow-execution-starter
 func main() {
 	var workflowID string
 	flag.StringVar(&workflowID, "w", "workflowID-to-cancel", "w is the workflowID of the workflow to be canceled.")
