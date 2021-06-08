@@ -56,6 +56,7 @@ Demonstrating common control flow patterns used together with Temporal's API
   - [Parallel workflow](https://github.com/temporalio/samples-go/tree/master/parallel): Executes multiple branches in parallel using `workflow.Go()` method.
   - [Pick First](https://github.com/temporalio/samples-go/tree/master/pickfirst): Execute activities in parallel branches, pick the result of the branch that completes first, and then cancels other activities that are not finished yet.
   - [Split/Merge](https://github.com/temporalio/samples-go/tree/master/splitmerge): Demonstrates how to use multiple Temporal coroutines (instead of native goroutine) to process a chunk of a large work item in parallel, and then merge the intermediate result to generate the final result. In Temporal workflow, you should not use go routine. Instead, you use corotinue via workflow.Go method.
+  - [Synchronous Proxy workflow](https://github.com/temporalio/samples-go/tree/master/synchronous-proxy) pattern: Achieve synchronous interaction with a main workflow from a "proxy workflow". The proxy workflow sends a signal to the main workflow, then blocks waiting for a signal in response.
 
 ### Concrete Examples
 
