@@ -1,4 +1,3 @@
-// @@@SNIPSTART samples-go-cancellation-cancel-workflow-execution-trigger
 package main
 
 import (
@@ -8,7 +7,7 @@ import (
 
 	"go.temporal.io/sdk/client"
 )
-
+// @@@SNIPSTART samples-go-cancellation-cancel-workflow-execution-trigger
 func main() {
 	var workflowID string
 	flag.StringVar(&workflowID, "wid", "workflowID-to-cancel", "workflowID of the Workflow Execution to be canceled.")

@@ -1,4 +1,3 @@
-// @@@SNIPSTART samples-go-branch-workflow-definition
 package branch
 
 import (
@@ -7,7 +6,7 @@ import (
 
 	"go.temporal.io/sdk/workflow"
 )
-
+// @@@SNIPSTART samples-go-branch-workflow-definition
 // SampleBranchWorkflow is a Temporal Workflow Definition
 // This Workflow Definition shows how to call multiple Activities in parallel.
 // The number of branches is controlled by a passed in parameter.

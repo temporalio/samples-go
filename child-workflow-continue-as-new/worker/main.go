@@ -8,7 +8,7 @@ import (
 
 	cw "github.com/temporalio/samples-go/child-workflow-continue-as-new"
 )
-
+// @@@SNIPSTART samples-go-cw-cas-worker-starter
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.NewClient(client.Options{
@@ -29,3 +29,4 @@ func main() {
 		log.Fatalln("Unable to start worker", err)
 	}
 }
+// @@@SNIPEND

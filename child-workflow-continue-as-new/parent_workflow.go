@@ -5,15 +5,16 @@ import (
 
 	"go.temporal.io/sdk/workflow"
 )
-
-// SampleParentWorkflow workflow definition
+// @@@SNIPSTART samples-go-cw-cas-parent-workflow-definition
+// SampleParentWorkflow is a Workflow Definition
 func SampleParentWorkflow(ctx workflow.Context) error {
 	logger := workflow.GetLogger(ctx)
 	execution := workflow.GetInfo(ctx).WorkflowExecution
-	// Parent workflow can choose to specify it's own ID for child execution.  Make sure they are unique for each execution.
+	// Parent Workflows can choose to specify Ids for child executions.
+	// Make sure Ids are unique for each execution.
+	// Do not specify if you want the Temporal Server to generate a unique ID for the child execution.
 	childID := fmt.Sprintf("child_workflow:%v", execution.RunID)
 	cwo := workflow.ChildWorkflowOptions{
-		// Do not specify WorkflowID if you want Temporal server to generate a unique ID for child execution
 		WorkflowID: childID,
 	}
 	ctx = workflow.WithChildOptions(ctx, cwo)
@@ -27,3 +28,4 @@ func SampleParentWorkflow(ctx workflow.Context) error {
 	logger.Info("Parent execution completed.", "Result", result)
 	return nil
 }
+// @@@SNIPEND

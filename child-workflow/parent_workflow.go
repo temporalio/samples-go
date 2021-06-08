@@ -1,10 +1,9 @@
-// @@@SNIPSTART samples-go-child-workflow-example-parent-workflow-definition
 package child_workflow
 
 import (
 	"go.temporal.io/sdk/workflow"
 )
-
+// @@@SNIPSTART samples-go-child-workflow-example-parent-workflow-definition
 // SampleParentWorkflow is a Workflow Definition
 // This Workflow Definition demonstrates how to start a Child Workflow Execution from a Parent Workflow Execution.
 // Each Child Workflow Execution starts a new Run.

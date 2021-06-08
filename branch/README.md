@@ -1,3 +1,4 @@
+## Parallel Activities
 <!-- @@@SNIPSTART samples-go-branch-readme -->
 Make sure the [Temporal Server is running locally](https://docs.temporal.io/docs/server/quick-install).
 

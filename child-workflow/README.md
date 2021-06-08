@@ -1,3 +1,4 @@
+## Child Workflow
 <!-- @@@SNIPSTART samples-go-child-workflow-example-readme -->
 Make sure the [Temporal Server is running locally](https://docs.temporal.io/docs/server/quick-install).
 
