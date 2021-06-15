@@ -33,7 +33,10 @@ func SamplePickFirstWorkflow(ctx workflow.Context) error {
 	// you might not care about them and could set WaitForCancellation to false (which is default value).
 
 	// starts 2 activities in parallel
-	f1 := workflow.ExecuteActivity(childCtx, SampleActivity, 0, 2*time.Second)
+	// Duration of f1 is set to 10 seconds in order to observe the cancellation before timeout, because
+	// Cancel is not delivered to activity until a heartbeat has been actually sent.
+	// Due to the internal batching, the first heartbeat will not be sent until after 80% of the HeartbeatTimeout (8 seconds in this case).
+	f1 := workflow.ExecuteActivity(childCtx, SampleActivity, 0, 10*time.Second)
 	f2 := workflow.ExecuteActivity(childCtx, SampleActivity, 1, 1*time.Second)
 	pendingFutures := []workflow.Future{f1, f2}
 	selector.AddFuture(f1, func(f workflow.Future) {
