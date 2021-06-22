@@ -57,6 +57,11 @@ func NewZapLogger() *zap.Logger {
 		ErrorOutputPaths: []string{"stderr"},
 	}
 	logger, err := config.Build()
+
+	// Or simple
+	// logger, err := zap.NewDevelopment()
+	// can be used instead of the code above.
+
 	if err != nil {
 		log.Fatalln("Unable to create zap logger")
 	}
