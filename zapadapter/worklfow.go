@@ -9,7 +9,6 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-// Workflow is a Hello World workflow definition.
 func Workflow(ctx workflow.Context, name string) error {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
