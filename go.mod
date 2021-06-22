@@ -16,5 +16,6 @@ require (
 	go.temporal.io/api v1.4.1-0.20210429213054-a9a257b5cf16
 	go.temporal.io/sdk v1.7.0
 	go.temporal.io/server v1.9.1-0.20210513111455-82b05a2018e7
+	go.uber.org/zap v1.16.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
