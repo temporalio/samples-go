@@ -19,7 +19,9 @@ The [helloworld](helloworld/README.md) sample is a good place to start.
 You can learn more about running the Server locally in the [temporalio/docker-compose README](https://github.com/temporalio/docker-compose/blob/main/README.md).
 And you can learn more about the Temporal Server technology in general via our [documentation](https://docs.temporal.io/).
 
-## Samples Directory
+## Samples directory
+
+<!-- @@@SNIPSTART samples-go-readme-samples-directory -->
 
 Each sample demonstrates one feature of the SDK, together with tests.
 
@@ -65,6 +67,8 @@ Demonstrating common control flow patterns used together with Temporal's API
   - [File Processing](https://github.com/temporalio/samples-go/tree/master/fileprocessing): Demos a file processing process. The workflow first starts an activity to download a requested resource file from web and store it locally on the host where it runs the download activity. Then, the workflow will start more activities to process the downloaded resource file. The key part is the following activities have to be run on the same host as the initial downloading activity. This is achieved by using the session API.
   - [Particle Swarm Optimization](https://github.com/temporalio/samples-go/tree/master/pso): Demos a long iterative math optimization process using particle swarm optimization (PSO). It demonstrates usage of parallel execution, `ContinueAsNew` for long histories, a query API, and custom `DataConverter` serialization.
   - [Prometheus Metrics](https://github.com/temporalio/samples-go/tree/master/metrics): Demonstrates how to instrument Temporal with Prometheus and Uber's Tally library.
+
+<!-- @@@SNIPEND -->
 
 ### Misc/Pending Examples
 
