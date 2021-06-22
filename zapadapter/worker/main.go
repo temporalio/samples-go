@@ -11,9 +11,11 @@ import (
 )
 
 func main() {
-	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.NewClient(client.Options{
-		Logger: zapadapter.NewZapAdapter(NewZapLogger()),
+		// ZapAdapter implements log.Logger interface and can be passed
+		// to the client constructor using client using client.Options.
+		Logger: zapadapter.NewZapAdapter(
+			NewZapLogger()),
 	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)

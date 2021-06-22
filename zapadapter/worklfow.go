@@ -9,6 +9,8 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
+// Workflow is a workflow function which does some logging.
+// Important note: workflow logger is replay aware and it won't log during replay.
 func Workflow(ctx workflow.Context, name string) error {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
