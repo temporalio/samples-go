@@ -25,7 +25,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 <!-- @@@SNIPSTART samples-go-readme-samples-directory -->
 
-- [Basic hello world](https://github.com/temporalio/samples-go/tree/master/helloworld): Simple example of a Workflow Definition and an Activity Definition.
+- [**Basic hello world**](https://github.com/temporalio/samples-go/tree/master/helloworld): Simple example of a Workflow Definition and an Activity Definition.
 
 ### API demonstrations
 
