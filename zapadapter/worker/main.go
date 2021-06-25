@@ -25,8 +25,8 @@ func main() {
 	w := worker.New(c, "zap-logger", worker.Options{})
 
 	w.RegisterWorkflow(zapadapter.Workflow)
-	w.RegisterActivity(zapadapter.Activity)
-	w.RegisterActivity(zapadapter.ActivityError)
+	w.RegisterActivity(zapadapter.LoggingActivity)
+	w.RegisterActivity(zapadapter.LoggingErrorAcctivity)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
