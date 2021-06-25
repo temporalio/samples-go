@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"go.temporal.io/sdk/activity"
+	"go.temporal.io/sdk/log"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -21,15 +22,15 @@ func Workflow(ctx workflow.Context, name string) error {
 	logger.Info("Logging from workflow", "name", name)
 
 	var result interface{}
-	err := workflow.ExecuteActivity(ctx, Activity, name).Get(ctx, &result)
+	err := workflow.ExecuteActivity(ctx, LoggingActivity, name).Get(ctx, &result)
 	if err != nil {
-		logger.Error("Activity failed.", "Error", err)
+		logger.Error("LoggingActivity failed.", "Error", err)
 		return err
 	}
 
-	err = workflow.ExecuteActivity(ctx, ActivityError).Get(ctx, &result)
+	err = workflow.ExecuteActivity(ctx, LoggingErrorAcctivity).Get(ctx, &result)
 	if err != nil {
-		logger.Error("Activity failed.", "Error", err)
+		logger.Error("LoggingActivity failed.", "Error", err)
 		return err
 	}
 
@@ -37,16 +38,18 @@ func Workflow(ctx workflow.Context, name string) error {
 	return nil
 }
 
-func Activity(ctx context.Context, name string) error {
+func LoggingActivity(ctx context.Context, name string) error {
 	logger := activity.GetLogger(ctx)
-	logger.Info("Executing Activity.", "name", name)
-	logger.Debug("Debugging Activity.", "value", "important debug data")
+	withLogger := logger.(log.WithLogger).With("activity", "LoggingActivity")
+
+	withLogger.Info("Executing LoggingActivity.", "name", name)
+	withLogger.Debug("Debugging LoggingActivity.", "value", "important debug data")
 	return nil
 }
 
-func ActivityError(ctx context.Context) error {
+func LoggingErrorAcctivity(ctx context.Context) error {
 	logger := activity.GetLogger(ctx)
 	logger.Warn("Ignore next error message. It is just for demo purpose.")
-	logger.Error("Unable to execute ActivityError.", "error", errors.New("random error"))
+	logger.Error("Unable to execute LoggingErrorAcctivity.", "error", errors.New("random error"))
 	return nil
 }
