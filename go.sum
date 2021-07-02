@@ -362,6 +362,8 @@ go.temporal.io/api v1.4.1-0.20210429213054-a9a257b5cf16/go.mod h1:TqTvtQnmH8u0Dg
 go.temporal.io/sdk v1.6.0/go.mod h1:7vODGLBoovAW72JxeMq4jENWmEkzKceNVTiIEOF5xJY=
 go.temporal.io/sdk v1.7.0 h1:uVJPkUHYu1k23Hn7F2mYso1p3wHnPbVwWobSPVYmW0I=
 go.temporal.io/sdk v1.7.0/go.mod h1:SGEzYshamm994VrqsONO/ON4RcPkdqsGHsRhtiOjcd8=
+go.temporal.io/sdk v1.8.0 h1:XvI3juXtDS8rlTJ/vjs7duwts9GxZhC8DabOd5wq3Ps=
+go.temporal.io/sdk v1.8.0/go.mod h1:SGEzYshamm994VrqsONO/ON4RcPkdqsGHsRhtiOjcd8=
 go.temporal.io/server v1.9.1-0.20210513111455-82b05a2018e7 h1:X437c2xQzbshkJJB0TTyTu2Ajy79F9g5HxVIZIA1Fwo=
 go.temporal.io/server v1.9.1-0.20210513111455-82b05a2018e7/go.mod h1:uYHt96DDwwQ9q3tyE9v29TD6ZIj9aqVPJLJT9qTf01Q=
 go.temporal.io/version v0.0.0-20201015012359-4d3bb966d193/go.mod h1:UA9S8/1LaKYae6TyD9NaPMJTZb911JcbqghI2CBSP78=
