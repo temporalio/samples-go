@@ -9,8 +9,8 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-// LargePayloadWorkflow workflow definition
-func Workflow(ctx workflow.Context, LengthOfHistory int, WillFailOrNot bool) (err error) {
+// LargeEventHistoryWorkflow workflow definition
+func LargeEventHistoryWorkflow(ctx workflow.Context, LengthOfHistory int, WillFailOrNot bool) (err error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: time.Minute,
 	}
@@ -18,8 +18,11 @@ func Workflow(ctx workflow.Context, LengthOfHistory int, WillFailOrNot bool) (er
 
 	var data []byte
 	i := 1
-	for i <= LengthOfHistory {
+
+	iterations := LengthOfHistory / 6 // 6 events per activity
+	for i <= iterations {
 		err = workflow.ExecuteActivity(ctx, Activity, data).Get(ctx, nil)
+		i++
 	}
 	if err != nil {
 		return errors.New("unexpected Activity failure")
@@ -31,6 +34,6 @@ func Workflow(ctx workflow.Context, LengthOfHistory int, WillFailOrNot bool) (er
 	return nil
 }
 
-func Activity(ctx context.Context, input []byte) error {
+func Activity(ctx context.Context) error {
 	return nil
 }

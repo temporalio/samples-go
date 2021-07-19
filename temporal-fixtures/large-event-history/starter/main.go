@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/pborman/uuid"
-	"github.com/temporalio/samples-go/temporal-fixtures/largeeventhistory"
+	largeeventhistory "github.com/temporalio/samples-go/temporal-fixtures/large-event-history"
 	"go.temporal.io/sdk/client"
 )
 
@@ -26,11 +26,12 @@ func main() {
 
 	id := uuid.New()[0:4]
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "largepayload_" + id,
-		TaskQueue: "largepayload",
+		ID:        "largeeventhistory_" + id,
+		TaskQueue: "largeeventhistory",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, largeeventhistory.Workflow, LengthOfHistory, WillFailOrNot)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions,
+		largeeventhistory.LargeEventHistoryWorkflow, LengthOfHistory, WillFailOrNot)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}

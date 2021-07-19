@@ -19,18 +19,15 @@ func TestUnitTestSuite(t *testing.T) {
 	suite.Run(t, new(UnitTestSuite))
 }
 
-func (s *UnitTestSuite) Test_LargePayloadWorkflow() {
+func (s *UnitTestSuite) Test_LargeEventHistoryWorkflow() {
 	env := s.NewTestWorkflowEnvironment()
 	env.SetWorkerOptions(worker.Options{})
-	var a *Activities
 
-	data := []byte{}
-	env.OnActivity(a.CreateLargeResultActivity, mock.Anything, 1*1024).Return(data, nil)
-	env.OnActivity(a.ProcessLargeInputActivity, mock.Anything, data).Return(nil)
+	env.OnActivity(Activity, mock.Anything).Return(nil)
 
-	env.RegisterActivity(a)
+	env.RegisterActivity(Activity)
 
-	env.ExecuteWorkflow(LargePayloadWorkflow, 1*1024)
+	env.ExecuteWorkflow(LargeEventHistoryWorkflow, 1024, false)
 
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())

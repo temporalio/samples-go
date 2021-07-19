@@ -18,9 +18,9 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "largepayload", worker.Options{})
+	w := worker.New(c, "largeeventhistory", worker.Options{})
 
-	w.RegisterWorkflow(largeeventhistory.Workflow)
+	w.RegisterWorkflow(largeeventhistory.LargeEventHistoryWorkflow)
 	w.RegisterActivity(largeeventhistory.Activity)
 
 	err = w.Run(worker.InterruptCh())
