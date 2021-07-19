@@ -19,8 +19,8 @@ func LargeEventHistoryWorkflow(ctx workflow.Context, LengthOfHistory int, WillFa
 	var data []byte
 	i := 1
 
-	iterations := LengthOfHistory / 6 // 6 events per activity
-	for i <= iterations {
+	countActivities := LengthOfHistory / 6
+	for i <= countActivities {
 		err = workflow.ExecuteActivity(ctx, Activity, data).Get(ctx, nil)
 		i++
 	}
