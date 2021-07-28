@@ -8,6 +8,15 @@ This repository contains several sample Workflow applications that demonstrate t
 - Temporal Go SDK repo: [https://github.com/temporalio/sdk-go](https://github.com/temporalio/sdk-go)
 - Go SDK docs: https://docs.temporal.io/docs/go/introduction
 
+## Running locally 
+use the local docker-compose.yaml to spin up temporal with postgres backend.
+
+```bash
+docker compose up
+```
+
+Temporal config [file](/dynamicconfig/development.yaml)
+
 ## How to use
 
 Make sure the Temporal Server is running locally.
