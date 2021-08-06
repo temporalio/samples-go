@@ -2,4 +2,4 @@ This fixuture starts few sets workflows `(NumberOfSets)`- each set containing a 
 
 Used in:
 
-- 
+- Web UI testing
