@@ -40,10 +40,18 @@ func main() {
 			enums.WORKFLOW_EXECUTION_STATUS_TIMED_OUT,
 		}
 
-		for _, s := range statuses {
+		for i, s := range statuses {
 			workflowOptions := client.StartWorkflowOptions{
 				ID:        id + "_" + s.String(),
 				TaskQueue: "rainbow-statuses",
+				SearchAttributes: map[string]interface{}{
+					"CustomKeywordField":  "rainbow-statuses-" + id,
+					"CustomIntField":      i,
+					"CustomDoubleField":   float64(i),
+					"CustomBoolField":     i%2 == 0,
+					"CustomDatetimeField": time.Now().UTC(),
+					"CustomStringField":   "rainbow statuses " + id + " " + s.String(),
+				},
 			}
 
 			if s == enums.WORKFLOW_EXECUTION_STATUS_TIMED_OUT {
