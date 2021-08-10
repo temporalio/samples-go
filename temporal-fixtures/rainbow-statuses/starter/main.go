@@ -75,6 +75,14 @@ func main() {
 					log.Fatalln("Unable to Terminate workflow", err)
 				}
 			}
+
+			signal := struct {
+				Hey string
+				At  time.Time
+			}{"from Mars", time.Now()}
+			if err = c.SignalWorkflow(context.Background(), w.GetID(), w.GetRunID(), "customSignal", signal); err != nil {
+				log.Fatalln("unable to signal workflow", err)
+			}
 		}
 	}
 }
