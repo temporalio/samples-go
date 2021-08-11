@@ -76,12 +76,14 @@ func main() {
 				}
 			}
 
-			signal := struct {
-				Hey string
-				At  time.Time
-			}{"from Mars", time.Now()}
-			if err = c.SignalWorkflow(context.Background(), w.GetID(), w.GetRunID(), "customSignal", signal); err != nil {
-				log.Fatalln("unable to signal workflow", err)
+			if s == enums.WORKFLOW_EXECUTION_STATUS_RUNNING {
+				signal := struct {
+					Hey string
+					At  time.Time
+				}{"from Mars", time.Now()}
+				if err = c.SignalWorkflow(context.Background(), w.GetID(), w.GetRunID(), "customSignal", signal); err != nil {
+					log.Fatalln("unable to signal workflow", err)
+				}
 			}
 		}
 	}
