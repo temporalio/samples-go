@@ -29,7 +29,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 ### API demonstrations
 
-- **Async activity completion**: Example of an [Expense reporting](https://github.com/temporalio/samples-go/tree/master/expense) Workflow that communicates with a server API. Additional documentation: [How to complete an Activity Execution asynchronously in Go](https://docs.temporal.io/docs/go/activities#asynchronous-activity-completion)
+- **Async activity completion**: Example of an [Expense reporting](https://github.com/temporalio/samples-go/tree/master/expense) Workflow that communicates with a server API. Additional documentation: [How to complete an Activity Execution asynchronously in Go](https://docs.temporal.io/docs/go/activities/#asynchronous-activity-completion)
 
 - [**Retry Activity Execution**](https://github.com/temporalio/samples-go/tree/master/retryactivity): This samples executes an unreliable Activity. The Activity is executed with a custom Retry Policy. If the Activity Execution fails, the Server will schedule a retry based on the Retry Policy. This Activity also includes a Heartbeat, which enables it to resume from the Activity Execution's last reported progress when it retries.
 
