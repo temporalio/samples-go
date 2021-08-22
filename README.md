@@ -29,7 +29,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 ### API demonstrations
 
-- **Async activity completion**: Example of an [Expense reporting](https://github.com/temporalio/samples-go/tree/master/expense) Workflow that communicates with a server API. Additional documentation: [How to complete an Activity Execution asynchronously in Go](https://docs.temporal.io/docs/go/activities#asynchronous-activity-completion)
+- **Async activity completion**: Example of an [Expense reporting](https://github.com/temporalio/samples-go/tree/master/expense) Workflow that communicates with a server API. Additional documentation: [How to complete an Activity Execution asynchronously in Go](https://docs.temporal.io/docs/go/activities/#asynchronous-activity-completion)
 
 - [**Retry Activity Execution**](https://github.com/temporalio/samples-go/tree/master/retryactivity): This samples executes an unreliable Activity. The Activity is executed with a custom Retry Policy. If the Activity Execution fails, the Server will schedule a retry based on the Retry Policy. This Activity also includes a Heartbeat, which enables it to resume from the Activity Execution's last reported progress when it retries.
 
@@ -37,7 +37,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Child Workflow with ContinueAsNew**](https://github.com/temporalio/samples-go/tree/master/child-workflow-continue-as-new): Demonstrates that the call to Continue-As-New, by a Child Workflow Execution, is *not visible to the a parent*. The Parent Workflow Execution receives a notification only when a Child Workflow Execution completes, fails or times out. This is a useful feature when there is a need to **process a large set of data**. The child can iterate over the data set calling Continue-As-New periodically without polluting the parents' history.
 
-- [**Cancellation**](https://github.com/temporalio/samples-go/tree/master/cancelactivity): Demonstrates how to cancel a Workflow Execution by calling `CancelWorkflow`, an how to defer an Activity Execution that "cleans up" after the Workflow Execution has been cancelled.
+- [**Cancellation**](https://github.com/temporalio/samples-go/tree/master/cancellation): Demonstrates how to cancel a Workflow Execution by calling `CancelWorkflow`, an how to defer an Activity Execution that "cleans up" after the Workflow Execution has been cancelled.
 
 - **Coroutines**: Do not use native `go` routines in Workflows. Instead use Temporal coroutines (`workflow.Go()`) to maintain a [deterministic](https://docs.temporal.io/docs/go/workflows/#how-to-write-workflow-code) Workflow. Can be seen in the [Split/Merge](https://github.com/temporalio/samples-go/tree/master/splitmerge), [DSL](https://github.com/temporalio/samples-go/tree/master/dsl), [Recovery](https://github.com/temporalio/samples-go/tree/master/recovery), [PSO](https://github.com/temporalio/samples-go/tree/master/pso), and [Parallel](https://github.com/temporalio/samples-go/tree/master/parallel) Workflow examples.
 
@@ -49,7 +49,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Query Example**](https://github.com/temporalio/samples-go/tree/master/query): Demonstrates how to Query the state of a single Workflow Execution using the `QueryWorkflow` and `SetQueryHandler` APIs. Additional documentation: [How to Query a Workflow Execution in Go](https://docs.temporal.io/docs/go/queries).
 
-- **Selectors**: Do not use the native Go `select` statment. Instead use [Go SDK Selectors](https://docs.temporal.io/docs/go/selectors) (`selector.Select(ctx)`) to maintain a [deterministic](https://docs.temporal.io/docs/go/workflows/#how-to-write-workflow-code) Workflow. Can be seen in the [Pick First](https://github.com/temporalio/samples-go/tree/master/pickfirst), [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex), [DSL](https://github.com/temporalio/samples-go/tree/master/dsl), and [Timer](https://github.com/temporalio/samples-go/tree/master/timer) examples.
+- **Selectors**: Do not use the native Go `select` statement. Instead use [Go SDK Selectors](https://docs.temporal.io/docs/go/selectors) (`selector.Select(ctx)`) to maintain a [deterministic](https://docs.temporal.io/docs/go/workflows/#how-to-write-workflow-code) Workflow. Can be seen in the [Pick First](https://github.com/temporalio/samples-go/tree/master/pickfirst), [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex), [DSL](https://github.com/temporalio/samples-go/tree/master/dsl), and [Timer](https://github.com/temporalio/samples-go/tree/master/timer) examples.
 
 - **Sessions**: Demonstrates how to bind a set of Activity Executions to a specific Worker after the first Activity executes. This feature is showcased in the [File Processing example](https://github.com/temporalio/samples-go/tree/master/fileprocessing). Addition documentation: [How to use Sessions in Go](https://docs.temporal.io/docs/go/sessions).
 
