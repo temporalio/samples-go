@@ -1,12 +1,11 @@
 package main
 
 import (
+	"github.com/temporalio/samples-go/updatabletimer"
 	"log"
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
-
-	"github.com/temporalio/samples-go/timer"
 )
 
 func main() {
@@ -19,13 +18,9 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "timer", worker.Options{
-		MaxConcurrentActivityExecutionSize: 3,
-	})
+	w := worker.New(c, updatabletimer.TaskQueue, worker.Options{})
 
-	w.RegisterWorkflow(timer.SampleTimerWorkflow)
-	w.RegisterActivity(timer.OrderProcessingActivity)
-	w.RegisterActivity(timer.SendEmailActivity)
+	w.RegisterWorkflow(updatabletimer.Workflow)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

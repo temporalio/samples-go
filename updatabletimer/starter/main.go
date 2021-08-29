@@ -2,17 +2,15 @@ package main
 
 import (
 	"context"
+	"github.com/temporalio/samples-go/updatabletimer"
 	"log"
 	"time"
 
-	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
-
-	"github.com/temporalio/samples-go/timer"
 )
 
+// Starts updatable timer workflow with initial wake-up time in 30 seconds.
 func main() {
-	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
@@ -22,13 +20,15 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "timer_" + uuid.New(),
-		TaskQueue: "timer",
+		ID:        updatabletimer.WorkflowID,
+		TaskQueue: updatabletimer.TaskQueue,
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, timer.SampleTimerWorkflow, time.Second*3)
+	wakeUpTime := time.Now().Add(30 * time.Second)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, updatabletimer.Workflow, wakeUpTime)
 	if err != nil {
-		log.Fatalln("Unable to execute workflow", err)
+		log.Fatalln("Unable to start workflow", err)
 	}
-	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
+	log.Println("Started workflow that is going to block on an updatable timer",
+		"WorkflowID", we.GetID(), "RunID", we.GetRunID(), "WakeUpTime", wakeUpTime)
 }

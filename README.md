@@ -61,6 +61,8 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Tracing and Context Propagation**](https://github.com/temporalio/samples-go/tree/master/ctxpropagation): Demonstrates  the client initialization with a context propagator, which propagates specific information in the `context.Context` object across the Workflow Execution. The `context.Context` object is populated with information prior to calling `StartWorkflow`. This example demonstrates that the information is available in the Workflow Execution and Activity Executions. Additional documentation: [How to use tracing in Go](https://docs.temporal.io/docs/go/tracing/).
 
+- [**Updatable Timer**](https://github.com/temporalio/samples-go/tree/master/updatabletimer): Demonstrates timer cancellation and use of a Selector to wait on a Future and a Channel simultaneously. 
+
 ### Dynamic Workflow logic examples
 
 These samples demonstrate some common control flow patterns using Temporal's Go SDK API.

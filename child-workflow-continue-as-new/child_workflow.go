@@ -6,6 +6,7 @@ import (
 
 	"go.temporal.io/sdk/workflow"
 )
+
 // @@@SNIPSTART samples-go-cw-cas-child-workflow-definition
 // SampleChildWorkflow is a Workflow Definition
 func SampleChildWorkflow(ctx workflow.Context, totalCount, runCount int) (string, error) {
@@ -27,4 +28,5 @@ func SampleChildWorkflow(ctx workflow.Context, totalCount, runCount int) (string
 	logger.Info("Child workflow starting new run.", "RunCount", runCount, "TotalCount", totalCount)
 	return "", workflow.NewContinueAsNewError(ctx, SampleChildWorkflow, totalCount, runCount)
 }
+
 // @@@SNIPEND

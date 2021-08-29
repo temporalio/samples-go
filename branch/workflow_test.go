@@ -36,4 +36,5 @@ func (s *UnitTestSuite) Test_BranchWorkflow() {
 	sort.Strings(expected)
 	s.Equal(expected, result)
 }
+
 // @@@SNIPEND

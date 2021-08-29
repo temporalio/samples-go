@@ -8,6 +8,7 @@ import (
 
 	"github.com/temporalio/samples-go/branch"
 )
+
 // @@@SNIPSTART samples-go-branch-worker-starter
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
@@ -29,4 +30,5 @@ func main() {
 		log.Fatalln("Unable to start worker", err)
 	}
 }
+
 // @@@SNIPEND

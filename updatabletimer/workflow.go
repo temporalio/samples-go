@@ -7,6 +7,8 @@ import (
 )
 
 const (
+	TaskQueue  = "updatable-timer"
+	WorkflowID = "updatable-timer"
 	QueryType  = "GetWakeUpTime"
 	SignalType = "UpdateWakeUpTime"
 )
@@ -21,24 +23,31 @@ type UpdatableTimer struct {
 // Supports ctx cancellation.
 // Returns temporal.CanceledError if ctx was canceled.
 func (u *UpdatableTimer) SleepUntil(ctx workflow.Context, wakeUpTime time.Time, updateWakeUpTimeCh workflow.ReceiveChannel) (err error) {
+	logger := workflow.GetLogger(ctx)
 	u.wakeUpTime = wakeUpTime
 	timerFired := false
 	for !timerFired && ctx.Err() == nil {
-		ctx, timerCancel := workflow.WithCancel(ctx)
-		duration := u.wakeUpTime.Sub(workflow.Now(ctx))
-		workflow.NewSelector(ctx).
-			AddFuture(workflow.NewTimer(ctx, duration), func(f workflow.Future) {
-				err := f.Get(ctx, nil)
+		timerCtx, timerCancel := workflow.WithCancel(ctx)
+		duration := u.wakeUpTime.Sub(workflow.Now(timerCtx))
+		timer := workflow.NewTimer(timerCtx, duration)
+		logger.Info("SleepUntil", "WakeUpTime", u.wakeUpTime)
+		workflow.NewSelector(timerCtx).
+			AddFuture(timer, func(f workflow.Future) {
+				err := f.Get(timerCtx, nil)
 				// if a timer returned an error then it was canceled
 				if err == nil {
+					logger.Info("Timer fired")
 					timerFired = true
+				} else if ctx.Err() != nil { // Only log on root ctx cancellation, not on timerCancel function call.
+					logger.Info("SleepUntil canceled")
 				}
 			}).
 			AddReceive(updateWakeUpTimeCh, func(c workflow.ReceiveChannel, more bool) {
-				timerCancel()                 // cancel outstanding timer
-				c.Receive(ctx, &u.wakeUpTime) // update wake-up time
+				timerCancel()                      // cancel outstanding timer
+				c.Receive(timerCtx, &u.wakeUpTime) // update wake-up time
+				logger.Info("Wake up time update requested")
 			}).
-			Select(ctx)
+			Select(timerCtx)
 	}
 	return ctx.Err()
 }
@@ -49,7 +58,6 @@ func (u *UpdatableTimer) GetWakeUpTime() time.Time {
 
 // Workflow that sleeps initialWakeUpTime unless the new wake-up time is received through "UpdateWakeUpTime" signal.
 func Workflow(ctx workflow.Context, initialWakeUpTime time.Time) error {
-	workflow.GetLogger(ctx).Info("Start Workflow")
 	timer := UpdatableTimer{}
 	err := workflow.SetQueryHandler(ctx, QueryType, func() (time.Time, error) {
 		return timer.GetWakeUpTime(), nil
@@ -57,7 +65,5 @@ func Workflow(ctx workflow.Context, initialWakeUpTime time.Time) error {
 	if err != nil {
 		return err
 	}
-	workflow.GetLogger(ctx).Info("Query Handler registered", QueryType)
-
 	return timer.SleepUntil(ctx, initialWakeUpTime, workflow.GetSignalChannel(ctx, SignalType))
 }

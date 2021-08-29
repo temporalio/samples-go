@@ -9,6 +9,7 @@ import (
 
 	cw "github.com/temporalio/samples-go/child-workflow-continue-as-new"
 )
+
 // @@@SNIPSTART samples-go-cw-cas-workflow-execution-starter
 func main() {
 	// The client is a heavyweight object that should be created once per process.
@@ -33,4 +34,5 @@ func main() {
 	}
 	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 }
+
 // @@@SNIPEND
