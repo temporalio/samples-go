@@ -3,10 +3,9 @@ package main
 import (
 	"log"
 
+	rainbowstatuses "github.com/temporalio/samples-go/temporal-fixtures/rainbow-statuses"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
-
-	"github.com/temporalio/samples-go/temporal-fixtures/openNclosed"
 )
 
 func main() {
@@ -19,10 +18,10 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "open-n-closed", worker.Options{})
+	w := worker.New(c, "rainbow-statuses", worker.Options{})
 
-	w.RegisterWorkflow(openNclosed.OpenNClosedWorkflow)
-	w.RegisterActivity(openNclosed.Activity)
+	w.RegisterWorkflow(rainbowstatuses.RainbowStatusesWorkflow)
+	w.RegisterActivity(&rainbowstatuses.Activities{})
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
