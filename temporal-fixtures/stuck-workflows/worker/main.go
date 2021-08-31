@@ -6,7 +6,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	"github.com/temporalio/samples-go/temporal-fixtures/openNclosed"
+	stuckworkflows "github.com/temporalio/samples-go/temporal-fixtures/stuck-workflows"
 )
 
 func main() {
@@ -19,10 +19,10 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "open-n-closed", worker.Options{})
+	w := worker.New(c, "stuck-workflows", worker.Options{})
 
-	w.RegisterWorkflow(openNclosed.OpenNClosedWorkflow)
-	w.RegisterActivity(openNclosed.Activity)
+	w.RegisterWorkflow(stuckworkflows.StuckWorkflow)
+	w.RegisterActivity(stuckworkflows.StuckWorkflowActivity)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

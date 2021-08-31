@@ -3,10 +3,9 @@ package main
 import (
 	"log"
 
+	largeeventhistory "github.com/temporalio/samples-go/temporal-fixtures/large-event-history"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
-
-	"github.com/temporalio/samples-go/temporal-fixtures/openNclosed"
 )
 
 func main() {
@@ -19,10 +18,10 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "open-n-closed", worker.Options{})
+	w := worker.New(c, "largeeventhistory", worker.Options{})
 
-	w.RegisterWorkflow(openNclosed.OpenNClosedWorkflow)
-	w.RegisterActivity(openNclosed.Activity)
+	w.RegisterWorkflow(largeeventhistory.LargeEventHistoryWorkflow)
+	w.RegisterActivity(largeeventhistory.Activity)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
