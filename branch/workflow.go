@@ -6,6 +6,7 @@ import (
 
 	"go.temporal.io/sdk/workflow"
 )
+
 // @@@SNIPSTART samples-go-branch-workflow-definition
 // SampleBranchWorkflow is a Temporal Workflow Definition
 // This Workflow Definition shows how to call multiple Activities in parallel.
@@ -41,4 +42,5 @@ func SampleBranchWorkflow(ctx workflow.Context, totalBranches int) (result []str
 	logger.Info("SampleBranchWorkflow end")
 	return
 }
+
 // @@@SNIPEND

@@ -7,6 +7,7 @@ import (
 
 	"go.temporal.io/sdk/client"
 )
+
 // @@@SNIPSTART samples-go-cancellation-cancel-workflow-execution-trigger
 func main() {
 	var workflowID string
@@ -33,4 +34,5 @@ func main() {
 	}
 	log.Println("Workflow Execution cancelled", "WorkflowID", workflowID)
 }
+
 // @@@SNIPEND

@@ -9,6 +9,7 @@ import (
 
 	"github.com/temporalio/samples-go/cancellation"
 )
+
 // @@@SNIPSTART samples-go-cancellation-workflow-execution-starter
 func main() {
 	var workflowID string
@@ -35,4 +36,5 @@ func main() {
 	}
 	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 }
+
 // @@@SNIPEND

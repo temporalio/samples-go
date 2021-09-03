@@ -6,8 +6,9 @@ import (
 
 	"go.temporal.io/sdk/activity"
 )
+
 // @@@SNIPSTART samples-go-cancellation-activity-definition
-type Activities struct {}
+type Activities struct{}
 
 func (a *Activities) ActivityToBeCanceled(ctx context.Context) (string, error) {
 	logger := activity.GetLogger(ctx)
@@ -36,4 +37,5 @@ func (a *Activities) ActivityToBeSkipped(ctx context.Context) error {
 	logger.Info("this Activity will be skipped due to cancellation")
 	return nil
 }
+
 // @@@SNIPEND

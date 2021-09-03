@@ -6,6 +6,7 @@ import (
 
 	"go.temporal.io/sdk/workflow"
 )
+
 // @@@SNIPSTART samples-go-cancellation-workflow-definition
 // YourWorkflow is a Workflow Definition that shows how it can be canceled.
 func YourWorkflow(ctx workflow.Context) error {

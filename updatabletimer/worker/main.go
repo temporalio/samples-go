@@ -1,15 +1,13 @@
 package main
 
 import (
+	"github.com/temporalio/samples-go/updatabletimer"
 	"log"
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
-
-	cw "github.com/temporalio/samples-go/child-workflow-continue-as-new"
 )
 
-// @@@SNIPSTART samples-go-cw-cas-worker-starter
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.NewClient(client.Options{
@@ -20,15 +18,12 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "child-workflow-continue-as-new", worker.Options{})
+	w := worker.New(c, updatabletimer.TaskQueue, worker.Options{})
 
-	w.RegisterWorkflow(cw.SampleParentWorkflow)
-	w.RegisterWorkflow(cw.SampleChildWorkflow)
+	w.RegisterWorkflow(updatabletimer.Workflow)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
 		log.Fatalln("Unable to start worker", err)
 	}
 }
-
-// @@@SNIPEND

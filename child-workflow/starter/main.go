@@ -9,6 +9,7 @@ import (
 
 	child_workflow "github.com/temporalio/samples-go/child-workflow"
 )
+
 // @@@SNIPSTART samples-go-child-workflow-example-execution-starter
 func main() {
 	// The client is a heavyweight object that should be created only once per process.
@@ -45,4 +46,5 @@ func main() {
 	}
 	log.Println("Workflow result: %v", "result", result)
 }
+
 // @@@SNIPEND

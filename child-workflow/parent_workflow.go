@@ -3,6 +3,7 @@ package child_workflow
 import (
 	"go.temporal.io/sdk/workflow"
 )
+
 // @@@SNIPSTART samples-go-child-workflow-example-parent-workflow-definition
 // SampleParentWorkflow is a Workflow Definition
 // This Workflow Definition demonstrates how to start a Child Workflow Execution from a Parent Workflow Execution.
@@ -26,4 +27,5 @@ func SampleParentWorkflow(ctx workflow.Context) (string, error) {
 	logger.Info("Parent execution completed.", "Result", result)
 	return result, nil
 }
+
 // @@@SNIPEND
