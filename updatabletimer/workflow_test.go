@@ -27,7 +27,7 @@ func (s *UnitTestSuite) Test_Sleep() {
 		var queryResult time.Time
 		err = value.Get(&queryResult)
 		s.NoError(err)
-		s.Equal(wakeUpTime, queryResult)
+		s.True(wakeUpTime.Equal(queryResult))
 	}, time.Minute*10)
 	env.ExecuteWorkflow(Workflow, wakeUpTime)
 
@@ -54,7 +54,7 @@ func (s *UnitTestSuite) Test_UpdateWakeUpTime() {
 		var queryResult time.Time
 		err = value.Get(&queryResult)
 		s.NoError(err)
-		s.Equal(updatedWakeUpTime1, queryResult)
+		s.True(updatedWakeUpTime1.Equal(queryResult))
 	}, time.Minute*11)
 
 	// Update wake-up time again
