@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/converter"
+	"go.temporal.io/sdk/interceptors"
 	"go.temporal.io/sdk/workflow"
 
 	"github.com/temporalio/samples-go/cryptconverter"
@@ -16,10 +16,13 @@ func main() {
 	c, err := client.NewClient(client.Options{
 		// Set DataConverter here to ensure that workflow inputs and results are
 		// encrypted/decrypted as required.
-		DataConverter: cryptconverter.NewCryptDataConverter(
-			converter.GetDefaultDataConverter(),
-		),
+		// DataConverter: cryptconverter.NewCryptDataConverter(
+		// 	converter.GetDefaultDataConverter(),
+		// ),
 		ContextPropagators: []workflow.ContextPropagator{cryptconverter.NewContextPropagator()},
+		ServiceInterceptors: []interceptors.ServiceInterceptor{
+			cryptconverter.NewCryptInputResultsInterceptor(),
+		},
 	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
@@ -32,7 +35,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, cryptconverter.PropagateKey, cryptconverter.CryptContext{KeyId: "test"})
+	ctx = cryptconverter.WithCryptKeyId(ctx, "test")
 
 	// The workflow input "My Secret Friend" will be encrypted by the DataConverter before being sent to Temporal
 	we, err := c.ExecuteWorkflow(

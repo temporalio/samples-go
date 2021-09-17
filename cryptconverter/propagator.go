@@ -10,19 +10,13 @@ import (
 type (
 	// contextKey is an unexported type used as key for items stored in the
 	// Context object
-	contextKey struct{}
+	contextKeyType struct{}
 
 	// propagator implements the custom context propagator
 	propagator struct{}
-
-	// CryptConfig is a struct holding values
-	CryptContext struct {
-		KeyId string `json:"keyId"`
-	}
 )
 
-// PropagateKey is the key used to store the value in the Context object
-var PropagateKey = contextKey{}
+var contextKey = contextKeyType{}
 
 // propagationKey is the key used by the propagator to pass values through the
 // Temporal server headers
@@ -34,9 +28,22 @@ func NewContextPropagator() workflow.ContextPropagator {
 	return &propagator{}
 }
 
+func WithCryptKeyId(ctx context.Context, keyId string) context.Context {
+	return context.WithValue(ctx, contextKey, keyId)
+}
+
+func GetCryptKeyId(ctx context.Context) string {
+	value := ctx.Value(contextKey)
+	if keyId, ok := value.(string); ok {
+		return keyId
+	}
+
+	return ""
+}
+
 // Inject injects values from context into headers for propagation
 func (s *propagator) Inject(ctx context.Context, writer workflow.HeaderWriter) error {
-	value := ctx.Value(PropagateKey)
+	value := ctx.Value(contextKey)
 	payload, err := converter.GetDefaultDataConverter().ToPayload(value)
 	if err != nil {
 		return err
@@ -47,7 +54,7 @@ func (s *propagator) Inject(ctx context.Context, writer workflow.HeaderWriter) e
 
 // InjectFromWorkflow injects values from context into headers for propagation
 func (s *propagator) InjectFromWorkflow(ctx workflow.Context, writer workflow.HeaderWriter) error {
-	value := ctx.Value(PropagateKey)
+	value := ctx.Value(contextKey)
 	payload, err := converter.GetDefaultDataConverter().ToPayload(value)
 	if err != nil {
 		return err
@@ -59,11 +66,11 @@ func (s *propagator) InjectFromWorkflow(ctx workflow.Context, writer workflow.He
 // Extract extracts values from headers and puts them into context
 func (s *propagator) Extract(ctx context.Context, reader workflow.HeaderReader) (context.Context, error) {
 	if value, ok := reader.Get(propagationKey); ok {
-		var cryptContext CryptContext
-		if err := converter.GetDefaultDataConverter().FromPayload(value, &cryptContext); err != nil {
+		var keyId string
+		if err := converter.GetDefaultDataConverter().FromPayload(value, &keyId); err != nil {
 			return ctx, nil
 		}
-		ctx = context.WithValue(ctx, PropagateKey, cryptContext)
+		ctx = context.WithValue(ctx, contextKey, keyId)
 	}
 
 	return ctx, nil
@@ -72,11 +79,11 @@ func (s *propagator) Extract(ctx context.Context, reader workflow.HeaderReader) 
 // ExtractToWorkflow extracts values from headers and puts them into context
 func (s *propagator) ExtractToWorkflow(ctx workflow.Context, reader workflow.HeaderReader) (workflow.Context, error) {
 	if value, ok := reader.Get(propagationKey); ok {
-		var cryptContext CryptContext
-		if err := converter.GetDefaultDataConverter().FromPayload(value, &cryptContext); err != nil {
+		var keyId string
+		if err := converter.GetDefaultDataConverter().FromPayload(value, &keyId); err != nil {
 			return ctx, nil
 		}
-		ctx = workflow.WithValue(ctx, PropagateKey, cryptContext)
+		ctx = workflow.WithValue(ctx, contextKey, keyId)
 	}
 
 	return ctx, nil

@@ -1,5 +1,7 @@
 module github.com/temporalio/samples-go
 
+replace go.temporal.io/sdk => /Users/rob/Code/github.com/robholland/sdk-go
+
 go 1.16
 
 require (
@@ -13,7 +15,7 @@ require (
 	github.com/uber-go/tally v3.3.17+incompatible
 	github.com/uber/jaeger-client-go v2.25.0+incompatible
 	github.com/uber/jaeger-lib v2.4.0+incompatible // indirect
-	go.temporal.io/api v1.4.1-0.20210429213054-a9a257b5cf16
+	go.temporal.io/api v1.4.1-0.20210827235039-3bd3d8a6fb20
 	go.temporal.io/sdk v1.9.0
 	go.temporal.io/server v1.9.1-0.20210513111455-82b05a2018e7
 	go.uber.org/zap v1.16.0
