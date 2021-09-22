@@ -3,7 +3,7 @@ package cancellation
 import (
 	"fmt"
 	"time"
-
+	"errors"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -20,6 +20,11 @@ func YourWorkflow(ctx workflow.Context) error {
 	logger.Info("cancel workflow started")
 	var a *Activities // Used to call Activities by function pointer
 	defer func() {
+		
+		if !errors.Is(ctx.Err(), workflow.ErrCanceled) {
+			return
+		}
+		
 		// When the Workflow is canceled, it has to get a new disconnected context to execute any Activities
 		newCtx, _ := workflow.NewDisconnectedContext(ctx)
 		err := workflow.ExecuteActivity(newCtx, a.CleanupActivity).Get(ctx, nil)
