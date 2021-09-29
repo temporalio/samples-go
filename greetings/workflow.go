@@ -35,6 +35,8 @@ func GreetingSample(ctx workflow.Context) (string, error) {
 		return "", err
 	}
 
+	
+	// @@@SNIPSTART samples-go-dependency-sharing-workflow
 	// Say Greeting.
 	var sayResult string
 	err = workflow.ExecuteActivity(ctx, a.SayGreeting, greetResult, nameResult).Get(ctx, &sayResult)
@@ -42,6 +44,7 @@ func GreetingSample(ctx workflow.Context) (string, error) {
 		logger.Error("Marshalling failed with error.", "Error", err)
 		return "", err
 	}
+	// @@@SNIPEND
 
 	logger.Info("GreetingSample completed.", "Result", sayResult)
 	return sayResult, nil
