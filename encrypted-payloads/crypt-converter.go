@@ -131,12 +131,7 @@ func (dc *CryptDataConverter) ToPayloads(values ...interface{}) (*commonpb.Paylo
 			return nil, fmt.Errorf("values[%d]: %w", i, err)
 		}
 
-		encryptedPayload, err := dc.encryptPayload(payload, dc.getKey())
-		if err != nil {
-			return nil, fmt.Errorf("values[%d]: %w", i, err)
-		}
-
-		payloads.Payloads = append(payloads.Payloads, encryptedPayload)
+		payloads.Payloads = append(payloads.Payloads, payload)
 	}
 
 	return payloads, nil
@@ -144,7 +139,12 @@ func (dc *CryptDataConverter) ToPayloads(values ...interface{}) (*commonpb.Paylo
 
 // ToPayload converts single value to payload.
 func (dc *CryptDataConverter) ToPayload(value interface{}) (*commonpb.Payload, error) {
-	return dc.dataConverter.ToPayload(value)
+	payload, err := dc.dataConverter.ToPayload(value)
+	if err != nil {
+		return nil, err
+	}
+
+	return dc.encryptPayload(payload, dc.getKey())
 }
 
 // FromPayloads converts to a list of values of different types.
@@ -154,16 +154,7 @@ func (dc *CryptDataConverter) FromPayloads(payloads *commonpb.Payloads, valuePtr
 			break
 		}
 
-		var err error
-
-		if isEncryptedPayload(payload) {
-			payload, err = dc.decryptPayload(payload)
-			if err != nil {
-				return fmt.Errorf("args[%d]: %w", i, err)
-			}
-		}
-
-		err = dc.dataConverter.FromPayload(payload, valuePtrs[i])
+		err := dc.FromPayload(payload, valuePtrs[i])
 		if err != nil {
 			return fmt.Errorf("args[%d]: %w", i, err)
 		}
@@ -174,7 +165,16 @@ func (dc *CryptDataConverter) FromPayloads(payloads *commonpb.Payloads, valuePtr
 
 // FromPayload converts single value from payload.
 func (dc *CryptDataConverter) FromPayload(payload *commonpb.Payload, valuePtr interface{}) error {
-	return dc.dataConverter.FromPayload(payload, valuePtr)
+	if !isEncryptedPayload(payload) {
+		return dc.dataConverter.FromPayload(payload, valuePtr)
+	}
+
+	decryptedPayload, err := dc.decryptPayload(payload)
+	if err != nil {
+		return err
+	}
+
+	return dc.dataConverter.FromPayload(decryptedPayload, valuePtr)
 }
 
 // ToStrings converts payloads object into human readable strings.
