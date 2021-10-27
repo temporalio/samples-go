@@ -2,19 +2,21 @@ package greetings
 
 import "fmt"
 
+// @@@SNIPSTART samples-go-dependency-sharing-activities
 type Activities struct {
 	Name     string
 	Greeting string
 }
 
-// GetName Activity.
-func (a *Activities) GetName() (string, error) {
-	return a.Name, nil
-}
-
 // GetGreeting Activity.
 func (a *Activities) GetGreeting() (string, error) {
 	return a.Greeting, nil
+}
+// @@@SNIPEND
+
+// GetName Activity.
+func (a *Activities) GetName() (string, error) {
+	return a.Name, nil
 }
 
 // SayGreeting Activity.

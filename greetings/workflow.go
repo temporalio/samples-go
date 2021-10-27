@@ -18,7 +18,8 @@ func GreetingSample(ctx workflow.Context) (string, error) {
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	var a *Activities
+	// @@@SNIPSTART samples-go-dependency-sharing-workflow
+	var a *Activities // use a nil struct pointer to call activities that are part of a structure
 
 	var greetResult string
 	err := workflow.ExecuteActivity(ctx, a.GetGreeting).Get(ctx, &greetResult)
@@ -26,6 +27,7 @@ func GreetingSample(ctx workflow.Context) (string, error) {
 		logger.Error("Get greeting failed.", "Error", err)
 		return "", err
 	}
+	// @@@SNIPEND
 
 	// Get Name.
 	var nameResult string
@@ -35,6 +37,7 @@ func GreetingSample(ctx workflow.Context) (string, error) {
 		return "", err
 	}
 
+	
 	// Say Greeting.
 	var sayResult string
 	err = workflow.ExecuteActivity(ctx, a.SayGreeting, greetResult, nameResult).Get(ctx, &sayResult)
