@@ -4,9 +4,9 @@ import (
 	"log"
 	"time"
 
-	prom "github.com/m3db/prometheus_client_golang/prometheus"
-	"github.com/uber-go/tally"
-	"github.com/uber-go/tally/prometheus"
+	prom "github.com/prometheus/client_golang/prometheus"
+	"github.com/uber-go/tally/v4"
+	"github.com/uber-go/tally/v4/prometheus"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
