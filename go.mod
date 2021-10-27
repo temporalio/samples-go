@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/golang/mock v1.6.0
+	github.com/golang/snappy v0.0.4
 	github.com/hashicorp/go-plugin v1.4.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pborman/uuid v1.2.1
