@@ -25,7 +25,7 @@ func main() {
 		TaskQueue: "snappycompress",
 	}
 
-	// The workflow input "My Secret Friend" will be encrypted by the DataConverter before being sent to Temporal
+	// The workflow input "My Compressed Friend" will be compressed by the DataConverter before being sent to Temporal
 	we, err := c.ExecuteWorkflow(
 		context.Background(),
 		workflowOptions,

@@ -12,7 +12,7 @@ go run worker/main.go
 ```
 go run starter/main.go
 ```
-5) Run the following command and see the encrypted payloads
+5) Run the following command and see the compressed payloads
 ```
 export PATH="../bin:$PATH" TEMPORAL_CLI_PLUGIN_DATA_CONVERTER=snappycompress-plugin
 tctl workflow show --wid snappycompress_workflowID

@@ -18,7 +18,7 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	logger := workflow.GetLogger(ctx)
-	logger.Info("Encrypted Payloads workflow started", "name", name)
+	logger.Info("Compressed Payloads workflow started", "name", name)
 
 	info := map[string]string{
 		"name": name,
@@ -31,7 +31,7 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 		return "", err
 	}
 
-	logger.Info("Encrypted Payloads workflow completed.", "result", result)
+	logger.Info("Compressed Payloads workflow completed.", "result", result)
 
 	return result, nil
 }

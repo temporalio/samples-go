@@ -32,13 +32,13 @@ func Test_DataConverter(t *testing.T) {
 	defaultPayloads, err := defConv.ToPayloads("Testing")
 	require.NoError(t, err)
 
-	encryptedPayloads, err := snappyConv.ToPayloads("Testing")
+	compressedPayloads, err := snappyConv.ToPayloads("Testing")
 	require.NoError(t, err)
 
-	require.NotEqual(t, defaultPayloads.Payloads[0].GetData(), encryptedPayloads.Payloads[0].GetData())
+	require.NotEqual(t, defaultPayloads.Payloads[0].GetData(), compressedPayloads.Payloads[0].GetData())
 
 	var result string
-	err = snappyConv.FromPayloads(encryptedPayloads, &result)
+	err = snappyConv.FromPayloads(compressedPayloads, &result)
 	require.NoError(t, err)
 
 	require.Equal(t, "Testing", result)
