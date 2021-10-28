@@ -5,9 +5,9 @@ import (
 	"log"
 
 	"go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/converter"
+	"go.temporal.io/sdk/workflow"
 
-	cryptconverter "github.com/temporalio/samples-go/encrypted-payloads"
+	"github.com/temporalio/samples-go/encryption"
 )
 
 func main() {
@@ -15,9 +15,8 @@ func main() {
 	c, err := client.NewClient(client.Options{
 		// Set DataConverter here to ensure that workflow inputs and results are
 		// encrypted/decrypted as required.
-		DataConverter: cryptconverter.NewCryptDataConverter(
-			converter.GetDefaultDataConverter(),
-		),
+		DataConverter:      encryption.CompressAndEncryptDataConverter,
+		ContextPropagators: []workflow.ContextPropagator{encryption.NewContextPropagator()},
 	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
@@ -25,12 +24,20 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "encrypted-payloads_workflowID",
-		TaskQueue: "encrypted-payloads",
+		ID:        "encryption_workflowID",
+		TaskQueue: "encryption",
 	}
 
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, encryption.PropagateKey, encryption.CryptContext{KeyId: "test"})
+
 	// The workflow input "My Secret Friend" will be encrypted by the DataConverter before being sent to Temporal
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, cryptconverter.Workflow, "My Secret Friend")
+	we, err := c.ExecuteWorkflow(
+		ctx,
+		workflowOptions,
+		encryption.Workflow,
+		"My Secret Friend",
+	)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
