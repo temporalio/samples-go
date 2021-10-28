@@ -12,7 +12,7 @@ func Test_DataConverter(t *testing.T) {
 	defaultDc := converter.GetDefaultDataConverter()
 
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, PropagateKey, CryptContext{KeyId: "test"})
+	ctx = context.WithValue(ctx, PropagateKey, CryptContext{KeyID: "test"})
 
 	cryptDc := NewEncryptionDataConverter(
 		converter.GetDefaultDataConverter(),

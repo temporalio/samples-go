@@ -55,7 +55,7 @@ func (dc *DataConverter) WithWorkflowContext(ctx workflow.Context) converter.Dat
 		}
 
 		options := dc.options
-		options.KeyID = val.KeyId
+		options.KeyID = val.KeyID
 
 		return NewEncryptionDataConverter(parent, options)
 	}
@@ -72,7 +72,7 @@ func (dc *DataConverter) WithContext(ctx context.Context) converter.DataConverte
 		}
 
 		options := dc.options
-		options.KeyID = val.KeyId
+		options.KeyID = val.KeyID
 
 		return NewEncryptionDataConverter(parent, options)
 	}
@@ -80,7 +80,7 @@ func (dc *DataConverter) WithContext(ctx context.Context) converter.DataConverte
 	return dc
 }
 
-func (e *Encoder) getKey(keyId string) (key []byte) {
+func (e *Encoder) getKey(keyID string) (key []byte) {
 	// Key must be fetched from secure storage in production (such as a KMS).
 	// For testing here we just hard code a key.
 	return []byte("test-key-test-key-test-key-test!")

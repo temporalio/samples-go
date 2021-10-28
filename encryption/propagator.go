@@ -17,7 +17,7 @@ type (
 
 	// CryptConfig is a struct holding values
 	CryptContext struct {
-		KeyId string `json:"keyId"`
+		KeyID string `json:"keyId"`
 	}
 )
 

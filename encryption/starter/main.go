@@ -29,7 +29,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, encryption.PropagateKey, encryption.CryptContext{KeyId: "test"})
+	ctx = context.WithValue(ctx, encryption.PropagateKey, encryption.CryptContext{KeyID: "test"})
 
 	// The workflow input "My Secret Friend" will be encrypted by the DataConverter before being sent to Temporal
 	we, err := c.ExecuteWorkflow(
