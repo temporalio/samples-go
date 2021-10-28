@@ -1,4 +1,4 @@
-package cryptconverter
+package encryption
 
 import (
 	"context"
@@ -17,7 +17,7 @@ type (
 
 	// CryptConfig is a struct holding values
 	CryptContext struct {
-		KeyId string `json:"keyId"`
+		KeyID string `json:"keyId"`
 	}
 )
 
@@ -26,7 +26,7 @@ var PropagateKey = contextKey{}
 
 // propagationKey is the key used by the propagator to pass values through the
 // Temporal server headers
-const propagationKey = "crypt-converter"
+const propagationKey = "encryption"
 
 // NewContextPropagator returns a context propagator that propagates a set of
 // string key-value pairs across a workflow

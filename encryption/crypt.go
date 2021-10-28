@@ -1,4 +1,4 @@
-package cryptconverter
+package encryption
 
 import (
 	"crypto/aes"

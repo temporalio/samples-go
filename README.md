@@ -43,9 +43,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Cron Workflow**](https://github.com/temporalio/samples-go/tree/master/cron): Demonstrates a recurring Workflow Execution that occurs according to a cron schedule. This samples showcases the `HasLastCompletionResult` and `GetLastCompletionResult` APIs which are used to pass information between executions. Additional documentation: [How to use the distributed cron feature](https://docs.temporal.io/docs/go/distributed-cron/).
 
-- [**Encrypted Payloads**](https://github.com/temporalio/samples-go/tree/master/encrypted-payloads): How to customize encryption/decryption of Workflow data with the DataConverter API. [Docs](https://docs.temporal.io/docs/go/workflows/#custom-serialization-and-workflow-security).
-
-- [**Crypt Converter**](https://github.com/temporalio/samples-go/tree/master/cryptconverter): Advanced, newer example.
+- [**Encryption**](https://github.com/temporalio/samples-go/tree/master/encryption): How to use encryption for Workflow/Activity data with the DataConverter API. Also includes an example of stacking encoders (in this case encryption and compression). [Docs](https://docs.temporal.io/docs/go/workflows/#custom-serialization-and-workflow-security).
 
 - [**Query Example**](https://github.com/temporalio/samples-go/tree/master/query): Demonstrates how to Query the state of a single Workflow Execution using the `QueryWorkflow` and `SetQueryHandler` APIs. Additional documentation: [How to Query a Workflow Execution in Go](https://docs.temporal.io/docs/go/queries).
 
