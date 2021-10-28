@@ -91,6 +91,9 @@ func NewEncryptionDataConverter(dataConverter converter.DataConverter, options E
 	encoders := []converter.PayloadEncoder{
 		&Encoder{KeyID: options.KeyID},
 	}
+	// Enable compression if requested.
+	// Note that this must be done before encryption to provide any value. Encrypted data should by design not compress very well.
+	// This means the compression encoder must come after the encryption encoder here as encoders are applied last -> first.
 	if options.Compress {
 		encoders = append(encoders, converter.NewZlibEncoder(converter.ZlibEncoderOptions{AlwaysEncode: true}))
 	}
