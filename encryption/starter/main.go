@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/workflow"
 
 	"github.com/temporalio/samples-go/encryption"
@@ -13,9 +14,32 @@ import (
 func main() {
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
-		// Set DataConverter here to ensure that workflow inputs and results are
+		// If you intend to use the same encryption key for all workflows you can
+		// set the KeyID for the encryption encoder like so:
+		//
+		// Set DataConverter to ensure that workflow inputs and results are
 		// encrypted/decrypted as required.
-		DataConverter:      encryption.CompressAndEncryptDataConverter,
+		//
+		//   DataConverter: encryption.NewEncryptionDataConverter(
+		// 	  converter.GetDefaultDataConverter(),
+		// 	  encryption.DataConverterOptions{KeyID: "test", Compress: true},
+		//   ),
+		//
+		// In this case you do not need to use a ContextPropagator.
+		//
+		// If you need to vary the encryption key per workflow, you can instead
+		// leave the KeyID unset for the encoder and supply it via the workflow
+		// context as shown below. For this use case you will also need to use a
+		// ContextPropagator so that KeyID is also available in the context for activities.
+		//
+		// Set DataConverter to ensure that workflow inputs and results are
+		// encrypted/decrypted as required.
+		DataConverter: encryption.NewEncryptionDataConverter(
+			converter.GetDefaultDataConverter(),
+			encryption.DataConverterOptions{Compress: true},
+		),
+		// Use a ContextPropagator so that the KeyID value set in the workflow context is
+		// also availble in the context for activities.
 		ContextPropagators: []workflow.ContextPropagator{encryption.NewContextPropagator()},
 	})
 	if err != nil {
@@ -29,6 +53,8 @@ func main() {
 	}
 
 	ctx := context.Background()
+	// If you are using a ContextPropagator and varying keys per workflow you need to set
+	// the KeyID to use for this workflow in the context:
 	ctx = context.WithValue(ctx, encryption.PropagateKey, encryption.CryptContext{KeyID: "test"})
 
 	// The workflow input "My Secret Friend" will be encrypted by the DataConverter before being sent to Temporal

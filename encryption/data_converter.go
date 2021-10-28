@@ -18,16 +18,6 @@ const (
 	MetadataEncryptionKeyID = "encryption-key-id"
 )
 
-var CompressAndEncryptDataConverter = NewEncryptionDataConverter(
-	converter.GetDefaultDataConverter(),
-	DataConverterOptions{Compress: true},
-)
-
-var EncryptDataConverter = NewEncryptionDataConverter(
-	converter.GetDefaultDataConverter(),
-	DataConverterOptions{Compress: false},
-)
-
 type DataConverter struct {
 	// Until EncodingDataConverter supports workflow.ContextAware we'll store parent here.
 	parent converter.DataConverter
@@ -47,6 +37,7 @@ type Encoder struct {
 }
 
 // TODO: Implement workflow.ContextAware in EncodingDataConverter
+// Note that you only need to implement this function if you need to vary the encryption KeyID per workflow.
 func (dc *DataConverter) WithWorkflowContext(ctx workflow.Context) converter.DataConverter {
 	if val, ok := ctx.Value(PropagateKey).(CryptContext); ok {
 		parent := dc.parent
@@ -64,6 +55,7 @@ func (dc *DataConverter) WithWorkflowContext(ctx workflow.Context) converter.Dat
 }
 
 // TODO: Implement workflow.ContextAware in EncodingDataConverter
+// Note that you only need to implement this function if you need to vary the encryption KeyID per workflow.
 func (dc *DataConverter) WithContext(ctx context.Context) converter.DataConverter {
 	if val, ok := ctx.Value(PropagateKey).(CryptContext); ok {
 		parent := dc.parent
