@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/hashicorp/go-plugin"
+	"go.temporal.io/sdk/converter"
 	cliplugin "go.temporal.io/server/tools/cli/plugin"
 
 	"github.com/temporalio/samples-go/encryption"
@@ -10,7 +11,10 @@ import (
 func main() {
 	var pluginMap = map[string]plugin.Plugin{
 		cliplugin.DataConverterPluginType: &cliplugin.DataConverterPlugin{
-			Impl: encryption.CompressAndEncryptDataConverter,
+			Impl: encryption.NewEncryptionDataConverter(
+				converter.GetDefaultDataConverter(),
+				encryption.DataConverterOptions{Compress: true},
+			),
 		},
 	}
 

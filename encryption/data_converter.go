@@ -18,16 +18,6 @@ const (
 	MetadataEncryptionKeyID = "encryption-key-id"
 )
 
-var CompressAndEncryptDataConverter = NewEncryptionDataConverter(
-	converter.GetDefaultDataConverter(),
-	DataConverterOptions{Compress: true},
-)
-
-var EncryptDataConverter = NewEncryptionDataConverter(
-	converter.GetDefaultDataConverter(),
-	DataConverterOptions{Compress: false},
-)
-
 type DataConverter struct {
 	// Until EncodingDataConverter supports workflow.ContextAware we'll store parent here.
 	parent converter.DataConverter
