@@ -15,22 +15,23 @@ func main() {
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		// If you intend to use the same encryption key for all workflows you can
-		// pass the KeyID to the encryption encoder like so:
-
+		// set the KeyID for the encryption encoder like so:
+		//
 		// Set DataConverter to ensure that workflow inputs and results are
 		// encrypted/decrypted as required.
-		// DataConverter: encryption.NewEncryptionDataConverter(
-		// 	converter.GetDefaultDataConverter(),
-		// 	encryption.DataConverterOptions{KeyID: "test", Compress: true},
-		// ),
-
+		//
+		//   DataConverter: encryption.NewEncryptionDataConverter(
+		// 	  converter.GetDefaultDataConverter(),
+		// 	  encryption.DataConverterOptions{KeyID: "test", Compress: true},
+		//   ),
+		//
 		// In this case you do not need to use a ContextPropagator.
-
+		//
 		// If you need to vary the encryption key per workflow, you can instead
 		// leave the KeyID unset for the encoder and supply it via the workflow
 		// context as shown below. For this use case you will also need to use a
 		// ContextPropagator so that KeyID is also available in the context for activities.
-
+		//
 		// Set DataConverter to ensure that workflow inputs and results are
 		// encrypted/decrypted as required.
 		DataConverter: encryption.NewEncryptionDataConverter(
@@ -52,8 +53,8 @@ func main() {
 	}
 
 	ctx := context.Background()
-	// Set the KeyID to use for this workflow. If you use the same KeyID for all workflows as described above
-	// you do not need to do this.
+	// If you are using a ContextPropagator and varying keys per workflow you need to set
+	// the KeyID to use for this workflow in the context:
 	ctx = context.WithValue(ctx, encryption.PropagateKey, encryption.CryptContext{KeyID: "test"})
 
 	// The workflow input "My Secret Friend" will be encrypted by the DataConverter before being sent to Temporal
