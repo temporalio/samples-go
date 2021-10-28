@@ -16,7 +16,7 @@ func Test_DataConverter(t *testing.T) {
 
 	cryptDc := NewEncryptionDataConverter(
 		converter.GetDefaultDataConverter(),
-		EncryptionDataConverterOptions{},
+		DataConverterOptions{},
 	)
 	cryptDcWc := cryptDc.WithContext(ctx)
 
