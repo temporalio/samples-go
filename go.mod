@@ -18,3 +18,5 @@ require (
 	go.uber.org/zap v1.16.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
+
+replace go.temporal.io/sdk => github.com/cretz/sdk-go v1.10.1-0.20211101154820-9f4c463da3ae
