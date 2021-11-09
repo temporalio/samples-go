@@ -1,0 +1,34 @@
+# this is just a config file for gitpod. Try it out at https://gitpod.io/#https://github.com/temporalio/samples-typescript/
+ports:
+  - port: 5432
+  - port: 7233
+  - port: 8088
+  - port: 9200
+tasks:
+  - name: Run Hello World Worker
+    init: |
+      cd helloworld
+      gp open README.md
+    command: |
+      gp sync-await server-up
+      go run /worker/main.go
+  - name: Run Hello World Workflow
+    init: cd helloworld
+    command: |
+      until go run /starter/main.go h; do sleep 5; done; clear; # retry until it works
+      sleep 10 # random buffer just to make really sure temporal is live
+      gp sync-done server-up
+      gp await-port 8088 # temporal web
+      gp preview http://localhost:8088 # reload Temporal Web to show new workflow
+    openMode: split-right
+ - name: Temporalite 
+   init: go install github.com/DataDog/temporalite/cmd/temporalite@latest
+   command: temporalite start --namespace default -f my-test.db
+  - name: Temporal Web/tctl
+    command: |
+      docker run -p 8088:8088 -e TEMPORAL_GRPC_ENDPOINT=host.docker.internal:7233 temporalio/web:1.12.0
+    openMode: split-right
+
+
+#       alias tctl="docker exec temporal-admin-tools tctl"
+#       echo "tctl configured! try typing tctl -v" # can't run tctl directly from gitpod.yml
