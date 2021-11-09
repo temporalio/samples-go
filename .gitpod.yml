@@ -11,11 +11,11 @@ tasks:
       gp open README.md
     command: |
       gp sync-await server-up
-      go run /worker/main.go
+      go run worker/main.go
   - name: Run Hello World Workflow
     init: cd helloworld
     command: |
-      until go run /starter/main.go h; do sleep 5; done; clear; # retry until it works
+      until go run starter/main.go h; do sleep 5; done; clear; # retry until it works
       sleep 10 # random buffer just to make really sure temporal is live
       gp sync-done server-up
       gp await-port 8088 # temporal web
