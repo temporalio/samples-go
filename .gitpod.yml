@@ -1,4 +1,4 @@
-# this is just a config file for gitpod. Try it out at https://gitpod.io/#https://github.com/temporalio/samples-typescript/
+# this is a config file for gitpod. Try it out at https://gitpod.io/#https://github.com/temporalio/samples-go/
 ports:
   - port: 5432
   - port: 7233
