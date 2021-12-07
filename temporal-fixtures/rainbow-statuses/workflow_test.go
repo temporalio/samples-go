@@ -36,3 +36,12 @@ func (s *UnitTestSuite) Test_RainbowStatusesWorkflow() {
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())
 }
+
+func (s *UnitTestSuite) TestReplayWorkflowHistoryFromFile() {
+	replayer := worker.NewWorkflowReplayer()
+
+	replayer.RegisterWorkflow(RainbowStatusesWorkflow)
+
+	err := replayer.ReplayWorkflowHistoryFromJSONFile(nil, "rainbowstatusesworkflow.json")
+	s.NoError(err)
+}

@@ -5,6 +5,7 @@ import (
 
 	"go.temporal.io/sdk/workflow"
 )
+
 // @@@SNIPSTART samples-go-cw-cas-parent-workflow-definition
 // SampleParentWorkflow is a Workflow Definition
 func SampleParentWorkflow(ctx workflow.Context) error {
@@ -28,4 +29,5 @@ func SampleParentWorkflow(ctx workflow.Context) error {
 	logger.Info("Parent execution completed.", "Result", result)
 	return nil
 }
+
 // @@@SNIPEND

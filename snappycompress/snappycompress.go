@@ -1,4 +1,4 @@
-package cryptconverter
+package snappycompress
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 
 // Workflow is a standard workflow definition.
 // Note that the Workflow and Activity don't need to care that
-// their inputs/results are being encrypted/decrypted.
+// their inputs/results are being compressed.
 func Workflow(ctx workflow.Context, name string) (string, error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
@@ -18,7 +18,7 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	logger := workflow.GetLogger(ctx)
-	logger.Info("Encrypted Payloads workflow started", "name", name)
+	logger.Info("Compressed Payloads workflow started", "name", name)
 
 	info := map[string]string{
 		"name": name,
@@ -31,7 +31,7 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 		return "", err
 	}
 
-	logger.Info("Encrypted Payloads workflow completed.", "result", result)
+	logger.Info("Compressed Payloads workflow completed.", "result", result)
 
 	return result, nil
 }

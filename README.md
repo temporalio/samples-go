@@ -29,7 +29,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 ### API demonstrations
 
-- **Async activity completion**: Example of an [Expense reporting](https://github.com/temporalio/samples-go/tree/master/expense) Workflow that communicates with a server API. Additional documentation: [How to complete an Activity Execution asynchronously in Go](https://docs.temporal.io/docs/go/activities#asynchronous-activity-completion)
+- **Async activity completion**: Example of an [Expense reporting](https://github.com/temporalio/samples-go/tree/master/expense) Workflow that communicates with a server API. Additional documentation: [How to complete an Activity Execution asynchronously in Go](https://docs.temporal.io/docs/go/activities/#asynchronous-activity-completion)
 
 - [**Retry Activity Execution**](https://github.com/temporalio/samples-go/tree/master/retryactivity): This samples executes an unreliable Activity. The Activity is executed with a custom Retry Policy. If the Activity Execution fails, the Server will schedule a retry based on the Retry Policy. This Activity also includes a Heartbeat, which enables it to resume from the Activity Execution's last reported progress when it retries.
 
@@ -37,29 +37,33 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Child Workflow with ContinueAsNew**](https://github.com/temporalio/samples-go/tree/master/child-workflow-continue-as-new): Demonstrates that the call to Continue-As-New, by a Child Workflow Execution, is *not visible to the a parent*. The Parent Workflow Execution receives a notification only when a Child Workflow Execution completes, fails or times out. This is a useful feature when there is a need to **process a large set of data**. The child can iterate over the data set calling Continue-As-New periodically without polluting the parents' history.
 
-- [**Cancellation**](https://github.com/temporalio/samples-go/tree/master/cancelactivity): Demonstrates how to cancel a Workflow Execution by calling `CancelWorkflow`, an how to defer an Activity Execution that "cleans up" after the Workflow Execution has been cancelled.
+- [**Cancellation**](https://github.com/temporalio/samples-go/tree/master/cancellation): Demonstrates how to cancel a Workflow Execution by calling `CancelWorkflow`, an how to defer an Activity Execution that "cleans up" after the Workflow Execution has been cancelled.
 
 - **Coroutines**: Do not use native `go` routines in Workflows. Instead use Temporal coroutines (`workflow.Go()`) to maintain a [deterministic](https://docs.temporal.io/docs/go/workflows/#how-to-write-workflow-code) Workflow. Can be seen in the [Split/Merge](https://github.com/temporalio/samples-go/tree/master/splitmerge), [DSL](https://github.com/temporalio/samples-go/tree/master/dsl), [Recovery](https://github.com/temporalio/samples-go/tree/master/recovery), [PSO](https://github.com/temporalio/samples-go/tree/master/pso), and [Parallel](https://github.com/temporalio/samples-go/tree/master/parallel) Workflow examples.
 
-- [**Cron Workflow**](https://github.com/temporalio/samples-go/tree/master/cron): Demonstrates a recurring Workflow Execution that occurs according to a cron schedule. This samples showcases the `HasLastCompletionResult` and `GetLastCompletionResult` APIs which are used to pass information between executions. Additional documentation: [How to use the distributed cron feature](https://docs.temporal.io/docs/go/distributed-cron/).
+- [**Cron Workflow**](https://github.com/temporalio/samples-go/tree/master/cron): Demonstrates a recurring Workflow Execution that occurs according to a cron schedule. This samples showcases the `HasLastCompletionResult` and `GetLastCompletionResult` APIs which are used to pass information between executions. Additional documentation: [What is a Temporal Cron Job?](https://docs.temporal.io/docs/content/what-is-a-temporal-cron-job).
 
-- [**Encrypted Payloads**](https://github.com/temporalio/samples-go/tree/master/encrypted-payloads): How to customize encryption/decryption of Workflow data with the DataConverter API. [Docs](https://docs.temporal.io/docs/go/workflows/#custom-serialization-and-workflow-security).
-
-- [**Crypt Converter**](https://github.com/temporalio/samples-go/tree/master/cryptconverter): Advanced, newer example.
+- [**Encryption**](https://github.com/temporalio/samples-go/tree/master/encryption): How to use encryption for Workflow/Activity data with the DataConverter API. Also includes an example of stacking encoders (in this case encryption and compression). [Docs](https://docs.temporal.io/docs/go/workflows/#custom-serialization-and-workflow-security).
 
 - [**Query Example**](https://github.com/temporalio/samples-go/tree/master/query): Demonstrates how to Query the state of a single Workflow Execution using the `QueryWorkflow` and `SetQueryHandler` APIs. Additional documentation: [How to Query a Workflow Execution in Go](https://docs.temporal.io/docs/go/queries).
 
-- **Selectors**: Do not use the native Go `select` statment. Instead use [Go SDK Selectors](https://docs.temporal.io/docs/go/selectors) (`selector.Select(ctx)`) to maintain a [deterministic](https://docs.temporal.io/docs/go/workflows/#how-to-write-workflow-code) Workflow. Can be seen in the [Pick First](https://github.com/temporalio/samples-go/tree/master/pickfirst), [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex), [DSL](https://github.com/temporalio/samples-go/tree/master/dsl), and [Timer](https://github.com/temporalio/samples-go/tree/master/timer) examples.
+- **Selectors**: Do not use the native Go `select` statement. Instead use [Go SDK Selectors](https://docs.temporal.io/docs/go/selectors) (`selector.Select(ctx)`) to maintain a [deterministic](https://docs.temporal.io/docs/go/workflows/#how-to-write-workflow-code) Workflow. Can be seen in the [Pick First](https://github.com/temporalio/samples-go/tree/master/pickfirst), [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex), [DSL](https://github.com/temporalio/samples-go/tree/master/dsl), and [Timer](https://github.com/temporalio/samples-go/tree/master/timer) examples.
 
 - **Sessions**: Demonstrates how to bind a set of Activity Executions to a specific Worker after the first Activity executes. This feature is showcased in the [File Processing example](https://github.com/temporalio/samples-go/tree/master/fileprocessing). Addition documentation: [How to use Sessions in Go](https://docs.temporal.io/docs/go/sessions).
 
 - **Signals**: Can be seen in the [Recovery](https://github.com/temporalio/samples-go/tree/master/recovery) and [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex) examples. Additional documentation: [eCommerce application tutorial](https://docs.temporal.io/blog/tags/go-ecommerce-tutorial), [How to use Signals in Go](https://docs.temporal.io/docs/go/signals).
 
-- [**Search Attributes**](https://github.com/temporalio/samples-go/tree/master/searchattributes): Demonstrates how to use custom Search Attributes that can be used to find Workflow Executions using predicates (must use with [Elasticsearch](https://docs.temporal.io/docs/server/elasticsearch-setup)).
+- [**Search Attributes**](https://github.com/temporalio/samples-go/tree/master/searchattributes): Demonstrates how to use custom Search Attributes that can be used to find Workflow Executions using predicates (must use with [Elasticsearch](https://docs.temporal.io/docs/content/how-to-integrate-elasticsearch-into-a-temporal-cluster)).
 
 - [**Timer Futures**](https://github.com/temporalio/samples-go/tree/master/timer): The sample starts a long running order processing operation and starts a Timer (`workflow.NewTimer()`). If the processing time is too long, a notification email is "sent" to the user regarding the delay (the execution does not cancel). If the operation finishes before the Timer fires, then the Timer is cancelled.
 
 - [**Tracing and Context Propagation**](https://github.com/temporalio/samples-go/tree/master/ctxpropagation): Demonstrates  the client initialization with a context propagator, which propagates specific information in the `context.Context` object across the Workflow Execution. The `context.Context` object is populated with information prior to calling `StartWorkflow`. This example demonstrates that the information is available in the Workflow Execution and Activity Executions. Additional documentation: [How to use tracing in Go](https://docs.temporal.io/docs/go/tracing/).
+
+- [**Updatable Timer**](https://github.com/temporalio/samples-go/tree/master/updatabletimer): Demonstrates timer cancellation and use of a Selector to wait on a Future and a Channel simultaneously.
+
+- [**Greetings**](https://github.com/temporalio/samples-go/tree/master/greetings): Demonstrates how to pass dependencies to activities defined as struct methods.
+-
+- [**Greetings Local**](https://github.com/temporalio/samples-go/tree/master/greetingslocal): Demonstrates how to pass dependencies to local activities defined as struct methods.
 
 ### Dynamic Workflow logic examples
 

@@ -1,7 +1,6 @@
-package cryptconverter
+package snappycompress
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
@@ -27,26 +26,19 @@ func Test_Workflow(t *testing.T) {
 }
 
 func Test_DataConverter(t *testing.T) {
-	defaultDc := converter.GetDefaultDataConverter()
+	defConv := converter.GetDefaultDataConverter()
+	snappyConv := AlwaysCompressDataConverter
 
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, PropagateKey, CryptContext{KeyId: "test"})
-
-	cryptDc := NewCryptDataConverter(
-		converter.GetDefaultDataConverter(),
-	)
-	cryptDcWc := cryptDc.WithContext(ctx)
-
-	defaultPayloads, err := defaultDc.ToPayloads("Testing")
+	defaultPayloads, err := defConv.ToPayloads("Testing")
 	require.NoError(t, err)
 
-	encryptedPayloads, err := cryptDcWc.ToPayloads("Testing")
+	compressedPayloads, err := snappyConv.ToPayloads("Testing")
 	require.NoError(t, err)
 
-	require.NotEqual(t, defaultPayloads.Payloads[0].GetData(), encryptedPayloads.Payloads[0].GetData())
+	require.NotEqual(t, defaultPayloads.Payloads[0].GetData(), compressedPayloads.Payloads[0].GetData())
 
 	var result string
-	err = cryptDc.FromPayloads(encryptedPayloads, &result)
+	err = snappyConv.FromPayloads(compressedPayloads, &result)
 	require.NoError(t, err)
 
 	require.Equal(t, "Testing", result)

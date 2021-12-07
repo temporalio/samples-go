@@ -2,17 +2,14 @@ package main
 
 import (
 	"github.com/hashicorp/go-plugin"
-	"github.com/temporalio/samples-go/cryptconverter"
-	"go.temporal.io/sdk/converter"
+	"github.com/temporalio/samples-go/snappycompress"
 	cliplugin "go.temporal.io/server/tools/cli/plugin"
 )
 
 func main() {
 	var pluginMap = map[string]plugin.Plugin{
 		cliplugin.DataConverterPluginType: &cliplugin.DataConverterPlugin{
-			Impl: cryptconverter.NewCryptDataConverter(
-				converter.GetDefaultDataConverter(),
-			),
+			Impl: snappycompress.AlwaysCompressDataConverter,
 		},
 	}
 

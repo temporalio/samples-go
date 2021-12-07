@@ -4,20 +4,16 @@ import (
 	"context"
 	"log"
 
+	"github.com/temporalio/samples-go/snappycompress"
 	"go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/converter"
-
-	cryptconverter "github.com/temporalio/samples-go/encrypted-payloads"
 )
 
 func main() {
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		// Set DataConverter here to ensure that workflow inputs and results are
-		// encrypted/decrypted as required.
-		DataConverter: cryptconverter.NewCryptDataConverter(
-			converter.GetDefaultDataConverter(),
-		),
+		// compressed as required.
+		DataConverter: snappycompress.AlwaysCompressDataConverter,
 	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
@@ -25,12 +21,17 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "encrypted-payloads_workflowID",
-		TaskQueue: "encrypted-payloads",
+		ID:        "snappycompress_workflowID",
+		TaskQueue: "snappycompress",
 	}
 
-	// The workflow input "My Secret Friend" will be encrypted by the DataConverter before being sent to Temporal
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, cryptconverter.Workflow, "My Secret Friend")
+	// The workflow input "My Compressed Friend" will be compressed by the DataConverter before being sent to Temporal
+	we, err := c.ExecuteWorkflow(
+		context.Background(),
+		workflowOptions,
+		snappycompress.Workflow,
+		"My Compressed Friend",
+	)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
