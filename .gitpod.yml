@@ -21,9 +21,9 @@ tasks:
       gp await-port 8088 # temporal web
       gp preview http://localhost:8088 # reload Temporal Web to show new workflow
     openMode: split-right
- - name: Temporalite 
-   init: go install github.com/DataDog/temporalite/cmd/temporalite@latest
-   command: temporalite start --namespace default -f my-test.db
+  - name: Temporalite 
+    init: go install github.com/DataDog/temporalite/cmd/temporalite@latest
+    command: temporalite start --namespace default -f my-test.db
   - name: Temporal Web/tctl
     command: |
       docker run -p 8088:8088 -e TEMPORAL_GRPC_ENDPOINT=host.docker.internal:7233 temporalio/web:1.12.0
