@@ -5,21 +5,21 @@ import (
 	"time"
 
 	prom "github.com/prometheus/client_golang/prometheus"
+	"github.com/temporalio/samples-go/metrics"
 	"github.com/uber-go/tally/v4"
 	"github.com/uber-go/tally/v4/prometheus"
 	"go.temporal.io/sdk/client"
+	sdktally "go.temporal.io/sdk/contrib/tally"
 	"go.temporal.io/sdk/worker"
-
-	"github.com/temporalio/samples-go/metrics"
 )
 
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.NewClient(client.Options{
-		MetricsScope: newPrometheusScope(prometheus.Configuration{
+		MetricsHandler: sdktally.NewMetricsHandler(newPrometheusScope(prometheus.Configuration{
 			ListenAddress: "0.0.0.0:9090",
 			TimerType:     "histogram",
-		}),
+		})),
 	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)

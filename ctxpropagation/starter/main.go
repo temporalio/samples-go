@@ -4,12 +4,12 @@ import (
 	"context"
 	"log"
 
-	"github.com/opentracing/opentracing-go"
 	"github.com/pborman/uuid"
-	"go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/workflow"
-
 	"github.com/temporalio/samples-go/ctxpropagation"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/contrib/opentracing"
+	"go.temporal.io/sdk/interceptor"
+	"go.temporal.io/sdk/workflow"
 )
 
 func main() {
@@ -17,10 +17,16 @@ func main() {
 	closer := ctxpropagation.SetJaegerGlobalTracer()
 	defer func() { _ = closer.Close() }()
 
+	// Create interceptor
+	tracingInterceptor, err := opentracing.NewInterceptor(opentracing.TracerOptions{})
+	if err != nil {
+		log.Fatalf("Failed creating interceptor: %v", err)
+	}
+
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
 		HostPort:           client.DefaultHostPort,
-		Tracer:             opentracing.GlobalTracer(),
+		Interceptors:       []interceptor.ClientInterceptor{tracingInterceptor},
 		ContextPropagators: []workflow.ContextPropagator{ctxpropagation.NewContextPropagator()},
 	})
 	if err != nil {
