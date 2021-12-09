@@ -3,12 +3,13 @@ package main
 import (
 	"log"
 
-	"github.com/temporalio/samples-go/ctxpropagation"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/contrib/opentracing"
 	"go.temporal.io/sdk/interceptor"
 	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
+
+	"github.com/temporalio/samples-go/ctxpropagation"
 )
 
 func main() {
