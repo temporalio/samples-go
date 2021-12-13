@@ -33,9 +33,10 @@ func Activity(ctx context.Context, scheduledTimeNanos int64) error {
 	logger := activity.GetLogger(ctx)
 
 	var err error
-	metricsScope := activity.GetMetricsScope(ctx)
-	metricsScope, sw := recordActivityStart(metricsScope, "metrics.Activity", scheduledTimeNanos)
-	defer func() { recordActivityEnd(metricsScope, sw, err) }()
+	metricsHandler := activity.GetMetricsHandler(ctx)
+	metricsHandler = recordActivityStart(metricsHandler, "metrics.Activity", scheduledTimeNanos)
+	startTime := time.Now()
+	defer func() { recordActivityEnd(metricsHandler, startTime, err) }()
 
 	time.Sleep(time.Second)
 	logger.Info("Metrics reported.")

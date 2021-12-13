@@ -3,7 +3,7 @@ package metrics
 import (
 	"time"
 
-	"github.com/uber-go/tally/v4"
+	"go.temporal.io/sdk/client"
 )
 
 const (
@@ -15,21 +15,24 @@ const (
 	activitySuccessCount = "activity_succeeded"
 )
 
-func recordActivityStart(scope tally.Scope, activityType string, scheduledTimeNanos int64) (tally.Scope, tally.Stopwatch) {
-	scope = scope.Tagged(map[string]string{"operation": activityType})
+func recordActivityStart(
+	handler client.MetricsHandler,
+	activityType string,
+	scheduledTimeNanos int64,
+) client.MetricsHandler {
+	handler = handler.WithTags(map[string]string{"operation": activityType})
 	scheduleToStartDuration := time.Duration(time.Now().UnixNano() - scheduledTimeNanos)
-	scope.Timer(scheduleToStartLatency).Record(scheduleToStartDuration)
-	scope.Counter(activityStartedCount).Inc(1)
-	sw := scope.Timer(activityLatency).Start()
-	return scope, sw
+	handler.Timer(scheduleToStartLatency).Record(scheduleToStartDuration)
+	handler.Counter(activityStartedCount).Inc(1)
+	return handler
 }
 
 // recordActivityEnd emits metrics at the end of an activity function
-func recordActivityEnd(scope tally.Scope, sw tally.Stopwatch, err error) {
-	sw.Stop()
+func recordActivityEnd(handler client.MetricsHandler, startTime time.Time, err error) {
+	handler.Timer(activityLatency).Record(time.Since(startTime))
 	if err != nil {
-		scope.Counter(activityFailedCount).Inc(1)
+		handler.Counter(activityFailedCount).Inc(1)
 		return
 	}
-	scope.Counter(activitySuccessCount).Inc(1)
+	handler.Counter(activitySuccessCount).Inc(1)
 }
