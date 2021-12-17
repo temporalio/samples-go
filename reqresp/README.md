@@ -7,9 +7,7 @@ the caller a response are in the example:
 * Response activity - Caller can provide activity information on where to send the response to (the more robust way)
 
 The workflow in this specific example accepts requests to uppercase a string via signal and then provides the response
-via either approach above. Care is taken to continue-as-new the workflow when the request count gets too large, but like
-all uses of continue-as-new in Go, the signal must be drained first. Therefore, if the requests come in faster than they
-are processed, the workflow history can grow until it reaches too large of a size and is then terminated.
+via either approach above.
 
 ### Running
 
@@ -55,3 +53,21 @@ notified when the local activity is executed.
 
 In this particular example, we have abstracted both concepts out into a `Requester`. This requester can be reused
 although the sample just shows it used ephemerally as part of the `request` CLI.
+
+### Explanation of continue-as-new
+
+Workflows cannot have infinitely-sized history and when the event count grows too large, `ContinueAsNew` can be returned
+to start a new one atomically. However, in order not to lose any data, signals must be drained and any other futures
+that need to be reacted to must be completed first. This means there must be a period where there are no signals to
+drain and no futures to wait on. If signals come in faster than processed or futures wait so long there is no idle
+period, `ContinueAsNew` will never happen and the history will grow unchecked until the extreme limit is reached at the
+server causing workflow termination.
+
+Since this sample is a long-running workflow, once the request count reaches a certain size, we perform a
+`ContinueAsNew`. To not lose any data, we only send this if there are no in-flight signal requests or executing
+activities. An executing activity can mean it is busy retrying. Care must be taken designing these systems where they do
+not receive requests so frequent that they can never have a idle period to return a `ContinueAsNew`. Signals are usually
+fast to receive, so they are less of a problem. Waiting on activities (as a response to the request or as a response
+callback activity) can be a tougher problem. Since we rely on the response of the activity, activity must complete
+including all retries. Retry policies of these activities should be set balancing the resiliency needs with the need to
+have a period of idleness at some point.

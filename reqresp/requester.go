@@ -94,6 +94,7 @@ type activityWorker interface {
 	Stop()
 }
 
+// Visible for testing
 var newWorker = func(c client.Client, taskQueue string) activityWorker {
 	return worker.New(c, taskQueue, worker.Options{})
 }
