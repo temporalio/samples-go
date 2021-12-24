@@ -71,7 +71,7 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 - [**Dynamic Execution**](https://github.com/temporalio/samples-go/tree/master/dynamic): Demonstrates how to execute Workflows and Activities using a name rather than a strongly typed function.
 
-- [**Branching Acitivites**](https://github.com/temporalio/samples-go/blob/master/branch): Executes multiple Activities in parallel. The number of branches is controlled by a parameter that is passed in at the start of the Workflow Execution.
+- [**Branching Activities**](https://github.com/temporalio/samples-go/blob/master/branch): Executes multiple Activities in parallel. The number of branches is controlled by a parameter that is passed in at the start of the Workflow Execution.
 
 - [**Exclusive Choice**](https://github.com/temporalio/samples-go/tree/master/choice-exclusive): Demonstrates how to execute Activities based on a dynamic input.
 
