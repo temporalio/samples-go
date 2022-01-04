@@ -94,8 +94,9 @@ func newUppercaser(ctx workflow.Context) (*uppercaser, error) {
 		// workflow stays open and may prevent it from performing its
 		// continue-as-new until timeout occurs and/or retries are finished.
 		responseActivityOptions: workflow.ActivityOptions{
-			// We use schedule-to-close because if the requester side is not present,
-			// this may hang otherwise with just start-to-close.
+			// We use schedule-to-start/close because if the requester side is not
+			// present, this may hang otherwise with just start-to-close.
+			ScheduleToStartTimeout: 5 * time.Second,
 			ScheduleToCloseTimeout: 10 * time.Second,
 			RetryPolicy:            &temporal.RetryPolicy{MaximumAttempts: 4},
 		},
@@ -126,7 +127,15 @@ func (u *uppercaser) run() error {
 		u.addExecuteActivityFuture(&req, selector)
 	})
 
-	// Continually select until there are too many requests and no pending selects
+	// Continually select until there are too many requests and no pending
+	// selects.
+	//
+	// The reason we check selector.HasPending even when we've reached the request
+	// limit is to make sure no events get lost. HasPending will continually
+	// return true while an unresolved future or a buffered signal exists. If, for
+	// example, we did not check this and there was an unhandled signal buffered
+	// locally, continue-as-new would be returned without it being handled and the
+	// new workflow wouldn't get the signal either. So it'd be lost.
 	for requestCount < u.requestsBeforeContinueAsNew || selector.HasPending() {
 		selector.Select(u)
 		if cancelled {

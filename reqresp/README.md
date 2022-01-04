@@ -3,8 +3,8 @@
 This sample demonstrates how to send a request and get a response from a Temporal workflow. Two approaches to providing
 the caller a response are in the example:
 
-* Query poll - Caller can run queries polling for response (the slow/inefficient way)
-* Response activity - Caller can provide activity information on where to send the response to (the more robust way)
+* Query poll - Caller can run queries polling for response (the less efficient way)
+* Response activity - Caller can provide activity information on where to send the response to (the more efficient way)
 
 The workflow in this specific example accepts requests to uppercase a string via signal and then provides the response
 via either approach above.
@@ -48,8 +48,8 @@ slower.
 
 Alternatively, a Temporal workflow can execute activities on different task queues. Therefore, a "response" task queue
 can be setup to handle activities executed from the other workflow. This means the response can be pushed. By providing
-which activity and task queue the response should be sent to inside the request, the local requester can just be
-notified when the local activity is executed.
+which activity and task queue the response should be sent to inside the request, the requester can just be notified when
+the activity is executed.
 
 In this particular example, we have abstracted both concepts out into a `Requester`. This requester can be reused
 although the sample just shows it used ephemerally as part of the `request` CLI.
@@ -60,8 +60,7 @@ Workflows cannot have infinitely-sized history and when the event count grows to
 to start a new one atomically. However, in order not to lose any data, signals must be drained and any other futures
 that need to be reacted to must be completed first. This means there must be a period where there are no signals to
 drain and no futures to wait on. If signals come in faster than processed or futures wait so long there is no idle
-period, `ContinueAsNew` will never happen and the history will grow unchecked until the extreme limit is reached at the
-server causing workflow termination.
+period, `ContinueAsNew` will not happen in a timely manner and history will grow.
 
 Since this sample is a long-running workflow, once the request count reaches a certain size, we perform a
 `ContinueAsNew`. To not lose any data, we only send this if there are no in-flight signal requests or executing
