@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/temporalio/samples-go/reqresp"
+	"github.com/temporalio/samples-go/reqrespactivity"
 	"go.temporal.io/sdk/client"
 )
 
@@ -18,11 +18,11 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "reqresp_workflow",
-		TaskQueue: "reqresp",
+		ID:        "reqrespactivity_workflow",
+		TaskQueue: "reqrespactivity",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, reqresp.UppercaseWorkflow)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, reqrespactivity.UppercaseWorkflow)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}

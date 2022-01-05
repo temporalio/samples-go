@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/temporalio/samples-go/reqresp"
+	"github.com/temporalio/samples-go/reqrespquery"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 )
@@ -17,10 +17,10 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "reqresp", worker.Options{})
+	w := worker.New(c, "reqrespquery", worker.Options{})
 
-	w.RegisterWorkflow(reqresp.UppercaseWorkflow)
-	w.RegisterActivity(reqresp.UppercaseActivity)
+	w.RegisterWorkflow(reqrespquery.UppercaseWorkflow)
+	w.RegisterActivity(reqrespquery.UppercaseActivity)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
