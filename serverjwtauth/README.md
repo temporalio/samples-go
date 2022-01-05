@@ -66,7 +66,7 @@ restricted access to the server to only authorized uses.
 
 To create this manually, we will use `tctl`. According to
 [the tctl docs](https://docs.temporal.io/docs/devtools/tctl/#securing-tctl) we can use the `tctl-authorization-plugin`
-binary. If using docker, this binary is included with tctl otherwise, built it and put it on the `PATH`.
+binary. If using docker, this binary is included with tctl otherwise, build it and put it on the `PATH`.
 
 We must set the `TEMPORAL_CLI_AUTHORIZATION_TOKEN` environment variable with an authorization header value that includes
 the JWT key. The following command generates a 1 hour key with `admin` permissions on the `system` namespace:

@@ -33,7 +33,7 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "hello-world", worker.Options{})
+	w := worker.New(c, "server-jwt-auth", worker.Options{})
 
 	w.RegisterWorkflow(helloworld.Workflow)
 	w.RegisterActivity(helloworld.Activity)

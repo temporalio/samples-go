@@ -35,7 +35,7 @@ func main() {
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        "hello_world_workflowID",
-		TaskQueue: "hello-world",
+		TaskQueue: "server-jwt-auth",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, helloworld.Workflow, "Temporal")

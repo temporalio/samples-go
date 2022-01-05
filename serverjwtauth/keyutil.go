@@ -98,7 +98,6 @@ type claims struct {
 }
 
 func (j *JWTConfig) GenToken() (string, error) {
-	// We intentionally don't regen under lock
 	sig, err := jose.NewSigner(
 		jose.SigningKey{Algorithm: jose.ES256, Key: j.Key},
 		(&jose.SignerOptions{}).WithType("JWT").WithHeader("kid", j.KeyID),
@@ -155,6 +154,7 @@ func (j *JWTHeadersProvider) GetHeaders(ctx context.Context) (map[string]string,
 	// regen
 	if time.Now().After(regenAfter) {
 		var err error
+		// We intentionally don't regen under lock
 		if token, err = j.Config.GenToken(); err != nil {
 			return nil, err
 		}
