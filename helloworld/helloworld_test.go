@@ -24,3 +24,16 @@ func Test_Workflow(t *testing.T) {
 	require.NoError(t, env.GetWorkflowResult(&result))
 	require.Equal(t, "Hello Temporal!", result)
 }
+
+func Test_Activity(t *testing.T) {
+	testSuite := &testsuite.WorkflowTestSuite{}
+	env := testSuite.NewTestActivityEnvironment()
+	env.RegisterActivity(Activity)
+
+	val, err := env.ExecuteActivity(Activity, "World")
+	require.NoError(t, err)
+
+	var res string
+	require.NoError(t, val.Get(&res))
+	require.Equal(t, "Hello World!", res)
+}
