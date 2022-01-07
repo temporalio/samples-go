@@ -49,7 +49,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - **Selectors**: Do not use the native Go `select` statement. Instead use [Go SDK Selectors](https://docs.temporal.io/docs/go/selectors) (`selector.Select(ctx)`) to maintain a [deterministic](https://docs.temporal.io/docs/go/workflows/#how-to-write-workflow-code) Workflow. Can be seen in the [Pick First](https://github.com/temporalio/samples-go/tree/master/pickfirst), [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex), [DSL](https://github.com/temporalio/samples-go/tree/master/dsl), and [Timer](https://github.com/temporalio/samples-go/tree/master/timer) examples.
 
-- **Sessions**: Demonstrates how to bind a set of Activity Executions to a specific Worker after the first Activity executes. This feature is showcased in the [File Processing example](https://github.com/temporalio/samples-go/tree/master/fileprocessing). Addition documentation: [How to use Sessions in Go](https://docs.temporal.io/docs/go/sessions).
+- **Sessions**: Demonstrates how to bind a set of Activity Executions to a specific Worker after the first Activity executes. This feature is showcased in the [File Processing example](https://github.com/temporalio/samples-go/tree/master/fileprocessing). Addition documentation: [How to use Sessions in Go](https://docs.temporal.io/docs/go/how-to-use-worker-sessions-in-go).
 
 - **Signals**: Can be seen in the [Recovery](https://github.com/temporalio/samples-go/tree/master/recovery) and [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex) examples. Additional documentation: [eCommerce application tutorial](https://docs.temporal.io/blog/tags/go-ecommerce-tutorial), [How to use Signals in Go](https://docs.temporal.io/docs/go/signals).
 
