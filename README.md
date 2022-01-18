@@ -62,8 +62,10 @@ Each sample demonstrates one feature of the SDK, together with tests.
 - [**Updatable Timer**](https://github.com/temporalio/samples-go/tree/master/updatabletimer): Demonstrates timer cancellation and use of a Selector to wait on a Future and a Channel simultaneously.
 
 - [**Greetings**](https://github.com/temporalio/samples-go/tree/master/greetings): Demonstrates how to pass dependencies to activities defined as struct methods.
--
+
 - [**Greetings Local**](https://github.com/temporalio/samples-go/tree/master/greetingslocal): Demonstrates how to pass dependencies to local activities defined as struct methods.
+
+- [**Interceptors**](https://github.com/temporalio/samples-go/tree/master/interceptor): Demonstrates how to use interceptors to intercept calls, in this case for adding context to the logger.
 
 ### Dynamic Workflow logic examples
 
