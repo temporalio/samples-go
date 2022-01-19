@@ -103,6 +103,12 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 - [**Request/Response with Response Queries**](https://github.com/temporalio/samples-go/tree/master/reqrespquery): Demonstrates how to accept requests via signals and use queries to poll for responses.
 
+### Third Party Libraries
+
+Temporal users maintain their own libraries, which may be helpful to you for learning. Be careful when relying on them wholesale as they are not professionally maintained by Temporal.
+
+- https://github.com/Courtsite/temporal-go-helpers Common convenience methods, and developer ergonomics for Temporal's Go SDK, including a `saga` helper for easily executing compensation rollback logic, and `ReceiveWithTimeout` to receive Signal with Timeout.
+
 <!-- @@@SNIPEND -->
 
 ### Pending examples
