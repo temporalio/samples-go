@@ -97,6 +97,10 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 - [**Prometheus Metrics**](https://github.com/temporalio/samples-go/tree/master/metrics): Demonstrates how to instrument Temporal with Prometheus and Uber's Tally library.
 
+- [**Request/Response with Response Activities**](https://github.com/temporalio/samples-go/tree/master/reqrespactivity): Demonstrates how to accept requests via signals and use callback activities to push responses.
+
+- [**Request/Response with Response Queries**](https://github.com/temporalio/samples-go/tree/master/reqrespquery): Demonstrates how to accept requests via signals and use queries to poll for responses.
+
 ### Pending examples
 
 Mostly examples we haven't yet ported from https://github.com/temporalio/samples-java/
