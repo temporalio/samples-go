@@ -23,8 +23,6 @@ And you can learn more about the Temporal Server technology in general via our [
 
 Each sample demonstrates one feature of the SDK, together with tests.
 
-<!-- @@@SNIPSTART samples-go-readme-samples-directory -->
-
 - [**Basic hello world**](https://github.com/temporalio/samples-go/tree/master/helloworld): Simple example of a Workflow Definition and an Activity Definition.
 
 ### API demonstrations
@@ -45,7 +43,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Encryption**](https://github.com/temporalio/samples-go/tree/master/encryption): How to use encryption for Workflow/Activity data with the DataConverter API. Also includes an example of stacking encoders (in this case encryption and compression). [Docs](https://docs.temporal.io/docs/go/workflows/#custom-serialization-and-workflow-security).
 
-- [**Query Example**](https://github.com/temporalio/samples-go/tree/master/query): Demonstrates how to Query the state of a single Workflow Execution using the `QueryWorkflow` and `SetQueryHandler` APIs. Additional documentation: [How to send a Query to a Workflow Execution in Go](https://docs.temporal.io/docs/go/how-to-send-a-query-to-a-workflow-execution-in-go), [How to handle a Query in a Workflow in Go](https://docs.temporal.io/docs/go/how-to-handle-a-query-in-a-workflow-in-go).
+- [**Query Example**](https://github.com/temporalio/samples-go/tree/master/query): Demonstrates how to Query the state of a single Workflow Execution using the `QueryWorkflow` and `SetQueryHandler` APIs. Additional documentation: [Queries in Go](https://docs.temporal.io/docs/go/queries).
 
 - **Selectors**: Do not use the native Go `select` statement. Instead use [Go SDK Selectors](https://docs.temporal.io/docs/go/selectors) (`selector.Select(ctx)`) to maintain a [deterministic](https://docs.temporal.io/docs/go/workflows/#how-to-write-workflow-code) Workflow. Can be seen in the [Pick First](https://github.com/temporalio/samples-go/tree/master/pickfirst), [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex), [DSL](https://github.com/temporalio/samples-go/tree/master/dsl), and [Timer](https://github.com/temporalio/samples-go/tree/master/timer) examples.
 
@@ -98,8 +96,6 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 - [**Particle Swarm Optimization**](https://github.com/temporalio/samples-go/tree/master/pso): Demonstrates how to perform a long iterative math optimization process using particle swarm optimization (PSO). This sample showcases the use of parallel executions, `ContinueAsNew` for long histories, a Query API, and the use of a custom `DataConverter` for serialization.
 
 - [**Prometheus Metrics**](https://github.com/temporalio/samples-go/tree/master/metrics): Demonstrates how to instrument Temporal with Prometheus and Uber's Tally library.
-
-<!-- @@@SNIPEND -->
 
 ### Pending examples
 
