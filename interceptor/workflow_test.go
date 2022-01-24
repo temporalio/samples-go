@@ -1,6 +1,7 @@
 package interceptor_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -8,6 +9,7 @@ import (
 	sdkinterceptor "go.temporal.io/sdk/interceptor"
 	"go.temporal.io/sdk/testsuite"
 	"go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 )
 
 func TestWorkflow(t *testing.T) {
@@ -21,7 +23,12 @@ func TestWorkflow(t *testing.T) {
 	// Add our interceptor to put a custom tag on the logs
 	env.SetWorkerOptions(worker.Options{
 		Interceptors: []sdkinterceptor.WorkerInterceptor{interceptor.NewWorkerInterceptor(interceptor.InterceptorOptions{
-			CustomLogTags: map[string]interface{}{"my-custom-key": "my-custom-value"},
+			GetExtraLogTagsForWorkflow: func(workflow.Context) []interface{} {
+				return []interface{}{"workflow-tag", "workflow-value"}
+			},
+			GetExtraLogTagsForActivity: func(context.Context) []interface{} {
+				return []interface{}{"activity-tag", "activity-value"}
+			},
 		})},
 	})
 
@@ -34,8 +41,8 @@ func TestWorkflow(t *testing.T) {
 	require.Equal(t, "Hello Temporal!", result)
 
 	// Confirm logs
-	require.True(t, capturingLogger.hasEntry("INFO", "HelloWorld workflow started", "my-custom-key", "my-custom-value"))
-	require.True(t, capturingLogger.hasEntry("INFO", "Activity", "my-custom-key", "my-custom-value"))
+	require.True(t, capturingLogger.hasEntry("INFO", "HelloWorld workflow started", "workflow-tag", "workflow-value"))
+	require.True(t, capturingLogger.hasEntry("INFO", "Activity", "activity-tag", "activity-value"))
 }
 
 type capturingLogger struct {

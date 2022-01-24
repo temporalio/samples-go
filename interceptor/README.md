@@ -14,4 +14,4 @@ go run ./interceptor/worker
 go run ./interceptor/starter
 ```
 
-Notice the log output has the `my-custom-key` tag with the `my-custom-value` value.
+Notice the log output has the `WorkflowStartTime`/`ActivityStartTime` tags on the logs.

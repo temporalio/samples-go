@@ -10,27 +10,16 @@ import (
 
 type workerInterceptor struct {
 	interceptor.WorkerInterceptorBase
-	customLogTags []interface{}
+	options InterceptorOptions
 }
 
 type InterceptorOptions struct {
-	CustomLogTags map[string]interface{}
+	GetExtraLogTagsForWorkflow func(workflow.Context) []interface{}
+	GetExtraLogTagsForActivity func(context.Context) []interface{}
 }
 
 func NewWorkerInterceptor(options InterceptorOptions) interceptor.WorkerInterceptor {
-	// Convert map to slice
-	tags := make([]interface{}, 0, len(options.CustomLogTags)*2)
-	for k, v := range options.CustomLogTags {
-		tags = append(tags, k, v)
-	}
-	return &workerInterceptor{customLogTags: tags}
-}
-
-func (w *workerInterceptor) withCustomLogTags(logger log.Logger) log.Logger {
-	if len(w.customLogTags) > 0 {
-		return log.With(logger, w.customLogTags...)
-	}
-	return logger
+	return &workerInterceptor{options: options}
 }
 
 func (w *workerInterceptor) InterceptActivity(
@@ -59,8 +48,14 @@ type activityOutboundInterceptor struct {
 }
 
 func (a *activityOutboundInterceptor) GetLogger(ctx context.Context) log.Logger {
-	// Set our custom tags
-	return a.root.withCustomLogTags(a.Next.GetLogger(ctx))
+	logger := a.Next.GetLogger(ctx)
+	// Add extra tags if any
+	if a.root.options.GetExtraLogTagsForActivity != nil {
+		if extraTags := a.root.options.GetExtraLogTagsForActivity(ctx); len(extraTags) > 0 {
+			logger = log.With(logger, extraTags...)
+		}
+	}
+	return logger
 }
 
 func (w *workerInterceptor) InterceptWorkflow(
@@ -89,6 +84,12 @@ type workflowOutboundInterceptor struct {
 }
 
 func (w *workflowOutboundInterceptor) GetLogger(ctx workflow.Context) log.Logger {
-	// Set our custom tags
-	return w.root.withCustomLogTags(w.Next.GetLogger(ctx))
+	logger := w.Next.GetLogger(ctx)
+	// Add extra tags if any
+	if w.root.options.GetExtraLogTagsForWorkflow != nil {
+		if extraTags := w.root.options.GetExtraLogTagsForWorkflow(ctx); len(extraTags) > 0 {
+			logger = log.With(logger, extraTags...)
+		}
+	}
+	return logger
 }
