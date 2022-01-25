@@ -43,7 +43,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Encryption**](https://github.com/temporalio/samples-go/tree/master/encryption): How to use encryption for Workflow/Activity data with the DataConverter API. Also includes an example of stacking encoders (in this case encryption and compression). [Docs](https://docs.temporal.io/docs/go/workflows/#custom-serialization-and-workflow-security).
 
-- [**Query Example**](https://github.com/temporalio/samples-go/tree/master/query): Demonstrates how to Query the state of a single Workflow Execution using the `QueryWorkflow` and `SetQueryHandler` APIs. Additional documentation: [Queries in Go](https://docs.temporal.io/docs/go/queries).
+- [**Query Example**](https://github.com/temporalio/samples-go/tree/master/query): Demonstrates how to Query the state of a single Workflow Execution using the `QueryWorkflow` and `SetQueryHandler` APIs. Additional documentation: [How to Query a Workflow Execution in Go](https://docs.temporal.io/docs/go/queries).
 
 - **Selectors**: Do not use the native Go `select` statement. Instead use [Go SDK Selectors](https://docs.temporal.io/docs/go/selectors) (`selector.Select(ctx)`) to maintain a [deterministic](https://docs.temporal.io/docs/go/workflows/#how-to-write-workflow-code) Workflow. Can be seen in the [Pick First](https://github.com/temporalio/samples-go/tree/master/pickfirst), [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex), [DSL](https://github.com/temporalio/samples-go/tree/master/dsl), and [Timer](https://github.com/temporalio/samples-go/tree/master/timer) examples.
 
