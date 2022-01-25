@@ -23,8 +23,6 @@ And you can learn more about the Temporal Server technology in general via our [
 
 Each sample demonstrates one feature of the SDK, together with tests.
 
-<!-- @@@SNIPSTART samples-go-readme-samples-directory -->
-
 - [**Basic hello world**](https://github.com/temporalio/samples-go/tree/master/helloworld): Simple example of a Workflow Definition and an Activity Definition.
 
 ### API demonstrations
@@ -51,7 +49,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - **Sessions**: Demonstrates how to bind a set of Activity Executions to a specific Worker after the first Activity executes. This feature is showcased in the [File Processing example](https://github.com/temporalio/samples-go/tree/master/fileprocessing). Addition documentation: [How to use Sessions in Go](https://docs.temporal.io/docs/go/sessions).
 
-- **Signals**: Can be seen in the [Recovery](https://github.com/temporalio/samples-go/tree/master/recovery) and [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex) examples. Additional documentation: [eCommerce application tutorial](https://docs.temporal.io/blog/tags/go-ecommerce-tutorial), [How to use Signals in Go](https://docs.temporal.io/docs/go/signals).
+- **Signals**: Can be seen in the [Recovery](https://github.com/temporalio/samples-go/tree/master/recovery) and [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex) examples. Additional documentation: [eCommerce application tutorial](https://docs.temporal.io/blog/tags/go-ecommerce-tutorial), [How to send a Signal to a Workflow Execution in Go](https://docs.temporal.io/docs/go/how-to-send-a-signal-to-a-workflow-execution-in-go), [How to handle a Signal in a Workflow Execution in Go](https://docs.temporal.io/docs/go/how-to-handle-a-signal-in-a-workflow-in-go).
 
 - [**Search Attributes**](https://github.com/temporalio/samples-go/tree/master/searchattributes): Demonstrates how to use custom Search Attributes that can be used to find Workflow Executions using predicates (must use with [Elasticsearch](https://docs.temporal.io/docs/content/how-to-integrate-elasticsearch-into-a-temporal-cluster)).
 
@@ -104,8 +102,6 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 - [**Request/Response with Response Activities**](https://github.com/temporalio/samples-go/tree/master/reqrespactivity): Demonstrates how to accept requests via signals and use callback activities to push responses.
 
 - [**Request/Response with Response Queries**](https://github.com/temporalio/samples-go/tree/master/reqrespquery): Demonstrates how to accept requests via signals and use queries to poll for responses.
-
-<!-- @@@SNIPEND -->
 
 ### Pending examples
 
