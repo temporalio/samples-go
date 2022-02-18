@@ -11,7 +11,7 @@ This repository contains several sample Workflow applications that demonstrate t
 ## How to use
 
 - You can either run this in the browser with Gitpod: [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/temporalio/samples-go/)
-- Or you can run Temporal Server locally (follow the [Quick install guide](https://docs.temporal.io/docs/server/quick-install)), then clone this repository and follow the instructions in the README that is included with each sample.
+- Or you can run Temporal Server locally (follow the [Quick install guide](https://docs.temporal.io/docs/server/quick-install)), then clone this repository
 
 The [helloworld](helloworld/README.md) sample is a good place to start.
 
