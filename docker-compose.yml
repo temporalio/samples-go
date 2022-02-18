@@ -1,0 +1,103 @@
+# this is a simple docker compose that has been tested to work with gitpod,
+# for running these samples in the browser with no need to run Temporal Server locally
+# thanks to Johannes Schickling for figuring this out
+# see https://github.com/temporalio/docker-compose for other reference docker-compose files
+version: '3.5'
+services:
+  ## uncomment if you need search attributes feature
+  ## dont forget to uncomment the ES related comments in the temporal service
+  # elasticsearch:
+  #   container_name: temporal-elasticsearch
+  #   environment:
+  #     - cluster.routing.allocation.disk.threshold_enabled=true
+  #     - cluster.routing.allocation.disk.watermark.low=512mb
+  #     - cluster.routing.allocation.disk.watermark.high=256mb
+  #     - cluster.routing.allocation.disk.watermark.flood_stage=128mb
+  #     - discovery.type=single-node
+  #     - ES_JAVA_OPTS=-Xms100m -Xmx100m
+  #   image: elasticsearch:7.10.1
+  #   # networks:
+  #     # - temporal-network
+  #   ports:
+  #     - 9200:9200
+  postgresql:
+    container_name: temporal-postgresql
+    environment:
+      POSTGRES_PASSWORD: temporal
+      POSTGRES_USER: temporal
+    image: postgres:9.6
+    # networks:
+    # - temporal-network
+    ports:
+      - 5432:5432
+  temporal:
+    container_name: temporal
+    depends_on:
+      - postgresql
+    #  - elasticsearch
+    environment:
+      - DB=postgresql
+      - DB_PORT=5432
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=temporal
+      - POSTGRES_SEEDS=postgresql
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development_es.yaml
+    #  - ENABLE_ES=true
+    #  - ES_SEEDS=elasticsearch
+    #  - ES_VERSION=v7
+    image: temporalio/auto-setup:1.12.3
+    # networks:
+    # - temporal-network
+    ports:
+      - 7233:7233
+    volumes:
+      - ./dynamicconfig:/etc/temporal/config/dynamicconfig
+  temporal-admin-tools:
+    container_name: temporal-admin-tools
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_CLI_ADDRESS=temporal:7233
+    image: temporalio/admin-tools:1.12.3
+    # networks:
+    # - temporal-network
+    stdin_open: true
+    tty: true
+  temporal-web:
+    container_name: temporal-web
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_GRPC_ENDPOINT=temporal:7233
+      - TEMPORAL_PERMIT_WRITE_API=true
+    image: temporalio/web:1.12.0
+    # networks:
+    # - temporal-network
+    ports:
+      - 8088:8088
+
+  ## uncomment only if you need these features, eg you are Johannes
+  ## Collector
+  #otel-collector:
+  #  image: otel/opentelemetry-collector:0.27.0
+  #  command: ['--config=/conf/collector-config.yaml', '--log-level=DEBUG']
+  #  volumes:
+  #    - ./collector-config.yaml:/conf/collector-config.yaml
+  #  ports:
+  #    - '9464:9464'
+  #    - '4317:4317'
+  #    - '55681:55681'
+  #  depends_on:
+  #    - jaeger-all-in-one
+  #
+  ## Jaeger
+  #jaeger-all-in-one:
+  #  image: jaegertracing/all-in-one:1.22.0
+  #  ports:
+  #    - '16686:16686'
+  #    - '14268:14268'
+  #    - '14250'
+# networks:
+# temporal-network:
+# driver: bridge
+# name: temporal-network
