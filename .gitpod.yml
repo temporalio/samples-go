@@ -1,0 +1,44 @@
+# this is a config file for gitpod setup, ignore if you are running samples locally
+# See readme at https://github.com/temporalio/samples-typescript/blob/main/.gitpod.readme.md
+
+tasks:
+  - name: Run Hello World Worker
+    init: |
+      alias tctl="docker exec temporal-admin-tools tctl"
+      echo "tctl configured! try typing tctl -v"
+      cd hello-world # this cd doesnt persist in postbuild
+      npm install
+    command: |
+      gp open .gitpod.readme.md
+      sleep 40
+      cd hello-world
+      go run worker/main.go
+  - name: Run Hello World Workflow
+    init: |
+      alias tctl="docker exec temporal-admin-tools tctl"
+      echo "tctl configured! try typing tctl -v"
+    command: |
+      cd hello-world
+      sleep 45
+      go run starter/main.go
+      sleep 5
+      gp preview http://localhost:8088 # open up Temporal Web to show new workflow
+    openMode: split-right
+  - name: Temporal Server
+    init: docker-compose pull
+    command: docker-compose up
+
+ports:
+  - port: 5432 # postgres
+    onOpen: ignore
+  - port: 7233 # temporal server
+    onOpen: ignore
+  - port: 8088 # temporal web
+    onOpen: ignore
+    visibility: public
+# notes for future temporalite usage
+#  - name: Temporalite
+#    init: go install github.com/DataDog/temporalite/cmd/temporalite@latest
+#    command: temporalite start --namespace default -f my-test.db
+# separate temporal web
+#      docker run -t -i -p 8088:8088 -e TEMPORAL_GRPC_ENDPOINT=temporal:7233 temporalio/web:1.12.0 # this does not work yet :(
