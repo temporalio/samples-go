@@ -6,19 +6,18 @@ tasks:
     init: |
       alias tctl="docker exec temporal-admin-tools tctl"
       echo "tctl configured! try typing tctl -v"
-      cd hello-world # this cd doesnt persist in postbuild
-      npm install
+      cd helloworld # this cd doesnt persist in postbuild
     command: |
       gp open .gitpod.readme.md
       sleep 40
-      cd hello-world
+      cd helloworld
       go run worker/main.go
   - name: Run Hello World Workflow
     init: |
       alias tctl="docker exec temporal-admin-tools tctl"
       echo "tctl configured! try typing tctl -v"
     command: |
-      cd hello-world
+      cd helloworld
       sleep 45
       go run starter/main.go
       sleep 5
