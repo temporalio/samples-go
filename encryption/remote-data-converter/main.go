@@ -55,7 +55,7 @@ func main() {
 
 	select {
 	case <-sigCh:
-		srv.Close()
+		_ = srv.Close()
 	case err := <-errCh:
 		logger.Fatal("error", tag.NewErrorTag(err))
 	}
