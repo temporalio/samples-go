@@ -2,6 +2,8 @@ module github.com/temporalio/samples-go
 
 go 1.16
 
+replace go.temporal.io/sdk => github.com/temporalio/sdk-go v1.13.2-0.20220222105951-0fe380a74262
+
 require (
 	github.com/golang/mock v1.6.0
 	github.com/golang/snappy v0.0.4
@@ -10,6 +12,7 @@ require (
 	github.com/pborman/uuid v1.2.1
 	github.com/prometheus/client_golang v1.11.0
 	github.com/stretchr/testify v1.7.0
+	github.com/temporalio/background-checks v0.0.0-20220207220306-9ec264a9f8c6
 	github.com/uber-go/tally/v4 v4.1.1
 	github.com/uber/jaeger-client-go v2.29.1+incompatible
 	go.temporal.io/api v1.7.0

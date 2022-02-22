@@ -78,11 +78,11 @@ func (e *Encoder) getKey(keyID string) (key []byte) {
 	return []byte("test-key-test-key-test-key-test!")
 }
 
-// NewEncryptionDataConverter creates a new instance of EncryptionDataConverter wrapping a DataConverter
-func NewEncryptionDataConverter(dataConverter converter.DataConverter, options DataConverterOptions) *DataConverter {
+func NewEncoders(options DataConverterOptions) []converter.PayloadEncoder {
 	encoders := []converter.PayloadEncoder{
 		&Encoder{KeyID: options.KeyID},
 	}
+
 	// Enable compression if requested.
 	// Note that this must be done before encryption to provide any value. Encrypted data should by design not compress very well.
 	// This means the compression encoder must come after the encryption encoder here as encoders are applied last -> first.
@@ -90,9 +90,14 @@ func NewEncryptionDataConverter(dataConverter converter.DataConverter, options D
 		encoders = append(encoders, converter.NewZlibEncoder(converter.ZlibEncoderOptions{AlwaysEncode: true}))
 	}
 
+	return encoders
+}
+
+// NewEncryptionDataConverter creates a new instance of EncryptionDataConverter wrapping a DataConverter
+func NewEncryptionDataConverter(dataConverter converter.DataConverter, options DataConverterOptions) *DataConverter {
 	return &DataConverter{
 		parent:                dataConverter,
-		EncodingDataConverter: *converter.NewEncodingDataConverter(dataConverter, encoders...),
+		EncodingDataConverter: *converter.NewEncodingDataConverter(dataConverter, NewEncoders(options)...),
 		options:               options,
 	}
 }
