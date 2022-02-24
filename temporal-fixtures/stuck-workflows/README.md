@@ -1,6 +1,6 @@
-This fixuture starts few stuck workflows:
+This fixture starts few stuck workflows:
 
-- no running worker that would listen to workflow's task queue
+- no running worker listening on a task queue
 - activity that fails and is being infinitely retried
 
 Used in:
