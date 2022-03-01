@@ -10,14 +10,10 @@ This repository contains several sample Workflow applications that demonstrate t
 
 ## How to use
 
-Make sure the Temporal Server is running locally.
-Follow the [Quick install guide](https://docs.temporal.io/docs/server/quick-install) to do that.
+- You can either run this in the browser with Gitpod: [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/temporalio/samples-go/)
+- Or you can run Temporal Server locally (follow the [Quick install guide](https://docs.temporal.io/docs/server/quick-install)), then clone this repository
 
-Then, clone this repository and follow the instructions in the README that is included with each sample.
 The [helloworld](helloworld/README.md) sample is a good place to start.
-
-You can learn more about running the Server locally in the [temporalio/docker-compose README](https://github.com/temporalio/docker-compose/blob/main/README.md).
-And you can learn more about the Temporal Server technology in general via our [documentation](https://docs.temporal.io/).
 
 ## Samples directory
 

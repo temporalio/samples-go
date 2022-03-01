@@ -14,6 +14,7 @@ steps:
       queue: "default"
       docker: "*"
     command: "make fossa-init fossa-analyze fossa-test"
+    branches: "main"
     plugins:
       - docker-compose#v3.1.0:
           run: all
