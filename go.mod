@@ -2,7 +2,7 @@ module github.com/temporalio/samples-go
 
 go 1.16
 
-replace go.temporal.io/sdk => github.com/temporalio/sdk-go v1.13.2-0.20220301162140-96a4a72a76f3
+replace go.temporal.io/sdk => github.com/temporalio/sdk-go v1.13.2-0.20220302083629-2c5ed0f2b142
 
 require (
 	github.com/golang/mock v1.6.0
@@ -14,12 +14,13 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/uber-go/tally/v4 v4.1.1
 	github.com/uber/jaeger-client-go v2.29.1+incompatible
-	go.temporal.io/api v1.7.0
+	go.temporal.io/api v1.7.1-0.20220223032354-6e6fe738916a
 	go.temporal.io/sdk v1.13.0
 	go.temporal.io/sdk/contrib/opentracing v0.1.0
 	go.temporal.io/sdk/contrib/tally v0.1.0
 	go.temporal.io/server v1.14.1
 	go.uber.org/zap v1.19.1
+	google.golang.org/grpc v1.44.0
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
