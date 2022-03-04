@@ -30,6 +30,23 @@ type ProviderConfig struct {
 	JWKS_URI string `json:"jwks_uri,omitempty"`
 }
 
+func discoverProviderConfig(providerURL string) (ProviderConfig, error) {
+	var providerConfig ProviderConfig
+
+	res, err := http.Get(strings.TrimSuffix(providerURL, "/") + "/.well-known/openid-configuration")
+	if err != nil {
+		return providerConfig, err
+	}
+	defer res.Body.Close()
+
+	err = json.NewDecoder(res.Body).Decode(&providerConfig)
+	if err != nil {
+		return providerConfig, err
+	}
+
+	return providerConfig, nil
+}
+
 func newClaimMapper(providerKeysURL string, logger log.Logger) authorization.ClaimMapper {
 	authConfig := config.Authorization{
 		JWTKeyProvider: config.JWTKeyProvider{
@@ -61,23 +78,6 @@ func (a *audienceGetter) Audience(ctx context.Context, req interface{}, info *gr
 	}
 
 	return a.audience
-}
-
-func discoverProviderConfig(providerURL string) (ProviderConfig, error) {
-	var providerConfig ProviderConfig
-
-	res, err := http.Get(strings.TrimSuffix(providerURL, "/") + "/.well-known/openid-configuration")
-	if err != nil {
-		return providerConfig, err
-	}
-	defer res.Body.Close()
-
-	err = json.NewDecoder(res.Body).Decode(&providerConfig)
-	if err != nil {
-		return providerConfig, err
-	}
-
-	return providerConfig, nil
 }
 
 func main() {
