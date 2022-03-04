@@ -22,23 +22,24 @@ type ProviderConfig struct {
 	Issuer   string `json:"issuer"`
 	JWKS_URI string `json:"jwks_uri,omitempty"`
 	Audience string
+	mapper   authorization.ClaimMapper
 }
 
-func discoverProviderConfig(providerURL string) (ProviderConfig, error) {
+func discoverProviderConfig(providerURL string) (*ProviderConfig, error) {
 	var providerConfig ProviderConfig
 
 	res, err := http.Get(strings.TrimSuffix(providerURL, "/") + "/.well-known/openid-configuration")
 	if err != nil {
-		return providerConfig, err
+		return nil, err
 	}
 	defer res.Body.Close()
 
 	err = json.NewDecoder(res.Body).Decode(&providerConfig)
 	if err != nil {
-		return providerConfig, err
+		return nil, err
 	}
 
-	return providerConfig, nil
+	return &providerConfig, nil
 }
 
 func newClaimMapper(providerKeysURL string, logger log.Logger) authorization.ClaimMapper {
@@ -73,14 +74,14 @@ func newCORSHTTPHandler(web string, next http.Handler) http.Handler {
 }
 
 // newPayloadEncoderOauthHTTPHandler wraps a HTTP handler with oauth support
-func newPayloadEncoderOauthHTTPHandler(providerConfig ProviderConfig, namespace string, mapper authorization.ClaimMapper, next http.Handler) http.Handler {
+func newPayloadEncoderOauthHTTPHandler(providerConfig *ProviderConfig, namespace string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authInfo := authorization.AuthInfo{
 			AuthToken: r.Header.Get("Authorization"),
 			Audience:  providerConfig.Audience,
 		}
 
-		claims, err := mapper.GetClaims(&authInfo)
+		claims, err := providerConfig.mapper.GetClaims(&authInfo)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
@@ -122,18 +123,13 @@ func newPayloadEncoderOauthHTTPHandler(providerConfig ProviderConfig, namespace 
 func newPayloadEncoderNamespacesHTTPHandler(encoders map[string][]converter.PayloadEncoder, providerConfig *ProviderConfig, logger log.Logger) http.Handler {
 	mux := http.NewServeMux()
 
-	var mapper authorization.ClaimMapper
-	if providerConfig != nil {
-		mapper = newClaimMapper(providerConfig.JWKS_URI, logger)
-	}
-
 	encoderHandlers := map[string]http.Handler{}
 	for namespace, encoderChain := range encoders {
 		fmt.Printf("Handling namespace: %s\n", namespace)
 
 		handler := converter.NewPayloadEncoderHTTPHandler(encoderChain...)
-		if providerConfig.Issuer != "" {
-			handler = newPayloadEncoderOauthHTTPHandler(*providerConfig, namespace, mapper, handler)
+		if providerConfig != nil {
+			handler = newPayloadEncoderOauthHTTPHandler(providerConfig, namespace, handler)
 		}
 		mux.Handle("/"+namespace+"/", handler)
 
@@ -176,7 +172,7 @@ func main() {
 		"default": encryption.NewEncoders(encryption.DataConverterOptions{Compress: true}),
 	}
 
-	var handler http.Handler
+	var providerConfig *ProviderConfig
 
 	if config.Provider != "" {
 		fmt.Printf("oauth support is enabled using: %s\n", config.Provider)
@@ -184,17 +180,17 @@ func main() {
 			fmt.Printf("enforcing oauth audience: %s\n", config.Audience)
 		}
 
-		providerConfig, err := discoverProviderConfig(config.Provider)
+		var err error
+		providerConfig, err = discoverProviderConfig(config.Provider)
 		if err != nil {
-			logger.Fatal("error", tag.NewErrorTag(err))
+			logger.Fatal("unable to discover provider config", tag.NewErrorTag(err))
 		}
-
-		handler = newPayloadEncoderNamespacesHTTPHandler(encoders, &providerConfig, logger)
+		providerConfig.mapper = newClaimMapper(providerConfig.JWKS_URI, logger)
 	} else {
 		fmt.Printf("oauth support is disabled\n")
-
-		handler = newPayloadEncoderNamespacesHTTPHandler(encoders, nil, logger)
 	}
+
+	handler := newPayloadEncoderNamespacesHTTPHandler(encoders, providerConfig, logger)
 
 	if config.Web != "" {
 		fmt.Printf("CORS support is enabled for Origin: %s\n", config.Web)
