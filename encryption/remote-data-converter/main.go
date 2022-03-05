@@ -18,15 +18,46 @@ import (
 	"go.temporal.io/server/common/log/tag"
 )
 
-type ProviderConfig struct {
+var logger log.Logger
+
+type Provider struct {
 	Issuer   string `json:"issuer"`
 	JWKS_URI string `json:"jwks_uri,omitempty"`
 	Audience string
 	mapper   authorization.ClaimMapper
 }
 
-func discoverProviderConfig(providerURL string) (*ProviderConfig, error) {
-	var providerConfig ProviderConfig
+func (p *Provider) Authorize(namespace string, r *http.Request) bool {
+	authInfo := authorization.AuthInfo{
+		AuthToken: r.Header.Get("Authorization"),
+		Audience:  p.Audience,
+	}
+
+	claims, err := p.mapper.GetClaims(&authInfo)
+	if err != nil {
+		logger.Warn("unable to parse claims", tag.NewErrorTag(err))
+		return false
+	}
+
+	// If they have no role in this namespace they will get RoleUndefined
+	role := claims.Namespaces[namespace]
+
+	switch {
+	case strings.HasSuffix(r.URL.Path, "/decode"):
+		if role >= authorization.RoleReader {
+			return true
+		}
+	case strings.HasSuffix(r.URL.Path, "/encode"):
+		if role >= authorization.RoleWriter {
+			return true
+		}
+	}
+
+	return false
+}
+
+func newProvider(providerURL string) (*Provider, error) {
+	var provider Provider
 
 	res, err := http.Get(strings.TrimSuffix(providerURL, "/") + "/.well-known/openid-configuration")
 	if err != nil {
@@ -34,15 +65,17 @@ func discoverProviderConfig(providerURL string) (*ProviderConfig, error) {
 	}
 	defer res.Body.Close()
 
-	err = json.NewDecoder(res.Body).Decode(&providerConfig)
+	err = json.NewDecoder(res.Body).Decode(&provider)
 	if err != nil {
 		return nil, err
 	}
 
-	return &providerConfig, nil
+	provider.mapper = newClaimMapper(provider.JWKS_URI)
+
+	return &provider, nil
 }
 
-func newClaimMapper(providerKeysURL string, logger log.Logger) authorization.ClaimMapper {
+func newClaimMapper(providerKeysURL string) authorization.ClaimMapper {
 	authConfig := config.Authorization{
 		JWTKeyProvider: config.JWTKeyProvider{
 			KeySourceURIs: []string{providerKeysURL},
@@ -74,38 +107,12 @@ func newCORSHTTPHandler(web string, next http.Handler) http.Handler {
 }
 
 // newPayloadEncoderOauthHTTPHandler wraps a HTTP handler with oauth support
-func newPayloadEncoderOauthHTTPHandler(providerConfig *ProviderConfig, namespace string, next http.Handler) http.Handler {
+func newPayloadEncoderOauthHTTPHandler(providers []*Provider, namespace string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authInfo := authorization.AuthInfo{
-			AuthToken: r.Header.Get("Authorization"),
-			Audience:  providerConfig.Audience,
-		}
-
-		claims, err := providerConfig.mapper.GetClaims(&authInfo)
-		if err != nil {
-			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-			return
-		}
-
-		// If they have no role in this namespace they will get RoleUndefined
-		role := claims.Namespaces[namespace]
-
-		authorized := false
-
-		switch {
-		case strings.HasSuffix(r.URL.Path, "/decode"):
-			if role >= authorization.RoleReader {
-				authorized = true
+		for _, provider := range providers {
+			if provider.Authorize(namespace, r) {
+				next.ServeHTTP(w, r)
 			}
-		case strings.HasSuffix(r.URL.Path, "/encode"):
-			if role >= authorization.RoleWriter {
-				authorized = true
-			}
-		}
-
-		if authorized {
-			next.ServeHTTP(w, r)
-			return
 		}
 
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
@@ -120,7 +127,7 @@ func newPayloadEncoderOauthHTTPHandler(providerConfig *ProviderConfig, namespace
 // with the namespace being operated on to easily support this pattern.
 // It will also accept URLs: /encode and /decode with the X-Namespace set to indicate the namespace.
 // This is useful for web access such as from Temporal Web.
-func newPayloadEncoderNamespacesHTTPHandler(encoders map[string][]converter.PayloadEncoder, providerConfig *ProviderConfig, logger log.Logger) http.Handler {
+func newPayloadEncoderNamespacesHTTPHandler(encoders map[string][]converter.PayloadEncoder, providers []*Provider) http.Handler {
 	mux := http.NewServeMux()
 
 	encoderHandlers := map[string]http.Handler{}
@@ -128,8 +135,8 @@ func newPayloadEncoderNamespacesHTTPHandler(encoders map[string][]converter.Payl
 		fmt.Printf("Handling namespace: %s\n", namespace)
 
 		handler := converter.NewPayloadEncoderHTTPHandler(encoderChain...)
-		if providerConfig != nil {
-			handler = newPayloadEncoderOauthHTTPHandler(providerConfig, namespace, handler)
+		if len(providers) > 0 {
+			handler = newPayloadEncoderOauthHTTPHandler(providers, namespace, handler)
 		}
 		mux.Handle("/"+namespace+"/", handler)
 
@@ -150,19 +157,55 @@ func newPayloadEncoderNamespacesHTTPHandler(encoders map[string][]converter.Payl
 	return mux
 }
 
-type appConfig struct {
-	Provider string
-	Audience string
-	Web      string
+type providers []*Provider
+
+func (p *providers) String() string {
+	urls := []string{}
+	for _, provider := range *p {
+		urls = append(urls, provider.Issuer)
+	}
+	return strings.Join(urls, ", ")
+}
+
+func (p *providers) Set(value string) error {
+	provider, err := newProvider(value)
+	if err != nil {
+		return err
+	}
+	*p = append(*p, provider)
+
+	return nil
+}
+
+type audience string
+
+func (a *audience) String() string {
+	return fmt.Sprint(*a)
+}
+
+func (a *audience) Set(value string) error {
+	if len(providersFlag) == 0 {
+		return fmt.Errorf("the audience flag must come after a provider flag")
+	}
+	provider := providersFlag[len(providersFlag)-1]
+	provider.Audience = value
+
+	return nil
+}
+
+var providersFlag providers
+var audienceFlag audience
+var webFlag string
+
+func init() {
+	logger = log.NewCLILogger()
+
+	flag.Var(&providersFlag, "provider", "OIDC Provider URL. Optional: Enables and requires oauth")
+	flag.Var(&audienceFlag, "audience", "OIDC Audience to enforce for the previous provider. Optional")
+	flag.StringVar(&webFlag, "web", "", "Temporal Web URL. Optional: enables CORS which is required for access from Temporal Web")
 }
 
 func main() {
-	logger := log.NewCLILogger()
-	config := &appConfig{}
-
-	flag.StringVar(&config.Provider, "provider", "", "OIDC Provider URL. Optional: Enables and requires oauth")
-	flag.StringVar(&config.Audience, "audience", "", "OIDC Audience to enforce. Optional")
-	flag.StringVar(&config.Web, "web", "", "Temporal Web URL. Optional: enables CORS which is required for access from Temporal Web")
 	flag.Parse()
 
 	// When supporting multiple namespaces, add them here.
@@ -172,31 +215,18 @@ func main() {
 		"default": encryption.NewEncoders(encryption.DataConverterOptions{Compress: true}),
 	}
 
-	var providerConfig *ProviderConfig
-
-	if config.Provider != "" {
-		fmt.Printf("oauth support is enabled using: %s\n", config.Provider)
-		if config.Audience != "" {
-			fmt.Printf("enforcing oauth audience: %s\n", config.Audience)
+	for _, provider := range providersFlag {
+		fmt.Printf("oauth enabled for: %s\n", provider.Issuer)
+		if provider.Audience != "" {
+			fmt.Printf("oauth audience: %s\n", provider.Audience)
 		}
-
-		var err error
-		providerConfig, err = discoverProviderConfig(config.Provider)
-		if err != nil {
-			logger.Fatal("unable to discover provider config", tag.NewErrorTag(err))
-		}
-		providerConfig.mapper = newClaimMapper(providerConfig.JWKS_URI, logger)
-	} else {
-		fmt.Printf("oauth support is disabled\n")
 	}
 
-	handler := newPayloadEncoderNamespacesHTTPHandler(encoders, providerConfig, logger)
+	handler := newPayloadEncoderNamespacesHTTPHandler(encoders, providersFlag)
 
-	if config.Web != "" {
-		fmt.Printf("CORS support is enabled for Origin: %s\n", config.Web)
-		handler = newCORSHTTPHandler(config.Web, handler)
-	} else {
-		fmt.Printf("CORS support is disabled\n")
+	if webFlag != "" {
+		fmt.Printf("CORS enabled for Origin: %s\n", webFlag)
+		handler = newCORSHTTPHandler(webFlag, handler)
 	}
 
 	srv := &http.Server{
