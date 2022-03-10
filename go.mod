@@ -13,7 +13,7 @@ require (
 	github.com/uber-go/tally/v4 v4.1.1
 	github.com/uber/jaeger-client-go v2.29.1+incompatible
 	go.temporal.io/api v1.7.1-0.20220223032354-6e6fe738916a
-	go.temporal.io/sdk v1.13.2-0.20220310140324-2a582f80c934
+	go.temporal.io/sdk v1.14.0
 	go.temporal.io/sdk/contrib/opentracing v0.1.0
 	go.temporal.io/sdk/contrib/tally v0.1.0
 	go.temporal.io/server v1.14.1

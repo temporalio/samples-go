@@ -417,8 +417,8 @@ go.temporal.io/api v1.7.1-0.20220223032354-6e6fe738916a h1:SgkeoCikBXMd/3fNNtymI
 go.temporal.io/api v1.7.1-0.20220223032354-6e6fe738916a/go.mod h1:OnUq5eS+Nyx+irKb3Ws5YB7yjGFf5XmI3WcVRU9COEo=
 go.temporal.io/sdk v1.11.0/go.mod h1:YPiw910FVnuF0/j4qHgqxGEB3kNCOD7ZQY3fOmZltnw=
 go.temporal.io/sdk v1.12.0/go.mod h1:lSp3lH1lI0TyOsus0arnO3FYvjVXBZGi/G7DjnAnm6o=
-go.temporal.io/sdk v1.13.2-0.20220310140324-2a582f80c934 h1:cLFIkjfOOtfxKlJ1/F8VqUJC9k0LqZJPE+gpaPO6O8c=
-go.temporal.io/sdk v1.13.2-0.20220310140324-2a582f80c934/go.mod h1:7rvvSS6oCXp19JSFQtSOhLxCX3wpEQSJZJlyCGleo9M=
+go.temporal.io/sdk v1.14.0 h1:7tJO72gK4xmsZ8W3Xp1rwKYdkwQ/mgnKN5LmROyZTac=
+go.temporal.io/sdk v1.14.0/go.mod h1:7rvvSS6oCXp19JSFQtSOhLxCX3wpEQSJZJlyCGleo9M=
 go.temporal.io/sdk/contrib/opentracing v0.1.0 h1:z5F1EoZQ6v8bMH/pzcFRgzoPKZCB+exUKMYt0jzuWME=
 go.temporal.io/sdk/contrib/opentracing v0.1.0/go.mod h1:rQavYHnrTXlFKvKrn5R91eOLdvaJJ27gtxaKFqH3LuM=
 go.temporal.io/sdk/contrib/tally v0.1.0 h1:edAcGKNIDYU7fd10e4C/43dHw/h1F9cACupcmIKwzPI=
