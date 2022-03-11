@@ -13,7 +13,7 @@ func main() {
 	c, err := client.NewClient(client.Options{
 		// Set DataConverter here to ensure that workflow inputs and results are
 		// compressed as required.
-		DataConverter: remotecodec.SnappyDataConverter,
+		DataConverter: remotecodec.DataConverter,
 	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
