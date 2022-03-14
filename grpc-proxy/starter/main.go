@@ -11,9 +11,7 @@ import (
 func main() {
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.NewClient(client.Options{
-		// Set DataConverter here to ensure that workflow inputs and results are
-		// compressed as required.
-		DataConverter: grpcproxy.DataConverter,
+		HostPort: "localhost:8081",
 	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
