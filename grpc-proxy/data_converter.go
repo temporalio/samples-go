@@ -1,4 +1,4 @@
-package snappycompress
+package grpcproxy
 
 import (
 	"github.com/golang/snappy"
@@ -6,27 +6,20 @@ import (
 	"go.temporal.io/sdk/converter"
 )
 
-// AlwaysCompressDataConverter is a converter that will always perform
-// compression even if the compressed size is larger than the original.
-var AlwaysCompressDataConverter = NewDataConverter(converter.GetDefaultDataConverter(), Options{AlwaysEncode: true})
-
-// Options are options for Snappy compression.
-type Options struct {
-	// If true, will always "compress" even if the compression results in a larger
-	// sized payload.
-	AlwaysEncode bool
-}
+var DataConverter = NewDataConverter(converter.GetDefaultDataConverter())
 
 // NewDataConverter creates a new data converter that wraps the given data
 // converter with snappy compression.
-func NewDataConverter(underlying converter.DataConverter, options Options) converter.DataConverter {
-	return converter.NewCodecDataConverter(underlying, &Codec{Options: options})
+func NewDataConverter(underlying converter.DataConverter) converter.DataConverter {
+	return converter.NewCodecDataConverter(underlying, NewPayloadCodec())
+}
+
+func NewPayloadCodec() converter.PayloadCodec {
+	return &Codec{}
 }
 
 // Codec implements converter.PayloadEncoder for snappy compression.
-type Codec struct {
-	Options Options
-}
+type Codec struct{}
 
 // Encode implements converter.PayloadCodec.Encode.
 func (e *Codec) Encode(payloads []*commonpb.Payload) ([]*commonpb.Payload, error) {
@@ -39,14 +32,9 @@ func (e *Codec) Encode(payloads []*commonpb.Payload) ([]*commonpb.Payload, error
 		}
 		// Compress
 		b := snappy.Encode(nil, origBytes)
-		// Only apply if the compression is smaller or always encode is set
-		if len(b) < len(origBytes) || e.Options.AlwaysEncode {
-			result[i] = &commonpb.Payload{
-				Metadata: map[string][]byte{converter.MetadataEncoding: []byte("binary/snappy")},
-				Data:     b,
-			}
-		} else {
-			result[i] = p
+		result[i] = &commonpb.Payload{
+			Metadata: map[string][]byte{converter.MetadataEncoding: []byte("binary/snappy")},
+			Data:     b,
 		}
 	}
 

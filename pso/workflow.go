@@ -39,7 +39,7 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (string, error) {
 
 	// Setup query handler for query type "child"
 	var childWorkflowID string
-	err := workflow.SetQueryHandler(ctx, "child", func(input []byte) (string, error) {
+	err := workflow.SetQueryHandler(ctx, "child", func() (string, error) {
 		return childWorkflowID, nil
 	})
 	if err != nil {
@@ -63,17 +63,21 @@ func PSOWorkflow(ctx workflow.Context, functionName string) (string, error) {
 
 		// Set child workflow options
 		// Parent workflow can choose to specify it's own ID for child execution.  Make sure they are unique for each execution.
+		wid := workflow.SideEffect(ctx, func(ctx workflow.Context) interface{} {
+			return "PSO_Child_" + uuid.New()
+		})
+		err = wid.Get(&childWorkflowID)
+		if err != nil {
+			return "", err
+		}
 		cwo := workflow.ChildWorkflowOptions{
-			WorkflowID:          "PSO_Child_" + uuid.New(),
+			WorkflowID:          childWorkflowID,
 			WorkflowRunTimeout:  time.Minute,
 			WorkflowTaskTimeout: time.Minute,
 		}
 		ctx = workflow.WithChildOptions(ctx, cwo)
 
 		childWorkflowFuture := workflow.ExecuteChildWorkflow(ctx, PSOChildWorkflow, *swarm, 1)
-		var childWE workflow.Execution
-		_ = childWorkflowFuture.GetChildWorkflowExecution().Get(ctx, &childWE)
-		childWorkflowID = childWE.ID
 		var result WorkflowResult
 		err = childWorkflowFuture.Get(ctx, &result) // This blocking until the child workflow has finished
 		if err != nil {

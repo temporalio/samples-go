@@ -10,20 +10,14 @@ This repository contains several sample Workflow applications that demonstrate t
 
 ## How to use
 
-Make sure the Temporal Server is running locally.
-Follow the [Quick install guide](https://docs.temporal.io/docs/server/quick-install) to do that.
+- You can either run this in the browser with Gitpod: [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/temporalio/samples-go/)
+- Or you can run Temporal Server locally (follow the [Quick install guide](https://docs.temporal.io/docs/server/quick-install)), then clone this repository
 
-Then, clone this repository and follow the instructions in the README that is included with each sample.
 The [helloworld](helloworld/README.md) sample is a good place to start.
-
-You can learn more about running the Server locally in the [temporalio/docker-compose README](https://github.com/temporalio/docker-compose/blob/main/README.md).
-And you can learn more about the Temporal Server technology in general via our [documentation](https://docs.temporal.io/).
 
 ## Samples directory
 
 Each sample demonstrates one feature of the SDK, together with tests.
-
-<!-- @@@SNIPSTART samples-go-readme-samples-directory -->
 
 - [**Basic hello world**](https://github.com/temporalio/samples-go/tree/master/helloworld): Simple example of a Workflow Definition and an Activity Definition.
 
@@ -51,7 +45,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - **Sessions**: Demonstrates how to bind a set of Activity Executions to a specific Worker after the first Activity executes. This feature is showcased in the [File Processing example](https://github.com/temporalio/samples-go/tree/master/fileprocessing). Addition documentation: [How to use Sessions in Go](https://docs.temporal.io/docs/go/sessions).
 
-- **Signals**: Can be seen in the [Recovery](https://github.com/temporalio/samples-go/tree/master/recovery) and [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex) examples. Additional documentation: [eCommerce application tutorial](https://docs.temporal.io/blog/tags/go-ecommerce-tutorial), [How to use Signals in Go](https://docs.temporal.io/docs/go/signals).
+- **Signals**: Can be seen in the [Recovery](https://github.com/temporalio/samples-go/tree/master/recovery) and [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex) examples. Additional documentation: [eCommerce application tutorial](https://docs.temporal.io/blog/tags/go-ecommerce-tutorial), [How to send a Signal to a Workflow Execution in Go](https://docs.temporal.io/docs/go/how-to-send-a-signal-to-a-workflow-execution-in-go), [How to handle a Signal in a Workflow Execution in Go](https://docs.temporal.io/docs/go/how-to-handle-a-signal-in-a-workflow-in-go).
 
 - [**Search Attributes**](https://github.com/temporalio/samples-go/tree/master/searchattributes): Demonstrates how to use custom Search Attributes that can be used to find Workflow Executions using predicates (must use with [Elasticsearch](https://docs.temporal.io/docs/content/how-to-integrate-elasticsearch-into-a-temporal-cluster)).
 
@@ -62,8 +56,10 @@ Each sample demonstrates one feature of the SDK, together with tests.
 - [**Updatable Timer**](https://github.com/temporalio/samples-go/tree/master/updatabletimer): Demonstrates timer cancellation and use of a Selector to wait on a Future and a Channel simultaneously.
 
 - [**Greetings**](https://github.com/temporalio/samples-go/tree/master/greetings): Demonstrates how to pass dependencies to activities defined as struct methods.
--
+
 - [**Greetings Local**](https://github.com/temporalio/samples-go/tree/master/greetingslocal): Demonstrates how to pass dependencies to local activities defined as struct methods.
+
+- [**Interceptors**](https://github.com/temporalio/samples-go/tree/master/interceptor): Demonstrates how to use interceptors to intercept calls, in this case for adding context to the logger.
 
 ### Dynamic Workflow logic examples
 
@@ -102,8 +98,6 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 - [**Request/Response with Response Activities**](https://github.com/temporalio/samples-go/tree/master/reqrespactivity): Demonstrates how to accept requests via signals and use callback activities to push responses.
 
 - [**Request/Response with Response Queries**](https://github.com/temporalio/samples-go/tree/master/reqrespquery): Demonstrates how to accept requests via signals and use queries to poll for responses.
-
-<!-- @@@SNIPEND -->
 
 ### Pending examples
 
