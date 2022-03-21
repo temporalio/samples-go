@@ -39,7 +39,7 @@ func newCORSHTTPHandler(web string, next http.Handler) http.Handler {
 func newPayloadCodecNamespacesHTTPHandler(encoders map[string][]converter.PayloadCodec) http.Handler {
 	mux := http.NewServeMux()
 
-	codecHandlers := map[string]http.Handler{}
+	codecHandlers := make(map[string]http.Handler, len(encoders))
 	for namespace, codecChain := range encoders {
 		fmt.Printf("Handling namespace: %s\n", namespace)
 
