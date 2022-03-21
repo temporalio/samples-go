@@ -39,7 +39,6 @@ func (dc *jsonDataConverter) ToPayloads(value ...interface{}) (*commonpb.Payload
 }
 
 func (dc *jsonDataConverter) ToPayload(value interface{}) (*commonpb.Payload, error) {
-
 	var err error
 	var buf bytes.Buffer
 	enc := json.NewEncoder(&buf)
@@ -84,6 +83,9 @@ func (dc *jsonDataConverter) ToPayload(value interface{}) (*commonpb.Payload, er
 }
 
 func (dc *jsonDataConverter) FromPayloads(payloads *commonpb.Payloads, valuePtrs ...interface{}) error {
+	if payloads == nil {
+		return nil
+	}
 	// TODO: convert payloads into key in DB/S3 and retrieve actual payloads from DB/S3
 	for i, payload := range payloads.Payloads {
 		err := dc.FromPayload(payload, valuePtrs[i])
