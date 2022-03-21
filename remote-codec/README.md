@@ -1,4 +1,7 @@
 ### Steps to run this sample:
+
+This sample shows how to decode payloads that have been compressed by a custom data converter for display in tctl and Temporal web.
+
 1) You need a Temporal service running. See details in README.md
 2) Run the following command to start the worker
 ```
