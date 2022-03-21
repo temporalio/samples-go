@@ -1,6 +1,6 @@
 ############################# Main targets #############################
 # Run all checks, build, and test.
-install: clean staticcheck errcheck bins test
+install: clean staticcheck errcheck workflowcheck bins test
 ########################################################################
 
 ##### Variables ######
@@ -40,6 +40,11 @@ errcheck:
 	@GO111MODULE=off go get -u github.com/kisielk/errcheck
 	@errcheck ./...
 
+workflowcheck:
+	@printf $(COLOR) "Run workflow check..."
+	@go install go.temporal.io/sdk/contrib/tools/workflowcheck
+	@workflowcheck -show-pos ./...
+
 update-sdk:
 	go get -u go.temporal.io/api@master
 	go get -u go.temporal.io/sdk@master
@@ -48,7 +53,7 @@ update-sdk:
 clean:
 	rm -rf bin
 	
-ci-build: staticcheck errcheck bins test
+ci-build: staticcheck errcheck workflowcheck bins test
 
 
 ##### Fossa #####
