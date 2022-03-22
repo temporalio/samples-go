@@ -12,7 +12,7 @@ import (
 
 type Provider struct {
 	Issuer   string `json:"issuer"`
-	JWKS_URI string `json:"jwks_uri,omitempty"`
+	JWKSURI  string `json:"jwks_uri,omitempty"`
 	Audience string
 	mapper   authorization.ClaimMapper
 }
@@ -66,7 +66,7 @@ func newProvider(providerURL string) (*Provider, error) {
 		return nil, err
 	}
 
-	provider.mapper = newClaimMapper(provider.JWKS_URI)
+	provider.mapper = newClaimMapper(provider.JWKSURI)
 
 	return &provider, nil
 }
