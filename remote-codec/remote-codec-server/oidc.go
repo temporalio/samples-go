@@ -59,7 +59,7 @@ func newProvider(providerURL string) (*Provider, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	defer func() { _ = res.Body.Close() }()
 
 	err = json.NewDecoder(res.Body).Decode(&provider)
 	if err != nil {
