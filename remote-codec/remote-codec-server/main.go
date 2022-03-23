@@ -32,11 +32,23 @@ func newCORSHTTPHandler(web string, next http.Handler) http.Handler {
 	})
 }
 
+// newPayloadEncoderOauthHTTPHandler wraps a HTTP handler with oauth support
+func newPayloadEncoderOauthHTTPHandler(provider *Provider, namespace string, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if provider.Authorize(namespace, r) {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+	})
+}
+
 // HTTP handler for codecs.
 // This remote codec server example supports URLs like: /{namespace}/encode and /{namespace}/decode
 // For example, for the default namespace you would hit /default/encode and /default/decode
 // It will also accept URLs: /encode and /decode with the X-Namespace set to indicate the namespace.
-func newPayloadCodecNamespacesHTTPHandler(encoders map[string][]converter.PayloadCodec) http.Handler {
+func newPayloadCodecNamespacesHTTPHandler(encoders map[string][]converter.PayloadCodec, provider *Provider) http.Handler {
 	mux := http.NewServeMux()
 
 	codecHandlers := make(map[string]http.Handler, len(encoders))
@@ -44,6 +56,9 @@ func newPayloadCodecNamespacesHTTPHandler(encoders map[string][]converter.Payloa
 		fmt.Printf("Handling namespace: %s\n", namespace)
 
 		handler := converter.NewPayloadCodecHTTPHandler(codecChain...)
+		if provider != nil {
+			handler = newPayloadEncoderOauthHTTPHandler(provider, namespace, handler)
+		}
 		mux.Handle("/"+namespace+"/", handler)
 
 		codecHandlers[namespace] = handler
@@ -64,12 +79,18 @@ func newPayloadCodecNamespacesHTTPHandler(encoders map[string][]converter.Payloa
 }
 
 var portFlag int
+var providerFlag string
+var audienceFlag string
 var webFlag string
+
+var provider *Provider
 
 func init() {
 	logger = log.NewCLILogger()
 
 	flag.IntVar(&portFlag, "port", 8081, "Port to listen on")
+	flag.StringVar(&providerFlag, "provider", "", "OIDC Provider URL. Optional: Enforces oauth authentication")
+	flag.StringVar(&audienceFlag, "audience", "", "OIDC Audience. Optional")
 	flag.StringVar(&webFlag, "web", "", "Temporal Web URL. Optional: enables CORS which is required for access from Temporal Web")
 }
 
@@ -82,7 +103,20 @@ func main() {
 		"default": {remotecodec.NewPayloadCodec()},
 	}
 
-	handler := newPayloadCodecNamespacesHTTPHandler(codecs)
+	if providerFlag != "" {
+		p, err := newProvider(providerFlag)
+		if err != nil {
+			logger.Fatal("error", tag.NewErrorTag(err))
+		}
+		fmt.Printf("oauth enabled for: %s\n", provider.Issuer)
+		provider = p
+		if audienceFlag != "" {
+			fmt.Printf("oauth audience: %s\n", provider.Audience)
+			provider.Audience = audienceFlag
+		}
+	}
+
+	handler := newPayloadCodecNamespacesHTTPHandler(codecs, provider)
 
 	if webFlag != "" {
 		fmt.Printf("CORS enabled for Origin: %s\n", webFlag)
