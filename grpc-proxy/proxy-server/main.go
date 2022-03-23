@@ -84,7 +84,7 @@ func main() {
 		logger.Fatal("unable to create listener: %v", tag.NewErrorTag(err))
 	}
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(grpc.ChainUnaryInterceptor(serverInterceptors...))
 	handler, err := client.NewWorkflowServiceProxyServer(
 		client.WorkflowServiceProxyOptions{Client: workflowClient},
 	)
