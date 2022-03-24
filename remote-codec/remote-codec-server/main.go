@@ -108,11 +108,11 @@ func main() {
 		if err != nil {
 			logger.Fatal("error", tag.NewErrorTag(err))
 		}
-		fmt.Printf("oauth enabled for: %s\n", provider.Issuer)
 		provider = p
+		fmt.Printf("oauth enabled for: %s\n", provider.Issuer)
 		if audienceFlag != "" {
-			fmt.Printf("oauth audience: %s\n", provider.Audience)
 			provider.Audience = audienceFlag
+			fmt.Printf("oauth audience: %s\n", provider.Audience)
 		}
 	}
 
