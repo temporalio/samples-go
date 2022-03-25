@@ -25,5 +25,5 @@ go run remote-codec-server/main.go
 ```
 6) Run the following command to see that tctl can now decode (uncompress) the payloads via the remote codec server
 ```
-tctl --remote_codec_endpoint 'http://localhost:8081/{namespace}' workflow show --wid remotecodec_workflowID
+tctl --codec_endpoint 'http://localhost:8081/{namespace}' workflow show --wid remotecodec_workflowID
 ```
