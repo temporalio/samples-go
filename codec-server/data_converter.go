@@ -1,4 +1,4 @@
-package remotecodec
+package codecserver
 
 import (
 	"github.com/golang/snappy"

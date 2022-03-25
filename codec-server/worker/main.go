@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	remotecodec "github.com/temporalio/samples-go/remote-codec"
+	codecserver "github.com/temporalio/samples-go/codec-server"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 )
@@ -13,17 +13,17 @@ func main() {
 	c, err := client.NewClient(client.Options{
 		// Set DataConverter here so that workflow and activity inputs/results will
 		// be compressed as required.
-		DataConverter: remotecodec.DataConverter,
+		DataConverter: codecserver.DataConverter,
 	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
 
-	w := worker.New(c, "remotecodec", worker.Options{})
+	w := worker.New(c, "codecserver", worker.Options{})
 
-	w.RegisterWorkflow(remotecodec.Workflow)
-	w.RegisterActivity(remotecodec.Activity)
+	w.RegisterWorkflow(codecserver.Workflow)
+	w.RegisterActivity(codecserver.Activity)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

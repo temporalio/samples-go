@@ -39,7 +39,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Encryption**](https://github.com/temporalio/samples-go/tree/master/encryption): How to use encryption for Workflow/Activity data with the DataConverter API. Also includes an example of stacking encoders (in this case encryption and compression). [Docs](https://docs.temporal.io/docs/go/workflows/#custom-serialization-and-workflow-security).
 
-- [**Remote Codec**](https://github.com/temporalio/samples-go/tree/master/remote-codec-server): Demonstrates using a remote codec server to decode compressed payloads for display in tctl and Temporal Web. This setup can be used for any kind of codec, for example encryption.
+- [**Codec Server**](https://github.com/temporalio/samples-go/tree/master/codec-server): Demonstrates using a codec server to decode payloads for display in tctl and Temporal Web. This setup can be used for any kind of codec, common examples are compression or encryption.
 
 - [**Query Example**](https://github.com/temporalio/samples-go/tree/master/query): Demonstrates how to Query the state of a single Workflow Execution using the `QueryWorkflow` and `SetQueryHandler` APIs. Additional documentation: [How to Query a Workflow Execution in Go](https://docs.temporal.io/docs/go/queries).
 

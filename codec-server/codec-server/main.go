@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"strconv"
 
-	remotecodec "github.com/temporalio/samples-go/remote-codec"
+	codecserver "github.com/temporalio/samples-go/codec-server"
 
 	"go.temporal.io/sdk/converter"
 	"go.temporal.io/server/common/log"
@@ -100,7 +100,7 @@ func main() {
 	// Set codecs per namespace here.
 	// Only handle codecs for the default namespace in this example.
 	codecs := map[string][]converter.PayloadCodec{
-		"default": {remotecodec.NewPayloadCodec()},
+		"default": {codecserver.NewPayloadCodec()},
 	}
 
 	if providerFlag != "" {
