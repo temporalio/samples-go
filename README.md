@@ -39,6 +39,8 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Encryption**](https://github.com/temporalio/samples-go/tree/master/encryption): How to use encryption for Workflow/Activity data with the DataConverter API. Also includes an example of stacking encoders (in this case encryption and compression). [Docs](https://docs.temporal.io/docs/go/workflows/#custom-serialization-and-workflow-security).
 
+- [**Codec Server**](https://github.com/temporalio/samples-go/tree/master/codec-server): Demonstrates using a codec server to decode payloads for display in tctl and Temporal Web. This setup can be used for any kind of codec, common examples are compression or encryption.
+
 - [**Query Example**](https://github.com/temporalio/samples-go/tree/master/query): Demonstrates how to Query the state of a single Workflow Execution using the `QueryWorkflow` and `SetQueryHandler` APIs. Additional documentation: [How to Query a Workflow Execution in Go](https://docs.temporal.io/docs/go/queries).
 
 - **Selectors**: Do not use the native Go `select` statement. Instead use [Go SDK Selectors](https://docs.temporal.io/docs/go/selectors) (`selector.Select(ctx)`) to maintain a [deterministic](https://docs.temporal.io/docs/go/workflows/#how-to-write-workflow-code) Workflow. Can be seen in the [Pick First](https://github.com/temporalio/samples-go/tree/master/pickfirst), [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex), [DSL](https://github.com/temporalio/samples-go/tree/master/dsl), and [Timer](https://github.com/temporalio/samples-go/tree/master/timer) examples.
@@ -67,7 +69,7 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 - [**Dynamic Execution**](https://github.com/temporalio/samples-go/tree/master/dynamic): Demonstrates how to execute Workflows and Activities using a name rather than a strongly typed function.
 
-- [**Branching Acitivites**](https://github.com/temporalio/samples-go/blob/master/branch): Executes multiple Activities in parallel. The number of branches is controlled by a parameter that is passed in at the start of the Workflow Execution.
+- [**Branching Acitivties**](https://github.com/temporalio/samples-go/blob/master/branch): Executes multiple Activities in parallel. The number of branches is controlled by a parameter that is passed in at the start of the Workflow Execution.
 
 - [**Exclusive Choice**](https://github.com/temporalio/samples-go/tree/master/choice-exclusive): Demonstrates how to execute Activities based on a dynamic input.
 

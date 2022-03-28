@@ -128,6 +128,7 @@ func printSearchAttributes(searchAttributes *common.SearchAttributes, logger log
 	}
 
 	var builder strings.Builder
+	//workflowcheck:ignore Only iterates for logging reasons
 	for k, v := range searchAttributes.GetIndexedFields() {
 		var currentVal interface{}
 		err := converter.GetDefaultDataConverter().FromPayload(v, &currentVal)

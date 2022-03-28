@@ -49,6 +49,7 @@ type (
 // SimpleDSLWorkflow workflow definition
 func SimpleDSLWorkflow(ctx workflow.Context, dslWorkflow Workflow) ([]byte, error) {
 	bindings := make(map[string]string)
+	//workflowcheck:ignore Only iterates for building another map
 	for k, v := range dslWorkflow.Variables {
 		bindings[k] = v
 	}
