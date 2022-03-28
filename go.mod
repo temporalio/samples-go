@@ -17,7 +17,7 @@ require (
 	go.temporal.io/api v1.7.1-0.20220223032354-6e6fe738916a
 	go.temporal.io/sdk v1.14.0
 	go.temporal.io/sdk/contrib/opentracing v0.1.0
-	go.temporal.io/sdk/contrib/tally v0.1.0
+	go.temporal.io/sdk/contrib/tally v0.1.1-0.20220328170036-567257bf3879
 	go.temporal.io/server v1.14.1
 	go.uber.org/zap v1.19.1
 	google.golang.org/grpc v1.44.0
