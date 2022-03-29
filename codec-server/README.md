@@ -64,7 +64,7 @@ sequenceDiagram;
 	Note right of tctl: Body: Payloads protobuf as JSON
 	alt invalid JSON
 		Server-->>tctl: HTTP 400 BadRequest
-    else decoder error
+    else encoder error
 		Server-->>tctl: HTTP 400 BadRequest
     else
 		Server-->>tctl: HTTP 200 OK
