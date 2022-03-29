@@ -99,6 +99,6 @@ func tctlSystemToken() error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("TEMPORAL_CLI_AUTHORIZATION_TOKEN=Bearer %v", token)
+	fmt.Printf("TEMPORAL_CLI_AUTH=Bearer %v", token)
 	return nil
 }
