@@ -110,8 +110,6 @@ github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.1/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
-github.com/cretz/temporal-sdk-go/contrib/tools/workflowcheck v0.0.0-20220121193620-36ed5f1888d9 h1:hor6fvGbcBYbPMVdgeiS74tRNe1QqUqMRa3CPVP0jms=
-github.com/cretz/temporal-sdk-go/contrib/tools/workflowcheck v0.0.0-20220121193620-36ed5f1888d9/go.mod h1:rSAFM+DxTYMhZlM6GFxTlqV73l5ewPeZbd9/LWWVCvc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -474,6 +472,8 @@ go.temporal.io/sdk/contrib/opentracing v0.1.0 h1:z5F1EoZQ6v8bMH/pzcFRgzoPKZCB+ex
 go.temporal.io/sdk/contrib/opentracing v0.1.0/go.mod h1:rQavYHnrTXlFKvKrn5R91eOLdvaJJ27gtxaKFqH3LuM=
 go.temporal.io/sdk/contrib/tally v0.1.0 h1:edAcGKNIDYU7fd10e4C/43dHw/h1F9cACupcmIKwzPI=
 go.temporal.io/sdk/contrib/tally v0.1.0/go.mod h1:PckZI8gA0AxIBvrgT2FQlm8TaqptYmqRdy2NxOibsZQ=
+go.temporal.io/sdk/contrib/tools/workflowcheck v0.0.0-20220331154559-fd0d1eb548eb h1:cpSEAnCCkOtcwdY2NysRXdi4Ny19F5V5KplrAVl1/Mo=
+go.temporal.io/sdk/contrib/tools/workflowcheck v0.0.0-20220331154559-fd0d1eb548eb/go.mod h1:rSAFM+DxTYMhZlM6GFxTlqV73l5ewPeZbd9/LWWVCvc=
 go.temporal.io/server v1.15.2 h1:3za3YwtJz9g/KOKfASLD6QWQwtfGObTUqny/q/EVi3o=
 go.temporal.io/server v1.15.2/go.mod h1:AXMXBNqMzAKVYUtnJhDoqk7COOykPdJ9i+TxOMgL/Rc=
 go.temporal.io/version v0.3.0/go.mod h1:UA9S8/1LaKYae6TyD9NaPMJTZb911JcbqghI2CBSP78=
