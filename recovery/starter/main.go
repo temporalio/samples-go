@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"log"
+	"time"
 
 	"go.temporal.io/sdk/client"
 
@@ -49,6 +50,7 @@ func main() {
 		workflowOptions := client.StartWorkflowOptions{
 			ID:        workflowID,
 			TaskQueue: "recovery",
+			WorkflowExecutionTimeout: 1 * time.Minute,
 		}
 		we, weError = c.ExecuteWorkflow(context.Background(), workflowOptions, recovery.RecoverWorkflow, params)
 	default:
