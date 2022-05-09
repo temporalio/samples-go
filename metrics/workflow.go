@@ -17,7 +17,7 @@ func Workflow(ctx workflow.Context) error {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Metrics workflow started.")
 
-	// custom
+	// increment custom counter
 	workflow.GetMetricsHandler(ctx).Counter("my_workflow_counter").Inc(1)
 
 	scheduledTimeNanos := workflow.Now(ctx).UnixNano()
