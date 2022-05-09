@@ -55,8 +55,8 @@ func newPrometheusScope(c prometheus.Configuration) tally.Scope {
 		Separator:       prometheus.DefaultSeparator,
 		SanitizeOptions: &sanitizeOptions,
 		Prefix:          "temporal_samples",
-		Tags:            map[string]string{"my_key1": "my_value1",
-			                       "my_key2": "my_value2"},
+		Tags: map[string]string{"my_key1": "my_value1",
+			"my_key2": "my_value2"},
 	}
 	scope, _ := tally.NewRootScope(scopeOpts, time.Second)
 
