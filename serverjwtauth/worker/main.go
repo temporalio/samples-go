@@ -16,7 +16,7 @@ func main() {
 		log.Fatalln(err)
 	}
 	// The client and worker are heavyweight objects that should be created once per process.
-	c, err := client.NewClient(client.Options{
+	c, err := client.Dial(client.Options{
 		HeadersProvider: &serverjwtauth.JWTHeadersProvider{
 			Config: serverjwtauth.JWTConfig{
 				Key:   key,

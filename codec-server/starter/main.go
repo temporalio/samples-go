@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// The client is a heavyweight object that should be created once per process.
-	c, err := client.NewClient(client.Options{
+	c, err := client.Dial(client.Options{
 		// Set DataConverter here to ensure that workflow inputs and results are
 		// encoded as required.
 		DataConverter: codecserver.DataConverter,

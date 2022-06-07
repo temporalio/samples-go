@@ -13,7 +13,7 @@ import (
 
 func main() {
 	// The client is a heavyweight object that should be created once per process.
-	c, err := client.NewClient(client.Options{
+	c, err := client.Dial(client.Options{
 		// If you intend to use the same encryption key for all workflows you can
 		// set the KeyID for the encryption encoder like so:
 		//

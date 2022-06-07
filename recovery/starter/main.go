@@ -20,7 +20,7 @@ func main() {
 	flag.Parse()
 
 	// The client is a heavyweight object that should be created once per process.
-	c, err := client.NewClient(client.Options{
+	c, err := client.Dial(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
 	if err != nil {
@@ -48,8 +48,8 @@ func main() {
 		}
 
 		workflowOptions := client.StartWorkflowOptions{
-			ID:        workflowID,
-			TaskQueue: "recovery",
+			ID:                       workflowID,
+			TaskQueue:                "recovery",
 			WorkflowExecutionTimeout: 1 * time.Minute,
 		}
 		we, weError = c.ExecuteWorkflow(context.Background(), workflowOptions, recovery.RecoverWorkflow, params)
