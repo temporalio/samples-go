@@ -138,7 +138,6 @@
       "activityTaskScheduledEventAttributes": {
         "activityId": "6",
         "activityType": { "name": "LongActivity" },
-        "namespace": "",
         "taskQueue": { "name": "rainbow-statuses", "kind": "Normal" },
         "header": { "fields": {} },
         "scheduleToCloseTimeout": "0s",

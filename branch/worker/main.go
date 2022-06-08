@@ -12,7 +12,7 @@ import (
 // @@@SNIPSTART samples-go-branch-worker-starter
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
-	c, err := client.NewClient(client.Options{
+	c, err := client.Dial(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
 	if err != nil {

@@ -13,7 +13,7 @@ import (
 // @@@SNIPSTART samples-go-cw-cas-workflow-execution-starter
 func main() {
 	// The client is a heavyweight object that should be created once per process.
-	c, err := client.NewClient(client.Options{
+	c, err := client.Dial(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
 	if err != nil {

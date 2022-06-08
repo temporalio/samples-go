@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	c, err := client.NewClient(client.Options{
+	c, err := client.Dial(client.Options{
 		// ZapAdapter implements log.Logger interface and can be passed
 		// to the client constructor using client using client.Options.
 		Logger: zapadapter.NewZapAdapter(

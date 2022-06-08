@@ -20,7 +20,7 @@ func main() {
 
 	// Create client
 	var err error
-	opts.Client, err = client.NewClient(client.Options{
+	opts.Client, err = client.Dial(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
 	if err != nil {
