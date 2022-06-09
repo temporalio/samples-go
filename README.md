@@ -85,6 +85,8 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 - [**Synchronous Proxy Workflow pattern**](https://github.com/temporalio/samples-go/tree/master/synchronous-proxy): This sample demonstrates a synchronous interaction with a "main" Workflow Execution from a "proxy" Workflow Execution. The proxy Workflow Execution sends a Signal to the "main" Workflow Execution, then blocks, waiting for a Signal in response.
 
+- [**Saga pattern**](https://github.com/temporalio/samples-go/tree/main/saga): This sample demonstrates how to implement a saga pattern using golang defer feature.
+
 ### Scenario based examples
 
 - [**DSL Workflow**](https://github.com/temporalio/samples-go/tree/master/dsl): Demonstrates how to implement a DSL-based Workflow. This sample contains 2 yaml files that each define a custom "workflow" which instructs the Temporal Workflow. This is useful if you want to build in a "low code" layer.
@@ -110,7 +112,6 @@ Mostly examples we haven't yet ported from https://github.com/temporalio/samples
   - Periodic Workflow: Workflow that executes some logic periodically. *Example to be completed*
   - Exception propagation and wrapping: *Example to be completed*
   - Polymorphic activity: *Example to be completed*
-  - SAGA pattern:  *Example to be completed*
   - Side Effect:  *Example to be completed* - [Docs](https://docs.temporal.io/docs/go/side-effect)
 
 ### Fixtures

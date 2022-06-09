@@ -23,6 +23,7 @@ require (
 	go.temporal.io/sdk/contrib/tally v0.1.0
 	go.temporal.io/sdk/contrib/tools/workflowcheck v0.0.0-20220331154559-fd0d1eb548eb
 	go.temporal.io/server v1.15.2
+	go.uber.org/multierr v1.7.0
 	go.uber.org/zap v1.20.0
 	google.golang.org/grpc v1.47.0
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
