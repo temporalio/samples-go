@@ -44,7 +44,7 @@ func main() {
 	if err != nil {
 		log.Fatalln("Failure getting workflow result", err)
 	}
-	log.Println("Workflow result: %v", "result", result)
+	log.Printf("Workflow result: %v", result)
 }
 
 // @@@SNIPEND
