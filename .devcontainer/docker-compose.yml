@@ -1,11 +1,12 @@
-# this is a simple docker compose that has been tested to work with remote containers in VS code.
-# You can run these samples in the browser with no need to run Temporal Server locally
-# by using Codespaces on github. 
+# This is a simple docker compose that has been tested to work with remote containers in VS code.
+# You can run these samples by installing the Remote Containers plugin in VSCode and opening
+# this repo. When prompted, click "Open in Cointainer".
+# see https://code.visualstudio.com/docs/remote/containers for info on remote containers
 # see https://github.com/temporalio/docker-compose for other reference docker-compose files
 version: '3.5'
 services:
-  ## uncomment if you need search attributes feature
-  ## dont forget to uncomment the ES related comments in the temporal service below
+  ## Uncomment if you need search attributes feature.
+  ## Don't forget to uncomment the ES related comments in the temporal service below.
   # elasticsearch:
   #   container_name: temporal-elasticsearch
   #   environment:
@@ -59,7 +60,7 @@ services:
     #  - ENABLE_ES=true
     #  - ES_SEEDS=elasticsearch
     #  - ES_VERSION=v7
-    image: temporalio/auto-setup:1.13.4
+    image: temporalio/auto-setup:latest
     ports:
       - 7233:7233
     volumes:
@@ -70,7 +71,7 @@ services:
       - temporal
     environment:
       - TEMPORAL_CLI_ADDRESS=temporal:7233
-    image: temporalio/admin-tools:1.13.4
+    image: temporalio/admin-tools:latest
     stdin_open: true
     tty: true
   temporal-web:
@@ -80,7 +81,7 @@ services:
     environment:
       - TEMPORAL_GRPC_ENDPOINT=temporal:7233
       - TEMPORAL_PERMIT_WRITE_API=true
-    image: temporalio/web:1.12.0
+    image: temporalio/web:latest
     ports:
       - 8088:8088
 
