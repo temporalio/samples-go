@@ -11,7 +11,7 @@ This repository contains several sample Workflow applications that demonstrate t
 ## How to use
 
 - You can run this in the browser with Gitpod: [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/temporalio/samples-go/)
-- Or you can run Temporal Server locally using [VSCode Remote Containers](https://code.visualstudio.com/docs/remote/containers). (install Remote containers plugin in VScode and then open this repo and select "Run in container" when prompted)
+- Or you can run Temporal Server locally using [VSCode Remote Containers](https://code.visualstudio.com/docs/remote/containers). [![Open in Remote - Containers](https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/temporalio/samples-go) 
 - Lastly, you can run Temporal Server locally on your own (follow the [Quick install guide](https://docs.temporal.io/docs/server/quick-install)), then clone this repository
 
 The [helloworld](helloworld/README.md) sample is a good place to start.
