@@ -2,6 +2,7 @@ package reqrespquery
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -69,7 +70,7 @@ func (r *Requester) RequestUppercase(ctx context.Context, str string) (string, e
 			var resp *Response
 			err = val.Get(&resp)
 			// We continue on ErrNoData
-			if err != nil && err != temporal.ErrNoData {
+			if err != nil && !errors.Is(err, temporal.ErrNoData) {
 				return "", fmt.Errorf("failed unmarshalling response: %w", err)
 			} else if resp != nil && resp.Error != "" {
 				return "", fmt.Errorf("request failed: %v", resp.Error)
