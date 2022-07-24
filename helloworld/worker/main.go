@@ -6,12 +6,15 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
+	"github.com/temporalio/samples-go/common"
 	"github.com/temporalio/samples-go/helloworld"
 )
 
 func main() {
+	options := common.GetClientOptions()
+
 	// The client and worker are heavyweight objects that should be created once per process.
-	c, err := client.Dial(client.Options{})
+	c, err := client.Dial(options)
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
