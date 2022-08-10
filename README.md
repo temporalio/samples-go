@@ -22,6 +22,8 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Basic hello world**](https://github.com/temporalio/samples-go/tree/master/helloworld): Simple example of a Workflow Definition and an Activity Definition.
 
+- [**Basic mTLS hello world**](https://github.com/temporalio/samples-go/tree/master/helloworldmtls): Simple example of a Workflow Definition and an Activity Definition using mTLS like Temporal Cloud.
+
 ### API demonstrations
 
 - **Async activity completion**: Example of an [Expense reporting](https://github.com/temporalio/samples-go/tree/master/expense) Workflow that communicates with a server API. Additional documentation: [How to complete an Activity Execution asynchronously in Go](https://docs.temporal.io/docs/go/activities/#asynchronous-activity-completion)
