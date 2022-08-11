@@ -58,7 +58,7 @@ func ParseClientOptionFlags(args []string) (client.Options, error) {
 	} else if *clientCert == "" || *clientKey == "" {
 		return client.Options{}, fmt.Errorf("-client-cert and -client-key are required")
 	}
-	// @@@SNIPSTART go-mtls-configuration
+
 	// Load client cert
 	cert, err := tls.LoadX509KeyPair(*clientCert, *clientKey)
 	if err != nil {
@@ -76,8 +76,7 @@ func ParseClientOptionFlags(args []string) (client.Options, error) {
 			return client.Options{}, fmt.Errorf("server CA PEM file invalid")
 		}
 	}
-	// @@@SNIPEND
-
+	// @@@SNIPSTART go-mtls-configuration
 	return client.Options{
 		HostPort:  *targetHost,
 		Namespace: *namespace,
@@ -88,4 +87,5 @@ func ParseClientOptionFlags(args []string) (client.Options, error) {
 			},
 		},
 	}, nil
+	// @@@SNIPEND
 }
