@@ -1,9 +1,12 @@
 package multinsclient
 
 import (
+	"bytes"
+	"context"
 	"fmt"
 	"hash/fnv"
 
+	"go.temporal.io/api/workflowservice/v1"
 	"go.temporal.io/sdk/client"
 )
 
@@ -122,6 +125,9 @@ func New(options Options) (*Client, error) {
 //
 // The resulting client is only non-nil if the namespace is enabled.
 func (c *Client) NamespaceFor(workflowID string, onlyEnabled bool) (namespace string, client client.Client) {
+	if workflowID == "" {
+		panic("missing workflow ID")
+	}
 	// First try across all namespaces
 	namespace = c.allNamespaces[c.hasher(workflowID, len(c.allNamespaces))]
 	// If they only want enabled and this one isn't enabled, do another hash only
@@ -174,4 +180,131 @@ func (c *Client) Close() {
 	for _, client := range c.enabledNamespaceClients {
 		client.Close()
 	}
+}
+
+// ExecuteWorkflow is a multi-namespace version of client.ExecuteWorkflow. The
+// workflow ID must be present.
+func (c *Client) ExecuteWorkflow(
+	ctx context.Context,
+	options client.StartWorkflowOptions,
+	workflow interface{},
+	args ...interface{},
+) (client.WorkflowRun, error) {
+	if options.ID == "" {
+		return nil, fmt.Errorf("workflow ID must be present")
+	}
+	return c.ClientFor(options.ID).ExecuteWorkflow(ctx, options, workflow, args...)
+}
+
+// GetWorkflow is a multi-namespace version of client.GetWorkflow.
+func (c *Client) GetWorkflow(ctx context.Context, workflowID string, runID string) client.WorkflowRun {
+	return c.ClientFor(workflowID).GetWorkflow(ctx, workflowID, runID)
+}
+
+// SignalWorkflow is a multi-namespace version of client.SignalWorkflow.
+func (c *Client) SignalWorkflow(
+	ctx context.Context,
+	workflowID string,
+	runID string,
+	signalName string,
+	arg interface{},
+) error {
+	return c.ClientFor(workflowID).SignalWorkflow(ctx, workflowID, runID, signalName, arg)
+}
+
+// SignalWithStartWorkflow is a multi-namespace version of
+// client.SignalWithStartWorkflow.
+func (c *Client) SignalWithStartWorkflow(
+	ctx context.Context,
+	workflowID string,
+	signalName string,
+	signalArg interface{},
+	options client.StartWorkflowOptions,
+	workflow interface{},
+	workflowArgs ...interface{},
+) (client.WorkflowRun, error) {
+	return c.ClientFor(workflowID).SignalWithStartWorkflow(
+		ctx, workflowID, signalName, signalArg, options, workflow, workflowArgs...)
+}
+
+// CancelWorkflow is a multi-namespace version of client.CancelWorkflow.
+func (c *Client) CancelWorkflow(ctx context.Context, workflowID string, runID string) error {
+	return c.ClientFor(workflowID).CancelWorkflow(ctx, workflowID, runID)
+}
+
+// TerminateWorkflow is a multi-namespace version of client.TerminateWorkflow.
+func (c *Client) TerminateWorkflow(
+	ctx context.Context,
+	workflowID string,
+	runID string,
+	reason string,
+	details ...interface{},
+) error {
+	return c.ClientFor(workflowID).TerminateWorkflow(ctx, workflowID, runID, reason, details...)
+}
+
+// ListWorkflow is a multi-namespace version of client.ListWorkflow. The page
+// size on the request must be set and namespace cannot be set.
+func (c *Client) ListWorkflow(
+	ctx context.Context,
+	request *workflowservice.ListWorkflowExecutionsRequest,
+) (*workflowservice.ListWorkflowExecutionsResponse, error) {
+	if request.Namespace != "" {
+		return nil, fmt.Errorf("namespace not allowed on request")
+	} else if request.PageSize == 0 {
+		// TODO(cretz): Default page size?
+		return nil, fmt.Errorf("page size required")
+	}
+
+	// If there is a next-page-token, extract the starting namespace
+	var startingNamespace string
+	callReq := &workflowservice.ListWorkflowExecutionsRequest{Query: request.Query}
+	if len(request.NextPageToken) > 0 {
+		callReq.NextPageToken = bytes.TrimPrefix(request.NextPageToken, []byte("__nspre__"))
+		if len(callReq.NextPageToken) == len(request.NextPageToken) {
+			return nil, fmt.Errorf("invalid next page token")
+		}
+		postIndex := bytes.Index(callReq.NextPageToken, []byte("__nspost__"))
+		if postIndex == -1 {
+			return nil, fmt.Errorf("invalid next page token")
+		}
+		startingNamespace = string(callReq.NextPageToken[:postIndex])
+		callReq.NextPageToken = bytes.TrimPrefix(callReq.NextPageToken[postIndex:], []byte("__nspost__"))
+	}
+
+	// Continually retrieve pages until we fill a page or are done
+	var resp workflowservice.ListWorkflowExecutionsResponse
+	for i, namespace := range c.enabledNamespaces {
+		// If there's a starting namespace and we're not it, keep going
+		if startingNamespace != "" {
+			if startingNamespace != namespace {
+				continue
+			}
+			startingNamespace = ""
+		}
+
+		// Set the page size as how many left we need
+		callReq.PageSize = request.PageSize - int32(len(resp.Executions))
+		callReq.Namespace = namespace
+		callResp, err := c.enabledNamespaceClients[namespace].ListWorkflow(ctx, callReq)
+		if err != nil {
+			return nil, err
+		}
+
+		// Add executions and if we've reached the page limit we're done
+		resp.Executions = append(resp.Executions, callResp.Executions...)
+		if len(resp.Executions) == int(request.PageSize) {
+			// If there is a next page token, set it. Otherwise, if we're not at the
+			// last namespace, set the next one as starting with no token.
+			if len(callResp.NextPageToken) > 0 {
+				resp.NextPageToken = append([]byte("__nspre__"+namespace+"__nspost__"), callResp.NextPageToken...)
+			} else if i < len(c.enabledNamespaces)-1 {
+				resp.NextPageToken = []byte("__nspre__" + c.enabledNamespaces[i+1] + "__nspost__")
+			}
+			break
+		}
+		// Clear out next token before doing next namespace
+		callReq.NextPageToken = nil
+	}
+	return &resp, nil
 }
