@@ -17,16 +17,11 @@ import (
 )
 
 /*
- * This sample shows how to use memo. (Note this feature only work with Elasticsearch)
+ * This sample shows how to use memo.
  */
 
 // ClientContextKey is the key for lookup
 type ClientContextKey struct{}
-
-const (
-	// namespace used for this sample. "default" namespace always exists on the server.
-	namespace = "default"
-)
 
 var (
 	// ErrClientNotFound when client is not found on context.
@@ -69,10 +64,10 @@ func MemoWorkflow(ctx workflow.Context) error {
 		return err
 	}
 
-	// Now send commands to the server and let Elasticsearch update the index.
+	// Now send commands to the server and let visibility storage update the index.
 	_ = workflow.Sleep(ctx, 1*time.Second)
 
-	// After Elasticsearch index is updated we can query it.
+	// After visibility storage index is updated we can query it.
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
 	}
@@ -84,7 +79,7 @@ func MemoWorkflow(ctx workflow.Context) error {
 		return err
 	}
 
-	// Print current memo from Elasticsearch.
+	// Print current memo from visibility storage.
 	err = printMemo(wfExecution.GetMemo(), logger)
 	if err != nil {
 		return err
