@@ -52,6 +52,8 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - **Signals**: Can be seen in the [Recovery](https://github.com/temporalio/samples-go/tree/master/recovery) and [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex) examples. Additional documentation: [eCommerce application tutorial](https://docs.temporal.io/blog/tags/go-ecommerce-tutorial), [How to send a Signal to a Workflow Execution in Go](https://docs.temporal.io/docs/go/how-to-send-a-signal-to-a-workflow-execution-in-go), [How to handle a Signal in a Workflow Execution in Go](https://docs.temporal.io/docs/go/how-to-handle-a-signal-in-a-workflow-in-go).
 
+- [**Memo**](https://github.com/temporalio/samples-go/tree/master/memo): Demonstrates how to use Memo that can be used to store any kind of data.
+
 - [**Search Attributes**](https://github.com/temporalio/samples-go/tree/master/searchattributes): Demonstrates how to use custom Search Attributes that can be used to find Workflow Executions using predicates (must use with [Elasticsearch](https://docs.temporal.io/docs/content/how-to-integrate-elasticsearch-into-a-temporal-cluster)).
 
 - [**Timer Futures**](https://github.com/temporalio/samples-go/tree/master/timer): The sample starts a long running order processing operation and starts a Timer (`workflow.NewTimer()`). If the processing time is too long, a notification email is "sent" to the user regarding the delay (the execution does not cancel). If the operation finishes before the Timer fires, then the Timer is cancelled.
