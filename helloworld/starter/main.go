@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/temporal"
 
 	"github.com/temporalio/samples-go/helloworld"
 )
@@ -33,7 +35,22 @@ func main() {
 	var result string
 	err = we.Get(context.Background(), &result)
 	if err != nil {
-		log.Fatalln("Unable get workflow result", err)
+		log.Println("Unable get workflow result", err)
+
+		var nonRetryErr *helloworld.NonRetryableError
+		if errors.As(err, &nonRetryErr) {
+			log.Println("NonRetryableError", nonRetryErr.Err, nonRetryErr.Code)
+		} else {
+			log.Println("Cannot convert to NonRetryableError")
+		}
+
+		var appErr *temporal.ApplicationError
+		if errors.As(err, &appErr) {
+			log.Println("ApplicationError", appErr)
+			log.Println("HasDetails", appErr.HasDetails())
+		} else {
+			log.Println("Cannot convert to ApplicationError")
+		}
 	}
 	log.Println("Workflow result:", result)
 }
