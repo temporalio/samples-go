@@ -25,7 +25,7 @@ func main() {
 	}
 
 	// The client is a heavyweight object that should be created once per process.
-	c, err := client.NewClient(client.Options{
+	c, err := client.Dial(client.Options{
 		HostPort:           client.DefaultHostPort,
 		Interceptors:       []interceptor.ClientInterceptor{tracingInterceptor},
 		ContextPropagators: []workflow.ContextPropagator{ctxpropagation.NewContextPropagator()},

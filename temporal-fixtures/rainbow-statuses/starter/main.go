@@ -19,7 +19,7 @@ var (
 
 func main() {
 	// The client is a heavyweight object that should be created once per process.
-	c, err := client.NewClient(client.Options{Namespace: "default"})
+	c, err := client.Dial(client.Options{Namespace: "default"})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}

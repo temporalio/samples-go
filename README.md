@@ -10,8 +10,9 @@ This repository contains several sample Workflow applications that demonstrate t
 
 ## How to use
 
-- You can either run this in the browser with Gitpod: [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/temporalio/samples-go/)
-- Or you can run Temporal Server locally (follow the [Quick install guide](https://docs.temporal.io/docs/server/quick-install)), then clone this repository
+- You can run this in the browser with Gitpod: [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/temporalio/samples-go/)
+- Or you can run Temporal Server locally using [VSCode Remote Containers](https://code.visualstudio.com/docs/remote/containers). [![Open in Remote - Containers](https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/temporalio/samples-go) 
+- Lastly, you can run Temporal Server locally on your own (follow the [Quick install guide](https://docs.temporal.io/docs/server/quick-install)), then clone this repository
 
 The [helloworld](helloworld/README.md) sample is a good place to start.
 
@@ -20,6 +21,8 @@ The [helloworld](helloworld/README.md) sample is a good place to start.
 Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Basic hello world**](https://github.com/temporalio/samples-go/tree/master/helloworld): Simple example of a Workflow Definition and an Activity Definition.
+
+- [**Basic mTLS hello world**](https://github.com/temporalio/samples-go/tree/master/helloworldmtls): Simple example of a Workflow Definition and an Activity Definition using mTLS like Temporal Cloud.
 
 ### API demonstrations
 
@@ -48,6 +51,8 @@ Each sample demonstrates one feature of the SDK, together with tests.
 - **Sessions**: Demonstrates how to bind a set of Activity Executions to a specific Worker after the first Activity executes. This feature is showcased in the [File Processing example](https://github.com/temporalio/samples-go/tree/master/fileprocessing). Addition documentation: [How to use Sessions in Go](https://docs.temporal.io/docs/go/sessions).
 
 - **Signals**: Can be seen in the [Recovery](https://github.com/temporalio/samples-go/tree/master/recovery) and [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex) examples. Additional documentation: [eCommerce application tutorial](https://docs.temporal.io/blog/tags/go-ecommerce-tutorial), [How to send a Signal to a Workflow Execution in Go](https://docs.temporal.io/docs/go/how-to-send-a-signal-to-a-workflow-execution-in-go), [How to handle a Signal in a Workflow Execution in Go](https://docs.temporal.io/docs/go/how-to-handle-a-signal-in-a-workflow-in-go).
+
+- [**Memo**](https://github.com/temporalio/samples-go/tree/master/memo): Demonstrates how to use Memo that can be used to store any kind of data.
 
 - [**Search Attributes**](https://github.com/temporalio/samples-go/tree/master/searchattributes): Demonstrates how to use custom Search Attributes that can be used to find Workflow Executions using predicates (must use with [Elasticsearch](https://docs.temporal.io/docs/content/how-to-integrate-elasticsearch-into-a-temporal-cluster)).
 
@@ -85,6 +90,8 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 - [**Synchronous Proxy Workflow pattern**](https://github.com/temporalio/samples-go/tree/master/synchronous-proxy): This sample demonstrates a synchronous interaction with a "main" Workflow Execution from a "proxy" Workflow Execution. The proxy Workflow Execution sends a Signal to the "main" Workflow Execution, then blocks, waiting for a Signal in response.
 
+- [**Saga pattern**](https://github.com/temporalio/samples-go/tree/main/saga): This sample demonstrates how to implement a saga pattern using golang defer feature.
+
 ### Scenario based examples
 
 - [**DSL Workflow**](https://github.com/temporalio/samples-go/tree/master/dsl): Demonstrates how to implement a DSL-based Workflow. This sample contains 2 yaml files that each define a custom "workflow" which instructs the Temporal Workflow. This is useful if you want to build in a "low code" layer.
@@ -110,7 +117,6 @@ Mostly examples we haven't yet ported from https://github.com/temporalio/samples
   - Periodic Workflow: Workflow that executes some logic periodically. *Example to be completed*
   - Exception propagation and wrapping: *Example to be completed*
   - Polymorphic activity: *Example to be completed*
-  - SAGA pattern:  *Example to be completed*
   - Side Effect:  *Example to be completed* - [Docs](https://docs.temporal.io/docs/go/side-effect)
 
 ### Fixtures

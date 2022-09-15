@@ -32,7 +32,7 @@ var (
 func main() {
 	var err error
 	// The client is a heavyweight object that should be created once per process.
-	workflowClient, err = client.NewClient(client.Options{
+	workflowClient, err = client.Dial(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
 	if err != nil {

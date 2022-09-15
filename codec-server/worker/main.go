@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
-	c, err := client.NewClient(client.Options{
+	c, err := client.Dial(client.Options{
 		// Set DataConverter here so that workflow and activity inputs/results will
 		// be compressed as required.
 		DataConverter: codecserver.DataConverter,

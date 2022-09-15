@@ -16,7 +16,7 @@ import (
 
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
-	c, err := client.NewClient(client.Options{
+	c, err := client.Dial(client.Options{
 		MetricsHandler: sdktally.NewMetricsHandler(newPrometheusScope(prometheus.Configuration{
 			ListenAddress: "0.0.0.0:9090",
 			TimerType:     "histogram",

@@ -13,7 +13,7 @@ import (
 // @@@SNIPSTART samples-go-child-workflow-example-execution-starter
 func main() {
 	// The client is a heavyweight object that should be created only once per process.
-	c, err := client.NewClient(client.Options{
+	c, err := client.Dial(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
 	if err != nil {
@@ -44,7 +44,7 @@ func main() {
 	if err != nil {
 		log.Fatalln("Failure getting workflow result", err)
 	}
-	log.Println("Workflow result: %v", "result", result)
+	log.Printf("Workflow result: %v", result)
 }
 
 // @@@SNIPEND

@@ -11,7 +11,7 @@ import (
 
 // Starts updatable timer workflow with initial wake-up time in 30 seconds.
 func main() {
-	c, err := client.NewClient(client.Options{
+	c, err := client.Dial(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
 	if err != nil {

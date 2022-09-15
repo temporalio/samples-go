@@ -64,18 +64,16 @@ When starting the server using the docker container, the following excerpt will 
 This is because by default the docker container attempts to register the `default` namespace, but cannot because we have
 restricted access to the server to only authorized uses.
 
-To create this manually, we will use `tctl`. According to
-[the tctl docs](https://docs.temporal.io/docs/devtools/tctl/#securing-tctl) we can use the `tctl-authorization-plugin`
-binary. If using docker, this binary is included with tctl otherwise, build it and put it on the `PATH`.
+To create this manually, we will use `tctl`.
 
-We must set the `TEMPORAL_CLI_AUTHORIZATION_TOKEN` environment variable with an authorization header value that includes
+We must set the `TEMPORAL_CLI_AUTH` environment variable with an authorization header value that includes
 the JWT key. The following command generates a 1 hour key with `admin` permissions on the `system` namespace:
 
     go run ./serverjwtauth/key tctl-system-token
 
 This will output something like:
 
-    TEMPORAL_CLI_AUTHORIZATION_TOKEN=Bearer abcde...
+    TEMPORAL_CLI_AUTH=Bearer abcde...
 
 See [this documentation](https://docs.temporal.io/docs/devtools/tctl/#run-the-cli) on how to run `tctl` with environment
 variables. If using the docker approach from bash, an argument could be added like:
@@ -88,11 +86,7 @@ Or if using `tctl` standalone from bash, an `export` for the environment can be 
 
 Once `tctl` is set to take an environment variable, it can be run to create the `default` namespace:
 
-    tctl --headers_provider_plugin tctl-authorization-plugin --ns default namespace register -rd 1
-
-We pass `--headers_provider_plugin tctl-authorization-plugin` so the environment variable is used for authentication. A
-more advanced use case could very easily create a new plugin binary for the header provider in [keyutil.go](keyutil.go)
-but that is beyond the scope of this sample.
+    tctl --ns default namespace register -rd 1
 
 ### Running the worker and starting the workflow
 
