@@ -86,7 +86,7 @@ Or if using `tctl` standalone from bash, an `export` for the environment can be 
 
 Once `tctl` is set to take an environment variable, it can be run to create the `default` namespace:
 
-    tctl --ns default namespace register -rd 1
+    tctl namespace register --retention 1 default
 
 ### Running the worker and starting the workflow
 

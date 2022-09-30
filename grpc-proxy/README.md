@@ -18,9 +18,9 @@ go run starter/main.go
 ```
 5) Run the following command and see that when tctl is connected directly to Temporal it cannot display the payloads as they are encoded (compressed)
 ```
-tctl workflow show --wid grpcproxy_workflowID
+tctl workflow show --workflow-id grpcproxy_workflowID
 ```
 6) Run the following command to see that when tctl is connected to Temporal via the proxy it can display the payloads
 ```
-tctl --address 'localhost:8081' workflow show --wid grpcproxy_workflowID
+tctl --address 'localhost:8081' workflow show --workflow-id grpcproxy_workflowID
 ```

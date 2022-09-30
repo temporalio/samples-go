@@ -15,6 +15,6 @@ go run starter/main.go
 5) Run the following command and see the compressed payloads
 ```
 export PATH="../bin:$PATH" TEMPORAL_CLI_PLUGIN_DATA_CONVERTER=snappycompress-plugin
-tctl workflow show --wid snappycompress_workflowID
+tctl workflow show --workflow-id snappycompress_workflowID
 ```
 Note: plugins should normally be available in your PATH, we include the current directory in the path here for ease of testing.

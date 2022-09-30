@@ -15,6 +15,6 @@ go run starter/main.go
 5) Run the following command and see the encrypted payloads
 ```
 export PATH="../bin:$PATH" TEMPORAL_CLI_PLUGIN_DATA_CONVERTER=encryption-plugin
-tctl workflow show --wid encryption_workflowID
+tctl workflow show --workflow-id encryption_workflowID
 ```
 Note: plugins should normally be available in your PATH, we include the current directory in the path here for ease of testing.

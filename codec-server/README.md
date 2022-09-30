@@ -16,7 +16,7 @@ go run starter/main.go
 ```
 4) Run the following command and see that tctl cannot display the payloads as they are encoded (compressed)
 ```
-tctl workflow show --wid codecserver_workflowID
+tctl workflow show --workflow-id codecserver_workflowID
 ```
 5) Run the following command to start the remote codec server
 ```
@@ -24,7 +24,7 @@ go run ./codec-server
 ```
 6) Run the following command to see that tctl can now decode (uncompress) the payloads via the remote codec server
 ```
-tctl --codec_endpoint 'http://localhost:8081/{namespace}' workflow show --wid codecserver_workflowID
+tctl --codec-endpoint 'http://localhost:8081/{namespace}' workflow show --workflow-id codecserver_workflowID
 ```
 
 # Codec Server Protocol
