@@ -54,6 +54,7 @@ func ParseClientOptionFlags(args []string) (client.Options, error) {
 	clientCert := set.String("client-cert", "", "Required path to client cert")
 	clientKey := set.String("client-key", "", "Required path to client key")
 	serverName := set.String("server-name", "", "Server name to use for verifying the server's certificate")
+	insecureSkipVerify := set.Bool("insecure-skip-verify", false, "Skip verification of the server's certificate and host name")
 	if err := set.Parse(args); err != nil {
 		return client.Options{}, fmt.Errorf("failed parsing args: %w", err)
 	} else if *clientCert == "" || *clientKey == "" {
@@ -83,9 +84,10 @@ func ParseClientOptionFlags(args []string) (client.Options, error) {
 		Namespace: *namespace,
 		ConnectionOptions: client.ConnectionOptions{
 			TLS: &tls.Config{
-				Certificates: []tls.Certificate{cert},
-				RootCAs:      serverCAPool,
-				ServerName:   *serverName,
+				Certificates:       []tls.Certificate{cert},
+				RootCAs:            serverCAPool,
+				ServerName:         *serverName,
+				InsecureSkipVerify: *insecureSkipVerify,
 			},
 		},
 	}, nil
