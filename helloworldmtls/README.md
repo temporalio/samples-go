@@ -8,3 +8,7 @@ go run ./helloworldmtls/worker -target-host my.namespace.tmprl.cloud:7233 -names
 ```
 go run ./helloworldmtls/starter -target-host my.namespace.tmprl.cloud:7233 -namespace my.namespace -client-cert path/to/cert.pem -client-key path/to/key.pem
 ```
+
+If the server uses self-signed certificates, pass one of the following two options when starting the worker or the example above:
+1. `-server-name` and provide the common name contained in the self-signed server certificate
+2. `-insecure-skip-verify` which disables certificate and host name validation
