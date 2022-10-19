@@ -1,17 +1,11 @@
-package saga
+package sagainterceptor
 
 import (
-	"errors"
 	"time"
 
 	"go.temporal.io/sdk/interceptor"
 	"go.temporal.io/sdk/workflow"
 	"go.uber.org/multierr"
-	"go.uber.org/zap"
-)
-
-const (
-	malformedActivity = "args of saga activity != 1"
 )
 
 var (
@@ -22,8 +16,8 @@ var (
 )
 
 type (
-	// TransactionOptions is options for a saga transactional workflow
-	TransactionOptions struct{}
+	// SagaOptions is options for a saga transactional workflow
+	SagaOptions struct{}
 
 	// CompensationOptions is options for compensate.
 	CompensationOptions struct {
@@ -31,15 +25,15 @@ type (
 		ActivityType string
 		// ActivityOptions is the activity execute options, local activity is not supported.
 		ActivityOptions *workflow.ActivityOptions
-		// Convertor optional. Convert req & response to request for compensate activity.
+		// Converter optional. Convert req & response to request for compensate activity.
 		// currently, activity func is not available for worker, so decode futures should be done by developer.
-		Convertor func(ctx workflow.Context, f workflow.Future, args interface{}) (interface{}, error)
+		Converter func(ctx workflow.Context, f workflow.Future, args ...interface{}) ([]interface{}, error)
 	}
 
 	//InterceptorOptions is options for saga interceptor.
 	InterceptorOptions struct {
 		// WorkflowRegistry names for workflow to be treated as Saga transaction.
-		WorkflowRegistry map[string]TransactionOptions
+		WorkflowRegistry map[string]SagaOptions
 		// ActivityRegistry Action -> CompensateAction, key is activity type for action.
 		ActivityRegistry map[string]CompensationOptions
 	}
@@ -54,28 +48,26 @@ type (
 		root *sagaInterceptor
 		ctx  sagaContext
 	}
+
 	workflowOutboundInterceptor struct {
 		interceptor.WorkflowOutboundInterceptorBase
 		root *sagaInterceptor
 		ctx  *sagaContext
 	}
 
-	action struct {
-		ActivityType string
-		Future       workflow.Future
-		Arg          interface{}
+	compensation struct {
+		Options      *CompensationOptions
+		ActionFuture workflow.Future
+		ActionArgs   []interface{}
 	}
 
 	sagaContext struct {
-		Actions []*action
+		Compensations []*compensation
 	}
 )
 
 // NewInterceptor creates an interceptor for execute in Saga patterns.
 // when workflow fails, registered compensate activities will be executed automatically.
-// NOTE: action&compensate activity has only one arg,
-// like func(ctx context.Context, arg interface{}) (interface{}, error),
-// or func(ctx context.Context, arg interface{}) error.
 func NewInterceptor(options InterceptorOptions) (interceptor.WorkerInterceptor, error) {
 	return &sagaInterceptor{options: options}, nil
 }
@@ -106,44 +98,41 @@ func (w *workflowInboundInterceptor) ExecuteWorkflow(
 ) (ret interface{}, err error) {
 	workflow.GetLogger(ctx).Debug("intercept ExecuteWorkflow")
 	ret, wferr := w.Next.ExecuteWorkflow(ctx, in)
-	if wferr == nil || len(w.ctx.Actions) == 0 {
+	if wferr == nil || len(w.ctx.Compensations) == 0 {
 		return ret, wferr
 	}
 
 	ctx, cancel := workflow.NewDisconnectedContext(ctx)
 	defer cancel()
-	for i := len(w.ctx.Actions) - 1; i >= 0; i-- {
-		a := w.ctx.Actions[i]
-		opt, ok := w.root.options.ActivityRegistry[a.ActivityType]
-		if !ok {
-			workflow.GetLogger(ctx).Warn("action in history has no compensate activity",
-				"activity_type", a.ActivityType)
-			continue
-		}
-
+	for i := len(w.ctx.Compensations) - 1; i >= 0; i-- {
+		c := w.ctx.Compensations[i]
 		// only compensate action with success
-		if err := a.Future.Get(ctx, nil); err != nil {
+		if err := c.ActionFuture.Get(ctx, nil); err != nil {
 			continue
 		}
 
 		// add opts if not config
-		activityOpts := opt.ActivityOptions
+		activityOpts := c.Options.ActivityOptions
 		if activityOpts == nil {
 			activityOpts = &defaultActivityOpts
 		}
 		ctx = workflow.WithActivityOptions(ctx, *activityOpts)
 
 		// use arg in action as default for compensate
-		arg := a.Arg
-		if opt.Convertor != nil {
-			arg, err = opt.Convertor(ctx, a.Future, arg)
+		args := c.ActionArgs
+		if c.Options.Converter != nil {
+			args, err = c.Options.Converter(ctx, c.ActionFuture, c.ActionArgs...)
 			if err != nil {
-				workflow.GetLogger(ctx).Error("failed to convert to compensate req", zap.Error(err))
+				workflow.GetLogger(ctx).Error("failed to convert to compensate req", "error", err)
 				return ret, multierr.Append(wferr, err)
 			}
 		}
 
-		if err := workflow.ExecuteActivity(ctx, opt.ActivityType, arg).Get(ctx, nil); err != nil {
+		if err := workflow.ExecuteActivity(ctx, c.Options.ActivityType, args...).Get(ctx, nil); err != nil {
+			// best effort, save error and continue
+			//wferr = multierr.Append(wferr, err)
+
+			// fail fast, one compensation fails, it will not continue
 			return ret, multierr.Append(wferr, err)
 		}
 	}
@@ -155,19 +144,14 @@ func (w *workflowOutboundInterceptor) ExecuteActivity(
 	activityType string,
 	args ...interface{},
 ) workflow.Future {
-	workflow.GetLogger(ctx).Debug("intercept ExecuteActivity")
+	workflow.GetLogger(ctx).Debug("intercept ExecuteActivity", "activity_type", activityType)
 	f := w.Next.ExecuteActivity(ctx, activityType, args...)
-	if _, ok := w.root.options.ActivityRegistry[activityType]; ok {
+	if opts, ok := w.root.options.ActivityRegistry[activityType]; ok {
 		workflow.GetLogger(ctx).Debug("save action future", "activity_type", activityType)
-		if len(args) != 1 {
-			f, set := workflow.NewFuture(ctx)
-			set.SetError(errors.New(malformedActivity))
-			return f
-		}
-		w.ctx.Actions = append(w.ctx.Actions, &action{
-			ActivityType: activityType,
-			Future:       f,
-			Arg:          args[0],
+		w.ctx.Compensations = append(w.ctx.Compensations, &compensation{
+			Options:      &opts,
+			ActionArgs:   args,
+			ActionFuture: f,
 		})
 	}
 
@@ -179,19 +163,14 @@ func (w *workflowOutboundInterceptor) ExecuteLocalActivity(
 	activityType string,
 	args ...interface{},
 ) workflow.Future {
-	workflow.GetLogger(ctx).Debug("intercept ExecuteLocalActivity")
+	workflow.GetLogger(ctx).Debug("intercept ExecuteLocalActivity", "activity_type", activityType)
 	f := w.Next.ExecuteLocalActivity(ctx, activityType, args...)
-	if _, ok := w.root.options.ActivityRegistry[activityType]; ok {
+	if opts, ok := w.root.options.ActivityRegistry[activityType]; ok {
 		workflow.GetLogger(ctx).Debug("save action future", "activity_type", activityType)
-		if len(args) != 1 {
-			f, set := workflow.NewFuture(ctx)
-			set.SetError(errors.New(malformedActivity))
-			return f
-		}
-		w.ctx.Actions = append(w.ctx.Actions, &action{
-			ActivityType: activityType,
-			Future:       f,
-			Arg:          args[0],
+		w.ctx.Compensations = append(w.ctx.Compensations, &compensation{
+			Options:      &opts,
+			ActionArgs:   args,
+			ActionFuture: f,
 		})
 	}
 
