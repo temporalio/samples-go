@@ -24,12 +24,15 @@ func main() {
 		log.Fatal("Call this program with the following arguments <workflow-id> <run-id> <signal-name>")
 	}
 
-	ctx := context.Background()
-
 	workflowID := args[0]
 	runID := args[1]
 	signalName := args[2]
-	err = c.SignalWorkflow(ctx, workflowID, runID, signalName, "dummy")
+
+	if signalName != "branch1" && signalName != "branch2" {
+		log.Fatal("<signal-name> input must be branch1 or branch2")
+	}
+	ctx := context.Background()
+	err = c.SignalWorkflow(ctx, workflowID, runID, signalName, "dummy-input")
 	if err != nil {
 		log.Fatalf("Failed signaling with error %v", err)
 	}
