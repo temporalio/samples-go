@@ -12,59 +12,71 @@ import (
  */
 
 // SampleParallelWorkflow workflow definition
+
+type resp struct {
+	result string
+	err    error
+}
+
 func SampleParallelWorkflow(ctx workflow.Context) ([]string, error) {
 	logger := workflow.GetLogger(ctx)
 	defer logger.Info("Workflow completed.")
 
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout: 10 * time.Second,
+		StartToCloseTimeout: 60 * time.Second,
 	}
-	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	future1, settable1 := workflow.NewFuture(ctx)
-	workflow.Go(ctx, func(ctx workflow.Context) {
-		defer logger.Info("First goroutine completed.")
+	ch := workflow.NewChannel(ctx)
 
-		var results []string
-		var result string
-		err := workflow.ExecuteActivity(ctx, SampleActivity, "branch1.1").Get(ctx, &result)
-		if err != nil {
-			settable1.SetError(err)
-			return
-		}
-		results = append(results, result)
-		err = workflow.ExecuteActivity(ctx, SampleActivity, "branch1.2").Get(ctx, &result)
-		if err != nil {
-			settable1.SetError(err)
-			return
-		}
-		results = append(results, result)
-		settable1.SetValue(results)
-	})
+	// create 2 temporal coroutines
+	for i := 0; i < 2; i++ {
+		j := i
+		workflow.Go(ctx, func(ctx workflow.Context) {
+			branch := fmt.Sprintf("branch%d", j+1)
 
-	future2, settable2 := workflow.NewFuture(ctx)
-	workflow.Go(ctx, func(ctx workflow.Context) {
-		defer logger.Info("Second goroutine completed.")
+			logger.Info("Goroutine started", "branch", branch)
+			waitForInput(ctx, branch)
 
-		var result string
-		err := workflow.ExecuteActivity(ctx, SampleActivity, "branch2").Get(ctx, &result)
-		settable2.Set(result, err)
-	})
+			var result string
+			err := workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, ao), SampleActivity, branch).Get(ctx, &result)
+			ch.Send(ctx, &resp{
+				result: result,
+				err:    err,
+			})
+			logger.Info("goroutine completed", "branch", branch)
+		})
+	}
 
 	var results []string
-	// Future.Get returns error from Settable.SetError
-	// Note that the first goroutine puts a slice into the settable while the second a string value
-	err := future1.Get(ctx, &results)
-	if err != nil {
-		return nil, err
-	}
-	var result string
-	err = future2.Get(ctx, &result)
-	if err != nil {
-		return nil, err
-	}
-	results = append(results, result)
+	for i := 0; i < 2; i++ {
+		fmt.Println("Waiting for response", i)
+		var v interface{}
+		ch.Receive(ctx, &v)
+		response, ok := v.(*resp)
+		if !ok {
+			fmt.Println("Invalid response")
+			continue
+		}
+		if response.err != nil {
+			fmt.Println("Got error from response", response.err)
+			continue
+		}
 
+		results = append(results, response.result)
+
+		if i == 0 {
+			var result string
+			fmt.Println("### going to execute activity after-first-result")
+			err := workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, ao), SampleActivity, "after-first-result").Get(ctx, &result)
+			if err != nil {
+				fmt.Println("Got error from after-branch1 response", err)
+			} else {
+				fmt.Println("### done to execute activity after-first-result", result)
+				results = append(results, result)
+			}
+		}
+	}
+	fmt.Println("### returning result", results)
 	return results, nil
 }
 
@@ -72,4 +84,17 @@ func SampleActivity(input string) (string, error) {
 	name := "sampleActivity"
 	fmt.Printf("Run %s with input %v \n", name, input)
 	return "Result_" + input, nil
+}
+
+func waitForInput(ctx workflow.Context, signalName string) {
+	workflow.GetLogger(ctx).Debug("Waiting for signal", "signalName", signalName)
+	signalChan := workflow.GetSignalChannel(ctx, signalName)
+	selector := workflow.NewSelector(ctx)
+
+	selector.AddReceive(signalChan, func(channel workflow.ReceiveChannel, _ bool) {
+		var v string
+		channel.Receive(ctx, &v)
+	})
+	selector.Select(ctx)
+	workflow.GetLogger(ctx).Debug("Resuming", "signalName", signalName)
 }

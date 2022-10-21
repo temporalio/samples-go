@@ -26,7 +26,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
+	log.Println("Started workflow", we.GetID(), we.GetRunID())
 
 	// Wait for workflow completion. This is rarely needed in real use cases
 	// when workflows are potentially long running
@@ -35,5 +35,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
+	log.Println("Completed workflow", "result", result)
 }
