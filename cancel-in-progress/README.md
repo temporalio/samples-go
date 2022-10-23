@@ -1,7 +1,7 @@
 ## Cancel-in-progress
 
-This example demonstrates how to implement a workflow that ensures that only one run of a child workflow is executed at a time. Subsequent runs will cancel the runnign child workflow and re-run it with the latest options.
-Those semantics are useful especially when implementing a CI pipeline. New commits during the execution of the workflow should short circuit the child workflow and only build the most recent commit.
+This example demonstrates how to implement a workflow that ensures that only one run of the child workflow is executed at a time. Subsequent runs will cancel the running child workflow and re-run it with the latest sent options through `SignalWithStartWorkflow`.
+Those semantics are useful, especially when implementing a CI pipeline. New commits during the workflow execution should short-circuit the child workflow and only build the most recent commit.
 
 
 Make sure the [Temporal Server is running locally](https://docs.temporal.io/docs/server/quick-install).
