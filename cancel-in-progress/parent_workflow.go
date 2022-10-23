@@ -15,7 +15,7 @@ func SampleParentWorkflow(ctx workflow.Context) (result string, err error) {
 
 	reBuildSignalChan := workflow.GetSignalChannel(ctx, ParentWorkflowSignalName)
 
-	// This will not block because the workflow is started with a signal transitionally.
+	// This will not block because the workflow is started with a signal transactional.
 	reBuildSignalChan.Receive(ctx, &message)
 
 	cwo := workflow.ChildWorkflowOptions{
