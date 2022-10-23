@@ -101,6 +101,7 @@ func GetLatestMessageFromChannel(logger log.Logger, ch workflow.ReceiveChannel) 
 			logger.Info("Continue with latest message.", "message", message)
 		} else {
 			logger.Info("Cancel old workflow execution.", "message", message)
+			// You might want to do some cleanup here
 		}
 	}
 
