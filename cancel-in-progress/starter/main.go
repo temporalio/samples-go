@@ -21,7 +21,7 @@ func main() {
 	}
 	defer c.Close()
 
-	// This Workflow ID must be deterministic because we don't want to start a new workflow every time.
+	// This Workflow ID must be fixed because we don't want to start a new workflow every time.
 	projectID := "my-project"
 
 	workflowID := "parent-workflow_" + projectID
