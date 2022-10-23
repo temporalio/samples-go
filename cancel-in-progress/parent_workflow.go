@@ -59,6 +59,8 @@ func SampleParentWorkflow(ctx workflow.Context) (result string, err error) {
 			cancelHandler()
 
 			// drain the channel to get the latest signal
+			// it is because that users might send multiple signals in a short period of time
+			// and we are only interested in the latest signal
 			message = GetLatestMessageFromChannel(logger, reBuildSignalChan)
 		})
 
