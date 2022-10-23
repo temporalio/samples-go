@@ -9,11 +9,11 @@ Make sure the [Temporal Server is running locally](https://docs.temporal.io/docs
 From the root of the project, start a Worker:
 
 ```bash
-go run synchronous-build/worker/main.go
+go run cancel-in-progress/worker/main.go
 ```
 
 Start the Workflow Execution:
 
 ```bash
-go run synchronous-build/starter/main.go
+go run cancel-in-progress/starter/main.go
 ```
