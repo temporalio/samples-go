@@ -28,7 +28,7 @@ func SampleParentWorkflow(ctx workflow.Context) (result string, err error) {
 	for !isProcessingDone {
 		ctx, cancelHandler := workflow.WithCancel(ctx)
 
-		// it is important re-execute the child workflow after every signal
+		// it is important to re-execute the child workflow after every signal
 		// because we might have cancelled the previous execution
 		childWorkflowFuture := workflow.ExecuteChildWorkflow(ctx, SampleChildWorkflow, message)
 
