@@ -15,7 +15,7 @@ func main() {
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.Dial(client.Options{
 		// If you intend to let the dataConverter to decide encryption key for all workflows
-		//you can set the KeyID for the encryption encoder like so:
+		// you can set the KeyID for the encryption encoder like so:
 		//
 		//   DataConverter: encryption.NewEncryptionDataConverter(
 		// 	  converter.GetDefaultDataConverter(),
