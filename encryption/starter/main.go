@@ -23,7 +23,7 @@ func main() {
 		//   ),
 		//
 		// In this case you do not need to use a ContextPropagator.
-		// You also can implement the EncryptionDataConverter to decide the encryption key
+		// You also can implement the dataConverter to decide the encryption key
 		// dynamically so that it's not always the same key.
 		//
 		// If you need to let the workflow starter to decide the encryption key per workflow,
