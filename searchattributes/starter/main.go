@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"go.temporal.io/sdk/converter"
 	"log"
 
 	"github.com/pborman/uuid"
@@ -36,4 +38,27 @@ func main() {
 		log.Fatalln("Unable to execute workflow", err)
 	}
 	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
+
+	resp, err := c.DescribeWorkflowExecution(context.Background(), we.GetID(), we.GetRunID())
+	if err != nil {
+		log.Fatalln("Unable to desc workflow", err)
+	}
+	searchAttributes := resp.GetWorkflowExecutionInfo().GetSearchAttributes()
+
+	for key, value := range searchAttributes.IndexedFields {
+		var object interface{}
+		err := converter.GetDefaultDataConverter().FromPayload(value, &object)
+		if err != nil {
+			log.Fatalln("Unable to convert to object", err)
+		}
+
+		str, isString := object.(string)
+		if isString {
+			fmt.Println("got a string, ", key, str)
+		}
+		f, isFloat := object.(float64)
+		if isFloat {
+			fmt.Println("got a float, ", key, f)
+		}
+	}
 }
