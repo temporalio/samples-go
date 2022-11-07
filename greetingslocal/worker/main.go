@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 
-	"github.com/temporalio/samples-go/greetings"
 	"github.com/temporalio/samples-go/greetingslocal"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
@@ -19,10 +18,10 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "greetings", worker.Options{})
+	w := worker.New(c, "greetings-local", worker.Options{})
 
 	w.RegisterWorkflow(greetingslocal.GreetingSample)
-	activities := &greetings.Activities{Name: "Temporal", Greeting: "Hello"}
+	activities := &greetingslocal.Activities{Name: "Temporal", Greeting: "Hello"}
 	w.RegisterActivity(activities)
 
 	err = w.Run(worker.InterruptCh())

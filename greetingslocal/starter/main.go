@@ -21,7 +21,7 @@ func main() {
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        "greetings_" + uuid.New(),
-		TaskQueue: "greetings",
+		TaskQueue: "greetings-local",
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, greetingslocal.GreetingSample)
