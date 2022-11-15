@@ -13,11 +13,8 @@ import (
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.Dial(client.Options{
-		// If you intend to use the same encryption key for all workflows you can
-		// set the KeyID for the encryption encoder like so:
-		//
-		// Set DataConverter to ensure that workflow inputs and results are
-		// encrypted/decrypted as required.
+		// If you intend to let the dataConverter to decide encryption key for all workflows
+		// you can set the KeyID for the encryption encoder like so:
 		//
 		//   DataConverter: encryption.NewEncryptionDataConverter(
 		// 	  converter.GetDefaultDataConverter(),
@@ -25,9 +22,11 @@ func main() {
 		//   ),
 		//
 		// In this case you do not need to use a ContextPropagator.
+		// You also can implement the dataConverter to decide the encryption key
+		// dynamically so that it's not always the same key.
 		//
-		// If you need to vary the encryption key per workflow, you can instead
-		// leave the KeyID unset for the encoder and supply it via the workflow
+		// If you need to let the workflow starter to decide the encryption key per workflow,
+		// you can instead leave the KeyID unset for the encoder and supply it via the workflow
 		// context as shown below. For this use case you will also need to use a
 		// ContextPropagator so that KeyID is also available in the context for activities.
 		//
