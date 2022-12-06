@@ -1,4 +1,4 @@
-This sample demonstrates getting multiple workflow histories in parallel and replaying them.
+This sample demonstrates getting multiple workflow histories and replaying them.
 
 ### Steps to run this sample:
 1) You need a Temporal service running. See details in README.md
@@ -6,7 +6,12 @@ This sample demonstrates getting multiple workflow histories in parallel and rep
 ```shell script
 go run multi-history-replay/worker/main.go
 ```
-3) Run the following command to start mutiple parallel workflows and then replay their histories
+3) Run the following command to start mutiple parallel workflows. This simulates having existing workflows
+on the server.
 ```shell script
 go run multi-history-replay/starter/main.go
+```
+4) Run the following command to replay the histories generated in step 3
+```shell script
+go run multi-history-replay/replayer/main.go
 ```
