@@ -5,31 +5,17 @@ import (
 	"log"
 
 	"github.com/temporalio/samples-go/helloworld"
-	"go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/history/v1"
-	"go.temporal.io/api/workflow/v1"
+	workflowpb "go.temporal.io/api/workflow/v1"
 	"go.temporal.io/api/workflowservice/v1"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 )
 
-func GetWorkflowHistory(ctx context.Context, client client.Client, id, runID string) (*history.History, error) {
-	var hist history.History
-	iter := client.GetWorkflowHistory(ctx, id, runID, false, enums.HISTORY_EVENT_FILTER_TYPE_ALL_EVENT)
-	for iter.HasNext() {
-		event, err := iter.Next()
-		if err != nil {
-			return nil, err
-		}
-		hist.Events = append(hist.Events, event)
-	}
-	return &hist, nil
-}
-
-// GetWorkflows calls ListWorkflow with query and gets as many workflow executions until there are no more or we the number exceeds maxWorkflows
-func GetWorkflows(ctx context.Context, c client.Client, query string, maxWorkflows int) ([]*workflow.WorkflowExecutionInfo, error) {
+// GetWorkflows calls ListWorkflow with query and gets all workflow exection infos in a list.
+func GetWorkflows(ctx context.Context, c client.Client, query string) ([]*workflowpb.WorkflowExecutionInfo, error) {
 	var nextPageToken []byte
-	workflowExecutions := make([]*workflow.WorkflowExecutionInfo, 0)
+	var workflowExecutions []*workflowpb.WorkflowExecutionInfo
 	for {
 		resp, err := c.ListWorkflow(ctx, &workflowservice.ListWorkflowExecutionsRequest{
 			Query:         query,
@@ -40,7 +26,7 @@ func GetWorkflows(ctx context.Context, c client.Client, query string, maxWorkflo
 		}
 		workflowExecutions = append(workflowExecutions, resp.Executions...)
 		nextPageToken = resp.NextPageToken
-		if nextPageToken == nil || len(workflowExecutions) >= maxWorkflows {
+		if len(nextPageToken) == 0 {
 			return workflowExecutions, nil
 		}
 	}
@@ -57,7 +43,7 @@ func main() {
 
 	query := "WorkflowId='multiple_history_replay_workflowID'"
 	log.Println("Listing workflows", "Query", query)
-	workflowExecutions, err := GetWorkflows(ctx, c, query, 10)
+	workflowExecutions, err := GetWorkflows(ctx, c, query)
 	if err != nil {
 		log.Fatalln("Error listing workflows", err)
 	}
@@ -66,11 +52,8 @@ func main() {
 	replayer := worker.NewWorkflowReplayer()
 	replayer.RegisterWorkflow(helloworld.Workflow)
 	for _, we := range workflowExecutions {
-		histroy, err := GetWorkflowHistory(ctx, c, we.Execution.GetWorkflowId(), we.Execution.GetRunId())
-		if err != nil {
-			log.Fatalln("Error getting history", err)
-		}
-		err = replayer.ReplayWorkflowHistory(nil, histroy)
+		execution := workflow.Execution{ID: we.Execution.GetWorkflowId(), RunID: we.Execution.GetRunId()}
+		err = replayer.ReplayWorkflowExecution(ctx, c.WorkflowService(), nil, "default", execution)
 		if err != nil {
 			log.Fatalln("Error replaying history", err)
 		}

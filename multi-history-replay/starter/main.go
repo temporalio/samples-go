@@ -32,8 +32,7 @@ func main() {
 		log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 
 		// Wait for the workflow to finish
-		var result string
-		err = we.Get(ctx, &result)
+		err = we.Get(ctx, nil)
 		if err != nil {
 			log.Fatalln("Unable get workflow result", err)
 		}
