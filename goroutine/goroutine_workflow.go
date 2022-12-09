@@ -48,7 +48,7 @@ func SampleGoroutineWorkflow(ctx workflow.Context, parallelism int) (results []s
 	workflow.Await(ctx, func() bool {
 		return err != nil || len(results) == parallelism
 	})
-	return results, err
+	return
 }
 
 func Step1(input string) (output string, err error) {

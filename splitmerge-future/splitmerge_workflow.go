@@ -21,21 +21,21 @@ type ChunkResult struct {
 }
 
 // SampleSplitMergeFutureWorkflow workflow definition
-func SampleSplitMergeFutureWorkflow(ctx workflow.Context, workerCount int) (ChunkResult, error) {
+func SampleSplitMergeFutureWorkflow(ctx workflow.Context, processorCount int) (ChunkResult, error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	var results []workflow.Future
-	for i := 0; i < workerCount; i++ {
+	for i := 0; i < processorCount; i++ {
 		// ExecuteActivity returns Future that doesn't need to be awaited immediately.
 		future := workflow.ExecuteActivity(ctx, ChunkProcessingActivity, i+1)
 		results = append(results, future)
 	}
 
 	var totalItemCount, totalSum int
-	for i := 0; i < workerCount; i++ {
+	for i := 0; i < processorCount; i++ {
 		var result ChunkResult
 		// Blocks until the activity result is available.
 		err := results[i].Get(ctx, &result)
