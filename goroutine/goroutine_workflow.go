@@ -24,15 +24,17 @@ func SampleGoroutineWorkflow(ctx workflow.Context, parallelism int) (results []s
 	for i := 0; i < parallelism; i++ {
 		input1 := fmt.Sprint(i) // Should be outside lambda to be captured correctly
 		// Start a goroutine in a workflow safe way
-		workflow.Go(ctx, func(ctx workflow.Context) {
+		workflow.Go(ctx, func(gCtx workflow.Context) {
+			// It is important to use the context passed to the goroutine function
+			// An attempt to use the enclosing context would lead to failure.
 			var result1 string
-			err = workflow.ExecuteActivity(ctx, Step1, input1).Get(ctx, &result1)
+			err = workflow.ExecuteActivity(gCtx, Step1, input1).Get(gCtx, &result1)
 			if err != nil {
 				// Very naive error handling. Only the last error will be returned by the workflow
 				return
 			}
 			var result2 string
-			err = workflow.ExecuteActivity(ctx, Step2, result1).Get(ctx, &result2)
+			err = workflow.ExecuteActivity(gCtx, Step2, result1).Get(gCtx, &result2)
 			if err != nil {
 				return
 			}
@@ -40,11 +42,13 @@ func SampleGoroutineWorkflow(ctx workflow.Context, parallelism int) (results []s
 		})
 	}
 
-	// Wait for Goroutines to complete
+	// Wait for Goroutines to complete. Await blocks until the condition function returns true.
+	// The function is evaluated on every workflow state change. Consider using `workflow.AwaitWithTimeout` to
+	// limit duration of the wait.
 	workflow.Await(ctx, func() bool {
 		return err != nil || len(results) == parallelism
 	})
-	return results, nil
+	return results, err
 }
 
 func Step1(input string) (output string, err error) {
