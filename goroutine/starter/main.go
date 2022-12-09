@@ -2,12 +2,11 @@ package main
 
 import (
 	"context"
+	"github.com/temporalio/samples-go/goroutine"
 	"log"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
-
-	"github.com/temporalio/samples-go/splitmerge"
 )
 
 func main() {
@@ -21,11 +20,11 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "split_merge_" + uuid.New(),
-		TaskQueue: "split-merge",
+		ID:        "goroutine-" + uuid.New(),
+		TaskQueue: "goroutine",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, splitmerge.SampleSplitMergeWorkflow, 5)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, goroutine.SampleGoroutineWorkflow, 5)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}

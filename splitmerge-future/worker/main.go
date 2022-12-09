@@ -6,7 +6,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	"github.com/temporalio/samples-go/parallel"
+	"github.com/temporalio/samples-go/splitmerge-future"
 )
 
 func main() {
@@ -19,10 +19,10 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "parallel", worker.Options{})
+	w := worker.New(c, "split-merge-future", worker.Options{})
 
-	w.RegisterWorkflow(parallel.SampleParallelWorkflow)
-	w.RegisterActivity(parallel.SampleActivity)
+	w.RegisterWorkflow(splitmerge_future.SampleSplitMergeFutureWorkflow)
+	w.RegisterActivity(splitmerge_future.ChunkProcessingActivity)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

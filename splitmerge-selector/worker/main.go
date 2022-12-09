@@ -1,12 +1,11 @@
 package main
 
 import (
+	splitmerge_selector "github.com/temporalio/samples-go/splitmerge-selector"
 	"log"
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
-
-	"github.com/temporalio/samples-go/splitmerge"
 )
 
 func main() {
@@ -19,10 +18,10 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "split-merge", worker.Options{})
+	w := worker.New(c, "split-merge-selector", worker.Options{})
 
-	w.RegisterWorkflow(splitmerge.SampleSplitMergeWorkflow)
-	w.RegisterActivity(splitmerge.ChunkProcessingActivity)
+	w.RegisterWorkflow(splitmerge_selector.SampleSplitMergeSelectorWorkflow)
+	w.RegisterActivity(splitmerge_selector.ChunkProcessingActivity)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
