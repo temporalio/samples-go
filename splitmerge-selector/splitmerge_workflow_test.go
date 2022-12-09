@@ -1,4 +1,4 @@
-package splitmerge_future
+package splitmerge_selector
 
 import (
 	"testing"
@@ -21,7 +21,7 @@ func (s *UnitTestSuite) Test_Workflow() {
 	env.RegisterActivity(ChunkProcessingActivity)
 
 	workerCount := 5
-	env.ExecuteWorkflow(SampleSplitMergeWorkflow, workerCount)
+	env.ExecuteWorkflow(SampleSplitMergeSelectorWorkflow, workerCount)
 
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())

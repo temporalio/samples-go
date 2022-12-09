@@ -21,11 +21,11 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "split_merge_" + uuid.New(),
-		TaskQueue: "split-merge",
+		ID:        "split_merge_future_" + uuid.New(),
+		TaskQueue: "split-merge-future",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, splitmerge_future.SampleSplitMergeWorkflow, 5)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, splitmerge_future.SampleSplitMergeFutureWorkflow, 5)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}

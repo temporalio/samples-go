@@ -21,7 +21,7 @@ func (s *UnitTestSuite) Test_Workflow() {
 	env.RegisterActivity(ChunkProcessingActivity)
 
 	workerCount := 5
-	env.ExecuteWorkflow(SampleSplitMergeWorkflow, workerCount)
+	env.ExecuteWorkflow(SampleSplitMergeFutureWorkflow, workerCount)
 
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())

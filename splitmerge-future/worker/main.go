@@ -19,9 +19,9 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "split-merge", worker.Options{})
+	w := worker.New(c, "split-merge-future", worker.Options{})
 
-	w.RegisterWorkflow(splitmerge_future.SampleSplitMergeWorkflow)
+	w.RegisterWorkflow(splitmerge_future.SampleSplitMergeFutureWorkflow)
 	w.RegisterActivity(splitmerge_future.ChunkProcessingActivity)
 
 	err = w.Run(worker.InterruptCh())

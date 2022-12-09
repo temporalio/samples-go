@@ -20,8 +20,8 @@ type ChunkResult struct {
 	SumInChunk           int
 }
 
-// SampleSplitMergeWorkflow workflow definition
-func SampleSplitMergeWorkflow(ctx workflow.Context, workerCount int) (ChunkResult, error) {
+// SampleSplitMergeFutureWorkflow workflow definition
+func SampleSplitMergeFutureWorkflow(ctx workflow.Context, workerCount int) (ChunkResult, error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
 	}

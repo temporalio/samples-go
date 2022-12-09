@@ -1,4 +1,4 @@
-package splitmerge_future
+package splitmerge_selector
 
 import (
 	"context"
@@ -20,8 +20,8 @@ type ChunkResult struct {
 	SumInChunk           int
 }
 
-// SampleSplitMergeWorkflow workflow definition
-func SampleSplitMergeWorkflow(ctx workflow.Context, workerCount int) (result ChunkResult, err error) {
+// SampleSplitMergeSelectorWorkflow workflow definition
+func SampleSplitMergeSelectorWorkflow(ctx workflow.Context, workerCount int) (result ChunkResult, err error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
 	}
