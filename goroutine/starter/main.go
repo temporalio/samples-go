@@ -24,7 +24,7 @@ func main() {
 		TaskQueue: "goroutine",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, goroutine.SampleParallelWorkflow, 5)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, goroutine.SampleGoroutineWorkflow, 5)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}

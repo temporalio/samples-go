@@ -26,12 +26,12 @@ func Step2Test(input string) (output string, err error) {
 	return input + ", Step2", nil
 }
 
-func (s *UnitTestSuite) Test_Workflow() {
+func (s *UnitTestSuite) Test_GoroutineWorkflow() {
 	env := s.NewTestWorkflowEnvironment()
 	env.RegisterActivityWithOptions(Step1Test, activity.RegisterOptions{Name: "Step1"})
 	env.RegisterActivityWithOptions(Step2Test, activity.RegisterOptions{Name: "Step2"})
 
-	env.ExecuteWorkflow(SampleParallelWorkflow, 2)
+	env.ExecuteWorkflow(SampleGoroutineWorkflow, 2)
 
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())

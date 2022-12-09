@@ -14,8 +14,8 @@ import (
 * In Temporal workflow, you should create goroutines using workflow.Go method.
  */
 
-// SampleParallelWorkflow workflow definition
-func SampleParallelWorkflow(ctx workflow.Context, parallelism int) (results []string, err error) {
+// SampleGoroutineWorkflow workflow definition
+func SampleGoroutineWorkflow(ctx workflow.Context, parallelism int) (results []string, err error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
 	}

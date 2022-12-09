@@ -1,4 +1,4 @@
-package splitmerge
+package splitmerge_future
 
 import (
 	"testing"

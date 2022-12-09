@@ -20,7 +20,7 @@ func main() {
 
 	w := worker.New(c, "goroutine", worker.Options{})
 
-	w.RegisterWorkflow(goroutine.SampleParallelWorkflow)
+	w.RegisterWorkflow(goroutine.SampleGoroutineWorkflow)
 	w.RegisterActivity(goroutine.Step1)
 	w.RegisterActivity(goroutine.Step2)
 

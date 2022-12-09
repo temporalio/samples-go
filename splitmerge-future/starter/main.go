@@ -7,7 +7,7 @@ import (
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
 
-	"github.com/temporalio/samples-go/splitmerge"
+	"github.com/temporalio/samples-go/splitmerge-future"
 )
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 		TaskQueue: "split-merge",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, splitmerge.SampleSplitMergeWorkflow, 5)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, splitmerge_future.SampleSplitMergeWorkflow, 5)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
