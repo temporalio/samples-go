@@ -45,7 +45,7 @@ func SampleGoroutineWorkflow(ctx workflow.Context, parallelism int) (results []s
 	// Wait for Goroutines to complete. Await blocks until the condition function returns true.
 	// The function is evaluated on every workflow state change. Consider using `workflow.AwaitWithTimeout` to
 	// limit duration of the wait.
-	workflow.Await(ctx, func() bool {
+	_ = workflow.Await(ctx, func() bool {
 		return err != nil || len(results) == parallelism
 	})
 	return
