@@ -163,10 +163,13 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
   parallel branches, picks the result of the branch that completes first, and then cancels other Activities that have
   not finished.
 
-- [**Split/Merge**](https://github.com/temporalio/samples-go/tree/master/splitmerge): Demonstrates how to use multiple
-  Temporal coroutines, instead of native goroutines. This samples to processes chunks of a large work item in parallel,
-  and then merges the intermediate results to generate the final result. Do not use native goroutines in Temporal
-  Workflows. Instead, the coroutine provided by the workflow.Go API.
+- [**Split/Merge Future**](https://github.com/temporalio/samples-go/tree/master/splitmerge-future): Demonstrates how to
+  use futures to await for completion of multiple activities invoked in parallel. This samples to processes chunks of a
+  large work item in parallel, and then merges the intermediate results to generate the final result.
+-
+- [**Split/Merge Selector**](https://github.com/temporalio/samples-go/tree/master/splitmerge-selector): Demonstrates how
+  to use Selector to process activity results as soon as they become available. This samples to processes chunks of a
+  large work item in parallel, and then merges the intermediate results to generate the final result.
 
 - [**Synchronous Proxy Workflow pattern**](https://github.com/temporalio/samples-go/tree/master/synchronous-proxy): This
   sample demonstrates a synchronous interaction with a "main" Workflow Execution from a "proxy" Workflow Execution. The
