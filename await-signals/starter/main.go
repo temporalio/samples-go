@@ -39,7 +39,10 @@ func main() {
 	rand.Shuffle(len(signals), func(i, j int) { signals[i], signals[j] = signals[j], signals[i] })
 	for _, signal := range signals {
 		signalName := fmt.Sprintf("Signal%d", signal)
-		c.SignalWorkflow(context.Background(), we.GetID(), we.GetRunID(), signalName, nil)
+		err = c.SignalWorkflow(context.Background(), we.GetID(), we.GetRunID(), signalName, nil)
+		if err != nil {
+			log.Fatalln("Unable to signals workflow", err)
+		}
 		log.Println("Sent " + signalName)
 		time.Sleep(2 * time.Second)
 	}
