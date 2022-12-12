@@ -179,6 +179,9 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 - [**Saga pattern**](https://github.com/temporalio/samples-go/tree/main/saga): This sample demonstrates how to implement
   a saga pattern using golang defer feature.
 
+- [**Await for signal processing**](https://github.com/temporalio/samples-go/tree/main/await-signals): Demonstrates how
+  to process out of order signals processing using `Await` and `AwaitWithTimeout`.
+
 ### Scenario based examples
 
 - [**DSL Workflow**](https://github.com/temporalio/samples-go/tree/master/dsl): Demonstrates how to implement a
