@@ -2,7 +2,6 @@ package await_signals
 
 import (
 	"go.temporal.io/sdk/temporal"
-	"go.temporal.io/server/common"
 	"time"
 
 	"go.temporal.io/sdk/workflow"
@@ -102,16 +101,18 @@ func (a *AwaitSignals) GetNextTimeout(ctx workflow.Context) (time.Duration, erro
 	if totalLeft <= 0 {
 		return 0, temporal.NewApplicationError("FromFirstSignalTimeout", "timeout")
 	}
-	return common.MinDuration(SignalToSignalTimeout, totalLeft), nil
+	if SignalToSignalTimeout < totalLeft {
+		return SignalToSignalTimeout, nil
+	}
+	return totalLeft, nil
 }
 
 // AwaitSignalsWorkflow workflow definition
 func AwaitSignalsWorkflow(ctx workflow.Context) (err error) {
 	log := workflow.GetLogger(ctx)
 	var a AwaitSignals
-	workflow.Go(ctx, func(ctx workflow.Context) {
-		a.Listen(ctx)
-	})
+	// Listen to signals in a different goroutine
+	workflow.Go(ctx, a.Listen)
 
 	// Wait for Signal1
 	err = workflow.Await(ctx, func() bool {
