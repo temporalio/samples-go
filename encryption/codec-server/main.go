@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -10,16 +11,11 @@ import (
 	"github.com/temporalio/samples-go/encryption"
 
 	"go.temporal.io/sdk/converter"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
 )
 
-var logger log.Logger
 var portFlag int
 
 func init() {
-	logger = log.NewCLILogger()
-
 	flag.IntVar(&portFlag, "port", 8081, "Port to listen on")
 }
 
@@ -47,6 +43,6 @@ func main() {
 	case <-sigCh:
 		_ = srv.Close()
 	case err := <-errCh:
-		logger.Fatal("error", tag.NewErrorTag(err))
+		log.Fatal(err)
 	}
 }
