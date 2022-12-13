@@ -1,8 +1,8 @@
 ### Steps to run this sample:
 1) You need a Temporal service running. See details in README.md
-2) Compile the encryption plugin for tctl
+2) Run the following command to start the remote codec server
 ```
-go build -o ../bin/encryption-plugin plugin/main.go
+go run ./codec-server
 ```
 3) Run the following command to start the worker
 ```
@@ -12,9 +12,14 @@ go run worker/main.go
 ```
 go run starter/main.go
 ```
-5) Run the following command and see the encrypted payloads
+5) Run the following command and see the payloads cannot be decoded
 ```
-export PATH="../bin:$PATH" TEMPORAL_CLI_PLUGIN_DATA_CONVERTER=encryption-plugin
 tctl workflow show --wid encryption_workflowID
 ```
-Note: plugins should normally be available in your PATH, we include the current directory in the path here for ease of testing.
+6) Run the following command and see the decoded payloads
+```
+tctl --codec_endpoint 'http://localhost:8081/' workflow show --wid encryption_workflowID
+```
+
+Note: The codec server provided in this sample does not support decoding payloads for the Temporal Web UI, only tctl.
+Please see the [codec-server](../codec-server/) sample for a more complete example of a codec server which provides UI decoding and oauth.
