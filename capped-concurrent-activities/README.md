@@ -1,4 +1,4 @@
-This sample workflow demonstrates how to execute multiple activities in parallel keeping them to a maximum per workflow.
+This sample workflow demonstrates how to execute multiple activities in parallel running just a maximum at the time per workflow.
 
 ### Steps to run this sample:
 
