@@ -25,7 +25,7 @@ func main() {
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions,
-		capped_activities.CappedActivitiesWorkflow, 90)
+		capped_activities.CappedActivitiesWorkflow, 30)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}

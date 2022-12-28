@@ -20,7 +20,7 @@ func (s *UnitTestSuite) Test_Workflow() {
 	env := s.NewTestWorkflowEnvironment()
 	env.RegisterActivity(ChunkProcessingActivity)
 
-	workerCount := 90
+	workerCount := 30
 	env.ExecuteWorkflow(CappedActivitiesWorkflow, workerCount)
 
 	s.True(env.IsWorkflowCompleted())

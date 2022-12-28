@@ -21,6 +21,8 @@ type ChunkResult struct {
 	SumInChunk           int
 }
 
+const batchSize = 10 // maximum activities running concurrently
+
 // CappedActivitiesWorkflow workflow definition
 func CappedActivitiesWorkflow(ctx workflow.Context, workerCount int) (result ChunkResult, err error) {
 	ao := workflow.ActivityOptions{
@@ -30,8 +32,6 @@ func CappedActivitiesWorkflow(ctx workflow.Context, workerCount int) (result Chu
 
 	selector := workflow.NewSelector(ctx)
 	var totalItemCount, totalSum int
-
-	batchSize := 30
 
 	runActivity := func(i int) {
 		// ExecuteActivity returns Future that doesn't need to be awaited immediately.
