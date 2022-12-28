@@ -15,5 +15,3 @@ go run capped-concurrent-activities/worker/main.go
 go run capped-concurrent-activities/starter/main.go
 ```
 
-./temporalite start --namespace default --ephemeral
-http://localhost:8233/namespaces/default/workflows?query=&search=basic
