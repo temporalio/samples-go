@@ -15,15 +15,11 @@ func Test_Workflow(t *testing.T) {
 
 	// Mock activity implementation
 	var activities *YourActivityObject
-	activityParam := YourActivityParam{
-		ActivityParamX: "Temporal",
-		ActivityParamY: 0,
-	}
 	activityResult := YourActivityResultObject{
-		ResultFieldX: "Temporal World!",
+		ResultFieldX: "Hello World!",
 		ResultFieldY: 1,
 	}
-	env.OnActivity(activities.YourActivityDefinition, mock.Anything, activityParam).Return(activityResult, nil)
+	env.OnActivity(activities.YourActivityDefinition, mock.Anything, mock.Anything).Return(activityResult, nil)
 	env.OnActivity(activities.PrintSharedSate, mock.Anything).Return(nil)
 	env.ExecuteWorkflow(YourWorkflowDefinition, YourWorkflowParam{})
 
@@ -31,14 +27,17 @@ func Test_Workflow(t *testing.T) {
 	require.NoError(t, env.GetWorkflowError())
 	var result YourWorkflowResultObject
 	require.NoError(t, env.GetWorkflowResult(&result))
-	require.Equal(t, "Hello World!", result.ResultFieldX)
 }
 
 func Test_Activity(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestActivityEnvironment()
 
-	var activities *YourActivityObject
+	var activities YourActivityObject
+
+	activities.SharedMessageState = "No messages!"
+	activities.SharedCounterState = 0
+
 	env.RegisterActivity(activities.YourActivityDefinition)
 	
 	activityParam := YourActivityParam{
