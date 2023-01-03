@@ -47,7 +47,7 @@ func YourWorkflowDefinition(ctx workflow.Context, param YourWorkflowParam) (Your
 		return YourWorkflowResultObject{}, err
 	}
 	// Make the results of the Workflow Execution available.
-	workflowResult := YourWorkflowResultObject {
+	workflowResult := YourWorkflowResultObject{
 		ResultFieldX: activityResult.ResultFieldX,
 		ResultFieldY: activityResult.ResultFieldY,
 	}
@@ -57,4 +57,5 @@ func YourWorkflowDefinition(ctx workflow.Context, param YourWorkflowParam) (Your
 func YourSimpleWorkflowDefinition(ctx workflow.Context) error {
 	return nil
 }
+
 // @@@SNIPEND

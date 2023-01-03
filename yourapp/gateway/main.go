@@ -1,3 +1,4 @@
+// @@@SNIPSTART go-samples-yourapp-your-gateway
 package main
 
 import (
@@ -13,7 +14,7 @@ import (
 func main() {
 	// Create a Temporal Client to communicate with the Temporal Cluster.
 	// A Temporal Client is a heavyweight object that should be created just once per process.
-	temporalClient, err := client.NewClient(client.Options{
+	temporalClient, err := client.Dial(client.Options{
 		HostPort: client.DefaultHostPort,
 	})
 	if err != nil {
@@ -53,3 +54,4 @@ func startWorkflowHandler(w http.ResponseWriter, r *http.Request, temporalClient
 	}
 	log.Println("Started Workflow\n", "WorkflowID:", workflowExecution.GetID(), "\nRunID:", workflowExecution.GetRunID())
 }
+// @@@SNIPEND

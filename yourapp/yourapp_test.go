@@ -39,7 +39,7 @@ func Test_Activity(t *testing.T) {
 	activities.SharedCounterState = 0
 
 	env.RegisterActivity(activities.YourActivityDefinition)
-	
+
 	activityParam := YourActivityParam{
 		ActivityParamX: "Hello",
 		ActivityParamY: 0,

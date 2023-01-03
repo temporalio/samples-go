@@ -1,3 +1,4 @@
+// @@@SNIPSTART go-samples-yourapp-your-worker
 package main
 
 import (
@@ -12,7 +13,7 @@ import (
 func main() {
 	// Create a Temporal Client
 	// A Temporal Client is a heavyweight object that should be created just once per process.
-	temporalClient, err := client.NewClient(client.Options{})
+	temporalClient, err := client.Dial(client.Options{})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
@@ -31,3 +32,4 @@ func main() {
 		log.Fatalln("Unable to start Worker", err)
 	}
 }
+// @@@SNIPEND
