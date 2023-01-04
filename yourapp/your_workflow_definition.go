@@ -13,8 +13,8 @@ type YourWorkflowParam struct {
 }
 
 type YourWorkflowResultObject struct {
-	ResultFieldX string
-	ResultFieldY int
+	WFResultFieldX string
+	WFResultFieldY int
 }
 
 // Workflow is a Hello World workflow definition.
@@ -48,8 +48,8 @@ func YourWorkflowDefinition(ctx workflow.Context, param YourWorkflowParam) (Your
 	}
 	// Make the results of the Workflow Execution available.
 	workflowResult := YourWorkflowResultObject{
-		ResultFieldX: activityResult.ResultFieldX,
-		ResultFieldY: activityResult.ResultFieldY,
+		WFResultFieldX: activityResult.ResultFieldX,
+		WFResultFieldY: activityResult.ResultFieldY,
 	}
 	return workflowResult, nil
 }
