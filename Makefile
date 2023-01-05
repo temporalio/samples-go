@@ -43,8 +43,8 @@ workflowcheck:
 	@workflowcheck -show-pos ./...
 
 update-sdk:
-	go get -u go.temporal.io/api@master
-	go get -u go.temporal.io/sdk@master
+	go get -u go.temporal.io/api@main
+	go get -u go.temporal.io/sdk@main
 	go mod tidy
 
 clean:

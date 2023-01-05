@@ -13,7 +13,7 @@ $ docker run --publish 6831:6831 --publish 16686:16686 jaegertracing/all-in-one:
 ```
 
 Steps to run this sample:
-1) You need a Temporal service running. See details README.md.
+1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 2) Run
 ```
 go run ctxpropagation/worker/main.go

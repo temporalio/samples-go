@@ -18,158 +18,157 @@ Server via the Temporal Go SDK.
 - Lastly, you can run Temporal Server locally on your own (follow
   the [Quick install guide](https://docs.temporal.io/clusters/quick-install)), then clone this repository
 
-The [helloworld](helloworld) sample is a good place to start.
+The [helloworld](https://github.com/temporalio/samples-go/tree/main/helloworld) sample is a good place to start.
 
 ## Samples directory
 
 Each sample demonstrates one feature of the SDK, together with tests.
 
-- [**Basic hello world**](helloworld): Simple example of a Workflow
+- [**Basic hello world**](https://github.com/temporalio/samples-go/tree/main/helloworld): Simple example of a Workflow
   Definition and an Activity Definition.
 
-- [**Basic mTLS hello world**](helloworldmtls): Simple example of a
+- [**Basic mTLS hello world**](https://github.com/temporalio/samples-go/tree/main/helloworldmtls): Simple example of a
   Workflow Definition and an Activity Definition using mTLS like Temporal Cloud.
 
 ### API demonstrations
 
 - **Async activity completion**: Example of
-  an [Expense reporting](expense) Workflow that communicates with a
+  an [Expense reporting](https://github.com/temporalio/samples-go/tree/main/expense) Workflow that communicates with a
   server API. Additional
   documentation: [How to complete an Activity Execution asynchronously in Go](https://docs.temporal.io/application-development/foundations/#develop-activities)
 
-- [**Retry Activity Execution**](retryactivity): This samples
+- [**Retry Activity Execution**](https://github.com/temporalio/samples-go/tree/main/retryactivity): This samples
   executes an unreliable Activity. The Activity is executed with a custom Retry Policy. If the Activity Execution fails,
   the Server will schedule a retry based on the Retry Policy. This Activity also includes a Heartbeat, which enables it
   to resume from the Activity Execution's last reported progress when it retries.
 
-- [**Child Workflow**](child-workflow): Demonstrates how to use
+- [**Child Workflow**](https://github.com/temporalio/samples-go/tree/main/child-workflow): Demonstrates how to use
   execute a Child Workflow from a Parent Workflow Execution. A Child Workflow Execution only returns to the Parent
   Workflow Execution after completing its last Run.
 
 - [**Child Workflow with
-  ContinueAsNew**](https://github.com/temporalio/samples-go/tree/master/child-workflow-continue-as-new): Demonstrates
+  ContinueAsNew**](https://github.com/temporalio/samples-go/tree/main/child-workflow-continue-as-new): Demonstrates
   that the call to Continue-As-New, by a Child Workflow Execution, is *not visible to the a parent*. The Parent Workflow
   Execution receives a notification only when a Child Workflow Execution completes, fails or times out. This is a useful
   feature when there is a need to **process a large set of data**. The child can iterate over the data set calling
   Continue-As-New periodically without polluting the parents' history.
 
-- [**Cancellation**](cancellation): Demonstrates how to cancel a
+- [**Cancellation**](https://github.com/temporalio/samples-go/tree/main/cancellation): Demonstrates how to cancel a
   Workflow Execution by calling `CancelWorkflow`, an how to defer an Activity Execution that "cleans up" after the
   Workflow Execution has been cancelled.
 
 - **Coroutines**: Do not use native `go` routines in Workflows. Instead use Temporal coroutines (`workflow.Go()`) to
   maintain a [deterministic](https://docs.temporal.io/application-development/foundations/#develop-workflows) Workflow. Can be
-  seen in the [Goroutine](goroutine)
-  , [DSL](dsl)
-  , [Recovery](recovery)
-  , [PSO](pso) Workflow examples.
+  seen in the [Goroutine](https://github.com/temporalio/samples-go/tree/main/goroutine)
+  , [DSL](https://github.com/temporalio/samples-go/tree/main/dsl)
+  , [Recovery](https://github.com/temporalio/samples-go/tree/main/recovery)
+  , [PSO](https://github.com/temporalio/samples-go/tree/main/pso) Workflow examples.
 
-- [**Cron Workflow**](cron): Demonstrates a recurring Workflow
+- [**Cron Workflow**](https://github.com/temporalio/samples-go/tree/main/cron): Demonstrates a recurring Workflow
   Execution that occurs according to a cron schedule. This samples showcases the `HasLastCompletionResult`
   and `GetLastCompletionResult` APIs which are used to pass information between executions. Additional
   documentation: [What is a Temporal Cron Job?](https://docs.temporal.io/docs/content/what-is-a-temporal-cron-job).
 
-- [**Encryption**](encryption): How to use encryption for
+- [**Encryption**](https://github.com/temporalio/samples-go/tree/main/encryption): How to use encryption for
   Workflow/Activity data with the DataConverter API. Also includes an example of stacking encoders (in this case
   encryption and compression)
 
-- [**Codec Server**](codec-server): Demonstrates using a codec
+- [**Codec Server**](https://github.com/temporalio/samples-go/tree/main/codec-server): Demonstrates using a codec
   server to decode payloads for display in tctl and Temporal Web. This setup can be used for any kind of codec, common
   examples are compression or encryption.
 
-- [**Query Example**](query): Demonstrates how to Query the state
+- [**Query Example**](https://github.com/temporalio/samples-go/tree/main/query): Demonstrates how to Query the state
   of a single Workflow Execution using the `QueryWorkflow` and `SetQueryHandler` APIs. Additional
   documentation: [How to Query a Workflow Execution in Go](https://docs.temporal.io/application-development/features/#queries).
 
 - **Selectors**: Do not use the native Go `select` statement. Instead
   use [Go SDK Selectors](https://docs.temporal.io/docs/go/selectors) (`selector.Select(ctx)`) to maintain
   a [deterministic](https://docs.temporal.io/application-development/foundations/#develop-workflows) Workflow. Can be seen in
-  the [Pick First](pickfirst)
-  , [Mutex](mutex)
-  , [DSL](dsl),
-  and [Timer](https://github.com/temporalio/samples-go/tree/master/timer) examples.
+  the [Pick First](https://github.com/temporalio/samples-go/tree/main/pickfirst)
+  , [Mutex](https://github.com/temporalio/samples-go/tree/main/mutex)
+  , [DSL](https://github.com/temporalio/samples-go/tree/main/dsl),
+  and [Timer](https://github.com/temporalio/samples-go/tree/main/timer) examples.
 
 - **Sessions**: Demonstrates how to bind a set of Activity Executions to a specific Worker after the first Activity
   executes. This feature is showcased in
-  the [File Processing example](https://github.com/temporalio/samples-go/tree/master/fileprocessing). Addition
-  documentation: [How to use Sessions in Go](https://docs.temporal.io/docs/go/sessions).
+  the [File Processing example](https://github.com/temporalio/samples-go/tree/main/fileprocessing). Addition
+  documentation: [How to use Sessions in Go](https://docs.temporal.io/go/how-to-create-a-worker-session-in-go).
 
-- **Signals**: Can be seen in the [Recovery](https://github.com/temporalio/samples-go/tree/master/recovery)
-  and [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex) examples. Additional
-  documentation: [eCommerce application tutorial](https://docs.temporal.io/blog/tags/go-ecommerce-tutorial)
-  , [How to send a Signal to a Workflow Execution in Go](https://docs.temporal.io/docs/go/how-to-send-a-signal-to-a-workflow-execution-in-go)
-  , [How to handle a Signal in a Workflow Execution in Go](https://docs.temporal.io/docs/go/how-to-handle-a-signal-in-a-workflow-in-go)
+- **Signals**: Can be seen in the [Recovery](https://github.com/temporalio/samples-go/tree/main/recovery)
+  and [Mutex](https://github.com/temporalio/samples-go/tree/main/mutex) examples. Additional
+  documentation: [eCommerce application tutorial](https://learn.temporal.io/tutorials/go/ecommerce/)
+  , [How to send and handle Signals in Go](https://docs.temporal.io/application-development/features/#signals)
   .
 
-- [**Memo**](https://github.com/temporalio/samples-go/tree/master/memo): Demonstrates how to use Memo that can be used
+- [**Memo**](https://github.com/temporalio/samples-go/tree/main/memo): Demonstrates how to use Memo that can be used
   to store any kind of data.
 
-- [**Search Attributes**](https://github.com/temporalio/samples-go/tree/master/searchattributes): Demonstrates how to
+- [**Search Attributes**](https://github.com/temporalio/samples-go/tree/main/searchattributes): Demonstrates how to
   use custom Search Attributes that can be used to find Workflow Executions using predicates (must use
-  with [Elasticsearch](https://docs.temporal.io/docs/content/how-to-integrate-elasticsearch-into-a-temporal-cluster)).
+  with [Elasticsearch](https://docs.temporal.io/clusters/how-to-integrate-elasticsearch-into-a-temporal-cluster)).
 
-- [**Timer Futures**](https://github.com/temporalio/samples-go/tree/master/timer): The sample starts a long running
+- [**Timer Futures**](https://github.com/temporalio/samples-go/tree/main/timer): The sample starts a long running
   order processing operation and starts a Timer (`workflow.NewTimer()`). If the processing time is too long, a
   notification email is "sent" to the user regarding the delay (the execution does not cancel). If the operation
   finishes before the Timer fires, then the Timer is cancelled.
 
-- [**Tracing and Context Propagation**](https://github.com/temporalio/samples-go/tree/master/ctxpropagation):
+- [**Tracing and Context Propagation**](https://github.com/temporalio/samples-go/tree/main/ctxpropagation):
   Demonstrates the client initialization with a context propagator, which propagates specific information in
   the `context.Context` object across the Workflow Execution. The `context.Context` object is populated with information
   prior to calling `StartWorkflow`. This example demonstrates that the information is available in the Workflow
   Execution and Activity Executions. Additional
-  documentation: [How to use tracing in Go](https://docs.temporal.io/docs/go/tracing/).
+  documentation: [How to use tracing in Go](https://docs.temporal.io/go/tracing).
 
-- [**Updatable Timer**](https://github.com/temporalio/samples-go/tree/master/updatabletimer): Demonstrates timer
+- [**Updatable Timer**](https://github.com/temporalio/samples-go/tree/main/updatabletimer): Demonstrates timer
   cancellation and use of a Selector to wait on a Future and a Channel simultaneously.
 
-- [**Greetings**](https://github.com/temporalio/samples-go/tree/master/greetings): Demonstrates how to pass dependencies
+- [**Greetings**](https://github.com/temporalio/samples-go/tree/main/greetings): Demonstrates how to pass dependencies
   to activities defined as struct methods.
 
-- [**Greetings Local**](https://github.com/temporalio/samples-go/tree/master/greetingslocal): Demonstrates how to pass
+- [**Greetings Local**](https://github.com/temporalio/samples-go/tree/main/greetingslocal): Demonstrates how to pass
   dependencies to local activities defined as struct methods.
 
-- [**Interceptors**](https://github.com/temporalio/samples-go/tree/master/interceptor): Demonstrates how to use
+- [**Interceptors**](https://github.com/temporalio/samples-go/tree/main/interceptor): Demonstrates how to use
   interceptors to intercept calls, in this case for adding context to the logger.
 
 ### Dynamic Workflow logic examples
 
 These samples demonstrate some common control flow patterns using Temporal's Go SDK API.
 
-- [**Dynamic Execution**](https://github.com/temporalio/samples-go/tree/master/dynamic): Demonstrates how to execute
+- [**Dynamic Execution**](https://github.com/temporalio/samples-go/tree/main/dynamic): Demonstrates how to execute
   Workflows and Activities using a name rather than a strongly typed function.
 
-- [**Branching Acitivties**](https://github.com/temporalio/samples-go/blob/master/branch): Executes multiple Activities
+- [**Branching Acitivties**](https://github.com/temporalio/samples-go/tree/main/branch): Executes multiple Activities
   in parallel. The number of branches is controlled by a parameter that is passed in at the start of the Workflow
   Execution.
 
-- [**Exclusive Choice**](https://github.com/temporalio/samples-go/tree/master/choice-exclusive): Demonstrates how to
+- [**Exclusive Choice**](https://github.com/temporalio/samples-go/tree/main/choice-exclusive): Demonstrates how to
   execute Activities based on a dynamic input.
 
-- [**Multi-Choice**](https://github.com/temporalio/samples-go/tree/master/choice-multi): Demonstrates how to execute
+- [**Multi-Choice**](https://github.com/temporalio/samples-go/tree/main/choice-multi): Demonstrates how to execute
   multiple Activities in parallel based on a dynamic input.
 
-- [**Mutex Workflow**](https://github.com/temporalio/samples-go/tree/master/mutex): Demonstrates the ability to
+- [**Mutex Workflow**](https://github.com/temporalio/samples-go/tree/main/mutex): Demonstrates the ability to
   lock/unlock a particular resource within a particular Temporal Namespace. In this examples the other Workflow
   Executions within the same Namespace wait until a locked resource is unlocked. This shows how to avoid race conditions
   or parallel mutually exclusive operations on the same resource.
 
-- [**Goroutine Workflow**](https://github.com/temporalio/samples-go/tree/master/goroutine): This sample executes
+- [**Goroutine Workflow**](https://github.com/temporalio/samples-go/tree/main/goroutine): This sample executes
   multiple sequences of activities in parallel using the `workflow.Go()` API.
 
-- [**Pick First**](https://github.com/temporalio/samples-go/tree/master/pickfirst): This sample executes Activities in
+- [**Pick First**](https://github.com/temporalio/samples-go/tree/main/pickfirst): This sample executes Activities in
   parallel branches, picks the result of the branch that completes first, and then cancels other Activities that have
   not finished.
 
-- [**Split/Merge Future**](https://github.com/temporalio/samples-go/tree/master/splitmerge-future): Demonstrates how to
+- [**Split/Merge Future**](https://github.com/temporalio/samples-go/tree/main/splitmerge-future): Demonstrates how to
   use futures to await for completion of multiple activities invoked in parallel. This samples to processes chunks of a
   large work item in parallel, and then merges the intermediate results to generate the final result.
 -
-- [**Split/Merge Selector**](https://github.com/temporalio/samples-go/tree/master/splitmerge-selector): Demonstrates how
+- [**Split/Merge Selector**](https://github.com/temporalio/samples-go/tree/main/splitmerge-selector): Demonstrates how
   to use Selector to process activity results as soon as they become available. This samples to processes chunks of a
   large work item in parallel, and then merges the intermediate results to generate the final result.
 
-- [**Synchronous Proxy Workflow pattern**](https://github.com/temporalio/samples-go/tree/master/synchronous-proxy): This
+- [**Synchronous Proxy Workflow pattern**](https://github.com/temporalio/samples-go/tree/main/synchronous-proxy): This
   sample demonstrates a synchronous interaction with a "main" Workflow Execution from a "proxy" Workflow Execution. The
   proxy Workflow Execution sends a Signal to the "main" Workflow Execution, then blocks, waiting for a Signal in
   response.
@@ -182,31 +181,31 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 ### Scenario based examples
 
-- [**DSL Workflow**](https://github.com/temporalio/samples-go/tree/master/dsl): Demonstrates how to implement a
+- [**DSL Workflow**](https://github.com/temporalio/samples-go/tree/main/dsl): Demonstrates how to implement a
   DSL-based Workflow. This sample contains 2 yaml files that each define a custom "workflow" which instructs the
   Temporal Workflow. This is useful if you want to build in a "low code" layer.
 
-- [**Expense Request**](https://github.com/temporalio/samples-go/tree/master/expense): This demonstrates how to process
+- [**Expense Request**](https://github.com/temporalio/samples-go/tree/main/expense): This demonstrates how to process
   an expense request. This sample showcases how to complete an Activity Execution asynchronously.
 
-- [**File Processing**](https://github.com/temporalio/samples-go/tree/master/fileprocessing): Demonstrates how to
+- [**File Processing**](https://github.com/temporalio/samples-go/tree/main/fileprocessing): Demonstrates how to
   download and process a file using set of Activities that run on the same host. Activities are executed to download a
   file from the web, store it locally on the host, and then "process it". This samples showcases how to handle a
   scenario where all subsequent Activities need to execute on the same host as the first Activity in the sequence. In
   Go, this is achieved by using the Session APIs.
 
-- [**Particle Swarm Optimization**](https://github.com/temporalio/samples-go/tree/master/pso): Demonstrates how to
+- [**Particle Swarm Optimization**](https://github.com/temporalio/samples-go/tree/main/pso): Demonstrates how to
   perform a long iterative math optimization process using particle swarm optimization (PSO). This sample showcases the
   use of parallel executions, `ContinueAsNew` for long histories, a Query API, and the use of a custom `DataConverter`
   for serialization.
 
-- [**Prometheus Metrics**](https://github.com/temporalio/samples-go/tree/master/metrics): Demonstrates how to instrument
+- [**Prometheus Metrics**](https://github.com/temporalio/samples-go/tree/main/metrics): Demonstrates how to instrument
   Temporal with Prometheus and Uber's Tally library.
 
-- [**Request/Response with Response Activities**](https://github.com/temporalio/samples-go/tree/master/reqrespactivity):
+- [**Request/Response with Response Activities**](https://github.com/temporalio/samples-go/tree/main/reqrespactivity):
   Demonstrates how to accept requests via signals and use callback activities to push responses.
 
-- [**Request/Response with Response Queries**](https://github.com/temporalio/samples-go/tree/master/reqrespquery):
+- [**Request/Response with Response Queries**](https://github.com/temporalio/samples-go/tree/main/reqrespquery):
   Demonstrates how to accept requests via signals and use queries to poll for responses.
 
 ### Pending examples
@@ -218,9 +217,9 @@ Mostly examples we haven't yet ported from https://github.com/temporalio/samples
 - Periodic Workflow: Workflow that executes some logic periodically. *Example to be completed*
 - Exception propagation and wrapping: *Example to be completed*
 - Polymorphic activity: *Example to be completed*
-- Side Effect:  *Example to be completed* - [Docs](https://docs.temporal.io/docs/go/side-effect)
+- Side Effect:  *Example to be completed* - [Docs](https://docs.temporal.io/go/how-to-execute-a-side-effect-in-go)
 
 ### Fixtures
 
 These are edge case examples useful for Temporal internal development and bug
-reporting. [See their readme for more details](https://github.com/temporalio/samples-go/tree/master/temporal-fixtures).
+reporting. [See their readme for more details](https://github.com/temporalio/samples-go/tree/main/temporal-fixtures).
