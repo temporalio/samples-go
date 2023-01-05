@@ -1,6 +1,6 @@
 ## Child Workflow
 <!-- @@@SNIPSTART samples-go-child-workflow-example-readme -->
-Make sure the [Temporal Server is running locally](https://docs.temporal.io/docs/server/quick-install).
+Make sure the [Temporal Server is running locally](https://docs.temporal.io/clusters/quick-install).
 
 From the root of the project, start a Worker:
 
