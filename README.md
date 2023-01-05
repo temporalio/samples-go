@@ -11,39 +11,38 @@ Server via the Temporal Go SDK.
 
 ## How to use
 
-- You can run this in the browser with
+- Run this in the browser with
   Gitpod: [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/temporalio/samples-go/)
-- Or you can run Temporal Server locally
-  using [VSCode Remote Containers](https://code.visualstudio.com/docs/remote/containers)
+- Or run Temporal Server locally with [VSCode Remote Containers](https://code.visualstudio.com/docs/remote/containers)
   . [![Open in Remote - Containers](https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/temporalio/samples-go)
 - Lastly, you can run Temporal Server locally on your own (follow
-  the [Quick install guide](https://docs.temporal.io/docs/server/quick-install)), then clone this repository
+  the [Quick install guide](https://docs.temporal.io/clusters/quick-install)), then clone this repository
 
-The [helloworld](helloworld/README.md) sample is a good place to start.
+The [helloworld](helloworld) sample is a good place to start.
 
 ## Samples directory
 
 Each sample demonstrates one feature of the SDK, together with tests.
 
-- [**Basic hello world**](https://github.com/temporalio/samples-go/tree/master/helloworld): Simple example of a Workflow
+- [**Basic hello world**](helloworld): Simple example of a Workflow
   Definition and an Activity Definition.
 
-- [**Basic mTLS hello world**](https://github.com/temporalio/samples-go/tree/master/helloworldmtls): Simple example of a
+- [**Basic mTLS hello world**](helloworldmtls): Simple example of a
   Workflow Definition and an Activity Definition using mTLS like Temporal Cloud.
 
 ### API demonstrations
 
 - **Async activity completion**: Example of
-  an [Expense reporting](https://github.com/temporalio/samples-go/tree/master/expense) Workflow that communicates with a
+  an [Expense reporting](expense) Workflow that communicates with a
   server API. Additional
-  documentation: [How to complete an Activity Execution asynchronously in Go](https://docs.temporal.io/docs/go/activities/#asynchronous-activity-completion)
+  documentation: [How to complete an Activity Execution asynchronously in Go](https://docs.temporal.io/application-development/foundations/#develop-activities)
 
-- [**Retry Activity Execution**](https://github.com/temporalio/samples-go/tree/master/retryactivity): This samples
+- [**Retry Activity Execution**](retryactivity): This samples
   executes an unreliable Activity. The Activity is executed with a custom Retry Policy. If the Activity Execution fails,
   the Server will schedule a retry based on the Retry Policy. This Activity also includes a Heartbeat, which enables it
   to resume from the Activity Execution's last reported progress when it retries.
 
-- [**Child Workflow**](https://github.com/temporalio/samples-go/tree/master/child-workflow): Demonstrates how to use
+- [**Child Workflow**](child-workflow): Demonstrates how to use
   execute a Child Workflow from a Parent Workflow Execution. A Child Workflow Execution only returns to the Parent
   Workflow Execution after completing its last Run.
 
@@ -54,41 +53,40 @@ Each sample demonstrates one feature of the SDK, together with tests.
   feature when there is a need to **process a large set of data**. The child can iterate over the data set calling
   Continue-As-New periodically without polluting the parents' history.
 
-- [**Cancellation**](https://github.com/temporalio/samples-go/tree/master/cancellation): Demonstrates how to cancel a
+- [**Cancellation**](cancellation): Demonstrates how to cancel a
   Workflow Execution by calling `CancelWorkflow`, an how to defer an Activity Execution that "cleans up" after the
   Workflow Execution has been cancelled.
 
 - **Coroutines**: Do not use native `go` routines in Workflows. Instead use Temporal coroutines (`workflow.Go()`) to
-  maintain a [deterministic](https://docs.temporal.io/docs/go/workflows/#how-to-write-workflow-code) Workflow. Can be
-  seen in the [Goroutine](https://github.com/temporalio/samples-go/tree/master/goroutine)
-  , [DSL](https://github.com/temporalio/samples-go/tree/master/dsl)
-  , [Recovery](https://github.com/temporalio/samples-go/tree/master/recovery)
-  , [PSO](https://github.com/temporalio/samples-go/tree/master/pso) Workflow examples.
+  maintain a [deterministic](https://docs.temporal.io/application-development/foundations/#develop-workflows) Workflow. Can be
+  seen in the [Goroutine](goroutine)
+  , [DSL](dsl)
+  , [Recovery](recovery)
+  , [PSO](pso) Workflow examples.
 
-- [**Cron Workflow**](https://github.com/temporalio/samples-go/tree/master/cron): Demonstrates a recurring Workflow
+- [**Cron Workflow**](cron): Demonstrates a recurring Workflow
   Execution that occurs according to a cron schedule. This samples showcases the `HasLastCompletionResult`
   and `GetLastCompletionResult` APIs which are used to pass information between executions. Additional
   documentation: [What is a Temporal Cron Job?](https://docs.temporal.io/docs/content/what-is-a-temporal-cron-job).
 
-- [**Encryption**](https://github.com/temporalio/samples-go/tree/master/encryption): How to use encryption for
+- [**Encryption**](encryption): How to use encryption for
   Workflow/Activity data with the DataConverter API. Also includes an example of stacking encoders (in this case
   encryption and compression)
-  . [Docs](https://docs.temporal.io/docs/go/workflows/#custom-serialization-and-workflow-security).
 
-- [**Codec Server**](https://github.com/temporalio/samples-go/tree/master/codec-server): Demonstrates using a codec
+- [**Codec Server**](codec-server): Demonstrates using a codec
   server to decode payloads for display in tctl and Temporal Web. This setup can be used for any kind of codec, common
   examples are compression or encryption.
 
-- [**Query Example**](https://github.com/temporalio/samples-go/tree/master/query): Demonstrates how to Query the state
+- [**Query Example**](query): Demonstrates how to Query the state
   of a single Workflow Execution using the `QueryWorkflow` and `SetQueryHandler` APIs. Additional
-  documentation: [How to Query a Workflow Execution in Go](https://docs.temporal.io/docs/go/queries).
+  documentation: [How to Query a Workflow Execution in Go](https://docs.temporal.io/application-development/features/#queries).
 
 - **Selectors**: Do not use the native Go `select` statement. Instead
   use [Go SDK Selectors](https://docs.temporal.io/docs/go/selectors) (`selector.Select(ctx)`) to maintain
-  a [deterministic](https://docs.temporal.io/docs/go/workflows/#how-to-write-workflow-code) Workflow. Can be seen in
-  the [Pick First](https://github.com/temporalio/samples-go/tree/master/pickfirst)
-  , [Mutex](https://github.com/temporalio/samples-go/tree/master/mutex)
-  , [DSL](https://github.com/temporalio/samples-go/tree/master/dsl),
+  a [deterministic](https://docs.temporal.io/application-development/foundations/#develop-workflows) Workflow. Can be seen in
+  the [Pick First](pickfirst)
+  , [Mutex](mutex)
+  , [DSL](dsl),
   and [Timer](https://github.com/temporalio/samples-go/tree/master/timer) examples.
 
 - **Sessions**: Demonstrates how to bind a set of Activity Executions to a specific Worker after the first Activity
