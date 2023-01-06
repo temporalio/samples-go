@@ -7,7 +7,7 @@ Server via the Temporal Go SDK.
 
 - Temporal Server repo: [https://github.com/temporalio/temporal](https://github.com/temporalio/temporal)
 - Temporal Go SDK repo: [https://github.com/temporalio/sdk-go](https://github.com/temporalio/sdk-go)
-- Go SDK docs: https://docs.temporal.io/docs/go/introduction
+- Go SDK docs: [https://docs.temporal.io/application-development](https://docs.temporal.io/application-development?lang=go#supported-sdks)
 
 ## How to use
 
