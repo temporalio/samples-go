@@ -22,4 +22,4 @@ tctl --codec_endpoint 'http://localhost:8081/' workflow show --wid encryption_wo
 ```
 
 Note: The codec server provided in this sample does not support decoding payloads for the Temporal Web UI, only tctl.
-Please see the [codec-server](https://github.com/temporalio/samples-go/tree/main/codec-server/) sample for a more complete example of a codec server which provides UI decoding and oauth.
+Please see the [codec-server](../codec-server/) sample for a more complete example of a codec server which provides UI decoding and oauth.
