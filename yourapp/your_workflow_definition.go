@@ -7,13 +7,13 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-// YourWorkflowParam is the object passed to the Workflow
+// YourWorkflowParam is the object passed to the Workflow.
 type YourWorkflowParam struct {
 	WorkflowParamX string
 	WorkflowParamY int
 }
 
-// YourWorkflowResultObject is the object returned by the Workflow
+// YourWorkflowResultObject is the object returned by the Workflow.
 type YourWorkflowResultObject struct {
 	WFResultFieldX string
 	WFResultFieldY int
@@ -57,7 +57,7 @@ func YourWorkflowDefinition(ctx workflow.Context, param YourWorkflowParam) (*You
 	return workflowResult, nil
 }
 
-// YourSimpleWorkflowDefintiion is the most basic Workflow Defintion
+// YourSimpleWorkflowDefintiion is the most basic Workflow Defintion.
 func YourSimpleWorkflowDefinition(ctx workflow.Context) error {
 	return nil
 }

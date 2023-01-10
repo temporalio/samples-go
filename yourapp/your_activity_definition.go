@@ -45,7 +45,7 @@ func (a *YourActivityObject) YourActivityDefinition(ctx context.Context, param Y
 	return result, nil
 }
 
-// PrintSharedState is another custom Activity Definition
+// PrintSharedState is another custom Activity Definition.
 func (a *YourActivityObject) PrintSharedSate(ctx context.Context) error {
 	logger := activity.GetLogger(ctx)
 	logger.Info("The current message is:", a.SharedMessageState)
