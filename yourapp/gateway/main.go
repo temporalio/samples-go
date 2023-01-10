@@ -52,6 +52,8 @@ func startWorkflowHandler(w http.ResponseWriter, r *http.Request, temporalClient
 	if err != nil {
 		log.Fatalln("Unable to execute the Workflow", err)
 	}
-	log.Println("Started Workflow\n", "WorkflowID:", workflowExecution.GetID(), "\nRunID:", workflowExecution.GetRunID())
+	log.Println("Started Workflow!")
+	log.Println("WorkflowID:", workflowExecution.GetID())
+	log.Println("RunID:", workflowExecution.GetRunID())
 }
 // @@@SNIPEND
