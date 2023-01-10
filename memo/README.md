@@ -1,6 +1,6 @@
 ### Steps to run this sample:
 
-1) Before running this, you need to run Temporal Server 1.18+.
+1) Before running this, you need to run [Temporal Server 1.18+](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 
 2) Run the following command to start the worker:
 ```

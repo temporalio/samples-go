@@ -6,7 +6,7 @@ Since the data structure that maintains the optimization state has to be passed 
 Also the query API is supported to get the current state of running workflow.
 
 Steps to run this sample: 
-1) You need a Temporal service running. See details in README.md
+1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 2) Run the following command multiple times on different console window. This is to simulate running workers on multiple different machines.
 ```
 go run pso/worker/main.go

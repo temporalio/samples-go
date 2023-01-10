@@ -12,7 +12,7 @@ The flow of calls is outlined in the diagram below.
 
 ### Steps to run this sample:
 
-1) You need a Temporal service running. See details in README.md
+1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 2) Run the following command to start the worker
 ```shell
 go run worker/main.go
