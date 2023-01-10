@@ -1,6 +1,6 @@
 ############################# Main targets #############################
 # Run all checks, build, and test.
-install: clean staticcheck errcheck workflowcheck bins test
+install: clean lint workflowcheck bins test
 ########################################################################
 
 ##### Variables ######
@@ -27,20 +27,15 @@ test:
 	$(NEWLINE))
 	@! grep -q "^--- FAIL" test.log
 
-staticcheck:
-	@printf $(COLOR) "Run static check..."
-	@GO111MODULE=off go get -u honnef.co/go/tools/cmd/staticcheck
-	@staticcheck ./...
-
-errcheck:
-	@printf $(COLOR) "Run error check..."
-	@GO111MODULE=off go get -u github.com/kisielk/errcheck
-	@errcheck ./...
+lint:
+	@printf $(COLOR) "Run checks..."
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
+	@golangci-lint run --disable-all -E errcheck -E staticcheck
 
 workflowcheck:
 	@printf $(COLOR) "Run workflow check..."
 	@go install go.temporal.io/sdk/contrib/tools/workflowcheck
-	@workflowcheck -show-pos ./...
+	@workflowcheck -config workflowcheck.config.yaml -show-pos ./...
 
 update-sdk:
 	go get -u go.temporal.io/api@main
@@ -49,5 +44,5 @@ update-sdk:
 
 clean:
 	rm -rf bin
-	
-ci-build: staticcheck errcheck workflowcheck bins test
+
+ci-build: lint workflowcheck bins test

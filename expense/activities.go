@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 
@@ -20,8 +20,8 @@ func CreateExpenseActivity(ctx context.Context, expenseID string) error {
 	if err != nil {
 		return err
 	}
-	body, err := ioutil.ReadAll(resp.Body)
-	_ = resp.Body.Close()
+	defer resp.Body.Close() // nolint:errcheck
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -57,8 +57,8 @@ func WaitForDecisionActivity(ctx context.Context, expenseID string) (string, err
 		logger.Info("waitForDecisionActivity failed to register callback.", "Error", err)
 		return "", err
 	}
-	body, err := ioutil.ReadAll(resp.Body)
-	_ = resp.Body.Close()
+	defer resp.Body.Close() // nolint:errcheck
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -86,8 +86,8 @@ func PaymentActivity(ctx context.Context, expenseID string) error {
 	if err != nil {
 		return err
 	}
-	body, err := ioutil.ReadAll(resp.Body)
-	_ = resp.Body.Close()
+	defer resp.Body.Close() // nolint:errcheck
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}

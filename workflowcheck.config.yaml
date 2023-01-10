@@ -1,0 +1,6 @@
+decls:
+  print: false
+  fmt.Printf: false
+  fmt.Sprintf: false
+  fmt.Sprint: false
+  fmt.Errorf: false
