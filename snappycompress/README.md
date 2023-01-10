@@ -1,5 +1,5 @@
 ### Steps to run this sample:
-1) You need a Temporal service running. See details in README.md
+1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 2) Compile the snappycompress plugin for tctl
 ```
 go build -o ../bin/snappycompress-plugin plugin/main.go

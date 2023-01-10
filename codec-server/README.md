@@ -3,9 +3,9 @@
 This sample shows how to decode payloads that have been encoded by a codec so they can be displayed by tctl and Temporal Web.
 The sample codec server supports OIDC authentication (via JWT in the Authorization header).
 Temporal Web can be configured to pass the user's OIDC access token to the codec server, see: https://github.com/temporalio/web#configuration
-Configuring OIDC is outside of the scope of this sample, but please see [../serverjwtauth](../serverjwtauth/) for more details about authentication.
+Configuring OIDC is outside of the scope of this sample, but please see the [serverjwtauth repo](../serverjwtauth/) for more details about authentication.
 
-1) You need a Temporal service running. See details in README.md
+1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 2) Run the following command to start the worker
 ```
 go run worker/main.go

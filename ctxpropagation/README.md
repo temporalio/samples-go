@@ -1,5 +1,5 @@
 This sample Workflow demos context propagation through a Workflow. Details about context propagation are
-available [here](https://docs.temporal.io/docs/go/tracing).
+available [here](https://docs.temporal.io/tracing).
 
 The sample Workflow initializes the client with a context propagator which propagates
 specific information in the `context.Context` object across the Workflow. The `context.Context` object is populated
@@ -13,7 +13,7 @@ $ docker run --publish 6831:6831 --publish 16686:16686 jaegertracing/all-in-one:
 ```
 
 Steps to run this sample:
-1) You need a Temporal service running. See details README.md.
+1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 2) Run
 ```
 go run ctxpropagation/worker/main.go
