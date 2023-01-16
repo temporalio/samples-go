@@ -4,13 +4,13 @@ The Temporal server may be configured to authorize based on JWT sent as a header
 endpoint that hosts the public keys used to sign tokens (in JWK format, ref
 [RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517)). Once the key's signature has been validated, the
 `permissions` claim in the token is used to determine what the caller can do. See
-[Temporal security documentation](https://docs.temporal.io/docs/server/security) for more details.
+[Temporal security documentation](https://docs.temporal.io/security) for more details.
 
 This example creates a ECDSA key pair, serves the public key for use by the server, and creates keys as needed for
 using `tctl`, running workers, and starting workflows.
 
 Note: Since we are not authorizing the UI in this sample, the server UI will not work with this restricted access.
-[Configuration of SSO for the Temporal Web UI](https://github.com/temporalio/web#configuring-authentication-optional) is
+[Configuration of SSO for the Temporal Web UI](https://github.com/temporalio/web/#configuring-authentication-optional) is
 outside the scope of this example.
 
 ## Running
@@ -75,7 +75,7 @@ This will output something like:
 
     TEMPORAL_CLI_AUTH=Bearer abcde...
 
-See [this documentation](https://docs.temporal.io/docs/devtools/tctl/#run-the-cli) on how to run `tctl` with environment
+See [this documentation](https://docs.temporal.io/tctl-v1/#run-the-cli) on how to run `tctl` with environment
 variables. If using the docker approach from bash, an argument could be added like:
 
     --env "$(go run ./serverjwtauth/key tctl-system-token)"
