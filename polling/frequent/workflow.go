@@ -11,6 +11,7 @@ func FrequentPolling(ctx workflow.Context) (string, error) {
 
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
+		HeartbeatTimeout:    2 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 

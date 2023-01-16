@@ -23,7 +23,7 @@ func main() {
 	w := worker.New(c, "pollingSampleQueue", worker.Options{})
 
 	w.RegisterWorkflow(periodic_sequence.PeriodicSequencePolling)
-	w.RegisterWorkflow(periodic_sequence.ChildWorkflow)
+	w.RegisterWorkflow(periodic_sequence.PollingChildWorkflow)
 	testService := polling.NewTestService(50)
 	activities := &periodic_sequence.PollingActivities{
 		TestService: &testService,

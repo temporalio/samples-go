@@ -25,7 +25,7 @@ func (s *UnitTestSuite) Test_PeriodicPollingWorkflow() {
 		TestService: &testService,
 	}
 	env.RegisterActivity(a)
-	env.RegisterWorkflow(ChildWorkflow)
+	env.RegisterWorkflow(PollingChildWorkflow)
 
 	env.ExecuteWorkflow(PeriodicSequencePolling, 100*time.Millisecond)
 

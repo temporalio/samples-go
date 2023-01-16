@@ -11,7 +11,7 @@ type ChildWorkflowParams struct {
 	PollingInterval        time.Duration
 }
 
-func ChildWorkflow(ctx workflow.Context, params ChildWorkflowParams) (string, error) {
+func PollingChildWorkflow(ctx workflow.Context, params ChildWorkflowParams) (string, error) {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Starting child workflow with params", params)
 	ao := workflow.ActivityOptions{
@@ -34,6 +34,6 @@ func ChildWorkflow(ctx workflow.Context, params ChildWorkflowParams) (string, er
 		}
 	}
 	// Request that the new child workflow run is invoked
-	err := workflow.NewContinueAsNewError(ctx, ChildWorkflow, params)
+	err := workflow.NewContinueAsNewError(ctx, PollingChildWorkflow, params)
 	return "", err
 }

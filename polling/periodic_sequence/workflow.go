@@ -12,7 +12,7 @@ func PeriodicSequencePolling(ctx workflow.Context, pollingInterval time.Duration
 		SingleWorkflowAttempts: 10,
 		PollingInterval:        pollingInterval,
 	}
-	res := workflow.ExecuteChildWorkflow(ctx, ChildWorkflow, params)
+	res := workflow.ExecuteChildWorkflow(ctx, PollingChildWorkflow, params)
 	var result string
 	err := res.Get(ctx, &result)
 	return result, err
