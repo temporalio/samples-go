@@ -7,21 +7,21 @@ import (
 )
 
 type ChildWorkflowParams struct {
-	SingleWorkflowAttempts int
-	PollingInterval        time.Duration
+	PollingInterval time.Duration
 }
 
 func PollingChildWorkflow(ctx workflow.Context, params ChildWorkflowParams) (string, error) {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Starting child workflow with params", params)
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout: 10 * time.Second,
+		StartToCloseTimeout:    10 * time.Second,
+		ScheduleToCloseTimeout: 2 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	var a *PollingActivities
 
-	for i := 0; i < params.SingleWorkflowAttempts; i++ {
+	for i := 0; i < 10; i++ {
 		// Here we would invoke a sequence of activities
 		// For sample we just use a single one repeated several times
 		var pollResult string

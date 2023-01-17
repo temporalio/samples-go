@@ -23,7 +23,7 @@ func (a *PollingActivities) DoPoll(ctx context.Context) (string, error) {
 		if err == nil {
 			return res, err
 		}
-		activity.RecordHeartbeat(ctx, "no response")
+		activity.RecordHeartbeat(ctx)
 		time.Sleep(a.PollInterval)
 	}
 	return a.TestService.GetServiceResult()
