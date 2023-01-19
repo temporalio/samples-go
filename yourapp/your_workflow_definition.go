@@ -1,4 +1,4 @@
-// @@@SNIPSTART go-samples-your-workflow-definition
+// @@@SNIPSTART go-samples-yourapp-your-workflow-definition
 package yourapp
 
 import (

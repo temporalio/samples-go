@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-yourapp-tests
 package yourapp
 
 import (
@@ -35,8 +36,10 @@ func Test_Activity(t *testing.T) {
 
 	var activities YourActivityObject
 
-	activities.SharedMessageState = "No messages!"
-	activities.SharedCounterState = 0
+	message := "No messages!"
+	counter := 0
+	activities.SharedMessageState = &message
+	activities.SharedCounterState = &counter
 
 	env.RegisterActivity(activities.YourActivityDefinition)
 
@@ -50,3 +53,4 @@ func Test_Activity(t *testing.T) {
 	require.NoError(t, val.Get(&res))
 	require.Equal(t, "Hello World!", res.ResultFieldX)
 }
+// @@@SNIPEND

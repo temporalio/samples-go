@@ -1,4 +1,4 @@
-// @@@SNIPSTART go-samples-your-activity-definition
+// @@@SNIPSTART go-samples-yourapp-your-activity-definition
 package yourapp
 
 import (
@@ -25,8 +25,8 @@ type YourActivityResultObject struct {
 // YourActivityObject is the struct that maintains shared state across Activities.
 // If the Worker crashes this Activity object loses its state.
 type YourActivityObject struct {
-	SharedMessageState string
-	SharedCounterState int
+	SharedMessageState *string
+	SharedCounterState *int
 }
 
 // YourActivityDefinition is your custom Activity Definition.
@@ -34,11 +34,13 @@ type YourActivityObject struct {
 func (a *YourActivityObject) YourActivityDefinition(ctx context.Context, param YourActivityParam) (YourActivityResultObject, error) {
 	// Use Acivities for computations or calling external APIs.
 	// This is just an example of appending to text and incrementing a counter.
-	a.SharedMessageState = param.ActivityParamX + " World!"
-	a.SharedCounterState = param.ActivityParamY + 1
+	message := param.ActivityParamX + " World!"
+	counter := param.ActivityParamY + 1
+	a.SharedMessageState = &message
+	a.SharedCounterState = &counter
 	result := YourActivityResultObject{
-		ResultFieldX: a.SharedMessageState,
-		ResultFieldY: a.SharedCounterState,
+		ResultFieldX: *a.SharedMessageState,
+		ResultFieldY: *a.SharedCounterState,
 	}
 	// Return the results back to the Workflow Execution.
 	// The results persist within the Event History of the Workflow Execution.
@@ -48,8 +50,8 @@ func (a *YourActivityObject) YourActivityDefinition(ctx context.Context, param Y
 // PrintSharedState is another custom Activity Definition.
 func (a *YourActivityObject) PrintSharedSate(ctx context.Context) error {
 	logger := activity.GetLogger(ctx)
-	logger.Info("The current message is:", a.SharedMessageState)
-	logger.Info("The current counter is:", a.SharedCounterState)
+	logger.Info("The current message is:", *a.SharedMessageState)
+	logger.Info("The current counter is:", *a.SharedCounterState)
 	return nil
 }
 

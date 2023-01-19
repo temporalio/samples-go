@@ -25,7 +25,10 @@ func main() {
 	http.HandleFunc("/start", func(w http.ResponseWriter, r *http.Request) {
 		startWorkflowHandler(w, r, temporalClient)
 	})
-	http.ListenAndServe(":8081", nil)
+	err = http.ListenAndServe(":8081", nil)
+	if err != nil {
+		log.Fatalln("Unable to run http server", err)
+	}
 }
 
 func startWorkflowHandler(w http.ResponseWriter, r *http.Request, temporalClient client.Client) {

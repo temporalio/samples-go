@@ -24,7 +24,12 @@ func main() {
 	yourWorker.RegisterWorkflow(yourapp.YourWorkflowDefinition)
 	// Register your Activity Definitons with the Worker.
 	// Use this technique for registering all Activities that are part of a struct and set the shared variable values.
-	activities := &yourapp.YourActivityObject{SharedMessageState: "No messages!", SharedCounterState: 0}
+	message := "No messages!"
+	counter := 0
+	activities := &yourapp.YourActivityObject{
+		SharedMessageState: &message,
+		SharedCounterState: &counter,
+	}
 	yourWorker.RegisterActivity(activities)
 	// Run the Worker
 	err = yourWorker.Run(worker.InterruptCh())
