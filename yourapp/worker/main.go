@@ -22,15 +22,18 @@ func main() {
 	yourWorker := worker.New(temporalClient, "your-custom-task-queue-name", worker.Options{})
 	// Register your Workflow Definitions with the Worker.
 	yourWorker.RegisterWorkflow(yourapp.YourWorkflowDefinition)
+	// Use the ReisterWorkflow method for each function registration.
+	yourWorker.RegisterWorkflow(yourapp.YourSimpleWorkflowDefinition)
 	// Register your Activity Definitons with the Worker.
 	// Use this technique for registering all Activities that are part of a struct and set the shared variable values.
-	message := "No messages!"
-	counter := 0
+	initialMessageString := "No messages!"
+	initialCounterState := 0
 	activities := &yourapp.YourActivityObject{
-		SharedMessageState: &message,
-		SharedCounterState: &counter,
+		SharedMessageState: &initialMessageString,
+		SharedCounterState: &initialCounterState,
 	}
 	yourWorker.RegisterActivity(activities)
+	yourWorker.RegisterActivity(yourapp.YourSimpleActivityDefinition)
 	// Run the Worker
 	err = yourWorker.Run(worker.InterruptCh())
 	if err != nil {
