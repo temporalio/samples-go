@@ -22,4 +22,5 @@ func TestReplayWorkflowHistoryFromFile(t *testing.T) {
 	err := replayer.ReplayWorkflowHistoryFromJSONFile(nil, "your_workflow_history.json")
 	require.NoError(t, err)
 }
+
 // @@@SNIPEND

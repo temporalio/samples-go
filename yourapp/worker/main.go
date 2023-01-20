@@ -4,8 +4,10 @@ package main
 import (
 	"log"
 
+	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 
 	"github.com/temporalio/samples-go/yourapp"
 )
@@ -21,9 +23,13 @@ func main() {
 	// Create a new Worker.
 	yourWorker := worker.New(temporalClient, "your-custom-task-queue-name", worker.Options{})
 	// Register your Workflow Definitions with the Worker.
+	// Use the ReisterWorkflow or RegisterWorkflowWithOptions method for each Workflow registration.
 	yourWorker.RegisterWorkflow(yourapp.YourWorkflowDefinition)
-	// Use the ReisterWorkflow method for each function registration.
-	yourWorker.RegisterWorkflow(yourapp.YourSimpleWorkflowDefinition)
+	// Use RegisterOptions to set the name of the Workflow Type for example.
+	registerWFOptions := workflow.RegisterOptions{
+		Name: "JustAnotherWorkflow",
+	}
+	yourWorker.RegisterWorkflowWithOptions(yourapp.YourSimpleWorkflowDefinition, registerWFOptions)
 	// Register your Activity Definitons with the Worker.
 	// Use this technique for registering all Activities that are part of a struct and set the shared variable values.
 	initialMessageString := "No messages!"
@@ -32,8 +38,13 @@ func main() {
 		SharedMessageState: &initialMessageString,
 		SharedCounterState: &initialCounterState,
 	}
+	// Use the RegisterActivity or RegisterActivityWithOptions method for each Activity.
 	yourWorker.RegisterActivity(activities)
-	yourWorker.RegisterActivity(yourapp.YourSimpleActivityDefinition)
+	// Use RegisterOptions to change the name of the Activity Type for example.
+	registerAOptions := activity.RegisterOptions{
+		Name: "JustAnotherActivity",
+	}
+	yourWorker.RegisterActivityWithOptions(yourapp.YourSimpleActivityDefinition, registerAOptions)
 	// Run the Worker
 	err = yourWorker.Run(worker.InterruptCh())
 	if err != nil {
