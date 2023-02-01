@@ -12,11 +12,7 @@ import (
 // on a consistent host.
 func FileProcessingWorkflow(ctx workflow.Context) (err error) {
 	ao := workflow.ActivityOptions{
-		// Note the use of scheduleToCloseTimeout.
-		// The reason this timeout type is used is because this task queue is unique
-		// to a single worker. When that worker goes away, there won't be a way for these
-		// activities to progress.
-		ScheduleToCloseTimeout: time.Minute,
+		StartToCloseTimeout: time.Minute,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 	var stickyTaskQueue string
@@ -25,8 +21,13 @@ func FileProcessingWorkflow(ctx workflow.Context) (err error) {
 		return
 	}
 	ao = workflow.ActivityOptions{
-		StartToCloseTimeout: time.Minute,
-		TaskQueue:           stickyTaskQueue,
+		// Note the use of scheduleToCloseTimeout.
+		// The reason this timeout type is used is because this task queue is unique
+		// to a single worker. When that worker goes away, there won't be a way for these
+		// activities to progress.
+		ScheduleToCloseTimeout: time.Minute,
+
+		TaskQueue: stickyTaskQueue,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
