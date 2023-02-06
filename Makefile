@@ -29,7 +29,7 @@ test:
 
 staticcheck:
 	@printf $(COLOR) "Run static check..."
-	@GO111MODULE=off go get -u honnef.co/go/tools/cmd/staticcheck
+	@go install honnef.co/go/tools/cmd/staticcheck@2022.1.3
 	@staticcheck ./...
 
 errcheck:
@@ -51,3 +51,4 @@ clean:
 	rm -rf bin
 	
 ci-build: staticcheck errcheck workflowcheck bins test
+GO111MODULE=off go get -u honnef.co/go/tools/cmd/staticcheck

@@ -179,6 +179,9 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 - [**Await for signal processing**](./await-signals): Demonstrates how
   to process out of order signals processing using `Await` and `AwaitWithTimeout`.
 
+- [**Sticky task queue for activities**](./activities-sticky-queues): Demonstrates how
+  to create a sticky task queue to run certain activities on the same host.
+
 ### Scenario based examples
 
 - [**DSL Workflow**](./dsl): Demonstrates how to implement a
