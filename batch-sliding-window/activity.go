@@ -1,4 +1,4 @@
-package branch
+package batch_sliding_window
 
 import (
 	"fmt"

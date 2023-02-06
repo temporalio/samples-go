@@ -1,5 +1,5 @@
 // @@@SNIPSTART samples-go-branch-workflow-definition-test
-package branch
+package batch_sliding_window
 
 import (
 	"sort"
