@@ -1,15 +1,11 @@
 package batch_sliding_window
 
-import (
-	"fmt"
-)
-
 type RecordLoader struct {
 	RecordCount int
 }
 
 type SingleRecord struct {
-	Id string
+	Id int
 }
 
 func (p *RecordLoader) GetRecords(pageSize, offset int) (result []SingleRecord, err error) {
@@ -19,8 +15,7 @@ func (p *RecordLoader) GetRecords(pageSize, offset int) (result []SingleRecord, 
 			size = p.RecordCount
 		}
 		for i := 0; i < size; i++ {
-			recordId := fmt.Sprintf("%d", i)
-			result = append(result, SingleRecord{Id: recordId})
+			result = append(result, SingleRecord{Id: i})
 		}
 	}
 	return
