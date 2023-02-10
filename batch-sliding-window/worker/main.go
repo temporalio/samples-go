@@ -1,15 +1,13 @@
 package main
 
 import (
+	batch_sliding_window "github.com/temporalio/samples-go/batch-sliding-window"
 	"log"
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
-
-	"github.com/temporalio/samples-go/branch"
 )
 
-// @@@SNIPSTART samples-go-branch-worker-starter
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.Dial(client.Options{
@@ -20,15 +18,16 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "branch", worker.Options{})
+	w := worker.New(c, "batch-sliding-window", worker.Options{})
 
-	w.RegisterWorkflow(branch.SampleBranchWorkflow)
-	w.RegisterActivity(branch.SampleActivity)
+	w.RegisterWorkflow(batch_sliding_window.ProcessBatchWorkflow)
+	w.RegisterWorkflow(batch_sliding_window.SlidingWindowWorkflow)
+	w.RegisterWorkflow(batch_sliding_window.RecordProcessorWorkflow)
+
+	w.RegisterActivity(&batch_sliding_window.RecordLoader{RecordCount: 3})
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
 		log.Fatalln("Unable to start worker", err)
 	}
 }
-
-// @@@SNIPEND

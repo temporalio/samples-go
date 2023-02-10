@@ -2,6 +2,7 @@ package batch_sliding_window
 
 import (
 	"go.temporal.io/sdk/workflow"
+	"math/rand"
 	"time"
 )
 
@@ -25,7 +26,12 @@ func RecordProcessorWorkflow(ctx workflow.Context, r SingleRecord) error {
 // ProcessRecord simulates application specific record processing.
 func ProcessRecord(ctx workflow.Context, r SingleRecord) error {
 	// Simulate some processing
-	workflow.Sleep(ctx, 10*time.Second)
+	encodedRandom := workflow.SideEffect(ctx, func(ctx workflow.Context) interface{} {
+		return rand.Intn(10)
+	})
+	var random int
+	encodedRandom.Get(&random)
+	time.Sleep(time.Duration(random) * time.Microsecond)
 	workflow.GetLogger(ctx).Info("Processed ", r)
 	return nil
 }
