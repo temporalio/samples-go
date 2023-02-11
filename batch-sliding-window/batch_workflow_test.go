@@ -3,6 +3,7 @@ package batch_sliding_window
 import (
 	"github.com/stretchr/testify/suite"
 	"go.temporal.io/sdk/testsuite"
+	"go.temporal.io/sdk/workflow"
 	"testing"
 )
 
@@ -16,13 +17,18 @@ func TestUnitTestSuite(t *testing.T) {
 }
 
 func (s *UnitTestSuite) Test_ProcessBatchWorkflow() {
+
 	env := s.NewTestWorkflowEnvironment()
 	env.RegisterActivity(&RecordLoader{RecordCount: 1})
-	env.ExecuteWorkflow(ProcessBatchWorkflow, &ProcessBatchWorkflowInput{
+	env.RegisterWorkflowWithOptions(func(ctx workflow.Context, input SlidingWindowWorkflowInput) (recordCount int, err error) {
+		return input.MaximumOffset, nil
+	}, workflow.RegisterOptions{Name: "SlidingWindowWorkflow"})
+	batchInput := ProcessBatchWorkflowInput{
 		PageSize:          1,
 		SlidingWindowSize: 1,
 		Partitions:        1,
-	})
+	}
+	env.ExecuteWorkflow(ProcessBatchWorkflow, batchInput)
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())
 	var result int
