@@ -37,7 +37,6 @@ func GreetingSample(ctx workflow.Context) (string, error) {
 		return "", err
 	}
 
-	
 	// Say Greeting.
 	var sayResult string
 	err = workflow.ExecuteActivity(ctx, a.SayGreeting, greetResult, nameResult).Get(ctx, &sayResult)
