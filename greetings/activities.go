@@ -12,6 +12,7 @@ type Activities struct {
 func (a *Activities) GetGreeting() (string, error) {
 	return a.Greeting, nil
 }
+
 // @@@SNIPEND
 
 // GetName Activity.

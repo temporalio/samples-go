@@ -32,7 +32,9 @@ func (s *replayTestSuite) TearDownTest() {
 
 // This replay test is the recommended way to make sure changing workflow code is backward compatible without non-deterministic errors.
 // "helloworld.json" can be downloaded from Temporal CLI:
-//      tctl wf show -w hello_world_workflowID --output_filename ./helloworld.json
+//
+//	tctl wf show -w hello_world_workflowID --output_filename ./helloworld.json
+//
 // Or from Temporal Web UI. And you may need to change workflowType in the first event.
 func (s *replayTestSuite) TestReplayWorkflowHistoryFromFile() {
 	replayer := worker.NewWorkflowReplayer()
