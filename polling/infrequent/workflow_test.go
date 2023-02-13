@@ -18,7 +18,7 @@ func TestUnitTestSuite(t *testing.T) {
 
 func (s *UnitTestSuite) Test_InfrequentPollingWorkflow() {
 	env := s.NewTestWorkflowEnvironment()
-	testService := polling.NewTestService(1) // Horrible workaround to avoid a timeout
+	testService := polling.NewTestService(5)
 	a := &PollingActivities{
 		TestService: &testService,
 	}
