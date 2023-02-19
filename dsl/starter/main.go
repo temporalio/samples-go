@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"flag"
-	"io/ioutil"
 	"log"
+	"os"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
@@ -18,7 +18,7 @@ func main() {
 	flag.StringVar(&dslConfig, "dslConfig", "dsl/workflow1.yaml", "dslConfig specify the yaml file for the dsl workflow.")
 	flag.Parse()
 
-	data, err := ioutil.ReadFile(dslConfig)
+	data, err := os.ReadFile(dslConfig)
 	if err != nil {
 		log.Fatalln("failed to load dsl config file", err)
 	}
