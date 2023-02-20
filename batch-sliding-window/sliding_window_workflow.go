@@ -7,28 +7,32 @@ import (
 	"time"
 )
 
-type SlidingWindowWorkflowInput struct {
-	PageSize          int
-	SlidingWindowSize int
-	Offset            int // inclusive
-	MaximumOffset     int // exclusive
-	Progress          int
-	// The set of ids
-	CurrentRecords map[int]bool // recordId -> ignored boolean
-}
+type (
+	SlidingWindowWorkflowInput struct {
+		PageSize          int
+		SlidingWindowSize int
+		Offset            int // inclusive
+		MaximumOffset     int // exclusive
+		Progress          int
+		// The set of ids
+		CurrentRecords map[int]bool // recordId -> ignored boolean
+	}
 
-type SingleRecordOrError struct {
-	Record SingleRecord
-	Err    error
-}
+	SlidingWindow struct {
+		input                    SlidingWindowWorkflowInput
+		currentRecords           map[int]bool
+		childrenStartedByThisRun []workflow.ChildWorkflowFuture
+		offset                   int
+		progress                 int
+	}
 
-type SlidingWindow struct {
-	input                    SlidingWindowWorkflowInput
-	currentRecords           map[int]bool
-	childrenStartedByThisRun []workflow.ChildWorkflowFuture
-	offset                   int
-	progress                 int
-}
+	SlidingWindowState struct {
+		CurrentRecords           map[int]bool
+		ChildrenStartedByThisRun int
+		Offset                   int
+		Progress                 int
+	}
+)
 
 func SlidingWindowWorkflow(ctx workflow.Context, input SlidingWindowWorkflowInput) (recordCount int, err error) {
 	impl := &SlidingWindow{
@@ -40,52 +44,68 @@ func SlidingWindowWorkflow(ctx workflow.Context, input SlidingWindowWorkflowInpu
 	if impl.currentRecords == nil {
 		impl.currentRecords = make(map[int]bool)
 	}
-
+	err = workflow.SetQueryHandler(ctx, "state", func() (SlidingWindowState, error) {
+		return impl.State()
+	})
+	if err != nil {
+		return 0, err
+	}
 	return impl.Execute(ctx)
 }
 
+// State returns the current state of the batch.
+// Used by the "state" workflow query.
+func (s *SlidingWindow) State() (SlidingWindowState, error) {
+	return SlidingWindowState{
+		CurrentRecords:           s.currentRecords,
+		ChildrenStartedByThisRun: len(s.childrenStartedByThisRun),
+		Offset:                   s.offset,
+		Progress:                 s.progress,
+	}, nil
+}
+
 func (s *SlidingWindow) Execute(ctx workflow.Context) (recordCount int, err error) {
+	fmt.Println("Execute Started !!!!!!!!!!! runId=" + workflow.GetInfo(ctx).WorkflowExecution.RunID)
 	ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		StartToCloseTimeout: 5 * time.Second,
 	})
 
-	workflowId := workflow.GetInfo(ctx).WorkflowExecution.ID
-
 	// Starts processing child workflow completion signals asynchronously
 	s.completionSignalPump(ctx)
 
-	// Starts loading records asynchronously
-	recordsChannel := s.recordsPump(ctx)
-
-	childrenToStart := s.input.SlidingWindowSize
-	if s.input.Offset+childrenToStart > s.input.MaximumOffset {
-		childrenToStart = s.input.MaximumOffset - s.input.Offset
+	var getOutput GetRecordsOutput
+	if s.offset < s.input.MaximumOffset {
+		getInput := &GetRecordsInput{
+			PageSize:  s.input.PageSize,
+			Offset:    s.offset,
+			MaxOffset: s.input.MaximumOffset,
+		}
+		var loader *RecordLoader
+		err = workflow.ExecuteActivity(ctx, loader.GetRecords, getInput).Get(ctx, &getOutput)
+		if err != nil {
+			return 0, err
+		}
 	}
+	workflowId := workflow.GetInfo(ctx).WorkflowExecution.ID
 	// Process records
-	for {
-		// After starting SlidingWindowSize children blocks until a completion signal is received.
+	for _, record := range getOutput.Records {
+		// Blocks until the total number of children (including started by previous runs)
+		// gets below the SlidingWindowSize.
 		workflow.Await(ctx, func() bool {
-			return len(s.currentRecords) < childrenToStart
+			return len(s.currentRecords) < s.input.SlidingWindowSize
 		})
-		var record SingleRecordOrError
-		more := recordsChannel.Receive(ctx, &record)
-		// records pump failed
-		if record.Err != nil {
-			return 0, record.Err
-		}
-		// Completes or continues workflow, if no more records to process.
-		if !more {
-			return s.continueAsNewOrComplete(ctx)
-		}
+
 		options := workflow.ChildWorkflowOptions{
 			ParentClosePolicy: enumspb.PARENT_CLOSE_POLICY_ABANDON,
-			WorkflowID:        fmt.Sprintf("%s/%d", workflowId, record.Record.Id),
+			WorkflowID:        fmt.Sprintf("%s/%d", workflowId, record.Id),
 		}
 		childCtx := workflow.WithChildOptions(ctx, options)
-		child := workflow.ExecuteChildWorkflow(childCtx, RecordProcessorWorkflow, record.Record)
+		child := workflow.ExecuteChildWorkflow(childCtx, RecordProcessorWorkflow, record)
+
 		s.childrenStartedByThisRun = append(s.childrenStartedByThisRun, child)
-		s.currentRecords[record.Record.Id] = true // value is ignored
+		s.currentRecords[record.Id] = true // value is ignored
 	}
+	return s.continueAsNewOrComplete(ctx)
 }
 
 func (s *SlidingWindow) continueAsNewOrComplete(ctx workflow.Context) (int, error) {
@@ -114,6 +134,8 @@ func (s *SlidingWindow) continueAsNewOrComplete(ctx workflow.Context) (int, erro
 			Progress:          s.progress,
 			CurrentRecords:    s.currentRecords,
 		}
+		workflow.GetLogger(ctx).Info("NewContinueAsNewError")
+
 		return 0, workflow.NewContinueAsNewError(ctx, SlidingWindowWorkflow, newInput)
 	}
 	// The last run in the chain.
@@ -125,16 +147,18 @@ func (s *SlidingWindow) continueAsNewOrComplete(ctx workflow.Context) (int, erro
 }
 
 func (s *SlidingWindow) drainCompletionSignalChannelAsync(ctx workflow.Context) {
+	workflow.GetLogger(ctx).Info("drainCompletionSignalChannelAsync start")
+
 	reportCompletionChannel := workflow.GetSignalChannel(ctx, "ReportCompletion")
-	ok := false
 	for {
 		var recordId int
-		ok = reportCompletionChannel.ReceiveAsync(&recordId)
-		if ok {
-			s.recordCompletion(recordId)
-		} else {
+		ok := reportCompletionChannel.ReceiveAsync(&recordId)
+		if !ok {
+			workflow.GetLogger(ctx).Info("drainCompletionSignalChannelAsync drained")
 			break
 		}
+		workflow.GetLogger(ctx).Info("drainCompletionSignalChannelAsync", "recordId", recordId)
+		s.recordCompletion(ctx, recordId)
 	}
 }
 
@@ -144,56 +168,21 @@ func (s *SlidingWindow) drainCompletionSignalChannelAsync(ctx workflow.Context) 
 func (s *SlidingWindow) completionSignalPump(ctx workflow.Context) {
 	reportCompletionChannel := workflow.GetSignalChannel(ctx, "ReportCompletion")
 	workflow.Go(ctx, func(ctx workflow.Context) {
-		var recordId int
-		_ = reportCompletionChannel.Receive(ctx, &recordId)
-		s.recordCompletion(recordId)
+		for {
+			var recordId int
+			_ = reportCompletionChannel.Receive(ctx, &recordId)
+			workflow.GetLogger(ctx).Info("completionSignalPump calls recordCompletion", "recordId", recordId)
+			s.recordCompletion(ctx, recordId)
+		}
 	})
 }
 
-func (s *SlidingWindow) recordCompletion(recordId int) {
+func (s *SlidingWindow) recordCompletion(ctx workflow.Context, recordId int) {
+	workflow.GetLogger(ctx).Info("recordCompletion", "recordId", recordId)
 	// duplicate signal check
 	if _, ok := s.currentRecords[recordId]; ok {
+		workflow.GetLogger(ctx).Info("recordCompletion recorded", "recordId", recordId)
 		delete(s.currentRecords, recordId)
 		s.progress += 1
 	}
-}
-
-// recordsPump pumps into the returned channel the batches of records loaded through GetRecords activity.
-// A failure is reported as a last record with Err field set. The Channel is closed at the end of the records
-// or on error.
-func (s *SlidingWindow) recordsPump(ctx workflow.Context) workflow.Channel {
-	log := workflow.GetLogger(ctx)
-	recordsChannel := workflow.NewChannel(ctx)
-	// Goroutine pumps records into the recordsChannel
-	workflow.Go(ctx, func(ctx workflow.Context) {
-		var loader *RecordLoader
-		for {
-			if s.offset >= s.input.MaximumOffset || s.offset >= s.input.Offset+s.input.SlidingWindowSize {
-				break
-			}
-			getInput := &GetRecordsInput{
-				PageSize:  s.input.PageSize,
-				Offset:    s.offset,
-				MaxOffset: s.input.MaximumOffset,
-			}
-			var getOutput GetRecordsOutput
-			err := workflow.ExecuteActivity(ctx, loader.GetRecords, getInput).Get(ctx, &getOutput)
-			if err != nil {
-				recordsChannel.Send(ctx, SingleRecordOrError{Err: err})
-				break
-			}
-			for _, record := range getOutput.Records {
-				log.Info("Sending record: ", record.Id)
-				recordsChannel.Send(ctx, SingleRecordOrError{Record: record})
-				log.Info("Sent record: ", record.Id)
-				s.offset += 1
-				if s.offset > s.input.MaximumOffset {
-					panic(fmt.Sprintf("Unexpected record offset(%d)>maximumOffset(%d)", s.offset, s.input.MaximumOffset))
-				}
-			}
-		}
-		recordsChannel.Close()
-		return
-	})
-	return recordsChannel
 }

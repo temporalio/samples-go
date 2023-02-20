@@ -21,7 +21,7 @@ func main() {
 	}
 	ctx := context.Background()
 	input := batch_sliding_window.ProcessBatchWorkflowInput{
-		PageSize:          1,
+		PageSize:          3,
 		SlidingWindowSize: 2,
 		Partitions:        1,
 	}

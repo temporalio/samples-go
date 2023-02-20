@@ -24,7 +24,7 @@ func main() {
 	w.RegisterWorkflow(batch_sliding_window.SlidingWindowWorkflow)
 	w.RegisterWorkflow(batch_sliding_window.RecordProcessorWorkflow)
 
-	w.RegisterActivity(&batch_sliding_window.RecordLoader{RecordCount: 3})
+	w.RegisterActivity(&batch_sliding_window.RecordLoader{RecordCount: 10})
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
