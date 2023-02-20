@@ -2,12 +2,11 @@ package frequent
 
 import (
 	"context"
+	"errors"
 	"github.com/temporalio/samples-go/polling"
 	"go.temporal.io/sdk/activity"
 	"time"
 )
-
-// @@@SNIPSTART samples-go-polling-frequent-activities
 
 type PollingActivities struct {
 	TestService  *polling.TestService
@@ -19,14 +18,16 @@ type PollingActivities struct {
 // using the heartbeat mechanism to keep the activity alive
 func (a *PollingActivities) DoPoll(ctx context.Context) (string, error) {
 	for {
-		res, err := a.TestService.GetServiceResult()
+		res, err := a.TestService.GetServiceResult(ctx)
 		if err == nil {
 			return res, err
 		}
 		activity.RecordHeartbeat(ctx)
-		time.Sleep(a.PollInterval)
+		select {
+		case <-ctx.Done():
+			return "", errors.New("channel closed")
+		case <-time.After(a.PollInterval):
+			return a.TestService.GetServiceResult(ctx)
+		}
 	}
-	return a.TestService.GetServiceResult()
 }
-
-// @@@SNIPEND

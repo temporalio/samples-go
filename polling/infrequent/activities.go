@@ -1,17 +1,15 @@
 package infrequent
 
 import (
+	"context"
 	"github.com/temporalio/samples-go/polling"
 )
 
-// @@@SNIPSTART samples-go-polling-infrequent-activities
 type PollingActivities struct {
 	TestService *polling.TestService
 }
 
 // DoPoll Activity.
-func (a *PollingActivities) DoPoll() (string, error) {
-	return a.TestService.GetServiceResult()
+func (a *PollingActivities) DoPoll(cmd context.Context) (string, error) {
+	return a.TestService.GetServiceResult(cmd)
 }
-
-// @@@SNIPEND

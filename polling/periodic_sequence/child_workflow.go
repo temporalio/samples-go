@@ -1,6 +1,7 @@
 package periodic_sequence
 
 import (
+	"go.temporal.io/sdk/temporal"
 	"time"
 
 	"go.temporal.io/sdk/workflow"
@@ -14,8 +15,10 @@ func PollingChildWorkflow(ctx workflow.Context, params ChildWorkflowParams) (str
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Starting child workflow with params", params)
 	ao := workflow.ActivityOptions{
-		StartToCloseTimeout:    10 * time.Second,
-		ScheduleToCloseTimeout: 2 * time.Second,
+		StartToCloseTimeout: 4 * time.Second,
+		RetryPolicy: &temporal.RetryPolicy{
+			MaximumAttempts: 1,
+		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
@@ -30,7 +33,11 @@ func PollingChildWorkflow(ctx workflow.Context, params ChildWorkflowParams) (str
 			return pollResult, nil
 		} else {
 			logger.Error("Error in activity, sleeping and retrying", err)
-			workflow.Sleep(ctx, params.PollingInterval)
+			err := workflow.Sleep(ctx, params.PollingInterval)
+			if err != nil {
+				return "", err
+			}
+
 		}
 	}
 	// Request that the new child workflow run is invoked

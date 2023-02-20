@@ -1,17 +1,15 @@
 package periodic_sequence
 
 import (
+	"context"
 	"github.com/temporalio/samples-go/polling"
 )
 
-// @@@SNIPSTART samples-go-polling-periodic-sequence
 type PollingActivities struct {
 	TestService *polling.TestService
 }
 
 // DoPoll Activity.
-func (a *PollingActivities) DoPoll() (string, error) {
-	return a.TestService.GetServiceResult()
+func (a *PollingActivities) DoPoll(ctx context.Context) (string, error) {
+	return a.TestService.GetServiceResult(ctx)
 }
-
-// @@@SNIPEND

@@ -7,6 +7,10 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
+const (
+	TaskQueueName = "pollingInfrequentlySampleQueue"
+)
+
 // InfrequentPolling Workflow that shows how infrequent polling via activity can be
 // implemented via activity retries. For this sample we  want to poll the test service
 // every 60 seconds. Here we:
@@ -20,7 +24,6 @@ import (
 // result from the activity.
 func InfrequentPolling(ctx workflow.Context) (string, error) {
 	logger := workflow.GetLogger(ctx)
-	// @@@SNIPSTART samples-go-polling-infrequent-activities
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 2 * time.Second,
 		RetryPolicy: &temporal.RetryPolicy{
@@ -29,7 +32,6 @@ func InfrequentPolling(ctx workflow.Context) (string, error) {
 		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
-	// @@@SNIPEND
 
 	var a *PollingActivities // use a nil struct pointer to call activities that are part of a structure
 

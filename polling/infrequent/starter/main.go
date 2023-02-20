@@ -21,7 +21,7 @@ func main() {
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        "InfrequentPollingSampleWorkflow" + uuid.New(),
-		TaskQueue: "pollingSampleQueue",
+		TaskQueue: infrequent.TaskQueueName,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, infrequent.InfrequentPolling)

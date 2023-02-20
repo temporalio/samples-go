@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"github.com/temporalio/samples-go/polling/frequent"
 	"log"
+
+	"github.com/temporalio/samples-go/polling/frequent"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
@@ -11,8 +12,7 @@ import (
 
 func main() {
 	// The client is a heavyweight object that should be created once per process.
-	c, err := client.Dial(client.Options{
-	})
+	c, err := client.Dial(client.Options{})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
@@ -20,7 +20,7 @@ func main() {
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        "FrequentPollingSampleWorkflow" + uuid.New(),
-		TaskQueue: "pollingSampleQueue",
+		TaskQueue: frequent.TaskQueueName,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, frequent.FrequentPolling)

@@ -1,6 +1,7 @@
 package polling
 
 import (
+	"context"
 	"errors"
 )
 
@@ -16,9 +17,9 @@ func NewTestService(errorAttempts int) TestService {
 	}
 }
 
-func (testService *TestService) GetServiceResult() (string, error) {
+func (testService *TestService) GetServiceResult(ctx context.Context) (string, error) {
 	testService.tryAttempts += 1
-	if testService.tryAttempts % testService.errorAttempts == 0 {
+	if testService.tryAttempts%testService.errorAttempts == 0 {
 		return "OK", nil
 	}
 	return "", errors.New("service is down")

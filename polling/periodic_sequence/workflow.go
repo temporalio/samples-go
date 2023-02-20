@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+const (
+	TaskQueueName = "pollingPeriodicSequenceSampleQueue"
+)
+
 func PeriodicSequencePolling(ctx workflow.Context, pollingInterval time.Duration) (string, error) {
 	cwo := workflow.ChildWorkflowOptions{}
 	ctx = workflow.WithChildOptions(ctx, cwo)

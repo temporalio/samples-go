@@ -23,7 +23,7 @@ func main() {
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        "pollingSampleQueue_" + uuid.New(),
-		TaskQueue: "pollingSampleQueue",
+		TaskQueue: periodic_sequence.TaskQueueName,
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, periodic_sequence.PeriodicSequencePolling, 1*time.Second)

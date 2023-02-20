@@ -20,7 +20,7 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "pollingSampleQueue", worker.Options{})
+	w := worker.New(c, periodic_sequence.TaskQueueName, worker.Options{})
 
 	w.RegisterWorkflow(periodic_sequence.PeriodicSequencePolling)
 	w.RegisterWorkflow(periodic_sequence.PollingChildWorkflow)
