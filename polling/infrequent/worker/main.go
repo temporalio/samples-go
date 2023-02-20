@@ -20,7 +20,7 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "pollingSampleQueue", worker.Options{})
+	w := worker.New(c, infrequent.TaskQueueName, worker.Options{})
 
 	w.RegisterWorkflow(infrequent.InfrequentPolling)
 	testService := polling.NewTestService(5)
