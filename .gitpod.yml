@@ -2,33 +2,53 @@
 # See readme at https://github.com/temporalio/samples-typescript/blob/main/.gitpod.readme.md
 
 tasks:
-  - name: Run Hello World Worker
-    init: |
-      alias tctl="docker exec temporal-admin-tools tctl"
-      echo "tctl configured! try typing tctl -v"
-      cd helloworld # this cd doesnt persist in postbuild
-    command: |
-      gp open .gitpod.readme.md
-      sleep 40
-      cd helloworld
-      go run worker/main.go
-  - name: Run Hello World Workflow
-    init: |
-      alias tctl="docker exec temporal-admin-tools tctl"
-      echo "tctl configured! try typing tctl -v"
-    command: |
-      cd helloworld
-      sleep 45
-      go run starter/main.go
-      sleep 5
-      gp preview http://localhost:8088 # open up Temporal Web to show new workflow
-    openMode: split-right
   - name: Temporal Server
     init: docker-compose pull
     command: docker-compose up
+  - name: Readiness monitor
+    command: |
+      echo "Waiting for tctl container"
+      while echo -n "." && sleep 1
+      do
+        docker container ls -a --filter "name=temporal-admin-tools" --filter "status=running" | grep -q 'temporal-admin-tools' &&
+        echo "ready" &&
+        break
+      done
 
+      echo "Waiting for temporal server"
+      while echo -n "." && sleep 1
+      do
+        docker exec temporal-admin-tools tctl cluster health | grep -q 'SERVING' &&
+        echo "ready" &&
+        gp sync-done serving &&
+        break
+      done
+  - name: Run Hello World Worker
+    init: |
+      gp sync-await serving
+    command: |
+      go run ./helloworld/worker/main.go
+  - name: Run Hello World Workflow
+    init: |
+      gp sync-await serving
+    command: |
+      go run ./helloworld/starter/main.go
+    openMode: split-right
+  - name: tctl playground
+    init: |
+      gp sync-await serving
+    command: |
+      alias tctl="docker exec temporal-admin-tools tctl"
+      echo "tctl configured! try typing tctl -v"
+  - name: Temporal Web
+    init: |
+      gp sync-await serving
+    command: |
+      gp preview http://localhost:8088
 ports:
   - port: 5432 # postgres
+    onOpen: ignore
+  - port: 9200 # elasticsearch
     onOpen: ignore
   - port: 7233 # temporal server
     onOpen: ignore
