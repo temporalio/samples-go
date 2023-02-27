@@ -30,7 +30,10 @@ func ProcessRecord(ctx workflow.Context, r SingleRecord) error {
 		return rand.Intn(10)
 	})
 	var random int
-	encodedRandom.Get(&random)
+	err := encodedRandom.Get(&random)
+	if err != nil {
+		return err
+	}
 	time.Sleep(time.Duration(random) * time.Microsecond)
 	workflow.GetLogger(ctx).Info("Processed ", r)
 	return nil
