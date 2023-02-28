@@ -9,17 +9,9 @@ import (
 	"go.temporal.io/sdk/testsuite"
 )
 
-type UnitTestSuite struct {
-	suite.Suite
-	testsuite.WorkflowTestSuite
-}
-
-func TestUnitTestSuite(t *testing.T) {
-	suite.Run(t, new(UnitTestSuite))
-}
-
-func (s *UnitTestSuite) Test_FrequentPollingWorkflow() {
-	env := s.NewTestWorkflowEnvironment()
+func TestFrequentPollingWorkflow() {
+	var suite testsuite.WorkflowTestSuite
+	env := suite.NewTestWorkflowEnvironment()
 	testService := polling.NewTestService(5)
 	a := &PollingActivities{
 		TestService:  &testService,
