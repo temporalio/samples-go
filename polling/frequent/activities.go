@@ -25,7 +25,7 @@ func (a *PollingActivities) DoPoll(ctx context.Context) (string, error) {
 		activity.RecordHeartbeat(ctx)
 		select {
 		case <-ctx.Done():
-			return "", errors.New("channel closed")
+			return "", ctx.Err()
 		case <-time.After(a.PollInterval):
 			return a.TestService.GetServiceResult(ctx)
 		}
