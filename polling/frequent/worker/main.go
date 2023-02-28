@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/temporalio/samples-go/polling"
-	"github.com/temporalio/samples-go/polling/frequent"
 	"log"
 	"time"
+
+	"github.com/temporalio/samples-go/polling"
+	"github.com/temporalio/samples-go/polling/frequent"
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"

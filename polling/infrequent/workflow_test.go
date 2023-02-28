@@ -1,10 +1,11 @@
 package infrequent
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/suite"
 	"github.com/temporalio/samples-go/polling"
 	"go.temporal.io/sdk/testsuite"
-	"testing"
 )
 
 type UnitTestSuite struct {

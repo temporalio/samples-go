@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"github.com/temporalio/samples-go/polling/infrequent"
 	"log"
+
+	"github.com/temporalio/samples-go/polling/infrequent"
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"

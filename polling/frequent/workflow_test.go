@@ -1,11 +1,10 @@
 package frequent
 
 import (
-	"github.com/temporalio/samples-go/polling"
-	"testing"
 	"time"
 
-	"github.com/stretchr/testify/suite"
+	"github.com/temporalio/samples-go/polling"
+
 	"go.temporal.io/sdk/testsuite"
 )
 

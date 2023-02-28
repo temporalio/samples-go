@@ -2,10 +2,10 @@ package frequent
 
 import (
 	"context"
-	"errors"
+	"time"
+
 	"github.com/temporalio/samples-go/polling"
 	"go.temporal.io/sdk/activity"
-	"time"
 )
 
 type PollingActivities struct {
@@ -27,7 +27,6 @@ func (a *PollingActivities) DoPoll(ctx context.Context) (string, error) {
 		case <-ctx.Done():
 			return "", ctx.Err()
 		case <-time.After(a.PollInterval):
-			return a.TestService.GetServiceResult(ctx)
 		}
 	}
 }

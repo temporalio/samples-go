@@ -2,6 +2,7 @@ package periodic_sequence
 
 import (
 	"context"
+
 	"github.com/temporalio/samples-go/polling"
 )
 

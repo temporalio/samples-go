@@ -1,9 +1,10 @@
 package periodic_sequence
 
 import (
-	"github.com/temporalio/samples-go/polling"
 	"testing"
 	"time"
+
+	"github.com/temporalio/samples-go/polling"
 
 	"github.com/stretchr/testify/suite"
 	"go.temporal.io/sdk/testsuite"

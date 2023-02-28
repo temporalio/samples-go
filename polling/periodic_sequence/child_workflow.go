@@ -1,8 +1,9 @@
 package periodic_sequence
 
 import (
-	"go.temporal.io/sdk/temporal"
 	"time"
+
+	"go.temporal.io/sdk/temporal"
 
 	"go.temporal.io/sdk/workflow"
 )

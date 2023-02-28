@@ -2,6 +2,7 @@ package infrequent
 
 import (
 	"context"
+
 	"github.com/temporalio/samples-go/polling"
 )
 
