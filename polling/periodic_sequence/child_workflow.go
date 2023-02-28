@@ -31,13 +31,11 @@ func PollingChildWorkflow(ctx workflow.Context, params ChildWorkflowParams) (str
 		err := workflow.ExecuteActivity(ctx, a.DoPoll).Get(ctx, &pollResult)
 		if err == nil {
 			return pollResult, nil
-		} else {
-			logger.Error("Error in activity, sleeping and retrying", err)
-			err := workflow.Sleep(ctx, params.PollingInterval)
-			if err != nil {
-				return "", err
-			}
-
+		}
+		logger.Error("Error in activity, sleeping and retrying", err)
+		err := workflow.Sleep(ctx, params.PollingInterval)
+		if err != nil {
+			return "", err
 		}
 	}
 	// Request that the new child workflow run is invoked
