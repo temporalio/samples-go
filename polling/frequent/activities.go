@@ -16,6 +16,9 @@ type PollingActivities struct {
 // DoPoll Activity.
 // In this activity polling is implemented within the activity itself and not the workflow,
 // using the heartbeat mechanism to keep the activity alive
+// This activity intentionally hides underlying error and always retry until the context is closed
+// A more sophisticated implementation would distinguish between intermittent failures and catastrophic
+// failures from the underlying service
 func (a *PollingActivities) DoPoll(ctx context.Context) (string, error) {
 	for {
 		res, err := a.TestService.GetServiceResult(ctx)

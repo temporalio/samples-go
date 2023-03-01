@@ -4,11 +4,10 @@ import (
 	"log"
 
 	"github.com/temporalio/samples-go/polling"
+	"github.com/temporalio/samples-go/polling/infrequent"
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
-
-	"github.com/temporalio/samples-go/polling/infrequent"
 )
 
 func main() {
