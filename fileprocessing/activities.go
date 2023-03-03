@@ -2,7 +2,6 @@ package fileprocessing
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"strings"
 	"time"
@@ -40,7 +39,7 @@ func (a *Activities) ProcessFileActivity(ctx context.Context, fileName string) (
 	defer func() { _ = os.Remove(fileName) }() // cleanup temp file
 
 	// read downloaded file
-	data, err := ioutil.ReadFile(fileName)
+	data, err := os.ReadFile(fileName)
 	if err != nil {
 		logger.Error("processFileActivity failed to read file.", "FileName", fileName, "Error", err)
 		return "", err
@@ -84,7 +83,7 @@ func (b *BlobStore) downloadFile(fileID string) []byte {
 
 func (b *BlobStore) uploadFile(ctx context.Context, filename string) error {
 	// dummy uploader
-	_, err := ioutil.ReadFile(filename)
+	_, err := os.ReadFile(filename)
 	for i := 0; i < 5; i++ {
 		time.Sleep(1 * time.Second)
 		// Demonstrates that heartbeat accepts progress data.
@@ -110,7 +109,7 @@ func transcodeData(ctx context.Context, data []byte) []byte {
 }
 
 func saveToTmpFile(data []byte) (f *os.File, err error) {
-	tmpFile, err := ioutil.TempFile("", "temporal_sample")
+	tmpFile, err := os.CreateTemp("", "temporal_sample")
 	if err != nil {
 		return nil, err
 	}
