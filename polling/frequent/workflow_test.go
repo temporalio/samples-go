@@ -1,9 +1,10 @@
 package frequent
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/temporalio/samples-go/polling"
 

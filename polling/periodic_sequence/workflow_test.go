@@ -4,9 +4,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/temporalio/samples-go/polling"
 
-	"github.com/stretchr/testify/require"
 	"go.temporal.io/sdk/testsuite"
 )
 

@@ -1,10 +1,12 @@
 package infrequent
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/temporalio/samples-go/polling"
+
 	"go.temporal.io/sdk/testsuite"
 )
 
