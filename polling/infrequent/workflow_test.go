@@ -1,23 +1,15 @@
 package infrequent
 
 import (
+	"github.com/stretchr/testify/require"
 	"testing"
 
-	"github.com/stretchr/testify/suite"
 	"github.com/temporalio/samples-go/polling"
 	"go.temporal.io/sdk/testsuite"
 )
 
-type UnitTestSuite struct {
-	suite.Suite
-	testsuite.WorkflowTestSuite
-}
-
-func TestUnitTestSuite(t *testing.T) {
-	suite.Run(t, new(UnitTestSuite))
-}
-
-func (s *UnitTestSuite) Test_InfrequentPollingWorkflow() {
+func Test_InfrequentPollingWorkflow(t *testing.T) {
+	s := testsuite.WorkflowTestSuite{}
 	env := s.NewTestWorkflowEnvironment()
 	testService := polling.NewTestService(5)
 	a := &PollingActivities{
@@ -27,10 +19,10 @@ func (s *UnitTestSuite) Test_InfrequentPollingWorkflow() {
 
 	env.ExecuteWorkflow(InfrequentPolling)
 
-	s.True(env.IsWorkflowCompleted())
-	s.NoError(env.GetWorkflowError())
+	require.True(t, env.IsWorkflowCompleted())
+	require.NoError(t, env.GetWorkflowError())
 	var pollResult string
-	s.NoError(env.GetWorkflowResult(&pollResult))
-	s.Equalf(pollResult, "OK", "The polling has returned the wrong result")
-	env.AssertExpectations(s.T())
+	require.NoError(t, env.GetWorkflowResult(&pollResult))
+	require.Equalf(t, pollResult, "OK", "The polling has returned the wrong result")
+	env.AssertExpectations(t)
 }

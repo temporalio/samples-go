@@ -34,7 +34,7 @@ func PollingChildWorkflow(ctx workflow.Context, params ChildWorkflowParams) (str
 			return pollResult, nil
 		}
 		logger.Error("Error in activity, sleeping and retrying", err)
-		err := workflow.Sleep(ctx, params.PollingInterval)
+		err = workflow.Sleep(ctx, params.PollingInterval)
 		if err != nil {
 			return "", err
 		}

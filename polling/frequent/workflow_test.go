@@ -1,6 +1,8 @@
 package frequent
 
 import (
+	"github.com/stretchr/testify/require"
+	"testing"
 	"time"
 
 	"github.com/temporalio/samples-go/polling"
@@ -8,9 +10,9 @@ import (
 	"go.temporal.io/sdk/testsuite"
 )
 
-func TestFrequentPollingWorkflow() {
-	var suite testsuite.WorkflowTestSuite
-	env := suite.NewTestWorkflowEnvironment()
+func TestFrequentPollingWorkflow(t *testing.T) {
+	var s testsuite.WorkflowTestSuite
+	env := s.NewTestWorkflowEnvironment()
 	testService := polling.NewTestService(5)
 	a := &PollingActivities{
 		TestService:  &testService,
@@ -19,11 +21,11 @@ func TestFrequentPollingWorkflow() {
 	env.RegisterActivity(a)
 	env.ExecuteWorkflow(FrequentPolling)
 
-	s.True(env.IsWorkflowCompleted())
-	s.NoError(env.GetWorkflowError())
+	require.True(t, env.IsWorkflowCompleted())
+	require.NoError(t, env.GetWorkflowError())
 	var pollResult string
-	s.NoError(env.GetWorkflowResult(&pollResult))
-	s.Equalf(pollResult, "OK", "The polling has returned the wrong result")
+	require.NoError(t, env.GetWorkflowResult(&pollResult))
+	require.Equalf(t, pollResult, "OK", "The polling has returned the wrong result")
 
-	env.AssertExpectations(s.T())
+	env.AssertExpectations(t)
 }

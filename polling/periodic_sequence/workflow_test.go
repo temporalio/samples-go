@@ -6,20 +6,12 @@ import (
 
 	"github.com/temporalio/samples-go/polling"
 
-	"github.com/stretchr/testify/suite"
+	"github.com/stretchr/testify/require"
 	"go.temporal.io/sdk/testsuite"
 )
 
-type UnitTestSuite struct {
-	suite.Suite
-	testsuite.WorkflowTestSuite
-}
-
-func TestUnitTestSuite(t *testing.T) {
-	suite.Run(t, new(UnitTestSuite))
-}
-
-func (s *UnitTestSuite) Test_PeriodicPollingWorkflow() {
+func Test_PeriodicPollingWorkflow(t *testing.T) {
+	s := testsuite.WorkflowTestSuite{}
 	env := s.NewTestWorkflowEnvironment()
 	testService := polling.NewTestService(5)
 	a := &PollingActivities{
@@ -30,8 +22,8 @@ func (s *UnitTestSuite) Test_PeriodicPollingWorkflow() {
 
 	env.ExecuteWorkflow(PeriodicSequencePolling, 100*time.Millisecond)
 
-	s.True(env.IsWorkflowCompleted())
-	s.NoError(env.GetWorkflowError())
+	require.True(t, env.IsWorkflowCompleted())
+	require.NoError(t, env.GetWorkflowError())
 
-	env.AssertExpectations(s.T())
+	env.AssertExpectations(t)
 }
