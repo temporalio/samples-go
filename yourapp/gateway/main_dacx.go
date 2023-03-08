@@ -1,4 +1,3 @@
-// @@@SNIPSTART go-samples-yourapp-your-gateway
 package main
 
 import (
@@ -6,10 +5,20 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/temporalio/samples-go/yourapp"
+	"samples-go/yourapp"
 
 	"go.temporal.io/sdk/client"
 )
+
+/*
+Use the [`Dial()`](https://pkg.go.dev/go.temporal.io/sdk/client#Dial) API available in the [`go.temporal.io/sdk/client`](https://pkg.go.dev/go.temporal.io/sdk/client) package to create a new [`Client`](https://pkg.go.dev/go.temporal.io/sdk/client#Client).
+
+If you don't provide [`HostPort`](https://pkg.go.dev/go.temporal.io/sdk/internal#ClientOptions), the Client defaults the address and port number to `127.0.0.1:7233`, which are the ports of the development Cluster.
+
+Set a custom Namespace name in the Namespace field on an instance of the Client Options.
+
+Use the [`ConnectionOptions`](https://pkg.go.dev/go.temporal.io/sdk/client#ConnectionOptions) API to connect a Client with mTLS.
+*/
 
 func main() {
 	// Create a Temporal Client to communicate with the Temporal Cluster.
@@ -25,7 +34,7 @@ func main() {
 	http.HandleFunc("/start", func(w http.ResponseWriter, r *http.Request) {
 		startWorkflowHandler(w, r, temporalClient)
 	})
-	err = http.ListenAndServe(":8081", nil)
+	err = http.ListenAndServe(":8091", nil)
 	if err != nil {
 		log.Fatalln("Unable to run http server", err)
 	}
@@ -47,8 +56,8 @@ func startWorkflowHandler(w http.ResponseWriter, r *http.Request, temporalClient
 	}
 	// Make the call to the Temporal Cluster to start the Workflow Execution.
 	workflowExecution, err := temporalClient.ExecuteWorkflow(
-		context.Background(), 
-		workflowOptions, 
+		context.Background(),
+		workflowOptions,
 		yourapp.YourWorkflowDefinition,
 		workflowParams,
 	)
@@ -59,4 +68,11 @@ func startWorkflowHandler(w http.ResponseWriter, r *http.Request, temporalClient
 	log.Println("WorkflowID:", workflowExecution.GetID())
 	log.Println("RunID:", workflowExecution.GetRunID())
 }
-// @@@SNIPEND
+
+/* @dac
+id: how-to-connect-to-a-development-cluster-in-go
+title: How to connect to a Temporal dev Cluster in Go
+label: Connect to a dev Cluster
+description: Use the Dial() method on the Temporal Client and omit setting any client options. If there is a local dev Cluster running, the Client will connect to it.
+lines:
+@dac */
