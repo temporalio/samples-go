@@ -15,7 +15,7 @@ import (
  */
 
 // SamplePickFirstWorkflow workflow definition
-func SamplePickFirstWorkflow(ctx workflow.Context) error {
+func SamplePickFirstWorkflow(ctx workflow.Context) (string, error) {
 	selector := workflow.NewSelector(ctx)
 	var firstResponse string
 
@@ -59,7 +59,7 @@ func SamplePickFirstWorkflow(ctx workflow.Context) error {
 		_ = f.Get(ctx, nil)
 	}
 	workflow.GetLogger(ctx).Info("Workflow completed.")
-	return nil
+	return firstResponse, nil
 }
 
 func SampleActivity(ctx context.Context, currentBranchID int, totalDuration time.Duration) (string, error) {
