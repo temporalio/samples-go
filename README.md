@@ -201,6 +201,9 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
   perform a long iterative math optimization process using particle swarm optimization (PSO). This sample showcases the
   use of parallel executions, `ContinueAsNew` for long histories, a Query API, and the use of a custom `DataConverter`
   for serialization.
+- 
+- [**Polling Services**](./polling): Recommended implementation of an activity that needs to periodically poll an external 
+resource waiting its successful completion
 
 - [**Prometheus Metrics**](./metrics): Demonstrates how to instrument
   Temporal with Prometheus and Uber's Tally library.
