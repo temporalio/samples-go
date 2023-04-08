@@ -4,6 +4,7 @@ import (
 	"fmt"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/workflow"
+	"sort"
 	"time"
 )
 
@@ -19,15 +20,25 @@ type (
 	}
 
 	SlidingWindow struct {
-		input                    SlidingWindowWorkflowInput
-		currentRecords           map[int]bool
+		input SlidingWindowWorkflowInput
+		// currentRecords represents a set of records that are currently being processed by child workflows.
+		// key is recordId. values are ignored.
+		currentRecords map[int]bool
+		// childrenStartedByThisRun is used to wait for children to start before calling continue as new.
 		childrenStartedByThisRun []workflow.ChildWorkflowFuture
-		offset                   int
-		progress                 int
+		// Offset into the next record to process.
+		offset int
+		// Count of completed recortds.
+		progress int
+		// completionSignalPumpCancellationHandler is used to request pump completion
+		completionSignalPumpCancellationHandler workflow.CancelFunc
+		// completionSignalPumpCompletion is used to wait for the pump completion.
+		completionSignalPumpCompletion workflow.Future
 	}
 
 	SlidingWindowState struct {
-		CurrentRecords           map[int]bool
+		// currentRecords represents a set of record ids that are currently being processed by child workflows.
+		CurrentRecords           []int
 		ChildrenStartedByThisRun int
 		Offset                   int
 		Progress                 int
@@ -56,8 +67,18 @@ func SlidingWindowWorkflow(ctx workflow.Context, input SlidingWindowWorkflowInpu
 // State returns the current state of the batch.
 // Used by the "state" workflow query.
 func (s *SlidingWindow) State() (SlidingWindowState, error) {
+	currentRecordIds := make([]int, len(s.currentRecords))
+	i := 0
+	// Range over map is a nondeterministic operation.
+	// It is OK to have a non-deterministic operation in a query function.
+	// Sorting of results makes the result deterministic anyway.
+	for k := range s.currentRecords {
+		currentRecordIds[i] = k
+		i++
+	}
+	sort.Ints(currentRecordIds)
 	return SlidingWindowState{
-		CurrentRecords:           s.currentRecords,
+		CurrentRecords:           currentRecordIds,
 		ChildrenStartedByThisRun: len(s.childrenStartedByThisRun),
 		Offset:                   s.offset,
 		Progress:                 s.progress,
@@ -65,7 +86,6 @@ func (s *SlidingWindow) State() (SlidingWindowState, error) {
 }
 
 func (s *SlidingWindow) Execute(ctx workflow.Context) (recordCount int, err error) {
-	fmt.Println("Execute Started !!!!!!!!!!! runId=" + workflow.GetInfo(ctx).WorkflowExecution.RunID)
 	ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		StartToCloseTimeout: 5 * time.Second,
 	})
@@ -91,9 +111,12 @@ func (s *SlidingWindow) Execute(ctx workflow.Context) (recordCount int, err erro
 	for _, record := range getOutput.Records {
 		// Blocks until the total number of children (including started by previous runs)
 		// gets below the SlidingWindowSize.
-		workflow.Await(ctx, func() bool {
+		err := workflow.Await(ctx, func() bool {
 			return len(s.currentRecords) < s.input.SlidingWindowSize
 		})
+		if err != nil {
+			return 0, err
+		}
 
 		options := workflow.ChildWorkflowOptions{
 			ParentClosePolicy: enumspb.PARENT_CLOSE_POLICY_ABANDON,
@@ -134,30 +157,33 @@ func (s *SlidingWindow) continueAsNewOrComplete(ctx workflow.Context) (int, erro
 			Progress:          s.progress,
 			CurrentRecords:    s.currentRecords,
 		}
-		workflow.GetLogger(ctx).Info("NewContinueAsNewError")
-
 		return 0, workflow.NewContinueAsNewError(ctx, SlidingWindowWorkflow, newInput)
 	}
 	// The last run in the chain.
 	// Awaits for all children to complete
-	workflow.Await(ctx, func() bool {
+	err := workflow.Await(ctx, func() bool {
 		return len(s.currentRecords) == 0
 	})
+	if err != nil {
+		return 0, err
+	}
 	return s.progress, nil
 }
 
 func (s *SlidingWindow) drainCompletionSignalChannelAsync(ctx workflow.Context) {
-	workflow.GetLogger(ctx).Info("drainCompletionSignalChannelAsync start")
+	// Request pump completion
+	s.completionSignalPumpCancellationHandler()
+	// Wait for the pump to complete to avoid signal loss.
+	_ = s.completionSignalPumpCompletion.Get(ctx, nil)
 
 	reportCompletionChannel := workflow.GetSignalChannel(ctx, "ReportCompletion")
+	// Drains signals async
 	for {
 		var recordId int
 		ok := reportCompletionChannel.ReceiveAsync(&recordId)
 		if !ok {
-			workflow.GetLogger(ctx).Info("drainCompletionSignalChannelAsync drained")
 			break
 		}
-		workflow.GetLogger(ctx).Info("drainCompletionSignalChannelAsync", "recordId", recordId)
 		s.recordCompletion(ctx, recordId)
 	}
 }
@@ -166,22 +192,35 @@ func (s *SlidingWindow) drainCompletionSignalChannelAsync(ctx workflow.Context) 
 // There is no need to clean up the pump goroutine in case a workflow completes due to an error.
 // All goroutines are released back automatically upon workflow completion.
 func (s *SlidingWindow) completionSignalPump(ctx workflow.Context) {
+	// completionSignalPumpCancellationHandler is used to request pump completion
+	ctx, cancellationHandler := workflow.WithCancel(ctx)
+	s.completionSignalPumpCancellationHandler = cancellationHandler
+
+	// completionSignalPumpCompletion is used to wait for the pump completion.
+	completed, completedSettable := workflow.NewFuture(ctx)
+	s.completionSignalPumpCompletion = completed
+
 	reportCompletionChannel := workflow.GetSignalChannel(ctx, "ReportCompletion")
+
 	workflow.Go(ctx, func(ctx workflow.Context) {
-		for {
+		selector := workflow.NewSelector(ctx)
+		selector.AddReceive(reportCompletionChannel, func(c workflow.ReceiveChannel, more bool) {
 			var recordId int
 			_ = reportCompletionChannel.Receive(ctx, &recordId)
-			workflow.GetLogger(ctx).Info("completionSignalPump calls recordCompletion", "recordId", recordId)
 			s.recordCompletion(ctx, recordId)
+		})
+		selector.AddReceive(ctx.Done(), func(c workflow.ReceiveChannel, more bool) {
+			completedSettable.Set(nil, nil)
+		})
+		for !completed.IsReady() {
+			selector.Select(ctx)
 		}
 	})
 }
 
 func (s *SlidingWindow) recordCompletion(ctx workflow.Context, recordId int) {
-	workflow.GetLogger(ctx).Info("recordCompletion", "recordId", recordId)
 	// duplicate signal check
 	if _, ok := s.currentRecords[recordId]; ok {
-		workflow.GetLogger(ctx).Info("recordCompletion recorded", "recordId", recordId)
 		delete(s.currentRecords, recordId)
 		s.progress += 1
 	}
