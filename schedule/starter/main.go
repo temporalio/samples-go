@@ -59,28 +59,25 @@ func main() {
 	err = scheduleHandle.Update(ctx, client.ScheduleUpdateOptions{
 		DoUpdate: func(schedule client.ScheduleUpdateInput) (*client.ScheduleUpdate, error) {
 			schedule.Description.Schedule.Spec = &client.ScheduleSpec{
-				// Run the schedule every 5s
+				// Run the schedule at 5pm on Friday
 				Calendars: []client.ScheduleCalendarSpec{
 					{
-						Second: []client.ScheduleRange{
-							{
-								Start: 0,
-								End:   59,
-								Step:  5,
-							},
-						},
-						Minute: []client.ScheduleRange{
-							{
-								Start: 0,
-								End:   59,
-							},
-						},
 						Hour: []client.ScheduleRange{
 							{
-								Start: 0,
-								End:   23,
+								Start: 16,
 							},
 						},
+						DayOfWeek: []client.ScheduleRange{
+							{
+								Start: 5,
+							},
+						},
+					},
+				},
+				// Run the schedule every 5s
+				Intervals: []client.ScheduleIntervalSpec{
+					{
+						Every: 5 * time.Second,
 					},
 				},
 			}
