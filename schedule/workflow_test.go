@@ -24,15 +24,17 @@ func (s *UnitTestSuite) Test_ScheduleWorkflow() {
 	env.RegisterWorkflow(SampleScheduleWorkflow)
 	env.RegisterActivity(DoSomething)
 
-	env.SetSearchAttributesOnStart(map[string]interface{}{
+	err := env.SetSearchAttributesOnStart(map[string]interface{}{
 		"TemporalScheduledById":      "schedule_test_ID",
 		"TemporalScheduledStartTime": time.Now(),
 	})
+	s.NoError(err)
+
 	env.OnActivity(DoSomething, mock.Anything, mock.Anything, mock.Anything).Return(nil).Times(3)
 
 	env.ExecuteWorkflow(SampleScheduleWorkflow)
 
 	s.True(env.IsWorkflowCompleted())
-	err := env.GetWorkflowError()
+	err = env.GetWorkflowError()
 	s.NoError(err)
 }

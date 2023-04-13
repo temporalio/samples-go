@@ -96,7 +96,10 @@ func main() {
 	}
 	// Upause schedule
 	log.Println("Unpausing schedule", "ScheduleID", scheduleHandle.GetID())
-	scheduleHandle.Unpause(ctx, client.ScheduleUnpauseOptions{})
+	err = scheduleHandle.Unpause(ctx, client.ScheduleUnpauseOptions{})
+	if err != nil {
+		log.Fatalln("Unable to unpause schedule", err)
+	}
 	// Wait for the schedule to run 10 actions
 	log.Println("Waiting for schedule to complete 10 actions", "ScheduleID", scheduleHandle.GetID())
 
