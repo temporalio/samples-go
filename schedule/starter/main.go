@@ -64,7 +64,7 @@ func main() {
 					{
 						Hour: []client.ScheduleRange{
 							{
-								Start: 16,
+								Start: 17,
 							},
 						},
 						DayOfWeek: []client.ScheduleRange{
