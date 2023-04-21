@@ -11,6 +11,7 @@ import (
 	"go.temporal.io/sdk/client"
 )
 
+// @@@SNIPSTART samples-go-schedule
 func main() {
 	ctx := context.Background()
 	// The client is a heavyweight object that should be created once per process.
@@ -116,3 +117,4 @@ func main() {
 		}
 	}
 }
+// @@@SNIPEND
