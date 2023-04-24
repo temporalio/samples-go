@@ -142,7 +142,7 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 - [**Dynamic Execution**](./dynamic): Demonstrates how to execute
   Workflows and Activities using a name rather than a strongly typed function.
 
-- [**Branching Acitivties**](./branch): Executes multiple Activities
+- [**Branching Activities**](./branch): Executes multiple Activities
   in parallel. The number of branches is controlled by a parameter that is passed in at the start of the Workflow
   Execution.
 
