@@ -69,7 +69,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
   and `GetLastCompletionResult` APIs which are used to pass information between executions. Additional
   documentation: [What is a Temporal Cron Job?](https://docs.temporal.io/docs/content/what-is-a-temporal-cron-job).
 
-- [**Schedule Workflow**](./Schedule): Demonstrates a recurring Workflow
+- [**Schedule Workflow**](./schedule): Demonstrates a recurring Workflow
   Execution that occurs according to a schedule.
   documentation: [Schedule](https://docs.temporal.io/workflows#schedule).
 
