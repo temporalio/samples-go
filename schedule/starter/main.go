@@ -11,7 +11,7 @@ import (
 	"go.temporal.io/sdk/client"
 )
 
-// @@@SNIPSTART samples-go-schedule
+
 func main() {
 	ctx := context.Background()
 	// The client is a heavyweight object that should be created once per process.
@@ -22,6 +22,7 @@ func main() {
 		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
+// @@@SNIPSTART samples-go-schedule-create-delete
 	// This schedule ID can be user business logic identifier as well.
 	scheduleID := "schedule_" + uuid.New()
 	workflowID := "schedule_workflow_" + uuid.New()
@@ -46,6 +47,8 @@ func main() {
 			log.Fatalln("Unable to delete schedule", err)
 		}
 	}()
+// @@@SNIPEND
+// @@@SNIPSTART samples-go-schedule-trigger
 	// Manually trigger the schedule once
 	log.Println("Manually triggering schedule", "ScheduleID", scheduleHandle.GetID())
 
@@ -55,6 +58,8 @@ func main() {
 	if err != nil {
 		log.Fatalln("Unable to trigger schedule", err)
 	}
+// @@@SNIPEND
+// @@@SNIPSTART samples-go-schedule-update
 	// Update the schedule with a spec so it will run periodically,
 	log.Println("Updating schedule", "ScheduleID", scheduleHandle.GetID())
 	err = scheduleHandle.Update(ctx, client.ScheduleUpdateOptions{
@@ -95,7 +100,9 @@ func main() {
 	if err != nil {
 		log.Fatalln("Unable to update schedule", err)
 	}
-	// Upause schedule
+// @@@SNIPEND
+// @@@SNIPSTART samples-go-schedule-unpause-describe
+	// Unpause schedule
 	log.Println("Unpausing schedule", "ScheduleID", scheduleHandle.GetID())
 	err = scheduleHandle.Unpause(ctx, client.ScheduleUnpauseOptions{})
 	if err != nil {
