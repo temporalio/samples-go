@@ -4,8 +4,9 @@ import (
 	"context"
 	"log"
 
-	grpcproxy "github.com/temporalio/samples-go/grpc-proxy"
 	"go.temporal.io/sdk/client"
+
+	grpcproxy "github.com/temporalio/samples-go/grpc-proxy"
 )
 
 func main() {
