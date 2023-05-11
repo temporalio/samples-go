@@ -31,10 +31,14 @@ func YourWorkflow(ctx workflow.Context) error {
 		if err != nil {
 			logger.Error("CleanupActivity failed", "Error", err)
 		}
+
 	}()
 
 	var result string
 	err := workflow.ExecuteActivity(ctx, a.ActivityToBeCanceled).Get(ctx, &result)
+	if err != nil {
+		return err
+	}
 	logger.Info(fmt.Sprintf("ActivityToBeCanceled returns %v, %v", result, err))
 
 	err = workflow.ExecuteActivity(ctx, a.ActivityToBeSkipped).Get(ctx, nil)
