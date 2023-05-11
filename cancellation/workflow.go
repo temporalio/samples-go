@@ -2,7 +2,6 @@ package cancellation
 
 import (
 	"errors"
-	"fmt"
 	"go.temporal.io/sdk/workflow"
 	"time"
 )
@@ -39,7 +38,6 @@ func YourWorkflow(ctx workflow.Context) error {
 	if err != nil {
 		return err
 	}
-	logger.Info(fmt.Sprintf("ActivityToBeCanceled returns %v, %v", result, err))
 
 	err = workflow.ExecuteActivity(ctx, a.ActivityToBeSkipped).Get(ctx, nil)
 	logger.Error("Error from ActivityToBeSkipped", "Error", err)
