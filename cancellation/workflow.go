@@ -25,7 +25,12 @@ func YourWorkflow(ctx workflow.Context) error {
 		}
 
 		// When the Workflow is canceled, it has to get a new disconnected context to execute any Activities
+		// Specify activity options for cleanup activity
+		aoCleanup := workflow.ActivityOptions{
+			StartToCloseTimeout: 2 * time.Second,
+		}
 		newCtx, _ := workflow.NewDisconnectedContext(ctx)
+		newCtx = workflow.WithActivityOptions(newCtx, aoCleanup)
 		err := workflow.ExecuteActivity(newCtx, a.CleanupActivity).Get(ctx, nil)
 		if err != nil {
 			logger.Error("CleanupActivity failed", "Error", err)
@@ -39,10 +44,6 @@ func YourWorkflow(ctx workflow.Context) error {
 		return err
 	}
 
-	err = workflow.ExecuteActivity(ctx, a.ActivityToBeSkipped).Get(ctx, nil)
-	logger.Error("Error from ActivityToBeSkipped", "Error", err)
-
 	logger.Info("Workflow Execution complete.")
-
 	return nil
 }

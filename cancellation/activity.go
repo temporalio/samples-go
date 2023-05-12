@@ -31,11 +31,4 @@ func (a *Activities) CleanupActivity(ctx context.Context) error {
 	logger.Info("Cleanup Activity started")
 	return nil
 }
-
-func (a *Activities) ActivityToBeSkipped(ctx context.Context) error {
-	logger := activity.GetLogger(ctx)
-	logger.Info("this Activity will be skipped due to cancellation")
-	return nil
-}
-
 // @@@SNIPEND
