@@ -18,7 +18,7 @@ require (
 	github.com/uber/jaeger-client-go v2.29.1+incompatible
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	go.temporal.io/api v1.19.1-0.20230322213042-07fb271d475b
-	go.temporal.io/sdk v1.22.1
+	go.temporal.io/sdk v1.22.2
 	go.temporal.io/sdk/contrib/opentracing v0.1.0
 	go.temporal.io/sdk/contrib/tally v0.2.0
 	go.temporal.io/sdk/contrib/tools/workflowcheck v0.0.0-20230413153418-eaa3802876de
