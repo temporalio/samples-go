@@ -5,9 +5,9 @@
 This repository contains several sample Workflow applications that demonstrate the various capabilities of the Temporal
 Server via the Temporal Go SDK.
 
-- Temporal Server repo: [https://github.com/temporalio/temporal](https://github.com/temporalio/temporal)
-- Temporal Go SDK repo: [https://github.com/temporalio/sdk-go](https://github.com/temporalio/sdk-go)
-- Go SDK docs: [https://docs.temporal.io/application-development](https://docs.temporal.io/application-development?lang=go#supported-sdks)
+- Temporal Server repo: [temporalio/temporal](https://github.com/temporalio/temporal)
+- Temporal Go SDK repo: [temporalio/sdk-go](https://github.com/temporalio/sdk-go)
+- Go SDK docs: [docs.temporal.io/dev-guide/go](https://docs.temporal.io/dev-guide/go)
 
 ## How to use
 
@@ -167,7 +167,7 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 - [**Split/Merge Future**](./splitmerge-future): Demonstrates how to
   use futures to await for completion of multiple activities invoked in parallel. This samples to processes chunks of a
   large work item in parallel, and then merges the intermediate results to generate the final result.
--
+
 - [**Split/Merge Selector**](./splitmerge-selector): Demonstrates how
   to use Selector to process activity results as soon as they become available. This samples to processes chunks of a
   large work item in parallel, and then merges the intermediate results to generate the final result.
@@ -205,7 +205,7 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
   perform a long iterative math optimization process using particle swarm optimization (PSO). This sample showcases the
   use of parallel executions, `ContinueAsNew` for long histories, a Query API, and the use of a custom `DataConverter`
   for serialization.
-- 
+
 - [**Polling Services**](./polling): Recommended implementation of an activity that needs to periodically poll an external 
 resource waiting its successful completion
 
