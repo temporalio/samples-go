@@ -4,7 +4,7 @@ to see how to process them in the order of activity completion instead.
 
 ### Steps to run this sample:
 
-1) You need a Temporal service running. See details in README.md
+1) YRun a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 2) Run the following command to start the worker
 
 ```

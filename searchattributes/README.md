@@ -1,7 +1,7 @@
 ### Steps to run this sample:
-1) Before running this, Temporal Server need to run with an Advanced Visibility store (Elasticsearch integrated).
+1) Run [Temporal Server](Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use) with an Advanced Visibility store (Elasticsearch integrated).
 If you are using the default `docker-compose` config, then Elasticsearch is already integrated.
-If not, then you can [integrate Elasticsearch](https://docs.temporal.io/docs/content/how-to-integrate-elasticsearch-into-a-temporal-cluster) yourself.
+If not, then you can [integrate Elasticsearch](https://docs.temporal.io/cluster-deployment-guide/#elasticsearch) yourself.
 2) Run the following command to start the worker:
 ```
 go run searchattributes/worker/main.go

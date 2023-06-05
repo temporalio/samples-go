@@ -6,7 +6,7 @@ Parent Workflow Executions receive a notification that a Child Workflow Executio
 This feature is very useful when there is a need to process a large set of data.
 The Child Execution can iterate over the data set, calling Continue-As-New periodically without polluting the parents' history.
 
-Make sure the [Temporal Server is running locally](https://docs.temporal.io/docs/server/quick-install).
+Make sure the [Temporal Server is running locally](https://docs.temporal.io/application-development/foundations#run-a-development-cluster).
 
 Start the Worker:
 
