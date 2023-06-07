@@ -30,7 +30,7 @@ func init() {
 	flag.IntVar(&portFlag, "port", 8081, "Port to listen on")
 	flag.StringVar(&providerFlag, "provider", "", "OIDC Provider URL. Optional: Enforces oauth authentication")
 	flag.StringVar(&audienceFlag, "audience", "", "OIDC Audience. Optional.")
-	flag.StringVar(&upstreamFlag, "upstream", "127.0.0.1:7233", "Upstream Temporal Server Endpoint")
+	flag.StringVar(&upstreamFlag, "upstream", ":7233", "Upstream Temporal Server Endpoint")
 }
 
 func main() {
@@ -79,7 +79,7 @@ func main() {
 		)
 	}
 
-	listener, err := net.Listen("tcp", "127.0.0.1:"+strconv.Itoa(portFlag))
+	listener, err := net.Listen("tcp", ":"+strconv.Itoa(portFlag))
 	if err != nil {
 		logger.Fatal("unable to create listener: %v", tag.NewErrorTag(err))
 	}
