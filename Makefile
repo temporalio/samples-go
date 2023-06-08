@@ -49,6 +49,9 @@ update-sdk:
 
 clean:
 	rm -rf bin
+
+start-local:
+	docker-compose up -d
 	
 ci-build: staticcheck errcheck workflowcheck bins test
 GO111MODULE=off go get -u honnef.co/go/tools/cmd/staticcheck
