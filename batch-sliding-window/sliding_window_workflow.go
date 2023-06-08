@@ -9,6 +9,7 @@ import (
 )
 
 type (
+	// SlidingWindowWorkflowInput contains SlidingWindowWorkflow arguments
 	SlidingWindowWorkflowInput struct {
 		PageSize          int
 		SlidingWindowSize int
@@ -19,6 +20,7 @@ type (
 		CurrentRecords map[int]bool // recordId -> ignored boolean
 	}
 
+	// SlidingWindow structure that implements the workflow logic
 	SlidingWindow struct {
 		input SlidingWindowWorkflowInput
 		// currentRecords represents a set of records that are currently being processed by child workflows.
@@ -28,7 +30,7 @@ type (
 		childrenStartedByThisRun []workflow.ChildWorkflowFuture
 		// Offset into the next record to process.
 		offset int
-		// Count of completed recortds.
+		// Count of completed records.
 		progress int
 		// completionSignalPumpCancellationHandler is used to request pump completion
 		completionSignalPumpCancellationHandler workflow.CancelFunc
@@ -36,6 +38,7 @@ type (
 		completionSignalPumpCompletion workflow.Future
 	}
 
+	// SlidingWindowState used as a "state" query result.
 	SlidingWindowState struct {
 		// currentRecords represents a set of record ids that are currently being processed by child workflows.
 		CurrentRecords           []int
@@ -45,7 +48,16 @@ type (
 	}
 )
 
+// SlidingWindowWorkflow workflow processes a range of records using a requested number of child workflows.
+// As soon as a child workflow completes a new one is started.
 func SlidingWindowWorkflow(ctx workflow.Context, input SlidingWindowWorkflowInput) (recordCount int, err error) {
+	workflow.GetLogger(ctx).Info("SlidingWindowWorkflow",
+		"input", input.SlidingWindowSize,
+		"PageSize", input.PageSize,
+		"Offset", input.Offset,
+		"MaximumOffset", input.MaximumOffset,
+		"Progress", input.Progress)
+
 	impl := &SlidingWindow{
 		input:          input,
 		currentRecords: input.CurrentRecords,
@@ -109,7 +121,7 @@ func (s *SlidingWindow) Execute(ctx workflow.Context) (recordCount int, err erro
 	workflowId := workflow.GetInfo(ctx).WorkflowExecution.ID
 	// Process records
 	for _, record := range getOutput.Records {
-		// Blocks until the total number of children (including started by previous runs)
+		// Blocks until the total number of children (including started by the previous runs)
 		// gets below the SlidingWindowSize.
 		err := workflow.Await(ctx, func() bool {
 			return len(s.currentRecords) < s.input.SlidingWindowSize
@@ -119,8 +131,10 @@ func (s *SlidingWindow) Execute(ctx workflow.Context) (recordCount int, err erro
 		}
 
 		options := workflow.ChildWorkflowOptions{
+			// Use ABANDON as child workflows have to survive the parent calling continue-as-new
 			ParentClosePolicy: enumspb.PARENT_CLOSE_POLICY_ABANDON,
-			WorkflowID:        fmt.Sprintf("%s/%d", workflowId, record.Id),
+			// Human readable child id.
+			WorkflowID: fmt.Sprintf("%s/%d", workflowId, record.Id),
 		}
 		childCtx := workflow.WithChildOptions(ctx, options)
 		child := workflow.ExecuteChildWorkflow(childCtx, RecordProcessorWorkflow, record)
@@ -138,13 +152,13 @@ func (s *SlidingWindow) continueAsNewOrComplete(ctx workflow.Context) (int, erro
 		// continue-as-new might lead to a situation when they never start.
 		for _, child := range s.childrenStartedByThisRun {
 			err := child.GetChildWorkflowExecution().Get(ctx, nil)
-			// Is not expected as children automatically generated
+			// Is not expected as children's automatically generated
 			// IDs are not expected to collide.
 			if err != nil {
 				return 0, err
 			}
 		}
-		// Must drain signal channel without blocking before calling continue-as-new.
+		// Must drain the signal channel without blocking before calling continue-as-new.
 		// Failure to do so can lead to signal loss.
 		s.drainCompletionSignalChannelAsync(ctx)
 
@@ -159,7 +173,7 @@ func (s *SlidingWindow) continueAsNewOrComplete(ctx workflow.Context) (int, erro
 		}
 		return 0, workflow.NewContinueAsNewError(ctx, SlidingWindowWorkflow, newInput)
 	}
-	// The last run in the chain.
+	// The last run in the continue-as-new chain.
 	// Awaits for all children to complete
 	err := workflow.Await(ctx, func() bool {
 		return len(s.currentRecords) == 0

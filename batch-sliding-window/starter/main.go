@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-	// The client is a heavyweight object that should be created only once per process.
 	c, err := client.Dial(client.Options{})
 	if err != nil {
 		panic(err)
@@ -21,9 +20,9 @@ func main() {
 	}
 	ctx := context.Background()
 	input := batch_sliding_window.ProcessBatchWorkflowInput{
-		PageSize:          3,
-		SlidingWindowSize: 2,
-		Partitions:        1,
+		PageSize:          5,
+		SlidingWindowSize: 10,
+		Partitions:        3,
 	}
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, batch_sliding_window.ProcessBatchWorkflow, input)
 	if err != nil {

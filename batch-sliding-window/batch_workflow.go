@@ -2,6 +2,7 @@ package batch_sliding_window
 
 import (
 	"fmt"
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 	"time"
 )
@@ -28,41 +29,39 @@ func ProcessBatchWorkflow(ctx workflow.Context, input ProcessBatchWorkflowInput)
 		return 0, err
 	}
 
-	partitionSize := recordCount / input.Partitions
-	if recordCount%input.Partitions > 0 {
-		partitionSize += 1
+	if input.SlidingWindowSize < input.Partitions {
+		return 0, temporal.NewApplicationError(
+			"SlidingWindowSize cannot be less than number of partitions", "invalidInput")
 	}
+	partitions := divideIntoPartitions(recordCount, input.Partitions)
+	windowSizes := divideIntoPartitions(input.SlidingWindowSize, input.Partitions)
 
-	// Divide the window size between partitions
-	partitionWindowSize := input.SlidingWindowSize / input.Partitions
-	lastPartitionWindowSize := input.SlidingWindowSize % input.Partitions
-	if lastPartitionWindowSize == 0 {
-		lastPartitionWindowSize = partitionWindowSize
-	}
+	workflow.GetLogger(ctx).Info("ProcessBatchWorkflow",
+		"input", input,
+		"recordCount", recordCount,
+		"partitions", partitions,
+		"windowSizes", windowSizes)
 
 	var results []workflow.ChildWorkflowFuture
+	offset := 0
 	for i := 0; i < input.Partitions; i++ {
 		// Makes child id more user-friendly
 		childId := fmt.Sprintf("%s/%d", workflow.GetInfo(ctx).WorkflowExecution.ID, i)
 		childCtx := workflow.WithChildOptions(ctx, workflow.ChildWorkflowOptions{WorkflowID: childId})
 		// Define partition boundaries.
-		offset := partitionSize * i             // inclusive
-		maximumOffset := offset + partitionSize // exclusive
-		if maximumOffset > recordCount {
-			maximumOffset = recordCount
-		}
-		windowSize := partitionWindowSize
-		if i == input.Partitions-1 {
-			windowSize = lastPartitionWindowSize
+		maximumPartitionOffset := offset + partitions[i]
+		if maximumPartitionOffset > recordCount {
+			maximumPartitionOffset = recordCount
 		}
 		input := SlidingWindowWorkflowInput{
 			PageSize:          input.PageSize,
-			SlidingWindowSize: windowSize,
-			Offset:            offset,
-			MaximumOffset:     maximumOffset,
+			SlidingWindowSize: windowSizes[i],
+			Offset:            offset,                 // inclusive
+			MaximumOffset:     maximumPartitionOffset, // exclusive
 		}
 		child := workflow.ExecuteChildWorkflow(childCtx, SlidingWindowWorkflow, input)
 		results = append(results, child)
+		offset += partitions[i]
 	}
 	// Waits for all child workflows to complete
 	result := 0
@@ -75,4 +74,20 @@ func ProcessBatchWorkflow(ctx workflow.Context, input ProcessBatchWorkflowInput)
 		result += r
 	}
 	return result, nil
+}
+
+func divideIntoPartitions(number int, n int) []int {
+	base := number / n
+	remainder := number % n
+	partitions := make([]int, n)
+
+	for i := 0; i < n; i++ {
+		partitions[i] = base
+	}
+
+	for i := 0; i < remainder; i++ {
+		partitions[i] += 1
+	}
+
+	return partitions
 }
