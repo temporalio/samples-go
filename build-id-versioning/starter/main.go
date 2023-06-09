@@ -75,10 +75,13 @@ func main() {
 			ExistingCompatibleBuildId: "1.0",
 		},
 	})
+	if err != nil {
+		log.Fatalln("Unable to update build id compatability", err)
+	}
 
 	// Continue driving the workflow. Take note that the new version of the workflow run by the
 	// 1.1 worker is the one that takes over! You might see a workflow task timeout, if the 1.0
-	// worker is processing a task as the version update update happens. That's normal.
+	// worker is processing a task as the version update happens. That's normal.
 	for i := 0; i < 3; i++ {
 		err = c.SignalWorkflow(ctx, firstExecution.GetID(), firstExecution.GetRunID(),
 			"do-next-signal", "do-activity")
@@ -95,6 +98,9 @@ func main() {
 			BuildID: "2.0",
 		},
 	})
+	if err != nil {
+		log.Fatalln("Unable to update build id compatability", err)
+	}
 
 	// Start a new workflow, note that it will run on the new 2.0 version, without the client
 	// invocation changing at all!
@@ -105,6 +111,9 @@ func main() {
 		WorkflowExecutionTimeout: 5 * time.Minute,
 	}
 	secondExecution, err := c.ExecuteWorkflow(ctx, secondWorkflowOptions, "SampleChangingWorkflow")
+	if err != nil {
+		log.Fatalln("Unable to start workflow", err)
+	}
 	log.Println("Started second workflow",
 		"WorkflowID", secondExecution.GetID(), "RunID", secondExecution.GetRunID())
 
