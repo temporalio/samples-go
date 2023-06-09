@@ -32,6 +32,7 @@ func ProcessRecord(ctx workflow.Context, r SingleRecord) error {
 
 	// Use SideEffect to get a random number to ensure workflow determinism.
 	encodedRandom := workflow.SideEffect(ctx, func(ctx workflow.Context) interface{} {
+		//workflowcheck:ignore
 		return rand.Intn(10)
 	})
 	var random int
@@ -39,7 +40,10 @@ func ProcessRecord(ctx workflow.Context, r SingleRecord) error {
 	if err != nil {
 		return err
 	}
-	workflow.Sleep(ctx, time.Duration(random)*time.Second)
+	err = workflow.Sleep(ctx, time.Duration(random)*time.Second)
+	if err != nil {
+		return err
+	}
 	workflow.GetLogger(ctx).Info("Processed ", r)
 	return nil
 }

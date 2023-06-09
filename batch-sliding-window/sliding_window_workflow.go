@@ -84,6 +84,7 @@ func (s *SlidingWindow) State() (SlidingWindowState, error) {
 	// Range over map is a nondeterministic operation.
 	// It is OK to have a non-deterministic operation in a query function.
 	// Sorting of results makes the result deterministic anyway.
+	//workflowcheck:ignore
 	for k := range s.currentRecords {
 		currentRecordIds[i] = k
 		i++

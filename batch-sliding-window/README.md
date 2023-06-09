@@ -2,13 +2,15 @@
 
 A sample implementation of a batch processing Workflow that maintains a sliding window of record processing Workflows.
 
-A Workflow starts a configured number of Child Workflows in parallel. Each child processes a single record.
-When a child completes a new child immediately started.
+A SlidingWindowWorkflow starts a configured number (sliding window size) of RecordProcessorWorkflow children in parallel. 
+Each child processes a single record. When a child completes a new child is started.
 
-A Parent Workflow calls continue-as-new after starting a preconfigured number of children.
-A child completion is reported through a Signal as a parent cannot directly wait for a child started by a previous run.
+A SlidingWindowWorkflow calls continue-as-new after starting a preconfigured number of children to keep its history size bounded.
+A RecordProcessorWorkflow reports its completion through a Signal to its parent.
+This allows to notify a parent that called continue-as-new.
 
-Multiple instances of SlidingWindowBatchWorkflow run in parallel each processing a subset of records to support higher total rate of processing.
+A single instance of SlidingWindowWorkflow has limited window size and throughput. 
+To support larger window size and overall throughput multiple instances of SlidingWindowWorkflow run in parallel.
 
 #### Running the Sliding Window Batch Sample
 
