@@ -32,7 +32,7 @@ func main() {
 	wg.Wait()
 }
 
-func createAndRunWorker(c client.Client, taskQueue, buildID string, workflowFunc interface{}, wg *sync.WaitGroup) {
+func createAndRunWorker(c client.Client, taskQueue, buildID string, workflowFunc func(ctx workflow.Context) error, wg *sync.WaitGroup) {
 	w := worker.New(c, taskQueue, worker.Options{
 		// Both of these options must be set to opt into the feature
 		BuildID:                 buildID,
@@ -41,7 +41,7 @@ func createAndRunWorker(c client.Client, taskQueue, buildID string, workflowFunc
 	// It's important that we register all the different implementations of the workflow using
 	// the same name. This allows us to demonstrate what would happen if you were making changes
 	// to this workflow code over time while keeping the same workflow name/type.
-	w.RegisterWorkflowWithOptions(workflowFunc, workflow.RegisterOptions{Name: "SampleChangingWorkflow"})
+	w.RegisterWorkflowWithOptions(workflowFunc, workflow.RegisterOptions{Name: "SampleChangingWorkflow"}) //workflowcheck:ignore
 	w.RegisterActivity(build_id_versioning.SomeActivity)
 	w.RegisterActivity(build_id_versioning.SomeIncompatibleActivity)
 
