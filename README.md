@@ -222,7 +222,6 @@ resource waiting its successful completion
 
 Mostly examples we haven't yet ported from https://github.com/temporalio/samples-java/
 
-- Async activity calling: *Example to be completed*
 - Async lambda:  *Example to be completed*
 - Periodic Workflow: Workflow that executes some logic periodically. *Example to be completed*
 - Exception propagation and wrapping: *Example to be completed*
