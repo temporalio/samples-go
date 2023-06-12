@@ -22,6 +22,9 @@ func AsyncActivitiesWorkflow(ctx workflow.Context) (res string, err error) {
 		err = future.Get(ctx, &res2)
 	})
 	selector.Select(ctx)
+	if err != nil {
+		return
+	}
 	selector.Select(ctx)
 	if err == nil {
 		res = res1 + " It was great to meet you, but time has come. " + res2
