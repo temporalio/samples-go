@@ -3,6 +3,7 @@ package activities_async
 import (
 	"context"
 	"errors"
+	"github.com/stretchr/testify/mock"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -30,10 +31,10 @@ func testWorkflowFailsWhenActivityFail(t *testing.T, a interface{}) {
 	env := testSuite.NewTestWorkflowEnvironment()
 	env.RegisterActivity(SayHello)
 	env.RegisterActivity(SayGoodbye)
-	env.ExecuteWorkflow(AsyncActivitiesWorkflow)
-	env.OnActivity(a, func(ctx context.Context, arg string) (string, error) {
+	env.OnActivity(a, mock.Anything, mock.Anything).Return(func(ctx context.Context, arg string) (string, error) {
 		return "", errors.New("activity failed")
 	})
+	env.ExecuteWorkflow(AsyncActivitiesWorkflow)
 	require.True(t, env.IsWorkflowCompleted())
 	require.Error(t, env.GetWorkflowError())
 }
