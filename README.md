@@ -186,6 +186,9 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 - [**Sticky task queue for activities**](./activities-sticky-queues): Demonstrates how
   to create a sticky task queue to run certain activities on the same host.
 
+- [**Async activities invocation**](./activities-async): Demonstrates how to invoke two activities in parallel and 
+  return when both of them have completed without blocking between one activity invocation and the following one
+
 ### Scenario based examples
 
 - [**DSL Workflow**](./dsl): Demonstrates how to implement a
