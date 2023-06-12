@@ -25,17 +25,15 @@ func SampleChangingWorkflowV1(ctx workflow.Context) error {
 				StartToCloseTimeout: 10 * time.Second,
 			}
 			ctx1 := workflow.WithActivityOptions(ctx, ao)
-			err := workflow.ExecuteActivity(ctx1, SomeActivity, "v1").Get(ctx, nil)
+			err := workflow.ExecuteActivity(ctx1, SomeActivity, "v1").Get(ctx1, nil)
 			if err != nil {
 				return err
 			}
 		} else {
-			workflow.GetLogger(ctx).Info("Concluding workflow v1", workflow.Now(ctx))
-			break
+			workflow.GetLogger(ctx).Info("Concluding workflow v1")
+			return nil
 		}
 	}
-
-	return nil
 }
 
 // SampleChangingWorkflowV1b represents us having made *compatible* changes to
@@ -66,7 +64,7 @@ func SampleChangingWorkflowV1b(ctx workflow.Context) error {
 				// Note it is a valid compatible change to alter the input to an activity.
 				// However, because we're using the GetVersion API, this branch will never be
 				// taken.
-				err := workflow.ExecuteActivity(ctx1, SomeActivity, "v1b").Get(ctx, nil)
+				err := workflow.ExecuteActivity(ctx1, SomeActivity, "v1b").Get(ctx1, nil)
 				if err != nil {
 					return err
 				}
@@ -78,13 +76,13 @@ func SampleChangingWorkflowV1b(ctx workflow.Context) error {
 				err := workflow.ExecuteActivity(ctx1, SomeIncompatibleActivity, &IncompatibleActivityInput{
 					CalledBy: "v1b",
 					MoreData: "hello!",
-				}).Get(ctx, nil)
+				}).Get(ctx1, nil)
 				if err != nil {
 					return err
 				}
 			}
 		} else {
-			workflow.GetLogger(ctx).Info("Concluding workflow v1b", workflow.Now(ctx))
+			workflow.GetLogger(ctx).Info("Concluding workflow v1b")
 			break
 		}
 	}
