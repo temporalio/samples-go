@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"go.temporal.io/api/workflowservice/v1"
 	"log"
 	"os"
 	"time"
@@ -127,6 +128,27 @@ func main() {
 		"do-next-signal", "finish")
 	if err != nil {
 		log.Fatalln("Unable to signal workflow", err)
+	}
+
+	// Lastly we'll demonstrate how you can use the gRPC api to determine if certain bulid IDs are
+	// ready to be retied. There's more information in the documentation, but here's a quick example
+	// that will show us that we can retire the 1.0 worker:
+	retirementInfo, err := c.WorkflowService().GetWorkerTaskReachability(ctx, &workflowservice.GetWorkerTaskReachabilityRequest{
+		Namespace: "default",
+		BuildIds:  []string{"1.0"},
+	})
+	if err != nil {
+		log.Fatalln("Unable to get build id reachability", err)
+	}
+	reachabilityOf1Dot0 := retirementInfo.GetBuildIdReachability()[0]
+	noReachableQueues := true
+	for _, tq := range reachabilityOf1Dot0.GetTaskQueueReachability() {
+		if tq.GetReachability() != nil && len(tq.GetReachability()) > 0 {
+			noReachableQueues = false
+		}
+	}
+	if noReachableQueues {
+		log.Println("We have determined 1.0 is ready to be retired")
 	}
 
 }
