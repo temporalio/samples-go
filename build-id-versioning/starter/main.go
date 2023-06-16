@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"go.temporal.io/api/workflowservice/v1"
 	"log"
 	"os"
 	"time"
+
+	"go.temporal.io/api/workflowservice/v1"
 
 	"github.com/pborman/uuid"
 
@@ -73,7 +74,7 @@ func main() {
 		TaskQueue: taskQueue,
 		Operation: &client.BuildIDOpAddNewCompatibleVersion{
 			BuildID:                   "1.1",
-			ExistingCompatibleBuildId: "1.0",
+			ExistingCompatibleBuildID: "1.0",
 		},
 	})
 	if err != nil {
