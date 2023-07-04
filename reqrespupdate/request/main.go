@@ -55,7 +55,7 @@ func main() {
 		if val, err := req.RequestUppercase(ctx, str); err != nil {
 			log.Printf("  Failed: %v", errors.Unwrap(err))
 			// Backoff so the workflow can continue as new
-			if errors.Unwrap(err).Error() == reqrespupdate.BackoffError.Error() {
+			if errors.Unwrap(err).Error() == reqrespupdate.ErrBackoff.Error() {
 				log.Printf("Workflow trying to continue as new, backing off")
 				time.Sleep(2 * time.Second)
 			}

@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	BackoffError = errors.New("trying to continue as new")
+	ErrBackoff = errors.New("trying to continue as new")
 )
 
 // UppercaseWorkflow is a workflow that accepts requests to uppercase strings
@@ -85,7 +85,7 @@ func (u *uppercaser) run(ctx workflow.Context) error {
 	if u.rejectUpdateOnPendingContinueAsNew {
 		options.Validator = func(ctx workflow.Context, request Request) error {
 			if requestCount >= u.requestsBeforeContinueAsNew {
-				return BackoffError
+				return ErrBackoff
 			}
 			return nil
 		}
