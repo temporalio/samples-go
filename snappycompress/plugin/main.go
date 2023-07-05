@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/hashicorp/go-plugin"
 	"github.com/temporalio/samples-go/snappycompress"
-	cliplugin "go.temporal.io/server/tools/cli/plugin"
+	cliplugin "github.com/temporalio/tctl/cli/plugin"
 )
 
 func main() {
