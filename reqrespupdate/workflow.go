@@ -85,6 +85,8 @@ func (u *uppercaser) run(ctx workflow.Context) error {
 	if u.rejectUpdateOnPendingContinueAsNew {
 		options.Validator = func(ctx workflow.Context, request Request) error {
 			if requestCount >= u.requestsBeforeContinueAsNew {
+				// Rejecting an update in the validator will not persist the update
+				// to history which is useful if the history size is growing large.
 				return ErrBackoff
 			}
 			return nil

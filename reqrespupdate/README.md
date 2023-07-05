@@ -28,13 +28,13 @@ Multiple of those can be run on different terminals to confirm that the processe
 
 ### Comparison with activity-based responses and query-based response
 
-There are two other samlples showing how to do a request response pattern under [reqrespactivity](../reqrespactivity) sample and the [reqrespquery](../reqrespquery). The update based approach is the supperior option, and once released, will be the recommend approach.
+There are two other samples showing how to do a request response pattern under [reqrespactivity](../reqrespactivity) sample and the [reqrespquery](../reqrespquery). The update based approach is the superior option, and once released, will be the recommend approach.
 
 
 ### Explanation of continue-as-new
 
 Workflows cannot have infinitely-sized history and when the event count grows too large, `ContinueAsNew` can be returned
-to start a new one atomically. However, in order not to lose any data, update requests must be handles and any other futures
+to start a new one atomically. However, in order not to lose any data, update requests must be handled and any other futures
 that need to be reacted to must be completed first. This means there must be a period where there are no updates to
 process and no futures to wait on. If update requests come in faster than processed or futures wait so long there is no idle
 period, `ContinueAsNew` will not happen in a timely manner and history will grow.
