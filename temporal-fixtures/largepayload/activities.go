@@ -2,7 +2,7 @@ package largepayload
 
 import (
 	"context"
-	"math/rand"
+	"crypto/rand"
 
 	"go.temporal.io/sdk/activity"
 )

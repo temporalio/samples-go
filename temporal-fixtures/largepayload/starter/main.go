@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
 	"log"
-	"math/rand"
 	"strconv"
 
 	"github.com/pborman/uuid"
