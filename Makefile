@@ -51,4 +51,3 @@ clean:
 	rm -rf bin
 	
 ci-build: staticcheck errcheck workflowcheck bins test
-GO111MODULE=off go get -u honnef.co/go/tools/cmd/staticcheck
