@@ -29,7 +29,10 @@ func main() {
 	id := uuid.New()[0:4]
 
 	memoToken := make([]byte, PayloadSize)
-	rand.Read(memoToken)
+	_, err = rand.Read(memoToken)
+	if err != nil {
+		log.Fatalln("Unable to generate memo token", err)
+	}
 
 	i := 1
 	for i <= NumberOfWorkflows {
