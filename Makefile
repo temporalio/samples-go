@@ -5,7 +5,6 @@ install: clean staticcheck errcheck workflowcheck bins test
 
 ##### Variables ######
 UNIT_TEST_DIRS := $(sort $(dir $(shell find . -name "*_test.go")))
-MAIN_FILES := $(shell find . -name "main.go")
 TEST_TIMEOUT := 20s
 COLOR := "\e[1;36m%s\e[0m\n"
 
@@ -14,10 +13,24 @@ define NEWLINE
 
 endef
 
+# If the first argument is "bins"...
+ifeq (bins,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "bin"
+  BIN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(BIN_ARGS):;@:)
+endif
+
+ifeq ($(strip $(BIN_ARGS)),)
+	BIN_ARGS := .
+endif
+MAIN_FILES := $(shell find $(BIN_ARGS) -name "main.go")
+
 ##### Targets ######
+.PHONY: bins
 bins:
-	@printf $(COLOR) "Build samples..."
-	$(foreach MAIN_FILE,$(MAIN_FILES), go build -o bin/$(shell dirname "$(MAIN_FILE)") $(shell dirname "$(MAIN_FILE)")$(NEWLINE))
+	@printf $(COLOR) "Build sample for $(BIN_ARGS)"
+	$(foreach MAIN_FILE,$(MAIN_FILES), go build -o ./bin/$(shell dirname "$(MAIN_FILE)") ./$(shell dirname "$(MAIN_FILE)")$(NEWLINE))
 
 test:
 	@printf $(COLOR) "Run unit tests..."

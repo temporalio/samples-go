@@ -30,6 +30,20 @@ Each sample demonstrates one feature of the SDK, together with tests.
 - [**Basic mTLS hello world**](./helloworldmtls): Simple example of a
   Workflow Definition and an Activity Definition using mTLS like Temporal Cloud.
 
+## Building sampes
+
+To build all samples run this command:
+
+  $ make bins
+
+To build only a single sample run this command:
+
+  $ make bins <example-name>
+
+For example:
+
+  $ make bins helloworld
+
 ### API demonstrations
 
 - **Async activity completion**: Example of
