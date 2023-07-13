@@ -19,6 +19,8 @@ go run otel/starter/main.go
 The example outputs the traces in the stdout, both the worker and the starter.  
 [Trace output](./trace.json) collects the spans generated. Please note that in order to have the valid json they have been put in a JSON array but they are returned as single JSON objects.  
 
+If all is needed is to see Workflows and Activities there's no need to set up instrumentation for the Temporal cluster.  
+
 In order to send the traces to a real service you need to replace
 
 ```go
