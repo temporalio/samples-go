@@ -29,7 +29,7 @@ test:
 
 staticcheck:
 	@printf $(COLOR) "Run static check..."
-	@go install honnef.co/go/tools/cmd/staticcheck@latest
+	@go install honnef.co/go/tools/cmd/staticcheck@2023.1.3
 	@staticcheck ./...
 
 errcheck:
