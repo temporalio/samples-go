@@ -5,24 +5,36 @@ import (
 	"log"
 
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/interceptor"
 
-	"github.com/temporalio/samples-go/otel"
+	otelworkflow "github.com/temporalio/samples-go/otel"
 )
 
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	otelworkflow.Setup(ctx)
+	defer otelworkflow.Shutdown(ctx)
+
+	options := client.Options{
+		HostPort:     "localhost:7233",
+		Interceptors: []interceptor.ClientInterceptor{otelworkflow.GetInterceptor()},
+	}
+
 	// The client is a heavyweight object that should be created once per process.
-	c, err := client.Dial(client.Options{})
+	c, err := client.Dial(options)
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "hello_world_workflowID",
-		TaskQueue: "hello-world",
+		ID:        "otel_workflowID",
+		TaskQueue: "otel",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, otel.Workflow, "Temporal")
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, otelworkflow.Workflow, "Temporal")
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
