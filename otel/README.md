@@ -22,19 +22,19 @@ The example outputs the traces in the stdout, both the worker and the starter.
 In order to send the traces to a real service you need to replace
 
 ```go
-	exp, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
-	if err != nil {
-		log.Fatalln("failed to initialize stdouttrace exporter", err)
-	}
+exp, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
+if err != nil {
+    log.Fatalln("failed to initialize stdouttrace exporter", err)
+}
 ```
 with  
 ```go
-	// Configure a new OTLP exporter using environment variables for sending data to Honeycomb over gRPC
-	clientOTel := otlptracegrpc.NewClient()
-	exp, err := otlptrace.New(ctx, clientOTel)
-	if err != nil {
-		log.Fatalf("failed to initialize exporter: %e", err)
-	}
+// Configure a new OTLP exporter using environment variables for sending data to Honeycomb over gRPC
+clientOTel := otlptracegrpc.NewClient()
+exp, err := otlptrace.New(ctx, clientOTel)
+if err != nil {
+    log.Fatalf("failed to initialize exporter: %e", err)
+}
 ```
 
 And provide the required additional parameters like the OTLP endpoint.  
