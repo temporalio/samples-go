@@ -15,3 +15,4 @@ go run otel/worker/main.go
 ```bash
 go run otel/starter/main.go
 ```
+<img width="970" alt="Screenshot 2023-07-13 at 21 44 24" src="https://github.com/emanuelef/samples-go/assets/48717/d6e7fa3b-3604-4344-8e61-a81e0a02acd2">
