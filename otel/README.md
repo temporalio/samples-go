@@ -7,9 +7,9 @@ temporal server start-dev --ui-port 8089
 
 2) Run the following command to start the worker
 ```
-go run helloworld/worker/main.go
+go run otel/worker/main.go
 ```
 3) Run the following command to start the example
 ```
-go run helloworld/starter/main.go
+go run otel/starter/main.go
 ```
