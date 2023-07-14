@@ -21,7 +21,6 @@ func main() {
 	}
 	defer tp.Shutdown(ctx)
 
-	opentelemetry.NewTracingInterceptor(opentelemetry.TracerOptions{})
 	tracingInterceptor, err := opentelemetry.NewTracingInterceptor(opentelemetry.TracerOptions{})
 	if err != nil {
 		log.Fatalln("Unable to create interceptor", err)
