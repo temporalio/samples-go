@@ -4,21 +4,30 @@ import (
 	"context"
 	"log"
 
-	"go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/interceptor"
-
 	otelworkflow "github.com/temporalio/samples-go/opentelemetry"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/contrib/opentelemetry"
+	"go.temporal.io/sdk/interceptor"
 )
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	otelworkflow.Setup(ctx)
-	defer otelworkflow.Shutdown(ctx)
+	tp, err := otelworkflow.InitializeGlobalTracerProvider()
+	if err != nil {
+		log.Fatalln("Unable to create a global trace provider", err)
+	}
+	defer tp.Shutdown(ctx)
+
+	opentelemetry.NewTracingInterceptor(opentelemetry.TracerOptions{})
+	tracingInterceptor, err := opentelemetry.NewTracingInterceptor(opentelemetry.TracerOptions{})
+	if err != nil {
+		log.Fatalln("Unable to create interceptor", err)
+	}
 
 	options := client.Options{
-		Interceptors: []interceptor.ClientInterceptor{otelworkflow.GetInterceptor()},
+		Interceptors: []interceptor.ClientInterceptor{tracingInterceptor},
 	}
 
 	// The client is a heavyweight object that should be created once per process.
