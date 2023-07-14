@@ -50,4 +50,4 @@ OTEL_EXPORTER_OTLP_HEADERS
 
 As an example this is what is the rendered by Honeycomb.io.  
 
-![Honeycomb.io](honeycomb-traces.png)
+![Honeycomb.io](honeycomb_traces.png)
