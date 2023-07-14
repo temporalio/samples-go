@@ -4,13 +4,11 @@ import (
 	"context"
 	"time"
 
-	"go.temporal.io/sdk/activity"
-	"go.temporal.io/sdk/workflow"
-
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-
 	"go.opentelemetry.io/otel/trace"
+	"go.temporal.io/sdk/activity"
+	"go.temporal.io/sdk/workflow"
 )
 
 var tracer trace.Tracer
