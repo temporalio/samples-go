@@ -9,11 +9,11 @@ temporal server start-dev --ui-port 8089
 
 2) Run the following command to start the worker
 ```bash
-go run otel/worker/main.go
+go run opentelemetry/worker/main.go
 ```
 3) Run the following command to start the example
 ```bash
-go run otel/starter/main.go
+go run opentelemetry/starter/main.go
 ```
 
 The example outputs the traces in the stdout, both the worker and the starter.  

@@ -7,7 +7,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/interceptor"
 
-	otelworkflow "github.com/temporalio/samples-go/otel"
+	otelworkflow "github.com/temporalio/samples-go/opentelemetry"
 )
 
 func main() {
