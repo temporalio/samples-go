@@ -18,7 +18,6 @@ func main() {
 	defer otelworkflow.Shutdown(ctx)
 
 	options := client.Options{
-		HostPort:     "localhost:7233",
 		Interceptors: []interceptor.ClientInterceptor{otelworkflow.GetInterceptor()},
 	}
 
