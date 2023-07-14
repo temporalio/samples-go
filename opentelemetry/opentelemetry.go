@@ -43,15 +43,18 @@ func Activity(ctx context.Context, name string) error {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Activity", "name", name)
 
+	// Get current span and add new attributes
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(attribute.Bool("isTrue", true), attribute.String("stringAttr", "Ciao"))
 
+	// Create a child span
 	_, childSpan := tracer.Start(ctx, "custom-span")
 	time.Sleep(1 * time.Second)
 	childSpan.End()
 
 	time.Sleep(1 * time.Second)
 
+	// Add an event to the current span
 	span.AddEvent("Done Activity")
 
 	return nil
