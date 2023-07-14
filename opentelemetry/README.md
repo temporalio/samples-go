@@ -1,17 +1,17 @@
 ### Steps to run this sample:
 1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 
-One way could be just to use the temporal CLI.  
+One way could be just to use the Temporal CLI.  
 
 ```bash
-temporal server start-dev --ui-port 8089
+temporal server start-dev
 ```
 
 2) Run the following command to start the worker
 ```bash
 go run opentelemetry/worker/main.go
 ```
-3) Run the following command to start the example
+3) In another terminal, run the following command to run the workflow
 ```bash
 go run opentelemetry/starter/main.go
 ```
@@ -50,4 +50,4 @@ OTEL_EXPORTER_OTLP_HEADERS
 
 As an example this is what is the rendered by Honeycomb.io.  
 
-<img width="970" alt="Screenshot 2023-07-13 at 21 44 24" src="https://github.com/emanuelef/samples-go/assets/48717/d6e7fa3b-3604-4344-8e61-a81e0a02acd2">
+![Honeycomb.io](honeycomb-traces.png)
