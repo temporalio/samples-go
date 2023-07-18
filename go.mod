@@ -4,6 +4,9 @@ go 1.16
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v3.2.1+incompatible
 
+replace (
+	go.temporal.io/sdk v1.23.1 => ../sdk-go
+)
 require (
 	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
 	github.com/golang/mock v1.6.0
