@@ -38,7 +38,7 @@ func TestUppercaseWorkflow(t *testing.T) {
 	for i := 0; i < 550; i++ {
 		i := i
 		env.RegisterDelayedCallback(func() {
-			env.UpdateWorkflow(reqrespupdate.UpdateHandler, &updateCallback{
+			env.UpdateWorkflow(reqrespupdate.UpdateHandler, "test id", &updateCallback{
 				accept: func() {
 					if i >= 500 {
 						require.Fail(t, "update should fail since it should be trying to continue-as-new")
