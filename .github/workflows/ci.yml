@@ -16,6 +16,6 @@ jobs:
           submodules: recursive
       - uses: actions/setup-go@v2
         with:
-          go-version: "1.18"
+          go-version: "1.19"
       - name: CI Build
         run: make ci-build
