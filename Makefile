@@ -51,3 +51,4 @@ clean:
 	rm -rf bin
 	
 ci-build: staticcheck errcheck workflowcheck bins test
+
