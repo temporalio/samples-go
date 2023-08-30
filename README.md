@@ -46,8 +46,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
   execute a Child Workflow from a Parent Workflow Execution. A Child Workflow Execution only returns to the Parent
   Workflow Execution after completing its last Run.
 
-- [**Child Workflow with
-  ContinueAsNew**](./child-workflow-continue-as-new): Demonstrates
+- [**Child Workflow with ContinueAsNew**](./child-workflow-continue-as-new): Demonstrates
   that the call to Continue-As-New, by a Child Workflow Execution, is *not visible to the a parent*. The Parent Workflow
   Execution receives a notification only when a Child Workflow Execution completes, fails or times out. This is a useful
   feature when there is a need to **process a large set of data**. The child can iterate over the data set calling
@@ -135,6 +134,9 @@ Each sample demonstrates one feature of the SDK, together with tests.
 - [**Interceptors**](./interceptor): Demonstrates how to use
   interceptors to intercept calls, in this case for adding context to the logger.
 
+- [**Update**](./update): Demonstrates how to create a workflow that reacts
+  to workflow update requests.
+
 ### Dynamic Workflow logic examples
 
 These samples demonstrate some common control flow patterns using Temporal's Go SDK API.
@@ -217,6 +219,9 @@ resource waiting its successful completion
 
 - [**Request/Response with Response Queries**](./reqrespquery):
   Demonstrates how to accept requests via signals and use queries to poll for responses.
+
+- [**Request/Response with Response Updates**](./reqrespupdate):
+  Demonstrates how to accept requests and responsond via updates.
 
 ### Pending examples
 
