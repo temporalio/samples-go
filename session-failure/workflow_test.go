@@ -31,7 +31,7 @@ func (s *UnitTestSuite) Test_SampleFileProcessingWorkflow() {
 
 	env.RegisterActivity(a)
 
-	env.ExecuteWorkflow(SampleSessionFailureRecoveryWorkflow, "file1")
+	env.ExecuteWorkflow(SampleSessionFailureRecoveryWorkflow)
 
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())

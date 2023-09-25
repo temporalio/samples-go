@@ -13,32 +13,26 @@ var (
 )
 
 // SampleSessionFailureRecoveryWorkflow workflow definition
-func SampleSessionFailureRecoveryWorkflow(ctx workflow.Context, fileName string) (err error) {
-
-	err = runSession(ctx, fileName)
-	numOfRetries := 10
-	for err != nil && numOfRetries >= 0 {
-		// Only retry if we detected the session failed. In a production application
-		// it may make sense to also retry if some other errors occur, it
-		// depends on your business logic.
-		if errors.Is(err, ErrSessionHostDown) {
-			workflow.Sleep(ctx, 5*time.Minute)
-			err = runSession(ctx, fileName)
-		} else {
-			break
+func SampleSessionFailureRecoveryWorkflow(ctx workflow.Context) (err error) {
+	for retryNum := 0; retryNum < 10; retryNum++ {
+		if err = runSession(ctx); errors.Is(err, ErrSessionHostDown) {
+			if sleepErr := workflow.Sleep(ctx, 5*time.Minute); sleepErr != nil {
+				return sleepErr
+			}
+			continue
 		}
-		numOfRetries--
+		if err != nil {
+			workflow.GetLogger(ctx).Error("Workflow failed.", "Error", err.Error())
+		} else {
+			workflow.GetLogger(ctx).Info("Workflow completed.")
+		}
+		return
 	}
-
-	if err != nil {
-		workflow.GetLogger(ctx).Error("Workflow failed.", "Error", err.Error())
-	} else {
-		workflow.GetLogger(ctx).Info("Workflow completed.")
-	}
-	return err
+	workflow.GetLogger(ctx).Error("Workflow failed after multiple session retries.", "Error", err.Error())
+	return
 }
 
-func runSession(ctx workflow.Context, fileName string) (err error) {
+func runSession(ctx workflow.Context) (err error) {
 
 	so := &workflow.SessionOptions{
 		CreationTimeout:  time.Minute,

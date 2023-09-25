@@ -20,13 +20,12 @@ func main() {
 	}
 	defer c.Close()
 
-	fileID := uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "session_failure_" + fileID,
+		ID:        "session_failure_" + uuid.New(),
 		TaskQueue: "session-failure",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, sessionfailure.SampleSessionFailureRecoveryWorkflow, fileID)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, sessionfailure.SampleSessionFailureRecoveryWorkflow)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
