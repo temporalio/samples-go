@@ -38,6 +38,8 @@ variables should be set:
 * `TEMPORAL_JWT_KEY_SOURCE1=http://host.docker.internal:61884/jwks.json`
 * `TEMPORAL_AUTH_AUTHORIZER=default`
 * `TEMPORAL_AUTH_CLAIM_MAPPER=default`
+* `USE_INTERNAL_FRONTEND=1`
+* `SERVICES=frontend:history:matching:worker:internal-frontend`
 
 If using the docker-compose local install, these can be set in `docker-compose.yml`. If using a standalone server
 locally, the config is:
