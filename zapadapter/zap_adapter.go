@@ -79,3 +79,7 @@ func (log *ZapAdapter) Error(msg string, keyvals ...interface{}) {
 func (log *ZapAdapter) With(keyvals ...interface{}) log.Logger {
 	return &ZapAdapter{zl: log.zl.With(log.fields(keyvals)...)}
 }
+
+func (log *ZapAdapter) WithCallerSkip(skip int) log.Logger {
+	return &ZapAdapter{zl: log.zl.WithOptions(zap.AddCallerSkip(skip))}
+}
