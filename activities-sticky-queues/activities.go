@@ -16,7 +16,7 @@ func DownloadFile(ctx context.Context, url, path string) error {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Downloading file", "url", url, "path", path)
 	time.Sleep(3 * time.Second)
-	return os.WriteFile(url, []byte("Hello, Gophers!"), 0666)
+	return os.WriteFile(path, []byte("Hello, Gophers!"), 0666)
 }
 
 // ProcessFile is a stub function to processes a file.
