@@ -23,7 +23,7 @@ require (
 	go.temporal.io/server v1.15.2
 	go.uber.org/multierr v1.7.0
 	go.uber.org/zap v1.20.0
-	google.golang.org/grpc v1.57.0
+	google.golang.org/grpc v1.57.1
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gopkg.in/yaml.v3 v3.0.1
 )
