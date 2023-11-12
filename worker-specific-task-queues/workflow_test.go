@@ -1,4 +1,4 @@
-package activities_sticky_queues
+package worker_specific_task_queues
 
 import (
 	"testing"
@@ -15,11 +15,11 @@ func Test_Workflow(t *testing.T) {
 	env := testSuite.NewTestWorkflowEnvironment()
 
 	// Mock activity implementation
-	var a StickyTaskQueue
-	env.RegisterActivityWithOptions(a.GetStickyTaskQueue, activity.RegisterOptions{
-		Name: "GetStickyTaskQueue",
+	var a WorkerSpecificTaskQueue
+	env.RegisterActivityWithOptions(a.GetWorkerSpecificTaskQueue, activity.RegisterOptions{
+		Name: "GetWorkerSpecificTaskQueue",
 	})
-	env.OnActivity("GetStickyTaskQueue", mock.Anything).Return("unique-sticky-task-queue", nil)
+	env.OnActivity("GetWorkerSpecificTaskQueue", mock.Anything).Return("unique-task-queue", nil)
 	env.OnActivity(DownloadFile, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 	env.OnActivity(ProcessFile, mock.Anything, mock.Anything).Return(nil)
 	env.OnActivity(DeleteFile, mock.Anything, mock.Anything).Return(nil)

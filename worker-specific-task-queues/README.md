@@ -1,25 +1,30 @@
-# Sticky Activity Queues
+# Worker-Specific Task Queues
 
-This sample shows how to have [Sticky Execution](https://docs.temporal.io/tasks/#sticky-execution): using a unique task queue per Worker to have certain activities only run on that specific Worker.
+*[Sessions](https://docs.temporal.io/dev-guide/go/features#worker-sessions) are an alternative to Worker-specific Tasks Queues.*
+
+Use a unique Task Queue for each Worker in order to have certain Activities run on a specific Worker.
+
+This is useful in scenarios where multiple Activities need to run in the same process or on the same host, for example to share memory or disk. This sample has a file processing Workflow, where one Activity downloads the file to disk and other Activities process it and clean it up.
 
 The strategy is:
 
-- Create a `StickyTaskQueue.GetStickyTaskQueue` activity that generates a unique task queue name, `uniqueWorkerTaskQueue`.
-- It doesn't matter where this activity is run, so it can be "non sticky" as per Temporal default behavior.
-- In this demo, `uniqueWorkerTaskQueue` is simply a `uuid` initialized in the Worker, but you can inject smart logic here to uniquely identify the Worker, [as Netflix did](https://community.temporal.io/t/using-dynamic-task-queues-for-traffic-routing/3045).
-- For activities intended to be "sticky", only register them in one Worker, and have that be the only Worker listening on that `uniqueWorkerTaskQueue`.
-- Execute workflows from the Client like normal.
+- Each Worker process creates two `worker` instances:
+  - One instance listens on the `shared-task-queue` Task Queue.
+  - Another instance listens on a uniquely generated Task Queue (in this case, `uuid` is used, but you can inject smart logic here to uniquely identify the Worker, [as Netflix did](https://community.temporal.io/t/using-dynamic-task-queues-for-traffic-routing/3045)).
+- The Workflow and the first Activity are run on `shared-task-queue`.
+- The first Activity returns one of the uniquely generated Task Queues (that only one Worker is listening on—i.e. the **Worker-specific Task Queue**).
+- The rest of the Activities do the file processing and are run on the Worker-specific Task Queue.
 
 Activities have been artificially slowed with `time.Sleep(3 * time.Second)` to simulate slow activities.
 
 ### Running this sample
 
 ```bash
-go run activities-sticky-queues/worker/main.go
+go run worker-specific-task-queues/worker/main.go
 ```
 
 Start the Workflow Execution:
 
 ```bash
-go run activities-sticky-queues/starter/main.go
+go run worker-specific-task-queues/starter/main.go
 ```

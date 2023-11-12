@@ -4,7 +4,7 @@ import (
 	"log"
 	"sync"
 
-	activities_sticky_queues "github.com/temporalio/samples-go/activities-sticky-queues"
+	worker_specific_task_queues "github.com/temporalio/samples-go/worker-specific-task-queues"
 
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
@@ -14,24 +14,25 @@ import (
 )
 
 func main() {
-	// The client and worker are heavyweight objects that should be created once per process.
+	// The client and worker are heavyweight objects that should generally be created once per process.
+	// In this case, we create a single client but two workers since we need to handle Activities on multiple task queues.
 	c, err := client.Dial(client.Options{})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
-	stickTaskQueue := activities_sticky_queues.StickyTaskQueue{
+	uniqueTaskQueue := worker_specific_task_queues.WorkerSpecificTaskQueue{
 		TaskQueue: uuid.New().String(),
 	}
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		w := worker.New(c, "activities-sticky-queues", worker.Options{})
-		w.RegisterWorkflow(activities_sticky_queues.FileProcessingWorkflow)
+		w := worker.New(c, "shared-task-queue", worker.Options{})
+		w.RegisterWorkflow(worker_specific_task_queues.FileProcessingWorkflow)
 
-		w.RegisterActivityWithOptions(stickTaskQueue.GetStickyTaskQueue, activity.RegisterOptions{
-			Name: "GetStickyTaskQueue",
+		w.RegisterActivityWithOptions(uniqueTaskQueue.GetWorkerSpecificTaskQueue, activity.RegisterOptions{
+			Name: "GetWorkerSpecificTaskQueue",
 		})
 		err = w.Run(worker.InterruptCh())
 		if err != nil {
@@ -42,18 +43,18 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		// Create a new worker listening on the stick queue
-		stickWorker := worker.New(c, stickTaskQueue.TaskQueue, worker.Options{})
+		// Create a new worker listening on the unique queue
+		uniqueTaskQueueWorker := worker.New(c, uniqueTaskQueue.TaskQueue, worker.Options{})
 
-		stickWorker.RegisterActivity(activities_sticky_queues.DownloadFile)
-		stickWorker.RegisterActivity(activities_sticky_queues.ProcessFile)
-		stickWorker.RegisterActivity(activities_sticky_queues.DeleteFile)
+		uniqueTaskQueueWorker.RegisterActivity(worker_specific_task_queues.DownloadFile)
+		uniqueTaskQueueWorker.RegisterActivity(worker_specific_task_queues.ProcessFile)
+		uniqueTaskQueueWorker.RegisterActivity(worker_specific_task_queues.DeleteFile)
 
-		err = stickWorker.Run(worker.InterruptCh())
+		err = uniqueTaskQueueWorker.Run(worker.InterruptCh())
 		if err != nil {
 			log.Fatalln("Unable to start worker", err)
 		}
 	}()
-	// Wait for both worker to close
+	// Wait for both workers to close
 	wg.Wait()
 }

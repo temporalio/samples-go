@@ -1,4 +1,4 @@
-package activities_sticky_queues
+package worker_specific_task_queues
 
 import (
 	"bytes"
