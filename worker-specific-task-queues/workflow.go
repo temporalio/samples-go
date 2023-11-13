@@ -1,4 +1,4 @@
-package activities_sticky_queues
+package worker_specific_task_queues
 
 import (
 	"path/filepath"
@@ -8,15 +8,15 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-// FileProcessingWorkflow is a workflow that uses stick activity queues to process files
-// on a consistent host.
+// FileProcessingWorkflow is a workflow that uses Worker-specific Task Queues to run multiple Activities on a consistent
+// host.
 func FileProcessingWorkflow(ctx workflow.Context) (err error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: time.Minute,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
-	var stickyTaskQueue string
-	err = workflow.ExecuteActivity(ctx, "GetStickyTaskQueue").Get(ctx, &stickyTaskQueue)
+	var WorkerSpecificTaskQueue string
+	err = workflow.ExecuteActivity(ctx, "GetWorkerSpecificTaskQueue").Get(ctx, &WorkerSpecificTaskQueue)
 	if err != nil {
 		return
 	}
@@ -27,7 +27,7 @@ func FileProcessingWorkflow(ctx workflow.Context) (err error) {
 		// activities to progress.
 		ScheduleToCloseTimeout: time.Minute,
 
-		TaskQueue: stickyTaskQueue,
+		TaskQueue: WorkerSpecificTaskQueue,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 

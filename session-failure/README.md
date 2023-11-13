@@ -7,7 +7,7 @@ The workflow first creates a session then starts a short activity meant to simul
 Workflows detect a session worker has gone down through heartbeats by the session worker, so the workflow has a stale view of the session workers state. This is important to consider if your
 workflow schedules any activities on a session that can fail due to a timeout. It is possible that when a session worker fails, if your activities timeout is shorter than twice the session heartbeat timeout, your activity may fail with a timeout error and the session state will not be failed yet.
 
-It is also worth noting if a session worker is restarted then it is considered a new session worker and will not pick up any activities scheduled on the old session worker. If you want to be able to keep scheduling activities on the same host after restart look at ../activities-sticky-queues 
+It is also worth noting if a session worker is restarted then it is considered a new session worker and will not pick up any activities scheduled on the old session worker. If you want to be able to keep scheduling activities on the same host after restart look at ../worker-specific-task-queues 
 
 Steps to run this sample:
 1) You need a Temporal service running. See details in README.md

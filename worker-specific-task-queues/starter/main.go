@@ -6,7 +6,7 @@ import (
 
 	"go.temporal.io/sdk/client"
 
-	activities_sticky_queues "github.com/temporalio/samples-go/activities-sticky-queues"
+	worker_specific_task_queues "github.com/temporalio/samples-go/worker-specific-task-queues"
 )
 
 func main() {
@@ -18,11 +18,11 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "activities_sticky_queues_WorkflowID",
-		TaskQueue: "activities-sticky-queues",
+		ID:        "worker_specific_task_queues_WorkflowID",
+		TaskQueue: "shared-task-queue",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, activities_sticky_queues.FileProcessingWorkflow)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, worker_specific_task_queues.FileProcessingWorkflow)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
