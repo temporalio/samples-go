@@ -24,7 +24,7 @@ require (
 	go.temporal.io/server v1.22.3
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.24.0
-	google.golang.org/grpc v1.58.2
+	google.golang.org/grpc v1.58.3
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gopkg.in/yaml.v3 v3.0.1
 )
