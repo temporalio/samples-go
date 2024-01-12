@@ -18,7 +18,12 @@ func main() {
 	if err != nil {
 		log.Fatalln("Unable to create a global trace provider", err)
 	}
-	defer tp.Shutdown(ctx)
+
+	defer func() {
+		if err := tp.Shutdown(ctx); err != nil {
+			log.Println("Error shutting down trace provider:", err)
+		}
+	}()
 
 	tracingInterceptor, err := opentelemetry.NewTracingInterceptor(opentelemetry.TracerOptions{})
 	if err != nil {
