@@ -122,7 +122,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
   Execution and Activity Executions. Additional
   documentation: [How to use tracing in Go](https://docs.temporal.io/go/tracing).
 
-- [**OpenTelemetry**](./opentelemetry): Demonstrates how to instrument the Wokflows and
+- [**OpenTelemetry**](./opentelemetry): Demonstrates how to instrument the Workflows and
   Activities with OpenTelemetry.
 
 - [**Updatable Timer**](./updatabletimer): Demonstrates timer
