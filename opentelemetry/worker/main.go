@@ -44,6 +44,6 @@ func main() {
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
-		log.Fatalln("Unable to start worker", err)
+		log.Fatalln("Worker run failed", err)
 	}
 }
