@@ -27,7 +27,6 @@ func main() {
 	}
 
 	options := client.Options{
-		HostPort:     "localhost:7233",
 		Interceptors: []interceptor.ClientInterceptor{tracingInterceptor},
 	}
 
