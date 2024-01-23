@@ -122,6 +122,9 @@ Each sample demonstrates one feature of the SDK, together with tests.
   Execution and Activity Executions. Additional
   documentation: [How to use tracing in Go](https://docs.temporal.io/go/tracing).
 
+- [**OpenTelemetry**](./opentelemetry): Demonstrates how to instrument the Workflows and
+  Activities with OpenTelemetry.
+
 - [**Updatable Timer**](./updatabletimer): Demonstrates timer
   cancellation and use of a Selector to wait on a Future and a Channel simultaneously.
 
@@ -185,8 +188,7 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 - [**Await for signal processing**](./await-signals): Demonstrates how
   to process out of order signals processing using `Await` and `AwaitWithTimeout`.
 
-- [**Sticky task queue for activities**](./activities-sticky-queues): Demonstrates how
-  to create a sticky task queue to run certain activities on the same host.
+- [**Worker-specific Task Queues**](./worker-specific-task-queues): Use a unique task queue per Worker to have certain Activities only run on that specific Worker. For instance for a file processing Workflow, where one Activity downloads a file and subsequent Activities need to operate on that file. (If multiple Workers were on the same queue, subsequent Activities may get run on different machines that don't have the downloaded file.)
 
 ### Scenario based examples
 

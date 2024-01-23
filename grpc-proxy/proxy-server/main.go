@@ -72,7 +72,7 @@ func main() {
 			authorization.NewAuthorizationInterceptor(
 				newClaimMapper(provider.JWKSURI),
 				authorization.NewDefaultAuthorizer(),
-				metrics.NoopMetricsClient{},
+				metrics.NoopMetricsHandler,
 				logger,
 				provider,
 			),

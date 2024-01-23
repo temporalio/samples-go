@@ -4,9 +4,8 @@ import (
 	"context"
 	"log"
 
+	"github.com/temporalio/samples-go/slogadapter"
 	"go.temporal.io/sdk/client"
-
-	activities_sticky_queues "github.com/temporalio/samples-go/activities-sticky-queues"
 )
 
 func main() {
@@ -18,11 +17,11 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "activities_sticky_queues_WorkflowID",
-		TaskQueue: "activities-sticky-queues",
+		ID:        "slog_logger_workflow_id",
+		TaskQueue: "slog-logger",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, activities_sticky_queues.FileProcessingWorkflow)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, slogadapter.Workflow, "<param to log>")
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
@@ -30,10 +29,10 @@ func main() {
 	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 
 	// Synchronously wait for the workflow completion.
-	var result string
+	var result interface{}
 	err = we.Get(context.Background(), &result)
 	if err != nil {
 		log.Fatalln("Unable get workflow result", err)
 	}
-	log.Println("Workflow completed")
+	log.Println("Workflow completed. Check worker logs.")
 }

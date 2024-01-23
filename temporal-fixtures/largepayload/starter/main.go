@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
 	"log"
-	"math/rand"
 	"strconv"
 
 	"github.com/pborman/uuid"
@@ -29,7 +29,7 @@ func main() {
 	id := uuid.New()[0:4]
 
 	memoToken := make([]byte, PayloadSize)
-	rand.Read(memoToken)
+	_, _ = rand.Read(memoToken)
 
 	i := 1
 	for i <= NumberOfWorkflows {
