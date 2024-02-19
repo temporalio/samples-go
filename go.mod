@@ -4,9 +4,6 @@ go 1.21
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
 
-// Remove once we do another API release
-replace go.temporal.io/api => go.temporal.io/api v1.26.0
-
 require (
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/golang/snappy v0.0.4
@@ -23,8 +20,8 @@ require (
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.16.0
 	go.opentelemetry.io/otel/sdk v1.22.0
 	go.opentelemetry.io/otel/trace v1.22.0
-	go.temporal.io/api v1.26.1
-	go.temporal.io/sdk v1.25.1
+	go.temporal.io/api v1.27.0
+	go.temporal.io/sdk v1.26.0-rc.2
 	go.temporal.io/sdk/contrib/datadog v0.2.0
 	go.temporal.io/api v1.29.1
 	go.temporal.io/sdk v1.26.0
@@ -90,18 +87,18 @@ require (
 	go.uber.org/atomic v1.11.0 // indirect
 	go4.org/intern v0.0.0-20230525184215-6c62f75575cb // indirect
 	go4.org/unsafe/assume-no-moving-gc v0.0.0-20231121144256-b99613f794b6 // indirect
-	golang.org/x/crypto v0.16.0 // indirect
+	golang.org/x/crypto v0.18.0 // indirect
 	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/net v0.19.0 // indirect
+	golang.org/x/net v0.20.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.16.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
-	google.golang.org/genproto v0.0.0-20240102182953-50ed04b92917 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20240102182953-50ed04b92917 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240102182953-50ed04b92917 // indirect
-	google.golang.org/grpc v1.60.1 // indirect
+	google.golang.org/genproto v0.0.0-20240125205218-1f4bbc51befe // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240125205218-1f4bbc51befe // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240125205218-1f4bbc51befe // indirect
+	google.golang.org/grpc v1.61.0 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	inet.af/netaddr v0.0.0-20230525184311-b8eac61e914a // indirect
