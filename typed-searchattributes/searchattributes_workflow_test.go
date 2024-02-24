@@ -26,7 +26,11 @@ func Test_Workflow(t *testing.T) {
 			CustomStringField.ValueSet("String field is for text. When query, it will be tokenized for partial match."),
 		)).Return(nil).Once()
 
-	env.OnUpsertTypedSearchAttributes(temporal.NewSearchAttributes(CustomKeyword.ValueSet("Update2"))).Return(nil).Once()
+	env.OnUpsertTypedSearchAttributes(
+		temporal.NewSearchAttributes(
+			CustomKeyword.ValueSet("Update2"),
+			CustomIntKey.ValueUnset(),
+		)).Return(nil).Once()
 
 	env.ExecuteWorkflow(SearchAttributesWorkflow)
 	require.True(t, env.IsWorkflowCompleted())

@@ -67,13 +67,19 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	}
 
 	// Update search attributes again.
-	err = workflow.UpsertTypedSearchAttributes(ctx, CustomKeyword.ValueSet("Update2"))
+	err = workflow.UpsertTypedSearchAttributes(ctx,
+		CustomKeyword.ValueSet("Update2"),
+		CustomIntKey.ValueUnset(),
+	)
 	if err != nil {
 		return err
 	}
 
 	// Sleep to allow update to be visible in search.
-	workflow.Sleep(ctx, 1*time.Second)
+	err = workflow.Sleep(ctx, 1*time.Second)
+	if err != nil {
+		return err
+	}
 
 	// Print current search attributes.
 	searchAttributes = workflow.GetTypedSearchAttributes(ctx)
