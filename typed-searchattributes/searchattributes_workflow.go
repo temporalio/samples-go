@@ -93,6 +93,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 }
 
 func printSearchAttributes(searchAttributes temporal.SearchAttributes, logger log.Logger) error {
+	//workflowcheck:ignore
 	if searchAttributes.Size() == 0 {
 		logger.Info("Current search attributes are empty.")
 		return nil
