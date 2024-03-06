@@ -140,6 +140,8 @@ Each sample demonstrates one feature of the SDK, together with tests.
 - [**Update**](./update): Demonstrates how to create a workflow that reacts
   to workflow update requests.
 
+- [**Eager Workflow Start**](./eager-workflow-start): Demonstrates how to start a workflow in eager mode, an experimental latency optimization.
+
 ### Dynamic Workflow logic examples
 
 These samples demonstrate some common control flow patterns using Temporal's Go SDK API.
