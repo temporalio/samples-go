@@ -43,6 +43,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 
 	// Get search attributes that were provided when workflow was started.
 	info := workflow.GetInfo(ctx)
+	//lint:ignore SA1019 - this is a sample
 	val := info.SearchAttributes.IndexedFields["CustomIntField"]
 	var currentIntValue int
 	err := converter.GetDefaultDataConverter().FromPayload(val, &currentIntValue)
@@ -63,6 +64,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	}
 	// This won't persist search attributes on server because commands are not sent to server,
 	// but local cache will be updated.
+	//lint:ignore SA1019 - this is a sample
 	err = workflow.UpsertSearchAttributes(ctx, attributes)
 	if err != nil {
 		return err
@@ -70,6 +72,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 
 	// Print current search attributes with modifications above.
 	info = workflow.GetInfo(ctx)
+	//lint:ignore SA1019 - this is a sample
 	err = printSearchAttributes(info.SearchAttributes, logger)
 	if err != nil {
 		return err
@@ -79,6 +82,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	attributes = map[string]interface{}{
 		"CustomKeywordField": "Update2",
 	}
+	//lint:ignore SA1019 - this is a sample
 	err = workflow.UpsertSearchAttributes(ctx, attributes)
 	if err != nil {
 		return err
@@ -86,6 +90,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 
 	// Print current search attributes.
 	info = workflow.GetInfo(ctx)
+	//lint:ignore SA1019 - this is a sample
 	err = printSearchAttributes(info.SearchAttributes, logger)
 	if err != nil {
 		return err

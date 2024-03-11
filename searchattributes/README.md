@@ -1,3 +1,5 @@
+This sample is now out of data, please see the ./typed-searchattributes sample.
+
 ### Steps to run this sample:
 1) Run [Temporal Server](Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use) with an Advanced Visibility store (Elasticsearch integrated).
 If you are using the default `docker-compose` config, then Elasticsearch is already integrated.
