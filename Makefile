@@ -41,7 +41,7 @@ errcheck:
 
 workflowcheck:
 	@printf $(COLOR) "Run workflow check..."
-	@go install go.temporal.io/sdk/contrib/tools/workflowcheck
+	@go install go.temporal.io/sdk/contrib/tools/workflowcheck@latest
 	@workflowcheck -show-pos ./...
 
 update-sdk:

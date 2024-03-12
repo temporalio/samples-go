@@ -26,7 +26,7 @@ require (
 	go.temporal.io/sdk/contrib/opentelemetry v0.3.0
 	go.temporal.io/sdk/contrib/opentracing v0.1.0
 	go.temporal.io/sdk/contrib/tally v0.2.0
-	go.temporal.io/sdk/contrib/tools/workflowcheck v0.1.1-0.20240311212033-3b9c5726c09f
+	go.temporal.io/sdk/contrib/tools/workflowcheck v0.2.0
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.24.0
 	google.golang.org/protobuf v1.33.0

@@ -325,8 +325,8 @@ go.temporal.io/sdk/contrib/opentracing v0.1.0 h1:z5F1EoZQ6v8bMH/pzcFRgzoPKZCB+ex
 go.temporal.io/sdk/contrib/opentracing v0.1.0/go.mod h1:rQavYHnrTXlFKvKrn5R91eOLdvaJJ27gtxaKFqH3LuM=
 go.temporal.io/sdk/contrib/tally v0.2.0 h1:XnTJIQcjOv+WuCJ1u8Ve2nq+s2H4i/fys34MnWDRrOo=
 go.temporal.io/sdk/contrib/tally v0.2.0/go.mod h1:1kpSuCms/tHeJQDPuuKkaBsMqfHnIIRnCtUYlPNXxuE=
-go.temporal.io/sdk/contrib/tools/workflowcheck v0.1.1-0.20240311212033-3b9c5726c09f h1:doX8aGxuuTCeD2knoAKGyncQWZ35JNaPIU7zU/gchIM=
-go.temporal.io/sdk/contrib/tools/workflowcheck v0.1.1-0.20240311212033-3b9c5726c09f/go.mod h1:/mK6sqmbx/7LDKv5ckBfZCAtqcXK2Epi8bBfUZM1diw=
+go.temporal.io/sdk/contrib/tools/workflowcheck v0.2.0 h1:02qHNFQBrEAp/2ZK+U50ftnoFJNH2V/Ny1+fJSLBRns=
+go.temporal.io/sdk/contrib/tools/workflowcheck v0.2.0/go.mod h1:/mK6sqmbx/7LDKv5ckBfZCAtqcXK2Epi8bBfUZM1diw=
 go.uber.org/atomic v1.4.0/go.mod h1:gD2HeocX3+yG+ygLZcrzQJaqmWj9AIm7n08wl/qW/PE=
 go.uber.org/atomic v1.7.0/go.mod h1:fEN4uk6kAWBTFdckzkM89CLk9XfWZrxpCo0nPH17wJc=
 go.uber.org/atomic v1.9.0/go.mod h1:fEN4uk6kAWBTFdckzkM89CLk9XfWZrxpCo0nPH17wJc=
