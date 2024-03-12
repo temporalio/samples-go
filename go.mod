@@ -26,7 +26,7 @@ require (
 	go.temporal.io/sdk/contrib/opentelemetry v0.3.0
 	go.temporal.io/sdk/contrib/opentracing v0.1.0
 	go.temporal.io/sdk/contrib/tally v0.2.0
-	go.temporal.io/sdk/contrib/tools/workflowcheck v0.0.0-20230612164027-11c2cb9e7d2d
+	go.temporal.io/sdk/contrib/tools/workflowcheck v0.1.1-0.20240311212033-3b9c5726c09f
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.24.0
 	google.golang.org/protobuf v1.33.0
@@ -92,7 +92,7 @@ require (
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
-	golang.org/x/tools v0.16.0 // indirect
+	golang.org/x/tools v0.17.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240304212257-790db918fca8 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240304212257-790db918fca8 // indirect
