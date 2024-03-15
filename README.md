@@ -191,6 +191,9 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 - [**Worker-specific Task Queues**](./worker-specific-task-queues): Use a unique task queue per Worker to have certain Activities only run on that specific Worker. For instance for a file processing Workflow, where one Activity downloads a file and subsequent Activities need to operate on that file. (If multiple Workers were on the same queue, subsequent Activities may get run on different machines that don't have the downloaded file.)
 
+- [**Async activities invocation**](./activities-async): Demonstrates how to invoke two activities in parallel and 
+  return when both of them have completed without blocking between one activity invocation and the following one
+
 ### Scenario based examples
 
 - [**DSL Workflow**](./dsl): Demonstrates how to implement a
@@ -230,7 +233,6 @@ resource waiting its successful completion
 
 Mostly examples we haven't yet ported from https://github.com/temporalio/samples-java/
 
-- Async activity calling: *Example to be completed*
 - Async lambda:  *Example to be completed*
 - Periodic Workflow: Workflow that executes some logic periodically. *Example to be completed*
 - Exception propagation and wrapping: *Example to be completed*
