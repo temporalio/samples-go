@@ -20,7 +20,7 @@ require (
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.24.0
 	go.opentelemetry.io/otel/sdk v1.24.0
 	go.opentelemetry.io/otel/trace v1.24.0
-	go.temporal.io/api v1.30.1
+	go.temporal.io/api v1.29.1
 	go.temporal.io/sdk v1.26.0
 	go.temporal.io/sdk/contrib/datadog v0.2.0
 	go.temporal.io/sdk/contrib/opentelemetry v0.3.0
