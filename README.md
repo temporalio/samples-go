@@ -30,6 +30,9 @@ Each sample demonstrates one feature of the SDK, together with tests.
 - [**Basic mTLS hello world**](./helloworldmtls): Simple example of a
   Workflow Definition and an Activity Definition using mTLS like Temporal Cloud.
 
+- [**Basic async activity execution**](./async-activity/): Simple example of a
+  Workflow Definition starting activities asynchronously.
+
 ### API demonstrations
 
 - **Async activity completion**: Example of
@@ -230,7 +233,6 @@ resource waiting its successful completion
 
 Mostly examples we haven't yet ported from https://github.com/temporalio/samples-java/
 
-- Async activity calling: *Example to be completed*
 - Async lambda:  *Example to be completed*
 - Periodic Workflow: Workflow that executes some logic periodically. *Example to be completed*
 - Exception propagation and wrapping: *Example to be completed*
