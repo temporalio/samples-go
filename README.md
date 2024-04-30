@@ -30,6 +30,8 @@ Each sample demonstrates one feature of the SDK, together with tests.
 - [**Basic mTLS hello world**](./helloworldmtls): Simple example of a
   Workflow Definition and an Activity Definition using mTLS like Temporal Cloud.
 
+- [**Dynamic mTLS hello world**](./dynamicmtls): Simple example showing how to refresh mTLS credentials. This allows for credentials to be refreshed without restarting the worker.
+
 ### API demonstrations
 
 - **Async activity completion**: Example of
