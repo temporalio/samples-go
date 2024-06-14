@@ -1,44 +1,18 @@
-* The sample demonstrates how to deal with multiple signals that can come out of order and require actions
-* if a certain signal not received in a specified time interval.
+# Accumulator
+This sample demonstrates how to accumulate many signals (events) over a time period. 
+This sample implements the Accumulator Pattern: collect many meaningful things that need to be collected and worked on together, such as all payments for an account, or all account updates by account.
+ 
+This sample models robots being created throughout the time period, groups them by what color they are, and greets all the robots of a color at the end.
+ 
+A new workflow is created per grouping. Workflows continue as new as needed.
+A sample activity at the end is given, and you could add an activity to
+process individual events in the processGreeting() method.
 
-This specific sample receives three signals: Signal1, Signal2, Signal3. They have to be processed in the
-sequential order, but they can be received out of order.
-There are two timeouts to enforce.
-The first one is the maximum time between signals.
-The second limits the total time since the first signal received.
+Because Temporal Workflows cannot have an unlimited size, Continue As New is used to process more signals that may come in.
+You could create as many groupings as desired, as Temporal Workflows scale out to many workflows without limit.
 
-A naive implementation of such use case would use a single loop that contains a Selector to listen on three
-signals and a timer. Something like:
+You could vary the time that the workflow waits for other signals, say for a day, or a variable time from first signal with the GetNextTimeout() function.
 
-	for {
-		selector := workflow.NewSelector(ctx)
-		selector.AddReceive(workflow.GetSignalChannel(ctx, "Signal1"), func(c workflow.ReceiveChannel, more bool) {
-			// Process signal1
-		})
-		selector.AddReceive(workflow.GetSignalChannel(ctx, "Signal2"), func(c workflow.ReceiveChannel, more bool) {
-			// Process signal2
-		}
-		selector.AddReceive(workflow.GetSignalChannel(ctx, "Signal3"), func(c workflow.ReceiveChannel, more bool) {
-			// Process signal3
-		}
-		cCtx, cancel := workflow.WithCancel(ctx)
-		timer := workflow.NewTimer(cCtx, timeToNextSignal)
-		selector.AddFuture(timer, func(f workflow.Future) {
-			// Process timeout
-		})
- 		selector.Select(ctx)
-	    cancel()
-      // break out of the loop on certain condition
-	}
-
-The above implementation works. But it quickly becomes pretty convoluted if the number of signals
-and rules around order of their arrivals and timeouts increases.
-
-The following example demonstrates an alternative approach. It receives signals in a separate goroutine.
-Each signal handler just updates a correspondent shared variable with the signal data.
-The main workflow function awaits the next step using `workflow.AwaitWithTimeout` using condition composed of
-the shared variables. This makes the main workflow method free from signal callbacks and makes the business logic
-clear.
 
 ### Steps to run this sample:
 
@@ -46,11 +20,16 @@ clear.
 2) Run the following command to start the worker
 
 ```
-go run await-signals/worker/main.go
+go run accumulator/worker/main.go
 ```
 
 3) Run the following command to start the workflow and send signals in random order
 
 ```
-go run await-signals/starter/main.go
+go run accumulator/starter/main.go
+```
+
+You can always run tests with
+```
+go test accumulator/accumulate_signals_workflow_test.go
 ```

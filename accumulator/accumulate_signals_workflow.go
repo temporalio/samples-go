@@ -4,55 +4,26 @@ import (
 	"fmt"
 	"strconv"
 	"time"
-	
-
-	//"go.temporal.io/sdk/temporal"
-
 	"go.temporal.io/sdk/workflow"
 )
 
 /**
- * The sample demonstrates how to deal with multiple signals that can come out of order and require actions
- * if a certain signal not received in a specified time interval.
- *
- * This specific sample receives three signals: Signal1, Signal2, Signal3. They have to be processed in the
- * sequential order, but they can be received out of order.
- * There are two timeouts to enforce.
- * The first one is the maximum time between signals.
- * The second limits the total time since the first signal received.
- *
- * A naive implementation of such use case would use a single loop that contains a Selector to listen on three
- * signals and a timer. Something like:
-
- *	for {
- *		selector := workflow.NewSelector(ctx)
- *		selector.AddReceive(workflow.GetSignalChannel(ctx, "Signal1"), func(c workflow.ReceiveChannel, more bool) {
- *			// Process signal1
- *		})
- *		selector.AddReceive(workflow.GetSignalChannel(ctx, "Signal2"), func(c workflow.ReceiveChannel, more bool) {
- *			// Process signal2
- *		}
- *		selector.AddReceive(workflow.GetSignalChannel(ctx, "Signal3"), func(c workflow.ReceiveChannel, more bool) {
- *			// Process signal3
- *		}
- *		cCtx, cancel := workflow.WithCancel(ctx)
- *		timer := workflow.NewTimer(cCtx, timeToNextSignal)
- *		selector.AddFuture(timer, func(f workflow.Future) {
- *			// Process timeout
- *		})
- * 		selector.Select(ctx)
- *	    cancel()
- *      // break out of the loop on certain condition
- *	}
- *
- *  The above implementation works. But it quickly becomes pretty convoluted if the number of signals
- *  and rules around order of their arrivals and timeouts increases.
- *
- *  The following example demonstrates an alternative approach. It receives signals in a separate goroutine.
- *  Each signal handler just updates a correspondent shared variable with the signal data.
- *  The main workflow function awaits the next step using `workflow.AwaitWithTimeout` using condition composed of
- *  the shared variables. This makes the main workflow method free from signal callbacks and makes the business logic
- *  clear.
+ * This sample demonstrates how to accumulate many signals (events) over a time period. 
+ * This sample implements the Accumulator Pattern: collect many meaningful things that
+ *   need to be collected and worked on together, such as all payments for an account, or 
+ *   all account updates by account.
+ * This sample models robots being created throughout the time period, 
+ *   groups them by what color they are, and greets all the robots of a color at the end.
+ * 
+ * A new workflow is created per grouping. Workflows continue as new as needed.
+ * A sample activity at the end is given, and you could add an activity to
+ *   process individual events in the processGreeting() method.
+ * 
+ * Because Temporal Workflows cannot have an unlimited size, Continue As New is used 
+ *   to process more signals that may come in.
+ * You could create as many groupings as desired, as Temporal Workflows scale out to many workflows without limit.
+ * You could vary the time that the workflow waits for other signals, say for a day, or a variable time from first 
+ *   signal with the GetNextTimeout() function.
  */
 
 // SignalToSignalTimeout is them maximum time between signals
@@ -67,45 +38,6 @@ type AccumulateGreeting struct {
 	GreetingKey     string
 }
 
-/* todo section
-[x] listen for signals
-[x] add to slice
-[x] take fisrtsignaltime and exitrequested out of the struct
-[x] test exit signal
-[x] signal with start
-[x] starter like java
-[ ] tests like java
-[x] consider checking for multiple messages in the signal wait loop
-[x] "process" each greeting as they come in -- activity? no
-[x] activity to combine all greetings
-[ ] make GetNextTimeout not be a func on the struct
-[ ] fix the extra listen
-[ ] continue as new check and doing it
-[ ] decide to use a separate goroutine function or keep the one you have
-[ ] for fun race vs java
-[ ] update readme
-*/
-
-// Listen to signals - greetings and exit
-func Listen(ctx workflow.Context, a AccumulateGreeting, ExitRequested bool, FirstSignalTime time.Time) {
-	log := workflow.GetLogger(ctx)
-	for {
-		selector := workflow.NewSelector(ctx)
-		selector.AddReceive(workflow.GetSignalChannel(ctx, "greeting"), func(c workflow.ReceiveChannel, more bool) {
-			c.Receive(ctx, &a)
-			log.Info("Signal Received")
-		})
-		selector.AddReceive(workflow.GetSignalChannel(ctx, "exit"), func(c workflow.ReceiveChannel, more bool) {
-			c.Receive(ctx, nil)
-			ExitRequested = true
-			log.Info("Exit Signal Received")
-		})
-		selector.Select(ctx)
-		if FirstSignalTime.IsZero() {
-			FirstSignalTime = workflow.Now(ctx)
-		}
-	}
-}
 
 // GetNextTimeout returns the maximum time allowed to wait for the next signal.
 func (a *AccumulateGreeting) GetNextTimeout(ctx workflow.Context, timeToExit bool, firstSignalTime time.Time ) (time.Duration, error) {
@@ -124,13 +56,16 @@ func (a *AccumulateGreeting) GetNextTimeout(ctx workflow.Context, timeToExit boo
 }
 
 // AccumulateSignalsWorkflow workflow definition
-// func AccumulateSignalsWorkflow(ctx workflow.Context, bucketKey string, greetings []AccumulateGreeting, greetingKeys map[string]bool) (greeting string, err error) {
-func AccumulateSignalsWorkflow(ctx workflow.Context, bucketKey string) (allGreetings string, err error) {
+func AccumulateSignalsWorkflow(ctx workflow.Context, bucketKey string, greetingsCAN []AccumulateGreeting, uniqueGreetingKeysMapCAN map[string]bool) (allGreetings string, err error) {
 	log := workflow.GetLogger(ctx)
 	var a AccumulateGreeting
 	greetings := []AccumulateGreeting{}
+	greetings = append(greetings, greetingsCAN...)
 	unprocessedGreetings := []AccumulateGreeting{}
 	uniqueGreetingKeysMap := make(map[string]bool)
+	for k, v := range uniqueGreetingKeysMapCAN {
+		uniqueGreetingKeysMap[k] = v
+	}
 	var FirstSignalTime time.Time
 	ExitRequested := false
 
@@ -139,27 +74,26 @@ func AccumulateSignalsWorkflow(ctx workflow.Context, bucketKey string) (allGreet
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	printGreetings(greetings)
 	// Listen to signals in a different goroutine
 	workflow.Go(ctx, func(gCtx workflow.Context) {
 		for {
-			log.Info("in workflow.go signals goroutine for{} \n")
+			log.Debug("in workflow.go signals goroutine for{} \n")
 			selector := workflow.NewSelector(gCtx)
 			selector.AddReceive(workflow.GetSignalChannel(gCtx, "greeting"), func(c workflow.ReceiveChannel, more bool) {
 				c.Receive(gCtx, &a)
 				unprocessedGreetings = append(unprocessedGreetings, a)
-				log.Info("Signal Received with text: " + a.GreetingText + ", more: " + strconv.FormatBool(more) + "\n")
-				// initialize a
+				log.Debug("Signal Received with text: " + a.GreetingText + ", more: " + strconv.FormatBool(more) + "\n")
+				
 				a = AccumulateGreeting{} 
 			})
 			selector.AddReceive(workflow.GetSignalChannel(gCtx, "exit"), func(c workflow.ReceiveChannel, more bool) {
 				c.Receive(gCtx, nil)
 				ExitRequested = true
-				log.Info("Exit Signal Received\n")
+				log.Debug("Exit Signal Received\n")
 			})
-			//log.Info("before select, greeting  text: " + a.GreetingText + "\n")
+			log.Debug("before select, greeting  text: " + a.GreetingText + "\n")
 			selector.Select(gCtx)
-			//log.Info("after select, greeting  text: " + a.GreetingText + "\n")
+			log.Debug("after select, greeting  text: " + a.GreetingText + "\n")
 			if FirstSignalTime.IsZero() {
 				FirstSignalTime = workflow.Now(gCtx)
 			}
@@ -176,42 +110,39 @@ func AccumulateSignalsWorkflow(ctx workflow.Context, bucketKey string) (allGreet
 		}
 		if timeout <= 0 {
 			// do final processing? or just check for signal one more time
-			log.Info("no time left for signals, checking one more time\n")
+			log.Debug("No time left for signals, checking one more time\n")
 		}
 
-		printGreetings(greetings)
-		log.Info("Awaiting for " + timeout.String() + "\n")
+		log.Debug("Awaiting for " + timeout.String() + "\n")
 		gotSignalBeforeTimeout, err := workflow.AwaitWithTimeout(ctx, timeout, func() bool {
 			return len(unprocessedGreetings) > 0 || ExitRequested
 		})
-		printGreetings(greetings)
 
-		// timeout
+		// timeout happened without a signal coming in, so let's process the greetings and wrap it up!
 		if len(unprocessedGreetings) == 0 {
-			log.Info("Into final processing, signal received? " + strconv.FormatBool(gotSignalBeforeTimeout)  + ", exit requested: " + strconv.FormatBool(ExitRequested) +"\n")
+			log.Debug("Into final processing, signal received? " + strconv.FormatBool(gotSignalBeforeTimeout)  + ", exit requested: " + strconv.FormatBool(ExitRequested) +"\n")
 			// do final processing
-			//printGreetings(greetings)
 			allGreetings = ""
-			// get token - retryable like normal, it's failure-prone and idempotent
 			err := workflow.ExecuteActivity(ctx, ComposeGreeting, greetings).Get(ctx, &allGreetings)
 			if err != nil {
 				log.Error("ComposeGreeting activity failed.", "Error", err)
 				return allGreetings, err
 			}
+			
 			return allGreetings, nil
 		}
 		
-		// process latest signal
-		// Here is where we can process individual signals as they come in.
-		// It's ok to call activities here.
-		// This also validates an individual greeting:
-		// - check for duplicates
-		// - check for correct bucket 
-
+		/* process latest signal
+		 * Here is where we can process individual signals as they come in.
+		 * It's ok to call activities here.
+		 * This also validates an individual greeting:
+		 * - check for duplicates
+		 * - check for correct bucket 
+		 */
 		for len(unprocessedGreetings) > 0 {
 			ug := unprocessedGreetings[0]
 			unprocessedGreetings = unprocessedGreetings[1:] 
-			//fmt.Printf("greetings slice info for unprocessedGreetings after taking out ug: len=%d cap=%d %v\n", len(unprocessedGreetings), cap(unprocessedGreetings), unprocessedGreetings)
+			
 			if ug.Bucket != bucketKey {
 				log.Warn("Wrong bucket, something is wrong with your signal processing. WF Bucket: [" + bucketKey +"], greeting bucket: [" + ug.Bucket + "]");
 			} else if(uniqueGreetingKeysMap[ug.GreetingKey]) {
@@ -219,14 +150,13 @@ func AccumulateSignalsWorkflow(ctx workflow.Context, bucketKey string) (allGreet
 			} else {
 				uniqueGreetingKeysMap[ug.GreetingKey] = true
 				greetings = append(greetings, ug)
-				//log.Info("Adding Greeting. Key: [" + ug.GreetingKey +"], Text: [" + ug.GreetingText + "]");
 			}
 		}
 		
-		//a = AccumulateGreeting{} 
 	}
 
-	return a.GreetingText, nil
+	log.Debug("Accumulate workflow starting new run with " + strconv.Itoa(len(greetings)) + " greetings.")
+	return "Continued As New.", workflow.NewContinueAsNewError(ctx, AccumulateSignalsWorkflow, bucketKey, greetings, uniqueGreetingKeysMap)
 }
 
 func printGreetings(s []AccumulateGreeting) {
