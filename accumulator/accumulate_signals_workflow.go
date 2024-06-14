@@ -1,7 +1,6 @@
 package accumulator
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 	"go.temporal.io/sdk/workflow"
@@ -157,8 +156,4 @@ func AccumulateSignalsWorkflow(ctx workflow.Context, bucketKey string, greetings
 
 	log.Debug("Accumulate workflow starting new run with " + strconv.Itoa(len(greetings)) + " greetings.")
 	return "Continued As New.", workflow.NewContinueAsNewError(ctx, AccumulateSignalsWorkflow, bucketKey, greetings, uniqueGreetingKeysMap)
-}
-
-func printGreetings(s []AccumulateGreeting) {
-	fmt.Printf("greetings slice info: len=%d cap=%d %v\n", len(s), cap(s), s)
 }
