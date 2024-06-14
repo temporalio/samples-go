@@ -114,7 +114,7 @@ func AccumulateSignalsWorkflow(ctx workflow.Context, bucketKey string, greetings
 		}
 
 		log.Debug("Awaiting for " + timeout.String() + "\n")
-		gotSignalBeforeTimeout, err := workflow.AwaitWithTimeout(ctx, timeout, func() bool {
+		gotSignalBeforeTimeout, _ := workflow.AwaitWithTimeout(ctx, timeout, func() bool {
 			return len(unprocessedGreetings) > 0 || ExitRequested
 		})
 

@@ -43,10 +43,6 @@ func main() {
     workflowId := WorkflowIDPrefix + "-" + bucket;
     buckets := []string{"red", "blue", "green", "yellow"}
     names := []string{"Genghis Khan", "Missy", "Bill", "Ted", "Rufus", "Abe"}
-	workflowOptions := client.StartWorkflowOptions{
-		ID:        workflowId,
-		TaskQueue: TaskQueue,
-	}
 
 	max_signals := 20
 	if triggerContinueAsNewWarning {
@@ -66,11 +62,11 @@ func main() {
 		time.Sleep(20 * time.Millisecond)
 
 		workflowId = WorkflowIDPrefix + "-" + bucket
-		workflowOptions = client.StartWorkflowOptions{
+		workflowOptions := client.StartWorkflowOptions{
 			ID:        workflowId,
 			TaskQueue: TaskQueue,
 		}
-		we, err := c.SignalWithStartWorkflow(context.Background(), workflowId, "greeting", greeting, workflowOptions, accumulator.AccumulateSignalsWorkflow, bucket)
+		we, err := c.SignalWithStartWorkflow(context.Background(), workflowId, "greeting", greeting, workflowOptions, accumulator.AccumulateSignalsWorkflow, bucket, nil, nil)
 		if err != nil {
 			log.Fatalln("Unable to signal with start workflow", err)
 		}
@@ -87,7 +83,7 @@ func main() {
 	bucket = "purple"
     workflowId = WorkflowIDPrefix + "-" + bucket
     
-	workflowOptions = client.StartWorkflowOptions{
+	workflowOptions := client.StartWorkflowOptions{
 		ID:        workflowId,
 		TaskQueue: TaskQueue,
 	}
@@ -98,7 +94,7 @@ func main() {
 	suzieGreeting.GreetingKey = "11235813"
 
 	// start the workflow async and then signal it
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, accumulator.AccumulateSignalsWorkflow, bucket)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, accumulator.AccumulateSignalsWorkflow, bucket, nil, nil)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
@@ -184,10 +180,5 @@ func main() {
 		we.Get(context.Background(), &exitSignalResults)
 		log.Println(we.GetID() + "-" + exitSignalResults + ": execution results: " + exitSignalResults)
       }
-
-
-	
-	return
-
 
 }
