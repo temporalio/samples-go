@@ -16,7 +16,7 @@ Server via the Temporal Go SDK.
 - Or run Temporal Server locally with [VSCode Remote Containers](https://code.visualstudio.com/docs/remote/containers)
   . [![Open in Remote - Containers](https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/temporalio/samples-go)
 - Lastly, you can run Temporal Server locally on your own (follow
-  the [Quick install guide](https://docs.temporal.io/application-development/foundations#run-a-development-cluster)), then clone this repository
+   [these instructions](https://learn.temporal.io/getting_started/go/dev_environment/)), then clone this repository
 
 The [helloworld](./helloworld) sample is a good place to start.
 
@@ -29,6 +29,8 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Basic mTLS hello world**](./helloworldmtls): Simple example of a
   Workflow Definition and an Activity Definition using mTLS like Temporal Cloud.
+
+- [**Dynamic mTLS hello world**](./dynamicmtls): Simple example showing how to refresh mTLS credentials. This allows for credentials to be refreshed without restarting the worker.
 
 ### API demonstrations
 
