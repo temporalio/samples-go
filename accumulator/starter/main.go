@@ -40,7 +40,6 @@ func main() {
 
 	// setup to send signals
     bucket := "blue";
-    workflowId := WorkflowIDPrefix + "-" + bucket;
     buckets := []string{"red", "blue", "green", "yellow"}
     names := []string{"Genghis Khan", "Missy", "Bill", "Ted", "Rufus", "Abe"}
 
@@ -61,7 +60,7 @@ func main() {
 		}
 		time.Sleep(20 * time.Millisecond)
 
-		workflowId = WorkflowIDPrefix + "-" + bucket
+		workflowId := WorkflowIDPrefix + "-" + bucket
 		workflowOptions := client.StartWorkflowOptions{
 			ID:        workflowId,
 			TaskQueue: TaskQueue,
@@ -81,7 +80,7 @@ func main() {
 
 	// now we will try sending a signals near time of workflow exit
 	bucket = "purple"
-    workflowId = WorkflowIDPrefix + "-" + bucket
+    workflowId := WorkflowIDPrefix + "-" + bucket
     
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        workflowId,
