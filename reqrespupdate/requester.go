@@ -33,7 +33,12 @@ func NewRequester(options RequesterOptions) (*Requester, error) {
 // RequestUppercase sends a request and returns a response.
 func (r *Requester) RequestUppercase(ctx context.Context, str string) (string, error) {
 	// Send request and poll on an interval for response
-	handle, err := r.options.Client.UpdateWorkflow(ctx, r.options.TargetWorkflowID, "", UpdateHandler, Request{Input: str})
+	handle, err := r.options.Client.UpdateWorkflow(ctx, client.UpdateWorkflowOptions{
+		WorkflowID:   r.options.TargetWorkflowID,
+		UpdateName:   UpdateHandler,
+		WaitForStage: client.WorkflowUpdateStageCompleted,
+		Args:         []interface{}{Request{Input: str}},
+	})
 	if err != nil {
 		return "", fmt.Errorf("failed updating workflow: %w", err)
 	}
