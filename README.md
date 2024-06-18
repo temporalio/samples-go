@@ -228,17 +228,6 @@ resource waiting its successful completion
 - [**Request/Response with Response Updates**](./reqrespupdate):
   Demonstrates how to accept requests and responsond via updates.
 
-### Pending examples
-
-Mostly examples we haven't yet ported from https://github.com/temporalio/samples-java/
-
-- Async activity calling: *Example to be completed*
-- Async lambda:  *Example to be completed*
-- Periodic Workflow: Workflow that executes some logic periodically. *Example to be completed*
-- Exception propagation and wrapping: *Example to be completed*
-- Polymorphic activity: *Example to be completed*
-- Side Effect:  *Example to be completed* - [Docs](https://docs.temporal.io/application-development/features?lang=go#side-effects)
-
 ### Fixtures
 
 These are edge case examples useful for Temporal internal development and bug
