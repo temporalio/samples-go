@@ -44,7 +44,9 @@ type GreetingsInfo struct {
 	UniqueGreetingKeys map[string]bool
 }
 
-// GetNextTimeout returns the maximum time allowed to wait for the next signal.
+// GetNextTimeout returns the maximum time for a workflow to wait for the next signal.
+// fromFirstSignalTimeout and signalToSignalTimeout can be adjusted to wait for the right amount of time
+// This resets with Continue As New
 func (a *AccumulateGreeting) GetNextTimeout(ctx workflow.Context, timeToExit bool, firstSignalTime time.Time) (time.Duration, error) {
 	if firstSignalTime.IsZero() {
 		firstSignalTime = workflow.Now(ctx)

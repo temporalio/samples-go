@@ -45,7 +45,7 @@ func main() {
 
 	maxSignals := 20
 	if triggerContinueAsNewWarning {
-		maxSignals = 10000
+		maxSignals = 5000
 	}
 
 	for i := 0; i < maxSignals; i++ {
@@ -64,7 +64,7 @@ func main() {
 			GreetingsList:      []accumulator.AccumulateGreeting{},
 			UniqueGreetingKeys: make(map[string]bool),
 		}
-		time.Sleep(20 * time.Millisecond)
+		time.Sleep(5 * time.Millisecond)
 
 		WorkflowID := WorkflowIDPrefix + "-" + bucket
 		workflowOptions := client.StartWorkflowOptions{
