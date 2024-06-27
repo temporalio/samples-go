@@ -308,7 +308,7 @@ func (s *UnitTestSuite) Test_Signal_With_Start_Wait_Too_Short() {
 	s.Contains(result, "Targe Robot")
 }
 
-// test 9: signal with start, send exit, then signal with start, should get two signals
+// test 9: signal with start, send exit, then signal with start, should get one signal
 func (s *UnitTestSuite) Test_Signal_After_Exit() {
 	env := s.NewTestWorkflowEnvironment()
 
