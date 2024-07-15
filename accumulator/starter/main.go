@@ -149,9 +149,11 @@ func main() {
 			log.Fatalln("Unable to signal workflow "+we.GetID(), err)
 		}
 		log.Println(we.GetID() + ": Sent exit")
+		// Signals after this test sending more signals after workflow exit
+		time.Sleep(5 * time.Millisecond)
 	}
 
-	// Test sending more signals after workflow exit
+	
 
 	janeGreeting := new(accumulator.AccumulateGreeting)
 	janeGreeting.GreetingText = "Jane Robot"
@@ -174,7 +176,7 @@ func main() {
 		if err != nil {
 			log.Println("Workflow " + we.GetID() + " not found to signal - this is intentional: " + err.Error())
 		}
-		log.Println("Sent " + badBucketGreeting.GreetingText + " to " + we.GetID())
+		log.Println("Sent invalid bucket signal " + badBucketGreeting.GreetingText + ", " + badBucketGreeting.Bucket + " to " + we.GetID())
 	}
 
 	if testDuplicate {

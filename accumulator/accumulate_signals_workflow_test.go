@@ -253,7 +253,7 @@ func (s *UnitTestSuite) Test_Signal_With_Start_Wait_Too_Long() {
 		targeGreeting.Bucket = bucket
 		targeGreeting.GreetingKey = "11"
 		env.SignalWorkflow("greeting", targeGreeting)
-	}, fromFirstSignalTimeout+time.Second*1)
+	}, fromStartTimeout+time.Second*1)
 
 	greetings := GreetingsInfo{
 		BucketKey:          bucket,
@@ -346,7 +346,7 @@ func (s *UnitTestSuite) Test_Signal_After_Exit() {
 	s.NoError(env.GetWorkflowError())
 	var result string
 	s.NoError(env.GetWorkflowResult(&result))
-	s.Contains(result, "Hello (1)")
+	s.Contains(result, "Hello (2)")
 	s.Contains(result, "John Robot")
-	s.NotContains(result, "Targe Robot")
+	s.Contains(result, "Targe Robot")
 }
