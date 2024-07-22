@@ -34,8 +34,10 @@ func main() {
 
 	// First, let's make the task queue use the build id versioning feature by adding an initial
 	// default version to the queue:
+	//lint:ignore SA1019 sample will be updated in the near future.
 	err = c.UpdateWorkerBuildIdCompatibility(ctx, &client.UpdateWorkerBuildIdCompatibilityOptions{
 		TaskQueue: taskQueue,
+		//lint:ignore SA1019 sample will be updated in the near future.
 		Operation: &client.BuildIDOpAddNewIDInNewDefaultSet{
 			BuildID: "1.0",
 		},
@@ -70,8 +72,10 @@ func main() {
 	time.Sleep(5 * time.Second)
 
 	// Now, let's update the task queue with a new compatible version:
+	//lint:ignore SA1019 sample will be updated in the near future.
 	err = c.UpdateWorkerBuildIdCompatibility(ctx, &client.UpdateWorkerBuildIdCompatibilityOptions{
 		TaskQueue: taskQueue,
+		//lint:ignore SA1019 sample will be updated in the near future.
 		Operation: &client.BuildIDOpAddNewCompatibleVersion{
 			BuildID:                   "1.1",
 			ExistingCompatibleBuildID: "1.0",
@@ -94,8 +98,10 @@ func main() {
 
 	// Add a new *incompatible* version to the task queue, which will become the new overall default
 	// for the queue.
+	//lint:ignore SA1019 sample will be updated in the near future.
 	err = c.UpdateWorkerBuildIdCompatibility(ctx, &client.UpdateWorkerBuildIdCompatibilityOptions{
 		TaskQueue: taskQueue,
+		//lint:ignore SA1019 sample will be updated in the near future.
 		Operation: &client.BuildIDOpAddNewIDInNewDefaultSet{
 			BuildID: "2.0",
 		},

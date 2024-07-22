@@ -24,6 +24,7 @@ func (s *UnitTestSuite) Test_ScheduleWorkflow() {
 	env.RegisterWorkflow(SampleScheduleWorkflow)
 	env.RegisterActivity(DoSomething)
 
+	//lint:ignore SA1019 sample will be updated in the near future.
 	err := env.SetSearchAttributesOnStart(map[string]interface{}{
 		"TemporalScheduledById":      "schedule_test_ID",
 		"TemporalScheduledStartTime": time.Now(),
