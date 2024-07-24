@@ -1,14 +1,38 @@
-# nexus-hello-api
+# nexus
+
+Nexus RPC is an open-source service framework for arbitrary-length operations whose lifetime may extend beyond a
+traditional RPC. It is an underpinning connecting durable executions within and across namespaces, clusters and regions
+– with an API contract designed with multi-team collaboration in mind. A service can be exposed as a set of sync or
+async Nexus operations – the latter provides an operation identifier and a uniform interface to get the status of an
+operation or its result, receive a completion callback, or cancel the operation.
+
+Temporal uses the Nexus RPC protocol to allow calling across namespace and cluster boundaries. The [Go SDK Nexus
+proposal](https://github.com/temporalio/proposals/blob/master/nexus/sdk-go.md) explains the user experience and shows
+sequence diagrams.
+
+This sample shows how to use Temporal for authoring a Nexus service and call it from a workflow.
+
+### Sample directory structure
+
+- [service](./service) - shared service defintion
+- [caller](./caller) - caller workflows, worker, and starter
+- [handler](./handler) - handler workflow, operations, and worker
+- [options](./options) - command line argument parsing utility
 
 ## Getting started locally
 
-### Get `temporal` CLI v0.14.0-nexus.0 to enable local development
+### Get `temporal` CLI `v0.14.0-nexus.0` to enable local development
 
 ```
 curl -sSf https://temporal.download/cli.sh | sh -s -- --version v0.14.0-nexus.0 --dir .
 
 ./bin/temporal --version
 ```
+
+-- OR --
+
+Alteratively, go to the [CLI release page](https://github.com/temporalio/cli/releases/tag/v0.14.0-nexus.0) and download
+an artifact for your OS and architecture.
 
 ### Spin up environment
 

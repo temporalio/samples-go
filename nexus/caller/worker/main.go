@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/temporalio/samples-go/nexus/caller/app"
+	"github.com/temporalio/samples-go/nexus/caller"
 	"github.com/temporalio/samples-go/nexus/options"
 
 	"go.temporal.io/sdk/client"
@@ -23,10 +23,10 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, app.TaskQueue, worker.Options{})
+	w := worker.New(c, caller.TaskQueue, worker.Options{})
 
-	w.RegisterWorkflow(app.EchoCallerWorkflow)
-	w.RegisterWorkflow(app.HelloCallerWorkflow)
+	w.RegisterWorkflow(caller.EchoCallerWorkflow)
+	w.RegisterWorkflow(caller.HelloCallerWorkflow)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

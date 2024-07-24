@@ -1,4 +1,4 @@
-package app
+package caller
 
 import (
 	"github.com/temporalio/samples-go/nexus/service"

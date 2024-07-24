@@ -8,7 +8,7 @@ import (
 	"go.temporal.io/sdk/worker"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
-	"github.com/temporalio/samples-go/nexus/handler/app"
+	"github.com/temporalio/samples-go/nexus/handler"
 	"github.com/temporalio/samples-go/nexus/options"
 	"github.com/temporalio/samples-go/nexus/service"
 )
@@ -31,16 +31,12 @@ func main() {
 
 	w := worker.New(c, taskQueue, worker.Options{})
 	service := nexus.NewService(service.HelloServiceName)
-	err = service.Register(app.EchoOperation)
+	err = service.Register(handler.EchoOperation, handler.HelloOperation)
 	if err != nil {
-		log.Fatalln("Unable to register operation", err)
-	}
-	err = service.Register(app.HelloOperation)
-	if err != nil {
-		log.Fatalln("Unable to register operation", err)
+		log.Fatalln("Unable to register operations", err)
 	}
 	w.RegisterNexusService(service)
-	w.RegisterWorkflow(app.HelloHandlerWorkflow)
+	w.RegisterWorkflow(handler.HelloHandlerWorkflow)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
