@@ -52,7 +52,7 @@ In a separate terminal window
 
 ```
 ./bin/temporal operator nexus endpoint create \
-  --name my_nexus_endpoint_name \
+  --name my-nexus-endpoint-name \
   --target-namespace my-target-namespace \
   --target-task-queue my-handler-task-queue \
   --description-file ./service/description.md

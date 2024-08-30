@@ -7,7 +7,7 @@ import (
 
 const (
 	TaskQueue    = "my-caller-workflow-task-queue"
-	endpointName = "my_nexus_endpoint_name"
+	endpointName = "my-nexus-endpoint-name"
 )
 
 func EchoCallerWorkflow(ctx workflow.Context, message string) (string, error) {
