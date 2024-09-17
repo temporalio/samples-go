@@ -36,7 +36,7 @@ staticcheck:
 
 errcheck:
 	@printf $(COLOR) "Run error check..."
-	@GO111MODULE=off go get -u github.com/kisielk/errcheck
+	@go install github.com/kisielk/errcheck@latest
 	@errcheck ./...
 
 workflowcheck:
