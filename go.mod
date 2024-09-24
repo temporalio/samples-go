@@ -100,5 +100,3 @@ require (
 	google.golang.org/grpc v1.65.0 // indirect
 	inet.af/netaddr v0.0.0-20230525184311-b8eac61e914a // indirect
 )
-
-replace go.temporal.io/sdk/contrib/tools/workflowcheck => ../sdk-go/contrib/tools/workflowcheck
