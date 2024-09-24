@@ -59,6 +59,7 @@ func (s *UnitTestSuite) Test_Workflow() {
 		env.RegisterDelayedCallback(func() {
 			env.UpdateWorkflow(AssignNodesToJobs, fmt.Sprintf("TestUpdateID-%d", i), &updateCallback{
 				complete: func(response interface{}, err error) {
+					s.NoError(err)
 					r := response.(ClusterManagerAssignNodesToJobResult)
 					s.Equal(len(r.NodesAssigned), 2)
 					env.RegisterDelayedCallback(func() {
@@ -99,11 +100,12 @@ func (s *UnitTestSuite) Test_UpdateFailure() {
 	env.RegisterDelayedCallback(func() {
 		env.UpdateWorkflow(AssignNodesToJobs, "TestUpdateID", &updateCallback{
 			complete: func(response interface{}, err error) {
+				s.NoError(err)
 				env.RegisterDelayedCallback(func() {
 					env.UpdateWorkflow(AssignNodesToJobs, "TestUpdateID2", &updateCallback{
 						complete: func(response interface{}, err error) {
 							s.Error(err)
-							s.Contains(err.Error(), "cannot assign 3 nodes; have only 1 available")
+							s.Contains(err.Error(), "not enough nodes to assign to job")
 						},
 					}, ClusterManagerAssignNodesToJobInput{
 						JobName:       "little-task",

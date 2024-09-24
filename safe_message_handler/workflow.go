@@ -87,7 +87,7 @@ func newClusterManager(ctx workflow.Context, wfInput ClusterManagerInput) (*Clus
 	shutdownCh := workflow.GetSignalChannel(ctx, ShutdownCluster)
 
 	state.Nodes = make(map[string]string)
-	for i := range 6 {
+	for i := range 25 {
 		state.Nodes[fmt.Sprint(i)] = ""
 	}
 
@@ -116,8 +116,8 @@ func newClusterManager(ctx workflow.Context, wfInput ClusterManagerInput) (*Clus
 
 func (cm *ClusterManager) badNodes() map[string]struct{} {
 	badNodes := make(map[string]struct{})
-	for k, v := range cm.state.Nodes {
-		if v == "BAD!" {
+	for _, k := range workflow.DeterministicKeys(cm.state.Nodes) {
+		if cm.state.Nodes[k] == "BAD!" {
 			badNodes[k] = struct{}{}
 		}
 	}
@@ -200,8 +200,8 @@ func (cm *ClusterManager) DeleteJob(ctx workflow.Context, input ClusterManagerDe
 	defer cm.nodeLock.Unlock()
 
 	nodesToUnassign := make([]string, 0)
-	for k, v := range cm.state.Nodes {
-		if v == input.JobName {
+	for _, k := range workflow.DeterministicKeys(cm.state.Nodes) {
+		if cm.state.Nodes[k] == input.JobName {
 			nodesToUnassign = append(nodesToUnassign, k)
 		}
 	}
@@ -223,8 +223,8 @@ func (cm *ClusterManager) DeleteJob(ctx workflow.Context, input ClusterManagerDe
 
 func (cm *ClusterManager) getUnassignedNodes() []string {
 	var unassignedNodes []string
-	for k, v := range cm.state.Nodes {
-		if v == "" {
+	for _, k := range workflow.DeterministicKeys(cm.state.Nodes) {
+		if cm.state.Nodes[k] == "" {
 			unassignedNodes = append(unassignedNodes, k)
 		}
 	}
@@ -252,7 +252,7 @@ func (cm *ClusterManager) performHealthCheck(ctx workflow.Context) {
 	if err != nil {
 		cm.logger.Error("Health check failed", "error", err)
 	}
-	for node := range badNodes {
+	for _, node := range workflow.DeterministicKeys(badNodes) {
 		cm.state.Nodes[node] = "BAD!"
 	}
 }
@@ -260,14 +260,14 @@ func (cm *ClusterManager) performHealthCheck(ctx workflow.Context) {
 func (cm *ClusterManager) getAssignedNodes(jobName *string) map[string]struct{} {
 	assignedNodes := make(map[string]struct{})
 	if jobName != nil {
-		for k, v := range cm.state.Nodes {
-			if v == *jobName {
+		for _, k := range workflow.DeterministicKeys(cm.state.Nodes) {
+			if cm.state.Nodes[k] == *jobName {
 				assignedNodes[k] = struct{}{}
 			}
 		}
 	} else {
-		for k, v := range cm.state.Nodes {
-			if v != "BAD!" {
+		for _, k := range workflow.DeterministicKeys(cm.state.Nodes) {
+			if cm.state.Nodes[k] != "BAD!" {
 				assignedNodes[k] = struct{}{}
 			}
 		}
