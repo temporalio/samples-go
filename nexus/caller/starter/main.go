@@ -1,3 +1,4 @@
+// @@@SNIPSTART startercaller-nexus
 package main
 
 import (
@@ -48,3 +49,4 @@ func runWorkflow(c client.Client, workflow interface{}, args ...interface{}) {
 	}
 	log.Println("Workflow result:", result)
 }
+// @@@SNIPEND

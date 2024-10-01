@@ -1,3 +1,4 @@
+// @@@SNIPSTART service-nexus
 package service
 
 const HelloServiceName = "my-hello-service"
@@ -32,3 +33,4 @@ type HelloInput struct {
 type HelloOutput struct {
 	Message string
 }
+// @@@SNIPEND
