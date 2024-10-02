@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-nexus-handler-worker
 package main
 
 import (
@@ -43,3 +44,4 @@ func main() {
 		log.Fatalln("Unable to start worker", err)
 	}
 }
+// @@@SNIPEND

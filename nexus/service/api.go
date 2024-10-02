@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-nexus-service
 package service
 
 const HelloServiceName = "my-hello-service"
@@ -32,3 +33,4 @@ type HelloInput struct {
 type HelloOutput struct {
 	Message string
 }
+// @@@SNIPEND

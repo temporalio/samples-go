@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-nexus-cli
 package options
 
 import (
@@ -71,3 +72,4 @@ func ParseClientOptionFlags(args []string) (client.Options, error) {
 		ConnectionOptions: connectionOptions,
 	}, nil
 }
+// @@@SNIPEND

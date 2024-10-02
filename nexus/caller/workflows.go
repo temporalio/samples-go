@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-nexus-caller-workflow
 package caller
 
 import (
@@ -41,3 +42,4 @@ func HelloCallerWorkflow(ctx workflow.Context, name string, language service.Lan
 
 	return res.Message, nil
 }
+// @@@SNIPEND
