@@ -14,8 +14,8 @@ const (
 )
 
 var (
-	activityTimeout = 2 * time.Second
-	updateTimeout   = 5 * time.Second
+	activityTimeout    = 2 * time.Second
+	earlyReturnTimeout = 5 * time.Second
 )
 
 // Workflow processes a transaction in two phases. First, the transaction is initialized, and if successful,
@@ -35,7 +35,7 @@ func Workflow(ctx workflow.Context, transactionId, fromAccount, toAccount string
 		UpdateName,
 		func(ctx workflow.Context) error {
 			condition := func() bool { return initDone }
-			if completed, err := workflow.AwaitWithTimeout(ctx, updateTimeout, condition); err != nil {
+			if completed, err := workflow.AwaitWithTimeout(ctx, earlyReturnTimeout, condition); err != nil {
 				return fmt.Errorf("update cancelled: %w", err)
 			} else if !completed {
 				return errors.New("update timed out")
