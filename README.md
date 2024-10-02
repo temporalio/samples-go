@@ -197,6 +197,8 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 ### Scenario based examples
 
+- [**Safe Message Handler**](./safe_message_handler): This demonstrates how to safely handle concurrent update and signal requests.
+
 - [**DSL Workflow**](./dsl): Demonstrates how to implement a
   DSL-based Workflow. This sample contains 2 yaml files that each define a custom "workflow" which instructs the
   Temporal Workflow. This is useful if you want to build in a "low code" layer.
