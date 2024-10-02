@@ -1,4 +1,4 @@
-// @@@SNIPSTART startercaller-nexus
+// @@@SNIPSTART samples-go-nexus-caller-starter
 package main
 
 import (

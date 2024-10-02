@@ -1,4 +1,4 @@
-// @@@SNIPSTART service-nexus
+// @@@SNIPSTART samples-go-nexus-service
 package service
 
 const HelloServiceName = "my-hello-service"

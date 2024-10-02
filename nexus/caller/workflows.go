@@ -1,4 +1,4 @@
-// @@@SNIPSTART workflowcaller-nexus
+// @@@SNIPSTART samples-go-nexus-caller-workflow
 package caller
 
 import (

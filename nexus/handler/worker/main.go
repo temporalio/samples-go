@@ -1,4 +1,4 @@
-// @@@SNIPSTART workerhandler-nexus
+// @@@SNIPSTART samples-go-nexus-handler-worker
 package main
 
 import (

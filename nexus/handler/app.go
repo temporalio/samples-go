@@ -1,4 +1,4 @@
-// @@@SNIPSTART handler-nexus
+// @@@SNIPSTART samples-go-nexus-handler
 package handler
 
 import (

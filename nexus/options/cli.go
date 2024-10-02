@@ -1,4 +1,4 @@
-// @@@SNIPSTART cli-nexus
+// @@@SNIPSTART samples-go-nexus-cli
 package options
 
 import (
