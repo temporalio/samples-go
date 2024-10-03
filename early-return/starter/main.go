@@ -50,7 +50,7 @@ func main() {
 		log.Fatalln("Error obtaining update result:", err)
 	}
 
-	log.Println("Transaction completed successfully")
+	log.Println("Transaction initialized successfully")
 
 	// The workflow will continue running, either completing or cancelling the transaction.
 }
