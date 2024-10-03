@@ -3,6 +3,7 @@ package earlyreturn
 import (
 	"context"
 	"errors"
+	"time"
 
 	"go.temporal.io/sdk/activity"
 )
@@ -24,10 +25,12 @@ func InitTransaction(ctx context.Context, tx Transaction) error {
 
 func CancelTransaction(ctx context.Context, tx Transaction) {
 	logger := activity.GetLogger(ctx)
+	time.Sleep(1 * time.Second)
 	logger.Info("Transaction cancelled")
 }
 
 func CompleteTransaction(ctx context.Context, tx Transaction) {
 	logger := activity.GetLogger(ctx)
+	time.Sleep(1 * time.Second)
 	logger.Info("Transaction completed")
 }
