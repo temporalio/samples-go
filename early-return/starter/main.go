@@ -26,13 +26,13 @@ func main() {
 			WaitForStage: client.WorkflowUpdateStageCompleted,
 		})
 
-	txId := uuid.New()
+	tx := earlyreturn.Transaction{ID: uuid.New(), FromAccount: "Bob", ToAccount: "Alice", Amount: 100.0}
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                 "early-return-workflow-ID-" + txId,
+		ID:                 "early-return-workflow-ID-" + tx.ID,
 		TaskQueue:          earlyreturn.TaskQueueName,
 		WithStartOperation: updateOperation,
 	}
-	we, err := c.ExecuteWorkflow(ctxWithTimeout, workflowOptions, earlyreturn.Workflow, txId, "bob", "alice", 100.0)
+	we, err := c.ExecuteWorkflow(ctxWithTimeout, workflowOptions, earlyreturn.Workflow, tx)
 	if err != nil {
 		log.Fatalln("Error executing workflow:", err)
 	}

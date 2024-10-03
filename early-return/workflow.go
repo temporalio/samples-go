@@ -18,6 +18,13 @@ var (
 	earlyReturnTimeout = 5 * time.Second
 )
 
+type Transaction struct {
+	ID          string
+	FromAccount string
+	ToAccount   string
+	Amount      float64
+}
+
 // Workflow processes a transaction in two phases. First, the transaction is initialized, and if successful,
 // it proceeds to completion. However, if initialization fails - due to validation errors or transient
 // issues (e.g., network connectivity problems) - the transaction is cancelled.
@@ -25,7 +32,7 @@ var (
 // By utilizing Update-with-Start, the client can initiate the workflow and immediately receive the result of
 // the initialization in a single round trip, even before the transaction processing completes. The remainder
 // of the transaction is then processed asynchronously.
-func Workflow(ctx workflow.Context, transactionId, fromAccount, toAccount string, amount float64) error {
+func Workflow(ctx workflow.Context, tx Transaction) error {
 	var initErr error
 	var initDone bool
 	logger := workflow.GetLogger(ctx)
@@ -54,9 +61,7 @@ func Workflow(ctx workflow.Context, transactionId, fromAccount, toAccount string
 	activityOptions := workflow.WithLocalActivityOptions(ctx, workflow.LocalActivityOptions{
 		ScheduleToCloseTimeout: activityTimeout,
 	})
-	initErr = workflow.ExecuteLocalActivity(
-		activityOptions, InitTransaction, transactionId, fromAccount, toAccount, amount,
-	).Get(ctx, nil)
+	initErr = workflow.ExecuteLocalActivity(activityOptions, InitTransaction, tx).Get(ctx, nil)
 	initDone = true
 
 	// Phase 2: Complete or cancel the transaction asychronously.
@@ -67,11 +72,11 @@ func Workflow(ctx workflow.Context, transactionId, fromAccount, toAccount string
 		logger.Info("cancelling transaction due to error: %v", initErr)
 
 		// Transaction failed to be initialized or not quickly enough; cancel the transaction.
-		return workflow.ExecuteActivity(activityCtx, CancelTransaction, transactionId).Get(ctx, nil)
+		return workflow.ExecuteActivity(activityCtx, CancelTransaction, tx).Get(ctx, nil)
 	}
 
 	logger.Info("completing transaction")
 
 	// Transaction was initialized successfully; complete the transaction.
-	return workflow.ExecuteActivity(activityCtx, CompleteTransaction, transactionId).Get(ctx, nil)
+	return workflow.ExecuteActivity(activityCtx, CompleteTransaction, tx).Get(ctx, nil)
 }
