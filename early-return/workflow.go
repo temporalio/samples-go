@@ -9,11 +9,8 @@ import (
 )
 
 const (
-	UpdateName    = "early-return"
-	TaskQueueName = "early-return-tq"
-)
-
-var (
+	UpdateName         = "early-return"
+	TaskQueueName      = "early-return-tq"
 	activityTimeout    = 2 * time.Second
 	earlyReturnTimeout = 5 * time.Second
 )
