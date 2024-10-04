@@ -21,7 +21,7 @@ func Test_CompleteTransaction(t *testing.T) {
 	uc := &updateCallback{}
 	env.RegisterDelayedCallback(func() {
 		env.UpdateWorkflow(UpdateName, uuid.New(), uc)
-	}, 0)
+	}, 0) // NOTE: zero delay ensures Update is delivered in first workflow task
 	env.ExecuteWorkflow(Workflow, tx)
 
 	require.True(t, env.IsWorkflowCompleted())
