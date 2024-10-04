@@ -1,25 +1,28 @@
 package earlyreturn
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
 
+	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/workflow"
 )
 
 const (
-	UpdateName         = "early-return"
-	TaskQueueName      = "early-return-tq"
-	activityTimeout    = 2 * time.Second
-	earlyReturnTimeout = 5 * time.Second
+	UpdateName    = "early-return"
+	TaskQueueName = "early-return-tq"
 )
 
 type Transaction struct {
-	ID          string
-	FromAccount string
-	ToAccount   string
-	Amount      float64
+	ID            string
+	SourceAccount string
+	TargetAccount string
+	Amount        int // in cents
+
+	initErr  error
+	initDone bool
 }
 
 // Workflow processes a transaction in two phases. First, the transaction is initialized, and if successful,
@@ -30,22 +33,12 @@ type Transaction struct {
 // the initialization in a single round trip, even before the transaction processing completes. The remainder
 // of the transaction is then processed asynchronously.
 func Workflow(ctx workflow.Context, tx Transaction) error {
-	var initErr error
-	var initDone bool
 	logger := workflow.GetLogger(ctx)
 
 	if err := workflow.SetUpdateHandler(
 		ctx,
 		UpdateName,
-		func(ctx workflow.Context) error {
-			condition := func() bool { return initDone }
-			if completed, err := workflow.AwaitWithTimeout(ctx, earlyReturnTimeout, condition); err != nil {
-				return fmt.Errorf("update cancelled: %w", err)
-			} else if !completed {
-				return errors.New("update timed out")
-			}
-			return initErr
-		},
+		tx.ReturnInitResult,
 	); err != nil {
 		return err
 	}
@@ -56,24 +49,64 @@ func Workflow(ctx workflow.Context, tx Transaction) error {
 	// See https://docs.temporal.io/activities#local-activity for more details.
 
 	activityOptions := workflow.WithLocalActivityOptions(ctx, workflow.LocalActivityOptions{
-		ScheduleToCloseTimeout: activityTimeout,
+		ScheduleToCloseTimeout: 10 * time.Second,
 	})
-	initErr = workflow.ExecuteLocalActivity(activityOptions, InitTransaction, tx).Get(ctx, nil)
-	initDone = true
+	tx.initErr = workflow.ExecuteLocalActivity(activityOptions, tx.InitTransaction).Get(ctx, nil)
+	tx.initDone = true
 
 	// Phase 2: Complete or cancel the transaction asychronously.
+
 	activityCtx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
-		StartToCloseTimeout: 10 * time.Second,
+		StartToCloseTimeout: 30 * time.Second,
 	})
-	if initErr != nil {
-		logger.Info("cancelling transaction due to error: %v", initErr)
+	if tx.initErr != nil {
+		logger.Error(fmt.Sprintf("cancelling transaction due to init error: %v", tx.initErr))
 
 		// Transaction failed to be initialized or not quickly enough; cancel the transaction.
-		return workflow.ExecuteActivity(activityCtx, CancelTransaction, tx).Get(ctx, nil)
+		if err := workflow.ExecuteActivity(activityCtx, tx.CancelTransaction).Get(ctx, nil); err != nil {
+			return fmt.Errorf("cancelling the transaction failed: %w", err)
+		}
+
+		return tx.initErr
 	}
 
 	logger.Info("completing transaction")
 
 	// Transaction was initialized successfully; complete the transaction.
-	return workflow.ExecuteActivity(activityCtx, CompleteTransaction, tx).Get(ctx, nil)
+	if err := workflow.ExecuteActivity(activityCtx, tx.CompleteTransaction).Get(ctx, nil); err != nil {
+		return fmt.Errorf("completing the transaction failed: %w", err)
+	}
+
+	return nil
+}
+
+func (tx *Transaction) ReturnInitResult(ctx workflow.Context) error {
+	if err := workflow.Await(ctx, func() bool { return tx.initDone }); err != nil {
+		return fmt.Errorf("transaction init cancelled: %w", err)
+	}
+	return tx.initErr
+}
+
+func (tx *Transaction) InitTransaction(ctx context.Context) error {
+	logger := activity.GetLogger(ctx)
+	if tx.Amount <= 0 {
+		return errors.New("invalid Amount")
+	}
+	time.Sleep(500 * time.Millisecond)
+	logger.Info("Transaction initialized")
+	return nil
+}
+
+func (tx *Transaction) CancelTransaction(ctx context.Context) error {
+	logger := activity.GetLogger(ctx)
+	time.Sleep(1 * time.Second)
+	logger.Info("Transaction cancelled")
+	return nil
+}
+
+func (tx *Transaction) CompleteTransaction(ctx context.Context) error {
+	logger := activity.GetLogger(ctx)
+	time.Sleep(1 * time.Second)
+	logger.Info("Transaction completed")
+	return nil
 }

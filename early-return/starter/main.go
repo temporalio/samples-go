@@ -26,7 +26,7 @@ func main() {
 			WaitForStage: client.WorkflowUpdateStageCompleted,
 		})
 
-	tx := earlyreturn.Transaction{ID: uuid.New(), FromAccount: "Bob", ToAccount: "Alice", Amount: 100.0}
+	tx := earlyreturn.Transaction{ID: uuid.New(), SourceAccount: "Bob", TargetAccount: "Alice", Amount: 100}
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                 "early-return-workflow-ID-" + tx.ID,
 		TaskQueue:          earlyreturn.TaskQueueName,
@@ -46,11 +46,12 @@ func main() {
 
 	err = updateHandle.Get(ctxWithTimeout, nil)
 	if err != nil {
+		// The workflow will continue running, cancelling the transaction.
+
 		// NOTE: If the error is retryable, a retry attempt must use a unique workflow ID.
 		log.Fatalln("Error obtaining update result:", err)
 	}
 
 	log.Println("Transaction initialized successfully")
-
-	// The workflow will continue running, either completing or cancelling the transaction.
+	// The workflow will continue running, completing the transaction.
 }
