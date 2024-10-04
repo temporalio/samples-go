@@ -1,3 +1,4 @@
+// @@@SNIPSTART samples-go-nexus-handler
 package handler
 
 import (
@@ -48,3 +49,4 @@ func HelloHandlerWorkflow(_ workflow.Context, input service.HelloInput) (service
 	}
 	return service.HelloOutput{}, fmt.Errorf("unsupported language %q", input.Language)
 }
+// @@@SNIPEND
