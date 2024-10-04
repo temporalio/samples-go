@@ -230,6 +230,9 @@ resource waiting its successful completion
 - [**Request/Response with Response Updates**](./reqrespupdate):
   Demonstrates how to accept requests and responsond via updates.
 
+- [**Early-Return**](./early-return):
+  Demonstrates how to receive a response mid-workflow, while the workflow continues to run to completion.
+
 ### Pending examples
 
 Mostly examples we haven't yet ported from https://github.com/temporalio/samples-java/
