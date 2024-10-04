@@ -33,12 +33,16 @@ type Transaction struct {
 // the initialization in a single round trip, even before the transaction processing completes. The remainder
 // of the transaction is then processed asynchronously.
 func Workflow(ctx workflow.Context, tx Transaction) error {
+	return run(ctx, tx)
+}
+
+func run(ctx workflow.Context, tx Transaction) error {
 	logger := workflow.GetLogger(ctx)
 
 	if err := workflow.SetUpdateHandler(
 		ctx,
 		UpdateName,
-		tx.ReturnInitResult,
+		tx.returnInitResult,
 	); err != nil {
 		return err
 	}
@@ -80,7 +84,7 @@ func Workflow(ctx workflow.Context, tx Transaction) error {
 	return nil
 }
 
-func (tx *Transaction) ReturnInitResult(ctx workflow.Context) error {
+func (tx *Transaction) returnInitResult(ctx workflow.Context) error {
 	if err := workflow.Await(ctx, func() bool { return tx.initDone }); err != nil {
 		return fmt.Errorf("transaction init cancelled: %w", err)
 	}
