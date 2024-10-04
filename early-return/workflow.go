@@ -49,7 +49,7 @@ func Workflow(ctx workflow.Context, tx Transaction) error {
 	// See https://docs.temporal.io/activities#local-activity for more details.
 
 	activityOptions := workflow.WithLocalActivityOptions(ctx, workflow.LocalActivityOptions{
-		ScheduleToCloseTimeout: 10 * time.Second,
+		ScheduleToCloseTimeout: 5 * time.Second, // short timeout to avoid another Workflow Task being scheduled
 	})
 	tx.initErr = workflow.ExecuteLocalActivity(activityOptions, tx.InitTransaction).Get(ctx, nil)
 	tx.initDone = true
