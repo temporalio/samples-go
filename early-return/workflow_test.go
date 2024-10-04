@@ -90,7 +90,6 @@ func Test_CancelTransaction_Fails(t *testing.T) {
 }
 
 type updateCallback struct {
-	complete    func(any, error)
 	completeErr error
 }
 
