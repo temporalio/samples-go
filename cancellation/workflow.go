@@ -2,7 +2,6 @@ package cancellation
 
 import (
 	"errors"
-	"fmt"
 	"go.temporal.io/sdk/workflow"
 	"time"
 )
@@ -26,21 +25,25 @@ func YourWorkflow(ctx workflow.Context) error {
 		}
 
 		// When the Workflow is canceled, it has to get a new disconnected context to execute any Activities
+		// Specify activity options for cleanup activity
+		aoCleanup := workflow.ActivityOptions{
+			StartToCloseTimeout: 2 * time.Second,
+		}
 		newCtx, _ := workflow.NewDisconnectedContext(ctx)
+		newCtx = workflow.WithActivityOptions(newCtx, aoCleanup)
 		err := workflow.ExecuteActivity(newCtx, a.CleanupActivity).Get(ctx, nil)
 		if err != nil {
 			logger.Error("CleanupActivity failed", "Error", err)
 		}
+
 	}()
 
 	var result string
 	err := workflow.ExecuteActivity(ctx, a.ActivityToBeCanceled).Get(ctx, &result)
-	logger.Info(fmt.Sprintf("ActivityToBeCanceled returns %v, %v", result, err))
-
-	err = workflow.ExecuteActivity(ctx, a.ActivityToBeSkipped).Get(ctx, nil)
-	logger.Error("Error from ActivityToBeSkipped", "Error", err)
+	if err != nil {
+		return err
+	}
 
 	logger.Info("Workflow Execution complete.")
-
 	return nil
 }
