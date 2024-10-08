@@ -15,6 +15,7 @@ func Test_Workflow(t *testing.T) {
 	env.RegisterActivity(ListExecutions)
 
 	// mock search attributes on start
+	//lint:ignore SA1019 typed alternative available, leaving this for reference
 	_ = env.SetSearchAttributesOnStart(map[string]interface{}{"CustomIntField": 1})
 
 	// mock upsert operations
@@ -26,11 +27,13 @@ func Test_Workflow(t *testing.T) {
 		"CustomDatetimeField": env.Now().UTC(),
 		"CustomStringField":   "String field is for text. When query, it will be tokenized for partial match. StringTypeField cannot be used in Order By",
 	}
+	//lint:ignore SA1019 typed alternative available, leaving this for reference
 	env.OnUpsertSearchAttributes(attributes).Return(nil).Once()
 
 	attributes = map[string]interface{}{
 		"CustomKeywordField": "Update2",
 	}
+	//lint:ignore SA1019 typed alternative available, leaving this for reference
 	env.OnUpsertSearchAttributes(attributes).Return(nil).Once()
 
 	// mock activity

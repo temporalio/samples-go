@@ -196,7 +196,11 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 - [**Worker-specific Task Queues**](./worker-specific-task-queues): Use a unique task queue per Worker to have certain Activities only run on that specific Worker. For instance for a file processing Workflow, where one Activity downloads a file and subsequent Activities need to operate on that file. (If multiple Workers were on the same queue, subsequent Activities may get run on different machines that don't have the downloaded file.)
 
+- [**Nexus**](./nexus): Demonstrates how to use the Nexus APIs to facilitate cross namespace calls.
+
 ### Scenario based examples
+
+- [**Safe Message Handler**](./safe_message_handler): This demonstrates how to safely handle concurrent update and signal requests.
 
 - [**DSL Workflow**](./dsl): Demonstrates how to implement a
   DSL-based Workflow. This sample contains 2 yaml files that each define a custom "workflow" which instructs the
@@ -230,6 +234,9 @@ resource waiting its successful completion
 
 - [**Request/Response with Response Updates**](./reqrespupdate):
   Demonstrates how to accept requests and responsond via updates.
+
+- [**Early-Return**](./early-return):
+  Demonstrates how to receive a response mid-workflow, while the workflow continues to run to completion.
 
 ### Pending examples
 
