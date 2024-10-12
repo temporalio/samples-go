@@ -16,7 +16,7 @@ Configuring OIDC is outside of the scope of this sample, but please see the [ser
    ```
 4) Run the following command and see that CLI cannot display the payloads as they are encoded (compressed)
    ```
-   temporal workflow show --w codecserver_workflowID
+   temporal workflow show -w codecserver_workflowID
    ```
 5) Run the following command to start the remote codec server.
    The `-web` flag is needed for Temporal Web UI for CORS. 
@@ -25,7 +25,7 @@ Configuring OIDC is outside of the scope of this sample, but please see the [ser
    ```
 6) Run the following command to see that CLI can now decode (uncompress) the payloads via the remote codec server
    ```
-   temporal --codec-endpoint 'http://localhost:8081/{namespace}' workflow show --w codecserver_workflowID
+   temporal workflow show -w codecserver_workflowID --codec-endpoint 'http://localhost:8081/{namespace}'
    ```
 
 # Codec Server Protocol
