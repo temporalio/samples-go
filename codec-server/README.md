@@ -1,9 +1,9 @@
 ### Steps to run this sample:
 
-This sample shows how to decode payloads that have been encoded by a codec so they can be displayed by the Temporal CLI and Temporal Web.
+This sample shows how to decode payloads that have been encoded by a codec so they can be displayed by the Temporal CLI and Temporal UI.
 The sample codec server supports OIDC authentication (via JWT in the Authorization header).
-Temporal Web can be configured to pass the user's OIDC access token to the codec server, see: https://github.com/temporalio/web#configuration
-Configuring OIDC is outside of the scope of this sample, but please see the [serverjwtauth repo](../serverjwtauth/) for more details about authentication.
+Temporal UI can be configured to pass the user's OIDC access token to the codec server, see: https://docs.temporal.io/references/web-ui-configuration#auth
+Configuring OIDC is outside the scope of this sample, but please see the [serverjwtauth repo](../serverjwtauth/) for more details about authentication.
 
 1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 2) Run the following command to start the worker
@@ -19,7 +19,7 @@ Configuring OIDC is outside of the scope of this sample, but please see the [ser
    temporal workflow show -w codecserver_workflowID
    ```
 5) Run the following command to start the remote codec server.
-   The `-web` flag is needed for Temporal Web UI for CORS. 
+   The `-web` flag is needed for Temporal UI for CORS.
    ```
    go run ./codec-server -web=http://localhost:8080
    ```
@@ -48,9 +48,9 @@ This makes deployment more flexible by allowing the endpoints to be mounted at a
 Implementations MAY:
 
 1. Support codec for different namespaces under different URLs.
-2. Read the `X-Namespace` header sent to the /encode or /decode endpoints as an alternative to differentiating namespaces based on URL. The current CLI and Temporal Web UI codec client code will set `X-Namespace` appropriately for each request.
+2. Read the `X-Namespace` header sent to the /encode or /decode endpoints as an alternative to differentiating namespaces based on URL. The current CLI and Temporal UI codec client code will set `X-Namespace` appropriately for each request.
 
-In the endpoint sequence diagrams below we are using the CLI as an example of the client side, but Temporal Web and all other consumers will follow the same protocol.
+In the endpoint sequence diagrams below we are using the CLI as an example of the client side, but Temporal UI and all other consumers will follow the same protocol.
 
 ### Encode
 
