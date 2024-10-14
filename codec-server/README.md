@@ -25,7 +25,7 @@ Configuring OIDC is outside of the scope of this sample, but please see the [ser
    ```
 6) Run the following command to see that the CLI can now decode (uncompress) the payloads via the remote codec server
    ```
-   temporal workflow show -w codecserver_workflowID --codec-endpoint 'http://localhost:8081/{namespace}'
+   temporal workflow show -w codecserver_workflowID --codec-endpoint http://localhost:8081/{namespace}
    ```
 
 # Codec Server Protocol
