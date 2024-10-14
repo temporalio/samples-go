@@ -50,7 +50,7 @@ Implementations MAY:
 1. Support codec for different namespaces under different URLs.
 2. Read the `X-Namespace` header sent to the /encode or /decode endpoints as an alternative to differentiating namespaces based on URL. The current CLI and Temporal Web UI codec client code will set `X-Namespace` appropriately for each request.
 
-In the endpoint sequence diagrams below we are using CLI as an example of the client side, but Temporal Web and all other consumers will follow the same protocol.
+In the endpoint sequence diagrams below we are using the CLI as an example of the client side, but Temporal Web and all other consumers will follow the same protocol.
 
 ### Encode
 
