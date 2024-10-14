@@ -1,31 +1,32 @@
 ### Steps to run this sample:
 
-This sample shows how to decode payloads that have been encoded by a codec so they can be displayed by tctl and Temporal Web.
+This sample shows how to decode payloads that have been encoded by a codec so they can be displayed by the Temporal CLI and Temporal UI.
 The sample codec server supports OIDC authentication (via JWT in the Authorization header).
-Temporal Web can be configured to pass the user's OIDC access token to the codec server, see: https://github.com/temporalio/web#configuration
-Configuring OIDC is outside of the scope of this sample, but please see the [serverjwtauth repo](../serverjwtauth/) for more details about authentication.
+Temporal UI can be configured to pass the user's OIDC access token to the codec server, see: https://docs.temporal.io/references/web-ui-configuration#auth
+Configuring OIDC is outside the scope of this sample, but please see the [serverjwtauth repo](../serverjwtauth/) for more details about authentication.
 
 1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 2) Run the following command to start the worker
-```
-go run worker/main.go
-```
+   ```
+   go run worker/main.go
+   ```
 3) Run the following command to start the example
-```
-go run starter/main.go
-```
-4) Run the following command and see that tctl cannot display the payloads as they are encoded (compressed)
-```
-tctl workflow show --wid codecserver_workflowID
-```
-5) Run the following command to start the remote codec server
-```
-go run ./codec-server
-```
-6) Run the following command to see that tctl can now decode (uncompress) the payloads via the remote codec server
-```
-tctl --codec_endpoint 'http://localhost:8081/{namespace}' workflow show --wid codecserver_workflowID
-```
+   ```
+   go run starter/main.go
+   ```
+4) Run the following command and see that the CLI cannot display the payloads as they are encoded (compressed)
+   ```
+   temporal workflow show -w codecserver_workflowID
+   ```
+5) Run the following command to start the remote codec server.
+   The `-web` flag is needed for Temporal UI for CORS.
+   ```
+   go run ./codec-server -web=http://localhost:8080
+   ```
+6) Run the following command to see that the CLI can now decode (uncompress) the payloads via the remote codec server
+   ```
+   temporal workflow show -w codecserver_workflowID --codec-endpoint http://localhost:8081/{namespace}
+   ```
 
 # Codec Server Protocol
 
@@ -47,26 +48,26 @@ This makes deployment more flexible by allowing the endpoints to be mounted at a
 Implementations MAY:
 
 1. Support codec for different namespaces under different URLs.
-2. Read the `X-Namespace` header sent to the /encode or /decode endpoints as an alternative to differentiating namespaces based on URL. The current `tctl` and Temporal Web UI codec client code will set `X-Namespace` appropriately for each request.
+2. Read the `X-Namespace` header sent to the /encode or /decode endpoints as an alternative to differentiating namespaces based on URL. The current CLI and Temporal UI codec client code will set `X-Namespace` appropriately for each request.
 
-In the endpoint sequence diagrams below we are using `tctl` as an example of the client side, but Temporal Web and all other consumers will follow the same protocol.
+In the endpoint sequence diagrams below we are using the CLI as an example of the client side, but Temporal UI and all other consumers will follow the same protocol.
 
 ### Encode
 
 ```mermaid
 sequenceDiagram;
-	participant tctl
+	participant CLI
 	participant Server as Codec Server
 
-	tctl->>Server: HTTP POST /encode
-	Note right of tctl: Content-Type: application/json
-	Note right of tctl: Body: Payloads protobuf as JSON
+	CLI->>Server: HTTP POST /encode
+	Note right of CLI: Content-Type: application/json
+	Note right of CLI: Body: Payloads protobuf as JSON
 	alt invalid JSON
-		Server-->>tctl: HTTP 400 BadRequest
+		Server-->>CLI: HTTP 400 BadRequest
     else encoder error
-		Server-->>tctl: HTTP 400 BadRequest
+		Server-->>CLI: HTTP 400 BadRequest
     else
-		Server-->>tctl: HTTP 200 OK
+		Server-->>CLI: HTTP 200 OK
 		Note left of Server: Content-Type: application/json
 		Note left of Server: Body: Encoded Payloads protobuf as JSON
 	end
@@ -76,18 +77,18 @@ sequenceDiagram;
 
 ```mermaid
 sequenceDiagram;
-	participant tctl
+	participant CLI
 	participant Server as Codec Server
 
-	tctl->>Server: HTTP POST /decode
-	Note right of tctl: Content-Type: application/json
-	Note right of tctl: Body: Payloads protobuf as JSON
+	CLI->>Server: HTTP POST /decode
+	Note right of CLI: Content-Type: application/json
+	Note right of CLI: Body: Payloads protobuf as JSON
 	alt invalid JSON
-		Server-->>tctl: HTTP 400 BadRequest
+		Server-->>CLI: HTTP 400 BadRequest
   else decoder error
-		Server-->>tctl: HTTP 400 BadRequest
+		Server-->>CLI: HTTP 400 BadRequest
   else
-		Server-->>tctl: HTTP 200 OK
+		Server-->>CLI: HTTP 200 OK
 		Note left of Server: Content-Type: application/json
 		Note left of Server: Body: Decoded Payloads protobuf as JSON
 	end
