@@ -14,7 +14,7 @@ Configuring OIDC is outside of the scope of this sample, but please see the [ser
    ```
    go run starter/main.go
    ```
-4) Run the following command and see that CLI cannot display the payloads as they are encoded (compressed)
+4) Run the following command and see that the CLI cannot display the payloads as they are encoded (compressed)
    ```
    temporal workflow show -w codecserver_workflowID
    ```
