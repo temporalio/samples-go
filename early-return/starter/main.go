@@ -7,6 +7,7 @@ import (
 
 	"github.com/pborman/uuid"
 	"github.com/temporalio/samples-go/early-return"
+	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/client"
 )
 
@@ -20,31 +21,27 @@ func main() {
 	ctxWithTimeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	updateOperation := client.NewUpdateWithStartWorkflowOperation(
-		client.UpdateWorkflowOptions{
-			UpdateName:   earlyreturn.UpdateName,
-			WaitForStage: client.WorkflowUpdateStageCompleted,
-		})
-
 	tx := earlyreturn.Transaction{ID: uuid.New(), SourceAccount: "Bob", TargetAccount: "Alice", Amount: 100}
-	workflowOptions := client.StartWorkflowOptions{
-		ID:                 "early-return-workflow-ID-" + tx.ID,
-		TaskQueue:          earlyreturn.TaskQueueName,
-		WithStartOperation: updateOperation,
-	}
-	we, err := c.ExecuteWorkflow(ctxWithTimeout, workflowOptions, earlyreturn.Workflow, tx)
+
+	startWorkflowOp, err := c.NewWithStartWorkflowOperation(client.StartWorkflowOptions{
+		ID:                       "early-return-workflow-ID-" + tx.ID,
+		WorkflowIDConflictPolicy: enumspb.WORKFLOW_ID_CONFLICT_POLICY_FAIL,
+		TaskQueue:                earlyreturn.TaskQueueName,
+	}, earlyreturn.Workflow, tx)
 	if err != nil {
-		log.Fatalln("Error executing workflow:", err)
+		// E.g. missing conflict policy, or workflow arguments do not match workflow definition.
+		log.Fatalln("Error creating start workflow operation:", err)
 	}
 
-	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
-
-	updateHandle, err := updateOperation.Get(ctxWithTimeout)
+	updateHandle, err := c.UpdateWithStartWorkflow(ctxWithTimeout, client.UpdateWorkflowOptions{
+		UpdateName:   earlyreturn.UpdateName,
+		WaitForStage: client.WorkflowUpdateStageCompleted,
+	}, startWorkflowOp)
 	if err != nil {
-		log.Fatalln("Error obtaining update handle:", err)
+		log.Fatalln("Error issuing update-with-start:", err)
 	}
-
-	err = updateHandle.Get(ctxWithTimeout, nil)
+	var earlyReturnResult any
+	err = updateHandle.Get(ctxWithTimeout, &earlyReturnResult)
 	if err != nil {
 		// The workflow will continue running, cancelling the transaction.
 
@@ -52,6 +49,11 @@ func main() {
 		log.Fatalln("Error obtaining update result:", err)
 	}
 
-	log.Println("Transaction initialized successfully")
+	workflowRun, err := startWorkflowOp.Get(ctxWithTimeout)
+	if err != nil {
+		log.Fatalln("Error obtaining workflow run:", err)
+	}
+	log.Println("Transaction initialized successfully, with runID:", workflowRun.GetRunID())
 	// The workflow will continue running, completing the transaction.
+
 }
