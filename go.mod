@@ -29,6 +29,7 @@ require (
 	go.temporal.io/sdk/contrib/tally v0.2.0
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.24.0
+	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2
 	gopkg.in/DataDog/dd-trace-go.v1 v1.59.0
 	gopkg.in/square/go-jose.v2 v2.6.0
@@ -97,6 +98,5 @@ require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240822170219-fc7c04adadcd // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240822170219-fc7c04adadcd // indirect
-	google.golang.org/grpc v1.65.0 // indirect
 	inet.af/netaddr v0.0.0-20230525184311-b8eac61e914a // indirect
 )

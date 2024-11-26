@@ -35,7 +35,7 @@ func main() {
 			WorkflowID:   we.GetID(),
 			RunID:        we.GetRunID(),
 			UpdateName:   update.FetchAndAdd,
-			WaitForStage: client.WorkflowUpdateStageCompleted,
+			WaitForStage: client.WorkflowUpdateStageAccepted,
 			Args:         []interface{}{addend},
 		})
 		if err != nil {
