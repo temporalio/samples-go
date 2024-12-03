@@ -16,7 +16,7 @@ const (
 	// To save some space for other metadata, we should stay around half that.
 	//
 	// For this example, as a proof of concept, we'll use much smaller size limit.
-	payloadSizeLimit = 33
+	payloadSizeLimit = 37
 )
 
 // BlobCodec knows where to store the blobs from the PropagatedValues
