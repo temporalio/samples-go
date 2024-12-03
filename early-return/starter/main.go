@@ -23,15 +23,11 @@ func main() {
 
 	tx := earlyreturn.Transaction{ID: uuid.New(), SourceAccount: "Bob", TargetAccount: "Alice", Amount: 100}
 
-	startWorkflowOp, err := c.NewWithStartWorkflowOperation(client.StartWorkflowOptions{
+	startWorkflowOp := c.NewWithStartWorkflowOperation(client.StartWorkflowOptions{
 		ID:                       "early-return-workflow-ID-" + tx.ID,
 		WorkflowIDConflictPolicy: enumspb.WORKFLOW_ID_CONFLICT_POLICY_FAIL,
 		TaskQueue:                earlyreturn.TaskQueueName,
 	}, earlyreturn.Workflow, tx)
-	if err != nil {
-		// E.g. missing conflict policy, or workflow arguments do not match workflow definition.
-		log.Fatalln("Error creating start workflow operation:", err)
-	}
 
 	updateHandle, err := c.UpdateWithStartWorkflow(ctxWithTimeout, client.UpdateWorkflowOptions{
 		UpdateName:   earlyreturn.UpdateName,
