@@ -82,6 +82,10 @@ Each sample demonstrates one feature of the SDK, together with tests.
   server to decode payloads for display in tctl and Temporal Web. This setup can be used for any kind of codec, common
   examples are compression or encryption.
 
+- [**Blob Store using Data Converters**](./blob-store-data-converter):
+  Demonstrates how to use the DataConverter to store large payloads greater than a certain size in a blobstore and pass
+  the object path around in the Temporal Event History. 
+
 - [**Query Example**](./query): Demonstrates how to Query the state
   of a single Workflow Execution using the `QueryWorkflow` and `SetQueryHandler` APIs. Additional
   documentation: [How to Query a Workflow Execution in Go](https://docs.temporal.io/application-development/features/#queries).
