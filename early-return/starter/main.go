@@ -29,10 +29,13 @@ func main() {
 		TaskQueue:                earlyreturn.TaskQueueName,
 	}, earlyreturn.Workflow, tx)
 
-	updateHandle, err := c.UpdateWithStartWorkflow(ctxWithTimeout, client.UpdateWorkflowOptions{
-		UpdateName:   earlyreturn.UpdateName,
-		WaitForStage: client.WorkflowUpdateStageCompleted,
-	}, startWorkflowOp)
+	updateHandle, err := c.UpdateWithStartWorkflow(ctxWithTimeout, client.UpdateWithStartWorkflowOptions{
+		UpdateOptions: client.UpdateWorkflowOptions{
+			UpdateName:   earlyreturn.UpdateName,
+			WaitForStage: client.WorkflowUpdateStageCompleted,
+		},
+		StartWorkflowOperation: startWorkflowOp,
+	})
 	if err != nil {
 		log.Fatalln("Error issuing update-with-start:", err)
 	}
