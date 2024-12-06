@@ -36,6 +36,8 @@ func Workflow(ctx workflow.Context, tx Transaction) error {
 	return run(ctx, tx)
 }
 
+// TODO: workflow should return final Transaction summary, and early return
+// should return some sort of transaction conformation.
 func run(ctx workflow.Context, tx Transaction) error {
 	logger := workflow.GetLogger(ctx)
 
