@@ -9,24 +9,6 @@ import (
 	"go.temporal.io/sdk/testsuite"
 )
 
-type updateCallback struct {
-	accept   func()
-	reject   func(error)
-	complete func(interface{}, error)
-}
-
-func (uc *updateCallback) Accept() {
-	uc.accept()
-}
-
-func (uc *updateCallback) Reject(err error) {
-	uc.reject(err)
-}
-
-func (uc *updateCallback) Complete(success interface{}, err error) {
-	uc.complete(success, err)
-}
-
 func TestUppercaseWorkflow(t *testing.T) {
 	// Create env
 	var suite testsuite.WorkflowTestSuite
@@ -38,19 +20,19 @@ func TestUppercaseWorkflow(t *testing.T) {
 	for i := 0; i < 550; i++ {
 		i := i
 		env.RegisterDelayedCallback(func() {
-			env.UpdateWorkflow(reqrespupdate.UpdateHandler, "test id", &updateCallback{
-				accept: func() {
+			env.UpdateWorkflow(reqrespupdate.UpdateHandler, fmt.Sprintf("test id %d", i), &testsuite.TestUpdateCallback{
+				OnAccept: func() {
 					if i >= 500 {
 						require.Fail(t, "update should fail since it should be trying to continue-as-new")
 					}
 				},
-				reject: func(err error) {
+				OnReject: func(err error) {
 					if i < 500 {
 						require.Fail(t, "this update should not fail")
 					}
 					require.Error(t, err)
 				},
-				complete: func(response interface{}, err error) {
+				OnComplete: func(response interface{}, err error) {
 					if i >= 500 {
 						require.Fail(t, "update should fail since it should be trying to continue-as-new")
 					}
