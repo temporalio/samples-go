@@ -53,8 +53,8 @@ func main() {
 		"WorkflowID:", updateHandle.WorkflowID(),
 		"RunID:", updateHandle.RunID())
 
-	var txResult earlyreturn.Transaction
-	if err = updateHandle.Get(ctxWithTimeout, &txResult); err != nil {
+	var txInitialization earlyreturn.Transaction
+	if err = updateHandle.Get(ctxWithTimeout, &txInitialization); err != nil {
 		// The workflow will continue running, cancelling the transaction.
 
 		// NOTE: If the error is retryable, a retry attempt must use a unique workflow ID.
@@ -68,7 +68,7 @@ func main() {
 	log.Println("Transaction initialized successfully",
 		"WorkflowID:", workflowRun.GetID(),
 		"RunID:", workflowRun.GetRunID(),
-		"TxID:", txResult.ID)
+		"TxID:", txInitialization.ID)
 
 	// The workflow will continue running, completing the transaction.
 
