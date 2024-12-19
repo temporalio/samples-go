@@ -10,40 +10,55 @@ import (
 	"go.temporal.io/sdk/testsuite"
 )
 
-func Test_CompleteTransaction(t *testing.T) {
+func Test_CompleteTransaction_Succeeds(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
 
-	tx := Transaction{ID: uuid.New(), SourceAccount: "Bob", TargetAccount: "Alice", Amount: 100}
-	env.RegisterActivity(tx.InitTransaction)
-	env.RegisterActivity(tx.CompleteTransaction)
+	txRequest := TransactionRequest{SourceAccount: "Bob", TargetAccount: "Alice", Amount: 100}
+	env.RegisterActivity(txRequest.Init)
+	env.RegisterActivity(CompleteTransaction)
 
-	uc := &updateCallback{}
 	env.RegisterDelayedCallback(func() {
-		env.UpdateWorkflow(UpdateName, uuid.New(), uc)
+		env.UpdateWorkflow(UpdateName, uuid.New(), &testsuite.TestUpdateCallback{
+			OnAccept: func() {},
+			OnReject: func(err error) {
+				panic("unexpected rejection")
+			},
+			OnComplete: func(i interface{}, err error) {
+				require.NoError(t, err)
+				require.NotEmpty(t, i.(*Transaction).ID)
+			},
+		})
 	}, 0) // NOTE: zero delay ensures Update is delivered in first workflow task
-	env.ExecuteWorkflow(Workflow, tx)
+	env.ExecuteWorkflow(Workflow, txRequest)
 
 	require.True(t, env.IsWorkflowCompleted())
 	require.NoError(t, env.GetWorkflowError())
-	require.NoError(t, uc.completeErr)
 }
 
 func Test_CompleteTransaction_Fails(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
 
-	tx := Transaction{ID: uuid.New(), SourceAccount: "Bob", TargetAccount: "Alice", Amount: 100}
-	env.RegisterActivity(tx.InitTransaction)
-	env.RegisterActivity(tx.CompleteTransaction)
+	txRequest := TransactionRequest{SourceAccount: "Bob", TargetAccount: "Alice", Amount: 100}
+	env.RegisterActivity(txRequest.Init)
+	env.RegisterActivity(CompleteTransaction)
 
-	env.OnActivity(tx.CompleteTransaction, mock.Anything).Return(fmt.Errorf("crash"))
+	env.OnActivity(CompleteTransaction, mock.Anything, mock.Anything).Return(fmt.Errorf("crash"))
 
-	uc := &updateCallback{}
 	env.RegisterDelayedCallback(func() {
-		env.UpdateWorkflow(UpdateName, uuid.New(), uc)
+		env.UpdateWorkflow(UpdateName, uuid.New(), &testsuite.TestUpdateCallback{
+			OnAccept: func() {},
+			OnReject: func(err error) {
+				panic("unexpected rejection")
+			},
+			OnComplete: func(i interface{}, err error) {
+				require.NoError(t, err)
+				require.NotEmpty(t, i.(*Transaction).ID)
+			},
+		})
 	}, 0)
-	env.ExecuteWorkflow(Workflow, tx)
+	env.ExecuteWorkflow(Workflow, txRequest)
 
 	require.True(t, env.IsWorkflowCompleted())
 	require.ErrorContains(t, env.GetWorkflowError(), "crash")
@@ -53,18 +68,24 @@ func Test_CancelTransaction(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
 
-	tx := Transaction{ID: uuid.New(), SourceAccount: "Bob", TargetAccount: "Alice", Amount: -1} // invalid!
-	env.RegisterActivity(tx.InitTransaction)
-	env.RegisterActivity(tx.CancelTransaction)
+	txRequest := TransactionRequest{SourceAccount: "Bob", TargetAccount: "Alice", Amount: -1} // invalid!
+	env.RegisterActivity(txRequest.Init)
+	env.RegisterActivity(CancelTransaction)
 
-	uc := &updateCallback{}
 	env.RegisterDelayedCallback(func() {
-		env.UpdateWorkflow(UpdateName, uuid.New(), uc)
+		env.UpdateWorkflow(UpdateName, uuid.New(), &testsuite.TestUpdateCallback{
+			OnAccept: func() {},
+			OnReject: func(err error) {
+				panic("unexpected rejection")
+			},
+			OnComplete: func(i interface{}, err error) {
+				require.ErrorContains(t, err, "invalid Amount")
+			},
+		})
 	}, 0)
-	env.ExecuteWorkflow(Workflow, tx)
+	env.ExecuteWorkflow(Workflow, txRequest)
 
 	require.True(t, env.IsWorkflowCompleted())
-	require.ErrorContains(t, uc.completeErr, "invalid Amount")
 	require.ErrorContains(t, env.GetWorkflowError(), "invalid Amount")
 }
 
@@ -72,31 +93,25 @@ func Test_CancelTransaction_Fails(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()
 
-	tx := Transaction{ID: uuid.New(), SourceAccount: "Bob", TargetAccount: "Alice", Amount: -1} // invalid!
-	env.RegisterActivity(tx.InitTransaction)
-	env.RegisterActivity(tx.CancelTransaction)
+	txRequest := TransactionRequest{SourceAccount: "Bob", TargetAccount: "Alice", Amount: -1} // invalid!
+	env.RegisterActivity(txRequest.Init)
+	env.RegisterActivity(CancelTransaction)
 
-	env.OnActivity(tx.CancelTransaction, mock.Anything).Return(fmt.Errorf("crash"))
+	env.OnActivity(CancelTransaction, mock.Anything, mock.Anything).Return(fmt.Errorf("crash"))
 
-	uc := &updateCallback{}
 	env.RegisterDelayedCallback(func() {
-		env.UpdateWorkflow(UpdateName, uuid.New(), uc)
+		env.UpdateWorkflow(UpdateName, uuid.New(), &testsuite.TestUpdateCallback{
+			OnAccept: func() {},
+			OnReject: func(err error) {
+				panic("unexpected rejection")
+			},
+			OnComplete: func(i interface{}, err error) {
+				require.ErrorContains(t, err, "invalid Amount")
+			},
+		})
 	}, 0)
-	env.ExecuteWorkflow(Workflow, tx)
+	env.ExecuteWorkflow(Workflow, txRequest)
 
 	require.True(t, env.IsWorkflowCompleted())
-	require.ErrorContains(t, uc.completeErr, "invalid Amount")
 	require.ErrorContains(t, env.GetWorkflowError(), "crash")
-}
-
-type updateCallback struct {
-	completeErr error
-}
-
-func (uc *updateCallback) Accept() {}
-
-func (uc *updateCallback) Reject(err error) {}
-
-func (uc *updateCallback) Complete(success interface{}, err error) {
-	uc.completeErr = err
 }
