@@ -1,6 +1,6 @@
 ## Parallel Activities
 <!-- @@@SNIPSTART samples-go-branch-readme -->
-Make sure the [Temporal Server is running locally](https://docs.temporal.io/application-development/foundations#run-a-development-cluster).
+Make sure the [Temporal Server is running locally](https://learn.temporal.io/getting_started/go/dev_environment/#set-up-a-local-temporal-service-for-development-with-temporal-cli).
 
 From the root of the project, start a Worker:
 
