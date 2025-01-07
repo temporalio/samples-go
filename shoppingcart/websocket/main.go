@@ -9,17 +9,10 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
-	shoppingcart "github.com/temporalio/samples-go/shoppingcart"
+	"github.com/temporalio/samples-go/shoppingcart"
 	"go.temporal.io/sdk/client"
 )
 
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true // Adjust for production
-	},
-}
-
-// WebSocketMessage defines the structure of the message sent by the web app
 type WebSocketMessage struct {
 	Action   string `json:"action"` // "add" or "remove"
 	ItemID   string `json:"item_id"`
@@ -31,23 +24,14 @@ type CartStatusMessage struct {
 	Data   CartState `json:"data"`
 }
 
-// CartSignalPayload is the payload structure for Temporal signals
-//type CartSignalPayload struct {
-//	Action   string `json:"action"` // "add" or "remove"
-//	ItemID   string `json:"item_id"`
-//	Quantity int    `json:"quantity"`
-//}
-
-// WebSocketServer holds the WebSocket connections and Temporal client
 type WebSocketServer struct {
 	connections    map[string]*websocket.Conn // Map of user_id to WebSocket connection
 	mu             sync.Mutex
 	temporalClient client.Client
 }
 
-type CartState map[string]int // itemID -> quantity
+type CartState map[string]int
 
-// NewWebSocketServer creates a new WebSocket server instance
 func NewWebSocketServer(temporalClient client.Client) *WebSocketServer {
 	return &WebSocketServer{
 		connections:    make(map[string]*websocket.Conn),
@@ -57,6 +41,11 @@ func NewWebSocketServer(temporalClient client.Client) *WebSocketServer {
 
 // HandleConnections manages incoming WebSocket connections
 func (s *WebSocketServer) HandleConnections(w http.ResponseWriter, r *http.Request) {
+	upgrader := websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			return true // Adjust for production
+		},
+	}
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println("Error upgrading connection:", err)
@@ -120,49 +109,35 @@ func (s *WebSocketServer) handleMessage(userID string, message []byte) {
 			log.Println("Error signaling workflow:", err)
 		}
 
-		// TODO: query the cart and push signal back to webapp
-		var cartState CartState
-		resp, err := s.temporalClient.QueryWorkflow(context.Background(), workflowID, "", "get_cart")
-		if err != nil {
-			log.Println("Error querying workflow:", err)
-			return
-		}
-		if err := resp.Get(&cartState); err != nil {
-			log.Fatalln("Unable to decode query result", err)
-		}
-
-		// Send the cart state back to the WebSocket client
-		response := CartStatusMessage{
-			Action: "cart_state",
-			Data:   cartState,
-		}
-		conn := s.connections[userID]
-		if conn != nil {
-			conn.WriteJSON(response)
-		}
+		s.getCart(workflowID, userID)
 	case "get_cart":
-		// Query the cart state
-		var cartState CartState
-		resp, err := s.temporalClient.QueryWorkflow(context.Background(), workflowID, "", "get_cart")
-		if err != nil {
-			log.Println("Error querying workflow:", err)
-			return
-		}
-		if err := resp.Get(&cartState); err != nil {
-			log.Fatalln("Unable to decode query result", err)
-		}
-
-		// Send the cart state back to the WebSocket client
-		response := CartStatusMessage{
-			Action: "cart_state",
-			Data:   cartState,
-		}
-		conn := s.connections[userID]
-		if conn != nil {
-			conn.WriteJSON(response)
-		}
+		s.getCart(workflowID, userID)
 	default:
 		log.Printf("Unknown action: %s\n", msg.Action)
+	}
+}
+
+// Query the cart workflow and state back to the webapp
+func (s *WebSocketServer) getCart(workflowID string, userID string) {
+	// Query the cart state
+	var cartState CartState
+	resp, err := s.temporalClient.QueryWorkflow(context.Background(), workflowID, "", "get_cart")
+	if err != nil {
+		log.Println("Error querying workflow:", err)
+		return
+	}
+	if err := resp.Get(&cartState); err != nil {
+		log.Fatalln("Unable to decode query result", err)
+	}
+
+	// Send the cart state back to the WebSocket client
+	response := CartStatusMessage{
+		Action: "cart_state",
+		Data:   cartState,
+	}
+	conn := s.connections[userID]
+	if conn != nil {
+		conn.WriteJSON(response)
 	}
 }
 

@@ -6,7 +6,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	shoppingcart "github.com/temporalio/samples-go/shoppingcart"
+	"github.com/temporalio/samples-go/shoppingcart"
 )
 
 func main() {

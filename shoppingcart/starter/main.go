@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	shoppingcart "github.com/temporalio/samples-go/shoppingcart"
+	"github.com/temporalio/samples-go/shoppingcart"
 	"go.temporal.io/sdk/client"
 )
 
@@ -18,9 +18,8 @@ func main() {
 	}
 	defer c.Close()
 
-	//shoppingCartID := uuid.New()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "shopping_cart_1", // + shoppingCartID,
+		ID:        "shopping_cart_1",
 		TaskQueue: "shopping_cart",
 	}
 
