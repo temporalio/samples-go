@@ -8,6 +8,7 @@ require (
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/golang/snappy v0.0.4
 	github.com/google/uuid v1.6.0
+	github.com/gorilla/websocket v1.5.0
 	github.com/hashicorp/go-plugin v1.4.5
 	github.com/nexus-rpc/sdk-go v0.1.0
 	github.com/opentracing/opentracing-go v1.2.0
