@@ -19,7 +19,7 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "shopping_cart", worker.Options{})
+	w := worker.New(c, shoppingcart.TaskQueueName, worker.Options{})
 
 	w.RegisterWorkflow(shoppingcart.CartWorkflow)
 

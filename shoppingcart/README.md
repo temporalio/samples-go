@@ -1,29 +1,26 @@
 # Shopping Cart
 
 This sample workflow shows how a shopping cart application can be implemented.
-Note that this program uses websockets to communicate between the webapp and 
-the Temporal service.
+This sample utilizes Update-with-Start and the `WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING`
+option to start and continually update the workflow with the same Update-with-Start
+call. This is also known as lazy-init.
 
-The shopping cart is represented as a workflow, maintaining the state of the
-cart, and the web socket server updates the carts with signals, and retrieves
-the cart state with a query. See [workflow message passing](https://docs.temporal.io/encyclopedia/workflow-message-passing)
-on the difference between queries and signals.
+Another interesting Update-with-Start use case is 
+[early return](https://github.com/temporalio/samples-go/tree/main/early-return), 
+which supplements this sample and can be used to handle the transaction and payment
+portion of this shopping cart scenario.
 
 ### Steps to run this sample:
 1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
+
+    NOTE: frontend.enableExecuteMultiOperation=true must be configured for the server
+in order to use Update-with-Start. 
+
 2) Run the following command to start the worker
 ```
 go run shoppingcart/worker/main.go
 ```
-3) Run the following command to start the web socket server
+3) Run the following command to start the web app
 ```
-go run shoppingcart/websocket/main.go
-```
-4) Run the following command to start the web app
-```
-go run shoppingcart/webapp/main.go
-```
-5) Run the following command to start the workflow execution
-```
-go run shoppingcart/starter/main.go
+go run shoppingcart/server/main.go
 ```
