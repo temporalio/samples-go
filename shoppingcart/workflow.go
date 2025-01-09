@@ -1,9 +1,7 @@
 package shoppingcart
 
 import (
-	"fmt"
 	"go.temporal.io/sdk/workflow"
-	"log"
 )
 
 var (
@@ -23,7 +21,8 @@ func CartWorkflow(ctx workflow.Context) error {
 	cart := make(CartState)
 
 	if err := workflow.SetUpdateHandler(ctx, UpdateName, func(ctx workflow.Context, actionType string, itemID string) (CartState, error) {
-		fmt.Println("Received update,", actionType, itemID)
+		logger := workflow.GetLogger(ctx)
+		logger.Info("Received update,", actionType, itemID)
 		if itemID != "" {
 			if actionType == "add" {
 				cart[itemID] += 1
@@ -33,7 +32,7 @@ func CartWorkflow(ctx workflow.Context) error {
 					delete(cart, itemID)
 				}
 			} else {
-				log.Fatalln("Unknown action type:", actionType)
+				logger.Error("Unknown action type:", actionType)
 			}
 		}
 		return cart, nil
