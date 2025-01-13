@@ -14,14 +14,15 @@ import (
 var (
 	cartState      = make(map[string]int)
 	workflowClient client.Client
-	itemCosts      = map[string]int{
-		"apple":      2,
-		"banana":     1,
-		"watermelon": 5,
-		"television": 1000,
-		"house":      10000000,
-		"car":        50000,
-		"binder":     10,
+	// Units are in cents
+	itemCosts = map[string]int{
+		"apple":      200,
+		"banana":     100,
+		"watermelon": 500,
+		"television": 100000,
+		"house":      100000000,
+		"car":        5000000,
+		"binder":     1000,
 	}
 )
 
@@ -48,7 +49,6 @@ func listHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "text/html") // Set the content type to HTML
 	_, _ = fmt.Fprint(w, "<h1>DUMMY SHOPPING WEBSITE</h1>"+
 		"<a href=\"/list\">HOME</a>"+
-		"<a href=\"/list\">TODO:Payment</a>"+
 		"<h3>Available Items to Purchase</h3><table border=1><tr><th>Item</th><th>Cost</th><th>Action</th>")
 
 	keys := make([]string, 0)
@@ -59,7 +59,8 @@ func listHandler(w http.ResponseWriter, _ *http.Request) {
 	for _, k := range keys {
 		actionButton := fmt.Sprintf("<a href=\"/action?type=add&id=%s\">"+
 			"<button style=\"background-color:#4CAF50;\">Add to Cart</button></a>", k)
-		_, _ = fmt.Fprintf(w, "<tr><td>%s</td><td>%d</td><td>%s</td></tr>", k, itemCosts[k], actionButton)
+		dollars := float64(itemCosts[k]) / 100
+		_, _ = fmt.Fprintf(w, "<tr><td>%s</td><td>$%.2f</td><td>%s</td></tr>", k, dollars, actionButton)
 	}
 	_, _ = fmt.Fprint(w, "</table><h3>Current items in cart:</h3>"+
 		"<table border=1><tr><th>Item</th><th>Quantity</th><th>Action</th>")
