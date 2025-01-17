@@ -100,6 +100,6 @@ func main() {
 
 	err = server.Serve(listener)
 	if err != nil {
-		logger.Fatal("unable to serve: %v", tag.NewErrorTag("error", err))
+		logger.Fatal("unable to serve", tag.Error(err))
 	}
 }
