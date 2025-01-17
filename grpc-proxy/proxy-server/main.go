@@ -55,7 +55,7 @@ func main() {
 	workflowClient := workflowservice.NewWorkflowServiceClient(grpcClient)
 
 	if err != nil {
-		logger.Fatal("unable to create client: %v", tag.NewErrorTag("error", err))
+		logger.Fatal("unable to create client", tag.Error(err))
 	}
 
 	serverInterceptors := []grpc.UnaryServerInterceptor{}
