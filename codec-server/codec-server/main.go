@@ -139,7 +139,7 @@ func main() {
 		_ = srv.Close()
 	case err := <-errCh:
 		if err != http.ErrServerClosed {
-				logger.Fatal("error from HTTP server", tag.NewErrorTag(err))
+				logger.Fatal("error from HTTP server", tag.Error(err))
 		}
 	}
 }
