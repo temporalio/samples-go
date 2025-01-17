@@ -62,7 +62,7 @@ func main() {
 	if providerFlag != "" {
 		provider, err := newProvider(providerFlag)
 		if err != nil {
-			logger.Fatal("unable to configure provider: %v", tag.NewErrorTag("error", err))
+			logger.Fatal("unable to configure provider", tag.Error(err))
 		}
 
 		if audienceFlag != "" {
