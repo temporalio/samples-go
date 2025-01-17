@@ -22,7 +22,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.27.0
 	go.opentelemetry.io/otel/trace v1.27.0
 	go.temporal.io/api v1.43.0
-	go.temporal.io/sdk v1.31.0
+	go.temporal.io/sdk v1.32.1
 	go.temporal.io/sdk/contrib/datadog v0.2.0
 	go.temporal.io/sdk/contrib/opentelemetry v0.6.0
 	go.temporal.io/sdk/contrib/opentracing v0.1.0
