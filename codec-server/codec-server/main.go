@@ -106,7 +106,7 @@ func main() {
 	if providerFlag != "" {
 		p, err := newProvider(providerFlag)
 		if err != nil {
-			logger.Fatal("error", tag.NewErrorTag("error", err))
+			logger.Fatal("failed to create OIDC provider", tag.Error(err))
 		}
 		provider = p
 		fmt.Printf("oauth enabled for: %s\n", provider.Issuer)
