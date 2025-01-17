@@ -31,7 +31,7 @@ func (p *Provider) Authorize(namespace string, r *http.Request) bool {
 
 	claims, err := p.mapper.GetClaims(&authInfo)
 	if err != nil {
-		logger.Warn("unable to parse claims", tag.NewErrorTag("error", err))
+		logger.Warn("unable to parse claims", tag.Error(err))
 		return false
 	}
 
