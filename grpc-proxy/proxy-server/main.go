@@ -93,7 +93,7 @@ func main() {
 		client.WorkflowServiceProxyOptions{Client: workflowClient},
 	)
 	if err != nil {
-		logger.Fatal("unable to create service proxy: %v", tag.NewErrorTag("error", err))
+		logger.Fatal("unable to create service proxy", tag.Error(err))
 	}
 
 	workflowservice.RegisterWorkflowServiceServer(server, handler)
