@@ -85,7 +85,7 @@ func main() {
 
 	listener, err := net.Listen("tcp", ":"+strconv.Itoa(portFlag))
 	if err != nil {
-		logger.Fatal("unable to create listener: %v", tag.NewErrorTag("error", err))
+		logger.Fatal("unable to create listener", tag.Error(err))
 	}
 
 	server := grpc.NewServer(grpc.ChainUnaryInterceptor(serverInterceptors...))
