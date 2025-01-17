@@ -42,7 +42,7 @@ func main() {
 		},
 	)
 	if err != nil {
-		logger.Fatal("unable to create interceptor: %v", tag.NewErrorTag("error", err))
+		logger.Fatal("unable to create interceptor", tag.Error(err))
 	}
 
 	grpcClient, err := grpc.Dial(
