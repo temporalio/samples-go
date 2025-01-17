@@ -1,14 +1,14 @@
 * The sample demonstrates how to deal with multiple signals that can come out of order and require actions
 * if a certain signal not received in a specified time interval.
 
-This specific sample receives three signals: Signal1, Signal2, Signal3. They have to be processed in the
+This specific sample receives three signals: Signal1, Signal2, Signal3. They have to be processed in
 sequential order, but they can be received out of order.
 There are two timeouts to enforce.
 The first one is the maximum time between signals.
 The second limits the total time since the first signal received.
 
-A naive implementation of such use case would use a single loop that contains a Selector to listen on three
-signals and a timer. Something like:
+A naive implementation would use a single loop that contains a Selector to listen on three signals and a timer.
+Something like:
 
 	for {
 		selector := workflow.NewSelector(ctx)
