@@ -138,6 +138,8 @@ func main() {
 	case <-sigCh:
 		_ = srv.Close()
 	case err := <-errCh:
-		logger.Fatal("error", tag.NewErrorTag("error", err))
+		if err != http.ErrServerClosed {
+				logger.Fatal("error from HTTP server", tag.NewErrorTag(err))
+		}
 	}
 }
