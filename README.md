@@ -102,7 +102,7 @@ Each sample demonstrates one feature of the SDK, together with tests.
 - **Signals**: Can be seen in the [Recovery](./recovery)
   and [Mutex](./mutex) examples. Additional
   documentation: [eCommerce application tutorial](https://learn.temporal.io/tutorials/go/ecommerce/)
-  , [How to send and handle Signals in Go](https://docs.temporal.io/application-development/features/#signals)
+  , [How to send and handle Signals in Go](https://docs.temporal.io/develop/go/message-passing#signals)
   .
 
 - [**Memo**](./memo): Demonstrates how to use Memo that can be used
