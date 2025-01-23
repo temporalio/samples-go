@@ -1,6 +1,7 @@
 package choice
 
 import (
+	"fmt"
 	"time"
 
 	"go.temporal.io/sdk/workflow"
@@ -31,18 +32,23 @@ func ExclusiveChoiceWorkflow(ctx workflow.Context) error {
 	logger := workflow.GetLogger(ctx)
 
 	// choose next activity based on order result
+
 	switch orderChoice {
 	case OrderChoiceApple:
-		workflow.ExecuteActivity(ctx, orderActivities.OrderApple, orderChoice).Get(ctx, nil)
+		err = workflow.ExecuteActivity(ctx, orderActivities.OrderApple, orderChoice).Get(ctx, nil)
 	case OrderChoiceBanana:
-		workflow.ExecuteActivity(ctx, orderActivities.OrderBanana, orderChoice).Get(ctx, nil)
+		err = workflow.ExecuteActivity(ctx, orderActivities.OrderBanana, orderChoice).Get(ctx, nil)
 	case OrderChoiceCherry:
-		workflow.ExecuteActivity(ctx, orderActivities.OrderCherry, orderChoice).Get(ctx, nil)
+		err = workflow.ExecuteActivity(ctx, orderActivities.OrderCherry, orderChoice).Get(ctx, nil)
 	case OrderChoiceOrange:
 		// Activity can be also called by its name
-		workflow.ExecuteActivity(ctx, "OrderOrange", orderChoice).Get(ctx, nil)
+		err = workflow.ExecuteActivity(ctx, "OrderOrange", orderChoice).Get(ctx, nil)
 	default:
-		logger.Error("Unexpected order", "Choice", orderChoice)
+		err = fmt.Errorf("unknown order choice: %v", orderChoice)
+	}
+
+	if err != nil {
+		return err
 	}
 
 	logger.Info("Workflow completed.")
