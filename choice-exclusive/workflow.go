@@ -33,14 +33,14 @@ func ExclusiveChoiceWorkflow(ctx workflow.Context) error {
 	// choose next activity based on order result
 	switch orderChoice {
 	case OrderChoiceApple:
-		workflow.ExecuteActivity(ctx, orderActivities.OrderApple, orderChoice)
+		workflow.ExecuteActivity(ctx, orderActivities.OrderApple, orderChoice).Get(ctx, nil)
 	case OrderChoiceBanana:
-		workflow.ExecuteActivity(ctx, orderActivities.OrderBanana, orderChoice)
+		workflow.ExecuteActivity(ctx, orderActivities.OrderBanana, orderChoice).Get(ctx, nil)
 	case OrderChoiceCherry:
-		workflow.ExecuteActivity(ctx, orderActivities.OrderCherry, orderChoice)
+		workflow.ExecuteActivity(ctx, orderActivities.OrderCherry, orderChoice).Get(ctx, nil)
 	case OrderChoiceOrange:
 		// Activity can be also called by its name
-		workflow.ExecuteActivity(ctx, "OrderOrange", orderChoice)
+		workflow.ExecuteActivity(ctx, "OrderOrange", orderChoice).Get(ctx, nil)
 	default:
 		logger.Error("Unexpected order", "Choice", orderChoice)
 	}
