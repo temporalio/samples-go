@@ -11,6 +11,18 @@ import (
 // FileProcessingWorkflow is a workflow that uses Worker-specific Task Queues to run multiple Activities on a consistent
 // host.
 func FileProcessingWorkflow(ctx workflow.Context) (err error) {
+	for attempt := 1; attempt <= 5; attempt++ {
+		if err = processFile(ctx); err == nil {
+			workflow.GetLogger(ctx).Info("Workflow completed.")
+			return
+		}
+		workflow.GetLogger(ctx).Error("Attempt failed, trying on new worker", attempt)
+	}
+	workflow.GetLogger(ctx).Error("Workflow failed after multiple retries.", "Error", err.Error())
+	return
+}
+
+func processFile(ctx workflow.Context) (err error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: time.Minute,
 	}
