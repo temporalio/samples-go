@@ -32,4 +32,4 @@ go run worker-specific-task-queues/starter/main.go
 ### Things to try
 You can try to intentionally crash Workers while they are doing work to see what happens when work gets "stuck" in a unique queue: currently the Workflow will `scheduleToCloseTimeout` without a Worker, and retry when a Worker comes back online.
 
-After the 5th attempt, it logs `Workflow failed after multiple session retries.` and exits. But you may wish to implement compensatory logic, including notifying you.
+After the 5th attempt, it logs `Workflow failed after multiple retries.` and exits. But you may wish to implement compensatory logic, including notifying you.
