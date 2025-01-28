@@ -14,7 +14,7 @@ for Update-with-Start being used for lazy initialization.
    NOTE: frontend.enableExecuteMultiOperation=true must be configured for the server
 in order to use Update-with-Start. 
 
-5) Run the following command to start the worker
+2) Run the following command to start the worker
 ```
 go run early-return/worker/main.go
 ```

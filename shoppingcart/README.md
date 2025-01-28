@@ -3,7 +3,8 @@
 This sample workflow shows how a shopping cart application can be implemented.
 This sample utilizes Update-with-Start and the `WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING`
 option to start and continually update the workflow with the same Update-with-Start
-call. This is also known as lazy-init.
+call. This is also known as lazy-init. You will see in the Temporal UI, when you checkout
+your cart, the current workflow will complete and a new workflow will be created.
 
 Another interesting Update-with-Start use case is 
 [early return](https://github.com/temporalio/samples-go/tree/main/early-return), 

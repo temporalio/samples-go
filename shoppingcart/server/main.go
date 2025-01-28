@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/pborman/uuid"
 	"github.com/temporalio/samples-go/shoppingcart"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/client"
@@ -12,7 +13,7 @@ import (
 )
 
 var (
-	cartState      = make(map[string]int)
+	cartState      = shoppingcart.CartState{Items: make(map[string]int)}
 	workflowClient client.Client
 	// Units are in cents
 	itemCosts = map[string]int{
@@ -24,6 +25,7 @@ var (
 		"car":        5000000,
 		"binder":     1000,
 	}
+	workflowIdNumber = uuid.New()
 )
 
 func main() {
@@ -48,7 +50,7 @@ func main() {
 func listHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "text/html") // Set the content type to HTML
 	_, _ = fmt.Fprint(w, "<h1>DUMMY SHOPPING WEBSITE</h1>"+
-		"<a href=\"/list\">HOME</a>"+
+		"<a href=\"/list\">HOME</a> <a href=\"/action?type=checkout\">Checkout</a>"+
 		"<h3>Available Items to Purchase</h3><table border=1><tr><th>Item</th><th>Cost</th><th>Action</th>")
 
 	keys := make([]string, 0)
@@ -65,27 +67,29 @@ func listHandler(w http.ResponseWriter, _ *http.Request) {
 	_, _ = fmt.Fprint(w, "</table><h3>Current items in cart:</h3>"+
 		"<table border=1><tr><th>Item</th><th>Quantity</th><th>Action</th>")
 
-	if len(cartState) == 0 {
+	if len(cartState.Items) == 0 {
 		updateWithStartCart("", "")
 	}
 
 	// List current items in cart
 	keys = make([]string, 0)
-	for k := range cartState {
+	for k := range cartState.Items {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 	for _, k := range keys {
 		removeButton := fmt.Sprintf("<a href=\"/action?type=remove&id=%s\">"+
 			"<button style=\"background-color:#f44336;\">Remove Item</button></a>", k)
-		_, _ = fmt.Fprintf(w, "<tr><td>%s</td><td>%d</td><td>%s</td></tr>", k, cartState[k], removeButton)
+		_, _ = fmt.Fprintf(w, "<tr><td>%s</td><td>%d</td><td>%s</td></tr>", k, cartState.Items[k], removeButton)
 	}
 	_, _ = fmt.Fprint(w, "</table>")
 }
 
 func actionHandler(w http.ResponseWriter, r *http.Request) {
 	actionType := r.URL.Query().Get("type")
-	if actionType != "add" && actionType != "remove" && actionType != "" {
+	switch actionType {
+	case "add", "remove", "checkout", "":
+	default:
 		log.Fatalln("Invalid action type:", actionType)
 	}
 	id := r.URL.Query().Get("id")
@@ -100,7 +104,7 @@ func actionHandler(w http.ResponseWriter, r *http.Request) {
 func updateWithStartCart(actionType string, id string) {
 	ctx := context.Background()
 	startWorkflowOp := workflowClient.NewWithStartWorkflowOperation(client.StartWorkflowOptions{
-		ID:        "shopping-cart-workflow",
+		ID:        "shopping-cart-workflow" + workflowIdNumber,
 		TaskQueue: shoppingcart.TaskQueueName,
 		// WorkflowIDConflictPolicy is required when using UpdateWithStartWorkflow.
 		// Here we use USE_EXISTING, because we want to reuse the running workflow, as it
@@ -126,12 +130,21 @@ func updateWithStartCart(actionType string, id string) {
 		log.Fatalln("Error issuing update-with-start:", err)
 	}
 
+	// If someone has checked out their cart, this completes the workflow.
+	// We then want to create a new workflow for the next user to shop.
+	if actionType == "checkout" {
+		workflowIdNumber = uuid.New()
+		cartState = shoppingcart.CartState{Items: make(map[string]int)}
+		log.Println("Items checked out and workflow completed, starting new workflow")
+		return
+	}
+
 	log.Println("Started workflow",
 		"WorkflowID:", updateHandle.WorkflowID(),
 		"RunID:", updateHandle.RunID())
 
 	// Always use a zero variable before calling Get for any Go SDK API
-	cartState = make(map[string]int)
+	cartState = shoppingcart.CartState{Items: make(map[string]int)}
 	if err = updateHandle.Get(ctx, &cartState); err != nil {
 		log.Fatalln("Error obtaining update result:", err)
 	}
