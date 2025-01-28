@@ -42,7 +42,7 @@ func main() {
 		},
 	)
 	if err != nil {
-		logger.Fatal("unable to create interceptor: %v", tag.NewErrorTag(err))
+		logger.Fatal("unable to create interceptor", tag.Error(err))
 	}
 
 	grpcClient, err := grpc.Dial(
@@ -55,33 +55,37 @@ func main() {
 	workflowClient := workflowservice.NewWorkflowServiceClient(grpcClient)
 
 	if err != nil {
-		logger.Fatal("unable to create client: %v", tag.NewErrorTag(err))
+		logger.Fatal("unable to create client", tag.Error(err))
 	}
 
 	serverInterceptors := []grpc.UnaryServerInterceptor{}
 	if providerFlag != "" {
 		provider, err := newProvider(providerFlag)
 		if err != nil {
-			logger.Fatal("unable to configure provider: %v", tag.NewErrorTag(err))
+			logger.Fatal("unable to configure provider", tag.Error(err))
 		}
 
 		if audienceFlag != "" {
 			provider.audience = audienceFlag
 		}
+
 		serverInterceptors = append(serverInterceptors,
-			authorization.NewAuthorizationInterceptor(
+			authorization.NewInterceptor(
 				newClaimMapper(provider.JWKSURI),
 				authorization.NewDefaultAuthorizer(),
 				metrics.NoopMetricsHandler,
 				logger,
+				newNamespaceChecker(),
 				provider,
-			),
+				"",
+				"",
+			).Intercept,
 		)
 	}
 
 	listener, err := net.Listen("tcp", ":"+strconv.Itoa(portFlag))
 	if err != nil {
-		logger.Fatal("unable to create listener: %v", tag.NewErrorTag(err))
+		logger.Fatal("unable to create listener", tag.Error(err))
 	}
 
 	server := grpc.NewServer(grpc.ChainUnaryInterceptor(serverInterceptors...))
@@ -89,13 +93,13 @@ func main() {
 		client.WorkflowServiceProxyOptions{Client: workflowClient},
 	)
 	if err != nil {
-		logger.Fatal("unable to create service proxy: %v", tag.NewErrorTag(err))
+		logger.Fatal("unable to create service proxy", tag.Error(err))
 	}
 
 	workflowservice.RegisterWorkflowServiceServer(server, handler)
 
 	err = server.Serve(listener)
 	if err != nil {
-		logger.Fatal("unable to serve: %v", tag.NewErrorTag(err))
+		logger.Fatal("unable to serve", tag.Error(err))
 	}
 }
