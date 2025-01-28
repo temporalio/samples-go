@@ -1,6 +1,7 @@
 package worker_specific_task_queues
 
 import (
+	"go.temporal.io/sdk/temporal"
 	"path/filepath"
 	"time"
 
@@ -11,8 +12,25 @@ import (
 // FileProcessingWorkflow is a workflow that uses Worker-specific Task Queues to run multiple Activities on a consistent
 // host.
 func FileProcessingWorkflow(ctx workflow.Context) (err error) {
+	// When using a worker-specific task queue, if a failure occurs, we want to retry all of the worker-specific
+	// logic, so wrap all the logic here in a loop.
+	for attempt := range 5 {
+		if err = processFile(ctx); err == nil {
+			workflow.GetLogger(ctx).Info("Workflow completed.")
+			return
+		}
+		workflow.GetLogger(ctx).Error("Attempt failed, trying on new worker", attempt+1)
+	}
+	workflow.GetLogger(ctx).Error("Workflow failed after multiple retries.", "Error", err.Error())
+	return
+}
+
+func processFile(ctx workflow.Context) (err error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: time.Minute,
+		RetryPolicy: &temporal.RetryPolicy{
+			MaximumAttempts: 1,
+		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 	var WorkerSpecificTaskQueue string
