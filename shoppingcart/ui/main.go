@@ -36,11 +36,10 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("Starting dummy server...")
 	http.HandleFunc("/", listHandler)
 	http.HandleFunc("/action", actionHandler)
 
-	fmt.Println("Server started on :8080")
+	fmt.Println("Shopping Cart UI available at http://localhost:8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		fmt.Println("Error starting server:", err)
 	}
@@ -48,7 +47,7 @@ func main() {
 
 func listHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "text/html") // Set the content type to HTML
-	_, _ = fmt.Fprint(w, "<h1>DUMMY SHOPPING WEBSITE</h1>"+
+	_, _ = fmt.Fprint(w, "<h1>SAMPLE SHOPPING WEBSITE</h1>"+
 		"<a href=\"/list\">HOME</a> <a href=\"/action?type=checkout\">Checkout</a>"+
 		"<h3>Available Items to Purchase</h3><table border=1><tr><th>Item</th><th>Cost</th><th>Action</th>")
 
@@ -125,16 +124,15 @@ func updateWithStartCart(actionType string, id string) shoppingcart.CartState {
 		WorkflowIDConflictPolicy: enumspb.WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING,
 	}, shoppingcart.CartWorkflow)
 
-	updateOptions := client.UpdateWorkflowOptions{
-		UpdateName:   shoppingcart.UpdateName,
-		WaitForStage: client.WorkflowUpdateStageCompleted,
-		Args:         []interface{}{actionType, id},
-	}
-	option := client.UpdateWithStartWorkflowOptions{
+	updateWithStartOptions := client.UpdateWithStartWorkflowOptions{
 		StartWorkflowOperation: startWorkflowOp,
-		UpdateOptions:          updateOptions,
+		UpdateOptions: client.UpdateWorkflowOptions{
+			UpdateName:   shoppingcart.UpdateName,
+			WaitForStage: client.WorkflowUpdateStageCompleted,
+			Args:         []interface{}{actionType, id},
+		},
 	}
-	updateHandle, err := workflowClient.UpdateWithStartWorkflow(ctx, option)
+	updateHandle, err := workflowClient.UpdateWithStartWorkflow(ctx, updateWithStartOptions)
 	if err != nil {
 		// For example, a client-side validation error (e.g. missing conflict
 		// policy or invalid workflow argument types in the start operation), or

@@ -28,5 +28,5 @@ go run shoppingcart/worker/main.go
 ```
 3) Run the following command to start the web app
 ```
-go run shoppingcart/server/main.go
+go run shoppingcart/ui/main.go
 ```

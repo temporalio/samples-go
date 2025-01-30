@@ -68,6 +68,12 @@ func CartWorkflow(ctx workflow.Context) error {
 			return err
 		}
 		logger.Info("Continuing as new")
+
+		// NOTE: In this sample workflow, using ContinueAsNew does not properly
+		// pass the cart state to the new workflow. This was omitted for simplicity.
+		// In practice, you could use an activity to query a database for your cart
+		// state at the beginning of the workflow, or you could change CartWorkflow
+		// to accept an optional CartState input param to handle this scenario.
 		return workflow.NewContinueAsNewError(ctx, CartWorkflow)
 	}
 
