@@ -10,12 +10,6 @@ var (
 	TaskQueueName = "shopping-cart-tq"
 )
 
-type CartSignalPayload struct {
-	Action   string `json:"action"` // "add" or "remove"
-	ItemID   string `json:"item_id"`
-	Quantity int    `json:"quantity"`
-}
-
 type CartState struct {
 	Items map[string]int // itemID -> quantity
 }
@@ -23,49 +17,60 @@ type CartState struct {
 func CartWorkflow(ctx workflow.Context) error {
 	cart := CartState{make(map[string]int)}
 	logger := workflow.GetLogger(ctx)
-	var checkout bool
 
 	if err := workflow.SetUpdateHandlerWithOptions(ctx, UpdateName, func(ctx workflow.Context, actionType string, itemID string) (CartState, error) {
 		logger.Info("Received update,", actionType, itemID)
-		if actionType == "checkout" {
-			checkout = true
-		}
-		if itemID != "" {
-			if actionType == "add" {
-				cart.Items[itemID] += 1
-			} else if actionType == "remove" {
-				cart.Items[itemID] -= 1
-				if cart.Items[itemID] <= 0 {
-					delete(cart.Items, itemID)
-				}
+		switch actionType {
+		case "add":
+			cart.Items[itemID] += 1
+		case "remove":
+			cart.Items[itemID] -= 1
+			if cart.Items[itemID] <= 0 {
+				delete(cart.Items, itemID)
 			}
+		case "list":
+		default:
+			logger.Error("Unsupported action type.")
 		}
+
 		return cart, nil
 	}, workflow.UpdateHandlerOptions{
-		Validator: func(ctx workflow.Context, actionType string, itemID string) error {
+		Validator: func(ctx workflow.Context, actionType string, itemId string) error {
 			switch actionType {
-			case "add", "remove", "checkout", "":
-				return nil
+			case "add", "remove":
+				if itemId == "" {
+					return fmt.Errorf("itemId must be specified for add or remove actionType")
+				}
+			case "list":
+				if itemId != "" {
+					logger.Warn("ItemId not needed for \"list\" actionType.")
+				}
 			default:
 				return fmt.Errorf("unsupported action type: %s", actionType)
 			}
+			return nil
 		},
 	}); err != nil {
 		return err
 	}
 
-	err := workflow.Await(ctx, func() bool { return workflow.GetInfo(ctx).GetContinueAsNewSuggested() || checkout })
+	signalChan := workflow.GetSignalChannel(ctx, "checkout")
+
+	err := workflow.Await(ctx, func() bool { return workflow.GetInfo(ctx).GetContinueAsNewSuggested() || signalChan.Receive(ctx, nil) })
 	if err != nil {
 		return err
 	}
 	if workflow.GetInfo(ctx).GetContinueAsNewSuggested() {
+		err := workflow.Await(ctx, func() bool {
+			return workflow.AllHandlersFinished(ctx)
+		})
+		if err != nil {
+			return err
+		}
 		logger.Info("Continuing as new")
 		return workflow.NewContinueAsNewError(ctx, CartWorkflow)
 	}
-	if checkout {
-		return nil
-	}
 
-	return fmt.Errorf("unreachable")
+	return nil
 
 }

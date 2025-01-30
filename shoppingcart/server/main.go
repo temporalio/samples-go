@@ -13,7 +13,6 @@ import (
 )
 
 var (
-	cartState      = shoppingcart.CartState{Items: make(map[string]int)}
 	workflowClient client.Client
 	// Units are in cents
 	itemCosts = map[string]int{
@@ -25,7 +24,7 @@ var (
 		"car":        5000000,
 		"binder":     1000,
 	}
-	workflowIdNumber = uuid.New()
+	sessionId = newSession()
 )
 
 func main() {
@@ -67,9 +66,7 @@ func listHandler(w http.ResponseWriter, _ *http.Request) {
 	_, _ = fmt.Fprint(w, "</table><h3>Current items in cart:</h3>"+
 		"<table border=1><tr><th>Item</th><th>Quantity</th><th>Action</th>")
 
-	if len(cartState.Items) == 0 {
-		updateWithStartCart("", "")
-	}
+	cartState := updateWithStartCart("list", "")
 
 	// List current items in cart
 	keys = make([]string, 0)
@@ -88,23 +85,39 @@ func listHandler(w http.ResponseWriter, _ *http.Request) {
 func actionHandler(w http.ResponseWriter, r *http.Request) {
 	actionType := r.URL.Query().Get("type")
 	switch actionType {
-	case "add", "remove", "checkout", "":
+	case "checkout":
+		err := workflowClient.SignalWorkflow(context.Background(), sessionId, "", "checkout", nil)
+		if err != nil {
+			log.Fatalln("Error signaling checkout:", err)
+		}
+		sessionId = newSession()
+		log.Println("Items checked out and workflow completed, starting new workflow")
+	case "add", "remove", "list":
+		id := r.URL.Query().Get("id")
+		updateWithStartCart(actionType, id)
 	default:
 		log.Fatalln("Invalid action type:", actionType)
 	}
-	id := r.URL.Query().Get("id")
 
-	updateWithStartCart(actionType, id)
-
-	if actionType != "" {
+	// Generate the HTML after communicating with the Temporal workflow.
+	// "list" already generates HTML, so skip for that scenario
+	if actionType != "list" {
 		listHandler(w, r)
 	}
 }
 
-func updateWithStartCart(actionType string, id string) {
+func updateWithStartCart(actionType string, id string) shoppingcart.CartState {
+	// Handle a client request to add an item to the shopping cart. The user is not logged in, but a session ID is
+	// available from a cookie, and we use this as the cart ID. The Temporal client was created at service-start
+	// time and is shared by all request handlers.
+	//
+	// A Workflow Type exists that can be used to represent a shopping cart. The method uses update-with-start to
+	// add an item to the shopping cart, creating the cart if it doesn't already exist.
+	//
+	// Note that the workflow handle is available, even if the Update fails.
 	ctx := context.Background()
 	startWorkflowOp := workflowClient.NewWithStartWorkflowOperation(client.StartWorkflowOptions{
-		ID:        "shopping-cart-workflow" + workflowIdNumber,
+		ID:        sessionId,
 		TaskQueue: shoppingcart.TaskQueueName,
 		// WorkflowIDConflictPolicy is required when using UpdateWithStartWorkflow.
 		// Here we use USE_EXISTING, because we want to reuse the running workflow, as it
@@ -130,22 +143,18 @@ func updateWithStartCart(actionType string, id string) {
 		log.Fatalln("Error issuing update-with-start:", err)
 	}
 
-	// If someone has checked out their cart, this completes the workflow.
-	// We then want to create a new workflow for the next user to shop.
-	if actionType == "checkout" {
-		workflowIdNumber = uuid.New()
-		cartState = shoppingcart.CartState{Items: make(map[string]int)}
-		log.Println("Items checked out and workflow completed, starting new workflow")
-		return
-	}
-
-	log.Println("Started workflow",
+	log.Println("Updated workflow",
 		"WorkflowID:", updateHandle.WorkflowID(),
 		"RunID:", updateHandle.RunID())
 
 	// Always use a zero variable before calling Get for any Go SDK API
-	cartState = shoppingcart.CartState{Items: make(map[string]int)}
+	cartState := shoppingcart.CartState{Items: make(map[string]int)}
 	if err = updateHandle.Get(ctx, &cartState); err != nil {
 		log.Fatalln("Error obtaining update result:", err)
 	}
+	return cartState
+}
+
+func newSession() string {
+	return "session-" + uuid.New()
 }

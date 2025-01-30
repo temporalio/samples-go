@@ -12,7 +12,10 @@ for Update-with-Start being used for lazy initialization.
 1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 
    NOTE: frontend.enableExecuteMultiOperation=true must be configured for the server
-in order to use Update-with-Start. 
+in order to use Update-with-Start. For example:
+```
+temporal server start-dev --dynamic-config-value frontend.enableExecuteMultiOperation=true
+```
 
 2) Run the following command to start the worker
 ```
