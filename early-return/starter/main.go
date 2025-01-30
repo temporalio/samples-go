@@ -3,10 +3,9 @@ package main
 import (
 	"context"
 	"log"
-	"time"
 
 	"github.com/pborman/uuid"
-	"github.com/temporalio/samples-go/early-return"
+	earlyreturn "github.com/temporalio/samples-go/early-return"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/client"
 )
@@ -18,8 +17,7 @@ func main() {
 	}
 	defer c.Close()
 
-	ctxWithTimeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	ctxWithTimeout := context.Background()
 
 	txRequest := earlyreturn.TransactionRequest{SourceAccount: "Bob", TargetAccount: "Alice", Amount: 100}
 
@@ -37,6 +35,7 @@ func main() {
 		WaitForStage: client.WorkflowUpdateStageCompleted,
 	}
 
+	log.Println("Start")
 	updateHandle, err := c.UpdateWithStartWorkflow(ctxWithTimeout, client.UpdateWithStartWorkflowOptions{
 		StartWorkflowOperation: startWorkflowOp,
 		UpdateOptions:          updateOptions,

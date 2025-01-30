@@ -49,6 +49,9 @@ func run(ctx workflow.Context, txRequest TransactionRequest) (*Transaction, erro
 		ctx,
 		UpdateName,
 		func(ctx workflow.Context) (*Transaction, error) {
+			if err := workflow.Sleep(ctx, 90*time.Second); err != nil {
+				return tx, err
+			}
 			if err := workflow.Await(ctx, func() bool { return initDone }); err != nil {
 				return nil, fmt.Errorf("transaction init cancelled: %w", err)
 			}
@@ -95,6 +98,12 @@ func run(ctx workflow.Context, txRequest TransactionRequest) (*Transaction, erro
 	}
 
 	workflow.GetLogger(ctx).Info("Transaction completed successfully", "ID", tx.ID)
+
+	if err := workflow.Await(ctx, func() bool {
+		return workflow.AllHandlersFinished(ctx)
+	}); err != nil {
+		return nil, err
+	}
 
 	return tx, nil
 }
