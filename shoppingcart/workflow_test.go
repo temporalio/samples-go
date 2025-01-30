@@ -60,13 +60,7 @@ func Test_ShoppingCartWorkflow(t *testing.T) {
 	}, 0)
 
 	env.RegisterDelayedCallback(func() {
-		env.UpdateWorkflow(UpdateName, uuid.New(), &testsuite.TestUpdateCallback{
-			OnAccept: func() {},
-			OnReject: func(err error) {
-				require.Fail(t, "unexpected rejection")
-			},
-			OnComplete: func(i interface{}, err error) {},
-		}, "checkout", "")
+		env.SignalWorkflow("checkout", nil)
 	}, 0)
 	env.ExecuteWorkflow(CartWorkflow)
 
