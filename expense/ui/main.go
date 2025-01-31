@@ -10,7 +10,7 @@ import (
 )
 
 /**
- * Dummy server that support to list expenses, create new expense, update expense state and checking expense state.
+ * Sample expense system that support to list expenses, create new expense, update expense state and checking expense state.
  */
 
 type expenseState string
@@ -22,7 +22,7 @@ const (
 	completed expenseState = "COMPLETED"
 )
 
-// use memory store for this dummy server
+// use memory store for this sample expense system
 var (
 	allExpense     = make(map[string]expenseState)
 	tokenMap       = make(map[string][]byte)
@@ -39,18 +39,19 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("Starting dummy server...")
 	http.HandleFunc("/", listHandler)
 	http.HandleFunc("/list", listHandler)
 	http.HandleFunc("/create", createHandler)
 	http.HandleFunc("/action", actionHandler)
 	http.HandleFunc("/status", statusHandler)
 	http.HandleFunc("/registerCallback", callbackHandler)
+
+	fmt.Println("Expense system UI available at http://localhost:8099")
 	_ = http.ListenAndServe(":8099", nil)
 }
 
 func listHandler(w http.ResponseWriter, _ *http.Request) {
-	_, _ = fmt.Fprint(w, "<h1>DUMMY EXPENSE SYSTEM</h1>"+"<a href=\"/list\">HOME</a>"+
+	_, _ = fmt.Fprint(w, "<h1>SAMPLE EXPENSE SYSTEM</h1>"+"<a href=\"/list\">HOME</a>"+
 		"<h3>All expense requests:</h3><table border=1><tr><th>Expense ID</th><th>Status</th><th>Action</th>")
 	var keys []string
 	for k := range allExpense {
