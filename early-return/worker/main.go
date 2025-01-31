@@ -19,6 +19,8 @@ func main() {
 	w := worker.New(c, earlyreturn.TaskQueueName, worker.Options{})
 
 	w.RegisterWorkflow(earlyreturn.Workflow)
+	w.RegisterActivity(earlyreturn.CompleteTransaction)
+	w.RegisterActivity(earlyreturn.CancelTransaction)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
