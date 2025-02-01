@@ -1,4 +1,4 @@
-package helloworld
+package sleepfordays
 
 import (
 	"context"
@@ -9,22 +9,22 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-const CompleteSignal = "complete"
-
-func SleepForDaysWorkflow(ctx workflow.Context, days int) (string, error) {
+func SleepForDaysWorkflow(ctx workflow.Context) (string, error) {
 	ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
 	})
 
 	isComplete := false
-	sigChan := workflow.GetSignalChannel(ctx, CompleteSignal)
-	workflow.Go(ctx, func(ctx workflow.Context) {
-		sigChan.Receive(ctx, &isComplete)
-	})
+	sigChan := workflow.GetSignalChannel(ctx, "complete")
 
 	for !isComplete {
-		workflow.ExecuteActivity(ctx, SendEmailActivity, fmt.Sprintf("Sleeping for %d days", days)).IsReady()
-		workflow.Sleep(ctx, time.Hour*24*time.Duration(days))
+		workflow.ExecuteActivity(ctx, SendEmailActivity, "Sleeping for 30 days")
+		selector := workflow.NewSelector(ctx)
+		selector.AddFuture(workflow.NewTimer(ctx, time.Hour*24*30), func(f workflow.Future) {})
+		selector.AddReceive(sigChan, func(c workflow.ReceiveChannel, more bool) {
+			isComplete = true
+		})
+		selector.Select(ctx)
 	}
 
 	return "done", nil

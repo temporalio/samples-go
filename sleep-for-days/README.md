@@ -1,6 +1,6 @@
 ### Sleep for days
 
-This sample demonstrates how to use Temporal to run a workflow that periodically sleeps for a number of days.
+This sample demonstrates how to create a Temporal workflow that runs forever, sending an email every 30 days.
 
 ### Steps to run this sample:
 1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).

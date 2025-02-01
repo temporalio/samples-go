@@ -19,8 +19,7 @@ func main() {
 		TaskQueue: "sleep-for-days",
 	}
 
-	const numDaysSleep = 3
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, sleepfordays.SleepForDaysWorkflow, numDaysSleep)
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, sleepfordays.SleepForDaysWorkflow)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
