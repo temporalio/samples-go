@@ -14,11 +14,13 @@ type CartState struct {
 	Items map[string]int // itemID -> quantity
 }
 
-func CartWorkflow(ctx workflow.Context) error {
-	cart := CartState{make(map[string]int)}
+func CartWorkflow(ctx workflow.Context, cart *CartState) error {
+	if cart == nil {
+		cart = &CartState{make(map[string]int)}
+	}
 	logger := workflow.GetLogger(ctx)
 
-	if err := workflow.SetUpdateHandlerWithOptions(ctx, UpdateName, func(ctx workflow.Context, actionType string, itemID string) (CartState, error) {
+	if err := workflow.SetUpdateHandlerWithOptions(ctx, UpdateName, func(ctx workflow.Context, actionType string, itemID string) (*CartState, error) {
 		logger.Info("Received update,", actionType, itemID)
 		switch actionType {
 		case "add":
@@ -69,12 +71,7 @@ func CartWorkflow(ctx workflow.Context) error {
 		}
 		logger.Info("Continuing as new")
 
-		// NOTE: In this sample workflow, using ContinueAsNew does not properly
-		// pass the cart state to the new workflow. This was omitted for simplicity.
-		// In practice, you could use an activity to query a database for your cart
-		// state at the beginning of the workflow, or you could change CartWorkflow
-		// to accept an optional CartState input param to handle this scenario.
-		return workflow.NewContinueAsNewError(ctx, CartWorkflow)
+		return workflow.NewContinueAsNewError(ctx, CartWorkflow, cart)
 	}
 
 	return nil

@@ -115,17 +115,16 @@ func updateWithStartCart(actionType string, id string) shoppingcart.CartState {
 	//
 	// Note that the workflow handle is available, even if the Update fails.
 	ctx := context.Background()
-	startWorkflowOp := workflowClient.NewWithStartWorkflowOperation(client.StartWorkflowOptions{
-		ID:        sessionId,
-		TaskQueue: shoppingcart.TaskQueueName,
-		// WorkflowIDConflictPolicy is required when using UpdateWithStartWorkflow.
-		// Here we use USE_EXISTING, because we want to reuse the running workflow, as it
-		// is long-running and keeping track of our cart state.
-		WorkflowIDConflictPolicy: enumspb.WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING,
-	}, shoppingcart.CartWorkflow)
 
 	updateWithStartOptions := client.UpdateWithStartWorkflowOptions{
-		StartWorkflowOperation: startWorkflowOp,
+		StartWorkflowOperation: workflowClient.NewWithStartWorkflowOperation(client.StartWorkflowOptions{
+			ID:        sessionId,
+			TaskQueue: shoppingcart.TaskQueueName,
+			// WorkflowIDConflictPolicy is required when using UpdateWithStartWorkflow.
+			// Here we use USE_EXISTING, because we want to reuse the running workflow, as it
+			// is long-running and keeping track of our cart state.
+			WorkflowIDConflictPolicy: enumspb.WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING,
+		}, shoppingcart.CartWorkflow, nil),
 		UpdateOptions: client.UpdateWorkflowOptions{
 			UpdateName:   shoppingcart.UpdateName,
 			WaitForStage: client.WorkflowUpdateStageCompleted,
