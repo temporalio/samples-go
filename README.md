@@ -32,6 +32,8 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Dynamic mTLS hello world**](./dynamicmtls): Simple example showing how to refresh mTLS credentials. This allows for credentials to be refreshed without restarting the worker.
 
+- [**Basic apiKey hello world**](./helloworld-apiKey): Simple example of a
+Workflow Definition and an Activity Definition using API Key to authenticate with Temporal Cloud.
 ### API demonstrations
 
 - **Async activity completion**: Example of
