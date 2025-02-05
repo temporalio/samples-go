@@ -58,7 +58,14 @@ func CartWorkflow(ctx workflow.Context, cart *CartState) error {
 
 	signalChan := workflow.GetSignalChannel(ctx, "checkout")
 
-	err := workflow.Await(ctx, func() bool { return workflow.GetInfo(ctx).GetContinueAsNewSuggested() || signalChan.Receive(ctx, nil) })
+	err := workflow.Await(ctx, func() bool {
+		if workflow.GetInfo(ctx).GetContinueAsNewSuggested() {
+			return true
+		}
+		signalChan.Receive(ctx, nil)
+
+		return true
+	})
 	if err != nil {
 		return err
 	}
