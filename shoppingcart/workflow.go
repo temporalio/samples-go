@@ -37,15 +37,15 @@ func CartWorkflow(ctx workflow.Context, cart *CartState) error {
 
 		return cart, nil
 	}, workflow.UpdateHandlerOptions{
-		Validator: func(ctx workflow.Context, actionType string, itemId string) error {
+		Validator: func(ctx workflow.Context, actionType string, itemID string) error {
 			switch actionType {
 			case "add", "remove":
-				if itemId == "" {
-					return fmt.Errorf("itemId must be specified for add or remove actionType")
+				if itemID == "" {
+					return fmt.Errorf("itemID must be specified for add or remove actionType")
 				}
 			case "list":
-				if itemId != "" {
-					logger.Warn("ItemId not needed for \"list\" actionType.")
+				if itemID != "" {
+					logger.Warn("ItemID not needed for \"list\" actionType.")
 				}
 			default:
 				return fmt.Errorf("unsupported action type: %s", actionType)
@@ -80,6 +80,7 @@ func CartWorkflow(ctx workflow.Context, cart *CartState) error {
 
 		return workflow.NewContinueAsNewError(ctx, CartWorkflow, cart)
 	}
+	logger.Info("User has checked out, cart workflow exiting.")
 
 	return nil
 

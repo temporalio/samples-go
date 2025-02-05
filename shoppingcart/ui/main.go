@@ -57,7 +57,7 @@ func listHandler(w http.ResponseWriter, _ *http.Request) {
 	}
 	sort.Strings(keys)
 	for _, k := range keys {
-		actionButton := fmt.Sprintf("<a href=\"/action?type=add&id=%s\">"+
+		actionButton := fmt.Sprintf("<a href=\"/action?type=add&itemID=%s\">"+
 			"<button style=\"background-color:#4CAF50;\">Add to Cart</button></a>", k)
 		dollars := float64(itemCosts[k]) / 100
 		_, _ = fmt.Fprintf(w, "<tr><td>%s</td><td>$%.2f</td><td>%s</td></tr>", k, dollars, actionButton)
@@ -74,7 +74,7 @@ func listHandler(w http.ResponseWriter, _ *http.Request) {
 	}
 	sort.Strings(keys)
 	for _, k := range keys {
-		removeButton := fmt.Sprintf("<a href=\"/action?type=remove&id=%s\">"+
+		removeButton := fmt.Sprintf("<a href=\"/action?type=remove&itemID=%s\">"+
 			"<button style=\"background-color:#f44336;\">Remove Item</button></a>", k)
 		_, _ = fmt.Fprintf(w, "<tr><td>%s</td><td>%d</td><td>%s</td></tr>", k, cartState.Items[k], removeButton)
 	}
@@ -89,11 +89,9 @@ func actionHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatalln("Error signaling checkout:", err)
 		}
-		sessionId = newSession()
-		log.Println("Items checked out and workflow completed, starting new workflow")
 	case "add", "remove", "list":
-		id := r.URL.Query().Get("id")
-		updateWithStartCart(actionType, id)
+		itemID := r.URL.Query().Get("itemID")
+		updateWithStartCart(actionType, itemID)
 	default:
 		log.Fatalln("Invalid action type:", actionType)
 	}
@@ -105,7 +103,7 @@ func actionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func updateWithStartCart(actionType string, id string) shoppingcart.CartState {
+func updateWithStartCart(actionType string, itemID string) shoppingcart.CartState {
 	// Handle a client request to add an item to the shopping cart. The user is not logged in, but a session ID is
 	// available from a cookie, and we use this as the cart ID. The Temporal client was created at service-start
 	// time and is shared by all request handlers.
@@ -128,7 +126,7 @@ func updateWithStartCart(actionType string, id string) shoppingcart.CartState {
 		UpdateOptions: client.UpdateWorkflowOptions{
 			UpdateName:   shoppingcart.UpdateName,
 			WaitForStage: client.WorkflowUpdateStageCompleted,
-			Args:         []interface{}{actionType, id},
+			Args:         []interface{}{actionType, itemID},
 		},
 	}
 	updateHandle, err := workflowClient.UpdateWithStartWorkflow(ctx, updateWithStartOptions)
