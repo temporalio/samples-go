@@ -20,7 +20,7 @@ func Test_ShoppingCartWorkflow(t *testing.T) {
 			OnReject: func(err error) { require.Fail(t, "unexpected rejection") },
 			OnComplete: func(i interface{}, err error) {
 				require.NoError(t, err)
-				cartState, ok := i.(CartState)
+				cartState, ok := i.(*CartState)
 				if !ok {
 					require.Fail(t, "Invalid return type")
 				}
@@ -36,7 +36,7 @@ func Test_ShoppingCartWorkflow(t *testing.T) {
 			OnReject: func(err error) { require.Fail(t, "unexpected rejection") },
 			OnComplete: func(i interface{}, err error) {
 				require.NoError(t, err)
-				cartState, ok := i.(CartState)
+				cartState, ok := i.(*CartState)
 				if !ok {
 					require.Fail(t, "Invalid return type")
 				}
@@ -62,7 +62,7 @@ func Test_ShoppingCartWorkflow(t *testing.T) {
 	env.RegisterDelayedCallback(func() {
 		env.SignalWorkflow("checkout", nil)
 	}, 0)
-	env.ExecuteWorkflow(CartWorkflow)
+	env.ExecuteWorkflow(CartWorkflow, nil)
 
 	require.True(t, env.IsWorkflowCompleted())
 	require.Equal(t, 2, updatesCompleted)
