@@ -314,10 +314,14 @@ func (cm *ClusterManager) run(ctx workflow.Context) (ClusterManagerResult, error
 				return ClusterManagerResult{}, err
 			}
 			cm.logger.Info("Continuing as new")
-			return ClusterManagerResult{}, workflow.NewContinueAsNewError(ctx, ClusterManagerInput{
-				State:             &cm.state,
-				TestContinueAsNew: cm.testContinueAsNew,
-			})
+			return ClusterManagerResult{}, workflow.NewContinueAsNewError(
+				ctx,
+				ClusterManagerWorkflow,
+				ClusterManagerInput{
+					State:             &cm.state,
+					TestContinueAsNew: cm.testContinueAsNew,
+				},
+			)
 		}
 
 	}
