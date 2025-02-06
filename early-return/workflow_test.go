@@ -22,7 +22,7 @@ func Test_CompleteTransaction_Succeeds(t *testing.T) {
 		env.UpdateWorkflow(UpdateName, uuid.New(), &testsuite.TestUpdateCallback{
 			OnAccept: func() {},
 			OnReject: func(err error) {
-				panic("unexpected rejection")
+				require.Fail(t, "unexpected rejection")
 			},
 			OnComplete: func(i interface{}, err error) {
 				require.NoError(t, err)
@@ -50,7 +50,7 @@ func Test_CompleteTransaction_Fails(t *testing.T) {
 		env.UpdateWorkflow(UpdateName, uuid.New(), &testsuite.TestUpdateCallback{
 			OnAccept: func() {},
 			OnReject: func(err error) {
-				panic("unexpected rejection")
+				require.Fail(t, "unexpected rejection")
 			},
 			OnComplete: func(i interface{}, err error) {
 				require.NoError(t, err)
@@ -76,7 +76,7 @@ func Test_CancelTransaction(t *testing.T) {
 		env.UpdateWorkflow(UpdateName, uuid.New(), &testsuite.TestUpdateCallback{
 			OnAccept: func() {},
 			OnReject: func(err error) {
-				panic("unexpected rejection")
+				require.Fail(t, "unexpected rejection")
 			},
 			OnComplete: func(i interface{}, err error) {
 				require.ErrorContains(t, err, "invalid Amount")
@@ -103,7 +103,7 @@ func Test_CancelTransaction_Fails(t *testing.T) {
 		env.UpdateWorkflow(UpdateName, uuid.New(), &testsuite.TestUpdateCallback{
 			OnAccept: func() {},
 			OnReject: func(err error) {
-				panic("unexpected rejection")
+				require.Fail(t, "unexpected rejection")
 			},
 			OnComplete: func(i interface{}, err error) {
 				require.ErrorContains(t, err, "invalid Amount")
