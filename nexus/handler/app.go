@@ -14,25 +14,30 @@ import (
 	"github.com/temporalio/samples-go/nexus/service"
 )
 
-// NewSyncOperation is a meant for exposing simple RPC handlers.
-var EchoOperation = temporalnexus.NewSyncOperation(service.EchoOperationName, func(ctx context.Context, c client.Client, input service.EchoInput, options nexus.StartOperationOptions) (service.EchoOutput, error) {
-	// The method is provided with an SDK client that can be used for arbitrary calls such as signaling, querying,
-	// and listing workflows but implementations are free to make arbitrary calls to other services or databases, or
-	// perform simple computations such as this one.
-	return service.EchoOutput(input), nil
-})
+// NewSyncOperation is meant for exposing simple RPC handlers.
+var EchoOperation = temporalnexus.NewSyncOperation(
+	service.EchoOperationName,
+	func(ctx context.Context, c client.Client, input service.EchoInput, options nexus.StartOperationOptions) (service.EchoOutput, error) {
+		// The method is provided with an SDK client that can be used for arbitrary calls such as signaling, querying,
+		// and listing workflows but implementations are free to make arbitrary calls to other services or databases, or
+		// perform simple computations such as this one.
+		return service.EchoOutput(input), nil
+	})
 
 // Use the NewWorkflowRunOperation constructor, which is the easiest way to expose a workflow as an operation.
 // See alternatives at https://pkg.go.dev/go.temporal.io/sdk/temporalnexus.
-var HelloOperation = temporalnexus.NewWorkflowRunOperation(service.HelloOperationName, HelloHandlerWorkflow, func(ctx context.Context, input service.HelloInput, options nexus.StartOperationOptions) (client.StartWorkflowOptions, error) {
-	return client.StartWorkflowOptions{
-		// Workflow IDs should typically be business meaningful IDs and are used to dedupe workflow starts.
-		// For this example, we're using the request ID allocated by Temporal when the caller workflow schedules
-		// the operation, this ID is guaranteed to be stable across retries of this operation.
-		ID: options.RequestID,
-		// Task queue defaults to the task queue this operation is handled on.
-	}, nil
-})
+var HelloOperation = temporalnexus.NewWorkflowRunOperation(
+	service.HelloOperationName,
+	HelloHandlerWorkflow,
+	func(ctx context.Context, input service.HelloInput, options nexus.StartOperationOptions) (client.StartWorkflowOptions, error) {
+		return client.StartWorkflowOptions{
+			// Workflow IDs should typically be business meaningful IDs and are used to dedupe workflow starts.
+			// For this example, we're using the request ID allocated by Temporal when the caller workflow schedules
+			// the operation, this ID is guaranteed to be stable across retries of this operation.
+			ID: options.RequestID,
+			// Task queue defaults to the task queue this operation is handled on.
+		}, nil
+	})
 
 func HelloHandlerWorkflow(_ workflow.Context, input service.HelloInput) (service.HelloOutput, error) {
 	switch input.Language {
@@ -49,4 +54,5 @@ func HelloHandlerWorkflow(_ workflow.Context, input service.HelloInput) (service
 	}
 	return service.HelloOutput{}, fmt.Errorf("unsupported language %q", input.Language)
 }
+
 // @@@SNIPEND
