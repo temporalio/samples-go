@@ -15,13 +15,14 @@ import (
 	"github.com/temporalio/samples-go/nexus/service"
 )
 
-var EchoOperation = temporalnexus.NewSyncOperation(service.EchoOperationName, func(ctx context.Context, c client.Client, input service.EchoInput, options nexus.StartOperationOptions) (service.EchoOutput, error) {
-	// NOTE: the provided client is not usable in the test environment.
+var EchoOperation = nexus.NewSyncOperation(service.EchoOperationName, func(ctx context.Context, input service.EchoInput, options nexus.StartOperationOptions) (service.EchoOutput, error) {
+	// NOTE: temporalnexus.GetClient is not usable in the test environment.
 	return service.EchoOutput(input), nil
 })
 
 var HelloOperation = temporalnexus.NewWorkflowRunOperation(service.HelloOperationName, FakeHelloHandlerWorkflow, func(ctx context.Context, input service.HelloInput, options nexus.StartOperationOptions) (client.StartWorkflowOptions, error) {
 	return client.StartWorkflowOptions{
+		// Do not use RequestID for production use cases. ID should be a meaninful business ID.
 		ID: options.RequestID,
 	}, nil
 })
