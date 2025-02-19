@@ -16,10 +16,9 @@ import (
 
 // NewSyncOperation is a meant for exposing simple RPC handlers.
 var EchoOperation = nexus.NewSyncOperation(service.EchoOperationName, func(ctx context.Context, input service.EchoInput, options nexus.StartOperationOptions) (service.EchoOutput, error) {
-	// The method is provided with an SDK client that can be used for arbitrary calls such as signaling, querying,
-	// and listing workflows but implementations are free to make arbitrary calls to other services or databases, or
-	// perform simple computations such as this one.
-	// Use temporalnexus.GetClient to get the client that the worker was initialized with.
+	// Use temporalnexus.GetClient to get the client that the worker was initialized with to perform client calls
+	// such as signaling, querying, and listing workflows. Implementations are free to make arbitrary calls to other
+	// services or databases, or perform simple computations such as this one.
 	return service.EchoOutput(input), nil
 })
 
