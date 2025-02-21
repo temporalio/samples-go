@@ -4,9 +4,11 @@ package handler
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 
+	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporalnexus"
 	"go.temporal.io/sdk/workflow"
@@ -26,15 +28,18 @@ var EchoOperation = temporalnexus.NewSyncOperation(service.EchoOperationName, fu
 // See alternatives at https://pkg.go.dev/go.temporal.io/sdk/temporalnexus.
 var HelloOperation = temporalnexus.NewWorkflowRunOperation(service.HelloOperationName, HelloHandlerWorkflow, func(ctx context.Context, input service.HelloInput, options nexus.StartOperationOptions) (client.StartWorkflowOptions, error) {
 	return client.StartWorkflowOptions{
-		// Workflow IDs should typically be business meaningful IDs and are used to dedupe workflow starts.
-		// For this example, we're using the request ID allocated by Temporal when the caller workflow schedules
-		// the operation, this ID is guaranteed to be stable across retries of this operation.
-		ID: options.RequestID,
+		ID: "hello-" + input.Name,
+		// Attach to existing workflow if it's already running.
+		WorkflowIDConflictPolicy: enumspb.WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING,
 		// Task queue defaults to the task queue this operation is handled on.
 	}, nil
 })
 
-func HelloHandlerWorkflow(_ workflow.Context, input service.HelloInput) (service.HelloOutput, error) {
+func HelloHandlerWorkflow(ctx workflow.Context, input service.HelloInput) (service.HelloOutput, error) {
+	if err := workflow.Sleep(ctx, 30*time.Second); err != nil {
+		return service.HelloOutput{}, nil
+	}
+
 	switch input.Language {
 	case service.EN:
 		return service.HelloOutput{Message: "Hello " + input.Name + " 👋"}, nil
@@ -49,4 +54,6 @@ func HelloHandlerWorkflow(_ workflow.Context, input service.HelloInput) (service
 	}
 	return service.HelloOutput{}, fmt.Errorf("unsupported language %q", input.Language)
 }
+
 // @@@SNIPEND
+

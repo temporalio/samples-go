@@ -2,6 +2,8 @@
 package caller
 
 import (
+	"fmt"
+
 	"github.com/temporalio/samples-go/nexus/service"
 	"go.temporal.io/sdk/workflow"
 )
@@ -36,6 +38,7 @@ func HelloCallerWorkflow(ctx workflow.Context, name string, language service.Lan
 	if err := fut.GetNexusOperationExecution().Get(ctx, &exec); err != nil {
 		return "", err
 	}
+	fmt.Printf("FOO exec: %#v\n", exec)
 	if err := fut.Get(ctx, &res); err != nil {
 		return "", err
 	}

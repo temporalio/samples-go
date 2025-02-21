@@ -24,7 +24,7 @@ func main() {
 		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
-	runWorkflow(c, caller.EchoCallerWorkflow, "Nexus Echo 👋")
+	// runWorkflow(c, caller.EchoCallerWorkflow, "Nexus Echo 👋")
 	runWorkflow(c, caller.HelloCallerWorkflow, "Nexus", service.ES)
 }
 
