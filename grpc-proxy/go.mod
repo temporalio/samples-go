@@ -5,7 +5,7 @@ go 1.23.2
 require (
 	github.com/golang/snappy v0.0.4
 	go.temporal.io/api v1.44.1
-	go.temporal.io/sdk v1.32.1
+	go.temporal.io/sdk v1.33.0
 	go.temporal.io/server v1.26.2
 	google.golang.org/grpc v1.67.1
 )
@@ -37,7 +37,7 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/nexus-rpc/sdk-go v0.1.0 // indirect
+	github.com/nexus-rpc/sdk-go v0.3.0 // indirect
 	github.com/olivere/elastic/v7 v7.0.32 // indirect
 	github.com/pborman/uuid v1.2.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect

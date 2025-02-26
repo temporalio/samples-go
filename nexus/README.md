@@ -24,7 +24,7 @@ This sample shows how to use Temporal for authoring a Nexus service and call it 
    site](https://learn.temporal.io/getting_started/go/dev_environment/#set-up-a-local-temporal-service-for-development-with-temporal-cli)
    to install Temporal CLI.
 
-> NOTE: The recommended version is at least v1.2.0.
+> NOTE: The recommended version is at least v1.3.0.
 
 ### Spin up environment
 
