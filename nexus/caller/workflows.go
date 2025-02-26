@@ -30,7 +30,7 @@ func HelloCallerWorkflow(ctx workflow.Context, name string, language service.Lan
 	fut := c.ExecuteOperation(ctx, service.HelloOperationName, service.HelloInput{Name: name, Language: language}, workflow.NexusOperationOptions{})
 	var res service.HelloOutput
 
-	// Optionally wait for the operation to be started. NexusOperationExecution will contain the operation ID in
+	// Optionally wait for the operation to be started. NexusOperationExecution will contain the operation token in
 	// case this operation is asynchronous.
 	var exec workflow.NexusOperationExecution
 	if err := fut.GetNexusOperationExecution().Get(ctx, &exec); err != nil {
@@ -42,4 +42,5 @@ func HelloCallerWorkflow(ctx workflow.Context, name string, language service.Lan
 
 	return res.Message, nil
 }
+
 // @@@SNIPEND

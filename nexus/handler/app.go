@@ -15,10 +15,10 @@ import (
 )
 
 // NewSyncOperation is a meant for exposing simple RPC handlers.
-var EchoOperation = temporalnexus.NewSyncOperation(service.EchoOperationName, func(ctx context.Context, c client.Client, input service.EchoInput, options nexus.StartOperationOptions) (service.EchoOutput, error) {
-	// The method is provided with an SDK client that can be used for arbitrary calls such as signaling, querying,
-	// and listing workflows but implementations are free to make arbitrary calls to other services or databases, or
-	// perform simple computations such as this one.
+var EchoOperation = nexus.NewSyncOperation(service.EchoOperationName, func(ctx context.Context, input service.EchoInput, options nexus.StartOperationOptions) (service.EchoOutput, error) {
+	// Use temporalnexus.GetClient to get the client that the worker was initialized with to perform client calls
+	// such as signaling, querying, and listing workflows. Implementations are free to make arbitrary calls to other
+	// services or databases, or perform simple computations such as this one.
 	return service.EchoOutput(input), nil
 })
 
@@ -49,4 +49,5 @@ func HelloHandlerWorkflow(_ workflow.Context, input service.HelloInput) (service
 	}
 	return service.HelloOutput{}, fmt.Errorf("unsupported language %q", input.Language)
 }
+
 // @@@SNIPEND
