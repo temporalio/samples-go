@@ -47,6 +47,8 @@ temporal operator namespace create --namespace my-caller-namespace
 
 #### Create Nexus endpoint
 
+> NOTE: this must be run in the `nexus` sample directory.
+
 ```
 temporal operator nexus endpoint create \
   --name my-nexus-endpoint-name \
