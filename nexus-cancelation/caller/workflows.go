@@ -38,11 +38,11 @@ func HelloCallerWorkflow(ctx workflow.Context, name string) (string, error) {
 	wg := workflow.NewWaitGroup(ctx)
 	for i, lang := range languages {
 		wg.Add(1)
-		workflow.Go(ctx, func(ctx workflow.Context) {
+		// Use the cancelable callCtx for executing the operation.
+		workflow.Go(callCtx, func(ctx workflow.Context) {
 			defer wg.Done()
-			// Use the cancelable callCtx for executing the operation.
 			fut := c.ExecuteOperation(
-				callCtx,
+				ctx,
 				service.HelloOperationName,
 				service.HelloInput{Name: name, Language: lang},
 				workflow.NexusOperationOptions{})
