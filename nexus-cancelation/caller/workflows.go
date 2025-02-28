@@ -47,6 +47,12 @@ func HelloCallerWorkflow(ctx workflow.Context, name string) (string, error) {
 				service.HelloInput{Name: name, Language: lang},
 				workflow.NexusOperationOptions{})
 			var output service.HelloOutput
+			// This future gets resolved when the operation completes with either success, failure, timeout,
+			// or cancelation.
+			// Only asynchronous operations may receive cancelation as cancelation in Nexus is sent using an
+			// operation token.
+			// The workflow or any other underlying resource backing the operation may choose to ignore the
+			// cancelation request, allowing the operation to end up in any of the terminal states.
 			err := fut.Get(ctx, &output)
 			results[i] = result{
 				lang:   lang,
@@ -57,6 +63,9 @@ func HelloCallerWorkflow(ctx workflow.Context, name string) (string, error) {
 			cancel()
 		})
 	}
+	// Wait for all operations to resolve. Once the workflow completes, the server will stop trying to cancel any
+	// operations that have not yet recieved cancelation, letting them run to completion. It is totally valid to
+	// abandon operations for certain use cases.
 	wg.Wait(ctx)
 
 	var greeting string
