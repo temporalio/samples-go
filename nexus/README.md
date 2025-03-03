@@ -60,7 +60,7 @@ temporal operator nexus endpoint create \
 ## Getting started with a self-hosted service or Temporal Cloud
 
 Nexus is currently available as
-[General Availability](https://docs.temporal.io/evaluate/development-production-features/release-stages).
+[General Availability](https://docs.temporal.io/evaluate/development-production-features/release-stages#general-availability).
 
 Self hosted users can [try Nexus
 out](https://github.com/temporalio/temporal/blob/main/docs/architecture/nexus.md#trying-nexus-out) in single cluster
