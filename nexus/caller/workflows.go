@@ -32,6 +32,7 @@ func HelloCallerWorkflow(ctx workflow.Context, name string, language service.Lan
 
 	// Optionally wait for the operation to be started. NexusOperationExecution will contain the operation token in
 	// case this operation is asynchronous.
+	// TODO: Is it worth explaining what you can do with the nexus operation token?
 	var exec workflow.NexusOperationExecution
 	if err := fut.GetNexusOperationExecution().Get(ctx, &exec); err != nil {
 		return "", err
