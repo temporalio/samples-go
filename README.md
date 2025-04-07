@@ -104,7 +104,8 @@ Workflow Definition and an Activity Definition using API Key to authenticate wit
 - **Signals**: Can be seen in the [Recovery](./recovery)
   and [Mutex](./mutex) examples. Additional
   documentation: [eCommerce application tutorial](https://learn.temporal.io/tutorials/go/ecommerce/)
-  , [How to send and handle Signals in Go](https://docs.temporal.io/application-development/features/#signals)
+  , [How to send Signals](https://docs.temporal.io/sending-messages#sending-signals)
+  , [How to handle Signals](https://docs.temporal.io/handling-messages)
   .
 
 - [**Memo**](./memo): Demonstrates how to use Memo that can be used
