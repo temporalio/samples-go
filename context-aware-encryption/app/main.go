@@ -33,7 +33,7 @@ func main() {
 
 	startables := []startable{
 		&Worker{tclient: c},
-		&App{tclient: c, maxCount: 1},
+		&App{tclient: c, maxCount: len(contextawareencryption.TenantKeysByOrganization)},
 	}
 
 	for _, s := range startables {
@@ -78,12 +78,12 @@ type Worker struct {
 }
 
 func (w *Worker) Start(ctx context.Context) error {
-	wrk := worker.New(w.tclient, "encryption", worker.Options{})
+	w.worker = worker.New(w.tclient, "encryption", worker.Options{})
 
-	wrk.RegisterWorkflow(contextawareencryption.TenantWorkflow)
-	wrk.RegisterActivity(contextawareencryption.TenantActivity)
+	w.worker.RegisterWorkflow(contextawareencryption.TenantWorkflow)
+	w.worker.RegisterActivity(contextawareencryption.TenantActivity)
 
-	return wrk.Run(worker.InterruptCh())
+	return w.worker.Run(worker.InterruptCh())
 }
 func (w *Worker) Shutdown(ctx context.Context) {
 	w.worker.Stop()
