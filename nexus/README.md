@@ -11,9 +11,9 @@ This sample shows how to use Temporal for authoring a Nexus service and call it 
 
 ### Sample directory structure
 
-- [service](./service) - shared service defintion
-- [caller](./caller) - caller workflows, worker, and starter
-- [handler](./handler) - handler workflow, operations, and worker
+- [service](./service) - shared service definition
+- [caller](./caller) - caller workflows, worker, and starter, which execute Nexus operations
+- [handler](./handler) - handler workflow, operations, and worker, which defines Nexus operations and creates a Nexus service
 - [options](./options) - command line argument parsing utility
 
 ## Getting started locally
@@ -58,9 +58,6 @@ temporal operator nexus endpoint create \
 ```
 
 ## Getting started with a self-hosted service or Temporal Cloud
-
-Nexus is currently available as
-[Public Preview](https://docs.temporal.io/evaluate/development-production-features/release-stages).
 
 Self hosted users can [try Nexus
 out](https://github.com/temporalio/temporal/blob/main/docs/architecture/nexus.md#trying-nexus-out) in single cluster

@@ -2,7 +2,7 @@
 
 This sample shows how to cancel a Nexus operation from a caller workflow.
 
-From more details on Nexus and how to setup to run this samples please see the [Nexus Sample](../nexus/README.md).
+From more details on Nexus and how to setup to run this sample please see the [Nexus Sample](../nexus/README.md).
 
 ### Running the sample
 
