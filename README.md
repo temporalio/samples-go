@@ -154,6 +154,9 @@ Workflow Definition and an Activity Definition using API Key to authenticate wit
 
 These samples demonstrate some common control flow patterns using Temporal's Go SDK API.
 
+- [**Dynamic Workflows**](./dynamic-workflows): Demonstrates how to execute Workflows and Activities dynamically,
+  using a single "Dynamic Workflow"
+
 - [**Dynamic Execution**](./dynamic): Demonstrates how to execute
   Workflows and Activities using a name rather than a strongly typed function.
 
