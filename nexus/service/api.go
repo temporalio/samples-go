@@ -14,6 +14,7 @@ type EchoOutput EchoInput
 
 // Hello operation
 const HelloOperationName = "say-hello"
+const CancelOperationName = "say-cancel"
 
 type Language string
 
@@ -33,4 +34,6 @@ type HelloInput struct {
 type HelloOutput struct {
 	Message string
 }
+
 // @@@SNIPEND
+

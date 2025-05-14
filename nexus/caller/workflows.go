@@ -2,6 +2,8 @@
 package caller
 
 import (
+	"time"
+
 	"github.com/temporalio/samples-go/nexus/service"
 	"go.temporal.io/sdk/workflow"
 )
@@ -28,7 +30,6 @@ func HelloCallerWorkflow(ctx workflow.Context, name string, language service.Lan
 	c := workflow.NewNexusClient(endpointName, service.HelloServiceName)
 
 	fut := c.ExecuteOperation(ctx, service.HelloOperationName, service.HelloInput{Name: name, Language: language}, workflow.NexusOperationOptions{})
-	var res service.HelloOutput
 
 	// Optionally wait for the operation to be started. NexusOperationExecution will contain the operation token in
 	// case this operation is asynchronous, which is a handle that can be used to perform additional actions like
@@ -37,11 +38,34 @@ func HelloCallerWorkflow(ctx workflow.Context, name string, language service.Lan
 	if err := fut.GetNexusOperationExecution().Get(ctx, &exec); err != nil {
 		return "", err
 	}
+
+	var res service.HelloOutput
 	if err := fut.Get(ctx, &res); err != nil {
 		return "", err
 	}
 
 	return res.Message, nil
+}
+
+func CancelCallerWorkflow(ctx workflow.Context) error {
+	cctx, cancel := workflow.WithCancel(ctx)
+	c := workflow.NewNexusClient(endpointName, service.HelloServiceName)
+	fut := c.ExecuteOperation(cctx, service.CancelOperationName, nil, workflow.NexusOperationOptions{})
+	var exec workflow.NexusOperationExecution
+	if err := fut.GetNexusOperationExecution().Get(ctx, &exec); err != nil {
+		return err
+	}
+
+	if err := workflow.Sleep(ctx, 60*time.Second); err != nil {
+		return err
+	}
+
+	cancel()
+	if err := fut.Get(ctx, nil); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // @@@SNIPEND

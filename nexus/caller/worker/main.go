@@ -28,6 +28,7 @@ func main() {
 
 	w.RegisterWorkflow(caller.EchoCallerWorkflow)
 	w.RegisterWorkflow(caller.HelloCallerWorkflow)
+	w.RegisterWorkflow(caller.CancelCallerWorkflow)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

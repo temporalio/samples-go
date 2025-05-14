@@ -24,8 +24,9 @@ func main() {
 		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
-	runWorkflow(c, caller.EchoCallerWorkflow, "Nexus Echo 👋")
+	// runWorkflow(c, caller.EchoCallerWorkflow, "Nexus Echo 👋")
 	runWorkflow(c, caller.HelloCallerWorkflow, "Nexus", service.ES)
+	// runCancelWorkflow(c)
 }
 
 func runWorkflow(c client.Client, workflow interface{}, args ...interface{}) {
@@ -49,4 +50,26 @@ func runWorkflow(c client.Client, workflow interface{}, args ...interface{}) {
 	}
 	log.Println("Workflow result:", result)
 }
+
+func runCancelWorkflow(c client.Client) {
+	ctx := context.Background()
+	workflowOptions := client.StartWorkflowOptions{
+		ID:        "nexus_cancel_caller_workflow_" + time.Now().Format("20060102150405"),
+		TaskQueue: caller.TaskQueue,
+	}
+
+	wr, err := c.ExecuteWorkflow(ctx, workflowOptions, caller.CancelCallerWorkflow)
+	if err != nil {
+		log.Fatalln("Unable to execute workflow", err)
+	}
+	log.Println("Started workflow", "WorkflowID", wr.GetID(), "RunID", wr.GetRunID())
+
+	var result string
+	err = wr.Get(context.Background(), &result)
+	if err != nil {
+		log.Fatalln("Unable get workflow result", err)
+	}
+	log.Println("Workflow result:", result)
+}
+
 // @@@SNIPEND

@@ -33,11 +33,13 @@ func main() {
 	w := worker.New(c, taskQueue, worker.Options{})
 	service := nexus.NewService(service.HelloServiceName)
 	err = service.Register(handler.EchoOperation, handler.HelloOperation)
+	err = service.Register(handler.CancelOperation)
 	if err != nil {
 		log.Fatalln("Unable to register operations", err)
 	}
 	w.RegisterNexusService(service)
 	w.RegisterWorkflow(handler.HelloHandlerWorkflow)
+	w.RegisterWorkflow(handler.CancelHandlerWorkflow)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
