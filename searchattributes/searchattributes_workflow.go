@@ -60,7 +60,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 		"CustomBoolField":     true,
 		"CustomDoubleField":   3.14,
 		"CustomDatetimeField": workflow.Now(ctx).UTC(),
-		"CustomStringField":   "String field is for text. When query, it will be tokenized for partial match. StringTypeField cannot be used in Order By",
+		"CustomStringField":   "String field is for text. When query, it will be tokenized for partial match.",
 	}
 	// This won't persist search attributes on server because commands are not sent to server,
 	// but local cache will be updated.
@@ -104,7 +104,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
-	query := "CustomIntField=2 AND CustomKeywordField='Update2' ORDER BY CustomDatetimeField DESC"
+	query := "CustomIntField=2 AND CustomKeywordField='Update2'"
 	var listResults []*workflowpb.WorkflowExecutionInfo
 	err = workflow.ExecuteActivity(ctx, ListExecutions, query).Get(ctx, &listResults)
 	if err != nil {
