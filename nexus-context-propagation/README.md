@@ -2,7 +2,7 @@
 
 This sample shows how to propagate context through client calls, workflows, and Nexus headers.
 
-From more details on Nexus and how to setup to run this samples please see the [Nexus Sample](../nexus/README.md).
+For more details on Nexus and how to set up to run this sample, please see the [Nexus Sample](../nexus/README.md).
 
 ### Running the sample
 
