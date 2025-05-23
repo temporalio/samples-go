@@ -1,6 +1,6 @@
 # Nexus Context Propagation
 
-This sample shows how to propgate context through client calls, workflows, and Nexus headers.
+This sample shows how to propagate context through client calls, workflows, and Nexus headers.
 
 From more details on Nexus and how to setup to run this samples please see the [Nexus Sample](../nexus/README.md).
 

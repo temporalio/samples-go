@@ -25,7 +25,7 @@ func Test_Workflow(t *testing.T) {
 		"CustomBoolField":     true,
 		"CustomDoubleField":   3.14,
 		"CustomDatetimeField": env.Now().UTC(),
-		"CustomStringField":   "String field is for text. When query, it will be tokenized for partial match. StringTypeField cannot be used in Order By",
+		"CustomStringField":   "String field is for text. When query, it will be tokenized for partial match.",
 	}
 	//lint:ignore SA1019 typed alternative available, leaving this for reference
 	env.OnUpsertSearchAttributes(attributes).Return(nil).Once()
