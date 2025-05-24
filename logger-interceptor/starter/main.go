@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/temporalio/samples-go/interceptor"
+	"github.com/temporalio/samples-go/logger-interceptor"
 	"go.temporal.io/sdk/client"
 )
 
@@ -18,10 +18,10 @@ func main() {
 
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        "interceptor_workflowID",
-		TaskQueue: "interceptor",
+		TaskQueue: "logger-interceptor",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, interceptor.Workflow, "Temporal")
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, logger_interceptor.Workflow, "Temporal")
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
