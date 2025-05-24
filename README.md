@@ -138,8 +138,11 @@ Workflow Definition and an Activity Definition using API Key to authenticate wit
 - [**Greetings Local**](./greetingslocal): Demonstrates how to pass
   dependencies to local activities defined as struct methods.
 
-- [**Interceptors**](./interceptor): Demonstrates how to use
+- [**Logging Interceptor**](./logger-interceptor): Demonstrates how to use
   interceptors to intercept calls, in this case for adding context to the logger.
+
+- [**Workflow Security Interceptor**](./workflow-security-interceptor): Demonstrates how to use
+  interceptors to intercept child workflow calls, in this case for validating their type.
 
 - [**Update**](./update): Demonstrates how to create a workflow that reacts
   to workflow update requests.
