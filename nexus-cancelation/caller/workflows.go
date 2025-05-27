@@ -64,7 +64,7 @@ func HelloCallerWorkflow(ctx workflow.Context, name string) (string, error) {
 		})
 	}
 	// Wait for all operations to resolve. Once the workflow completes, the server will stop trying to cancel any
-	// operations that have not yet recieved cancelation, letting them run to completion. It is totally valid to
+	// operations that have not yet received cancelation, letting them run to completion. It is totally valid to
 	// abandon operations for certain use cases.
 	wg.Wait(ctx)
 
