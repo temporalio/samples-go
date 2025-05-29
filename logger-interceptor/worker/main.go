@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/temporalio/samples-go/interceptor"
+	"github.com/temporalio/samples-go/logger-interceptor"
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
 	sdkinterceptor "go.temporal.io/sdk/interceptor"
@@ -21,9 +21,9 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "interceptor", worker.Options{
-		// Create interceptor that will put started time on the logger
-		Interceptors: []sdkinterceptor.WorkerInterceptor{interceptor.NewWorkerInterceptor(interceptor.InterceptorOptions{
+	w := worker.New(c, "logger-interceptor", worker.Options{
+		// Create logger-interceptor that will put started time on the logger
+		Interceptors: []sdkinterceptor.WorkerInterceptor{logger_interceptor.NewWorkerInterceptor(logger_interceptor.InterceptorOptions{
 			GetExtraLogTagsForWorkflow: func(ctx workflow.Context) []interface{} {
 				return []interface{}{"WorkflowStartTime", workflow.GetInfo(ctx).WorkflowStartTime.Format(time.RFC3339)}
 			},
@@ -33,8 +33,8 @@ func main() {
 		})},
 	})
 
-	w.RegisterWorkflow(interceptor.Workflow)
-	w.RegisterActivity(interceptor.Activity)
+	w.RegisterWorkflow(logger_interceptor.Workflow)
+	w.RegisterActivity(logger_interceptor.Activity)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

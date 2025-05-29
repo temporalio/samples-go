@@ -1,11 +1,11 @@
-package interceptor_test
+package logger_interceptor_test
 
 import (
 	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/temporalio/samples-go/interceptor"
+	"github.com/temporalio/samples-go/logger-interceptor"
 	sdkinterceptor "go.temporal.io/sdk/interceptor"
 	"go.temporal.io/sdk/testsuite"
 	"go.temporal.io/sdk/worker"
@@ -18,11 +18,11 @@ func TestWorkflow(t *testing.T) {
 	var capturingLogger capturingLogger
 	suite.SetLogger(&capturingLogger)
 	env := suite.NewTestWorkflowEnvironment()
-	env.RegisterActivity(interceptor.Activity)
+	env.RegisterActivity(logger_interceptor.Activity)
 
-	// Add our interceptor to put a custom tag on the logs
+	// Add our logger-interceptor to put a custom tag on the logs
 	env.SetWorkerOptions(worker.Options{
-		Interceptors: []sdkinterceptor.WorkerInterceptor{interceptor.NewWorkerInterceptor(interceptor.InterceptorOptions{
+		Interceptors: []sdkinterceptor.WorkerInterceptor{logger_interceptor.NewWorkerInterceptor(logger_interceptor.InterceptorOptions{
 			GetExtraLogTagsForWorkflow: func(workflow.Context) []interface{} {
 				return []interface{}{"workflow-tag", "workflow-value"}
 			},
@@ -33,7 +33,7 @@ func TestWorkflow(t *testing.T) {
 	})
 
 	// Run workflow
-	env.ExecuteWorkflow(interceptor.Workflow, "Temporal")
+	env.ExecuteWorkflow(logger_interceptor.Workflow, "Temporal")
 	require.True(t, env.IsWorkflowCompleted())
 	require.NoError(t, env.GetWorkflowError())
 	var result string
