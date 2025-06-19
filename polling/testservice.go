@@ -2,7 +2,8 @@ package polling
 
 import (
 	"context"
-	"errors"
+
+	"go.temporal.io/sdk/temporal"
 )
 
 type TestService struct {
@@ -22,5 +23,9 @@ func (testService *TestService) GetServiceResult(ctx context.Context) (string, e
 	if testService.tryAttempts%testService.errorAttempts == 0 {
 		return "OK", nil
 	}
-	return "", errors.New("service is down")
+	return "", temporal.NewApplicationErrorWithOptions(
+		"service is down", "ServiceError", temporal.ApplicationErrorOptions{
+			// This error is expected so we set it as benign to avoid excessive logging
+			Category: temporal.ApplicationErrorCategoryBenign,
+		})
 }
