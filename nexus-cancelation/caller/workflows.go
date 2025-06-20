@@ -45,7 +45,14 @@ func HelloCallerWorkflow(ctx workflow.Context, name string) (string, error) {
 				ctx,
 				service.HelloOperationName,
 				service.HelloInput{Name: name, Language: lang},
-				workflow.NexusOperationOptions{})
+				workflow.NexusOperationOptions{
+					// Set the cancellation type to NexusOperationCancellationTypeWaitRequested. 
+					// This means that the caller will wait for the cancellation request to be received by the handler before
+					// proceeding with the cancellation.
+					//
+					// By default, the caller would wait until the operation is completed.
+					CancellationType: workflow.NexusOperationCancellationTypeWaitRequested,
+				})
 			var output service.HelloOutput
 			// This future gets resolved when the operation completes with either success, failure, timeout,
 			// or cancelation.
@@ -63,9 +70,12 @@ func HelloCallerWorkflow(ctx workflow.Context, name string) (string, error) {
 			cancel()
 		})
 	}
-	// Wait for all operations to resolve. Once the workflow completes, the server will stop trying to cancel any
-	// operations that have not yet received cancelation, letting them run to completion. It is totally valid to
-	// abandon operations for certain use cases.
+	// Wait for all operations futures to resolve.  Once the workflow completes,
+	// the server will stop trying to cancel any operations that have not yet received cancelation,
+	// letting them run to completion. Since we set the CancellationType to NexusOperationCancellationTypeWaitRequested
+	// the future will be resolved when the operation receives the cancelation request.
+	//
+	// It is totally valid to abandon operations for certain use cases.
 	wg.Wait(ctx)
 
 	var greeting string
