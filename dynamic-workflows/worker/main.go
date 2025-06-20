@@ -23,7 +23,23 @@ func main() {
 
 	w := worker.New(c, "dynamic-workflows", worker.Options{})
 
-	w.RegisterDynamicWorkflow(dynamic.DynamicWorkflow, workflow.DynamicRegisterOptions{})
+	// Dynamic runtimes options are specified at workflow registration time.
+	options := workflow.DynamicRegisterOptions{
+		LoadDynamicRuntimeOptions: func(details workflow.LoadDynamicRuntimeOptionsDetails) (workflow.DynamicRuntimeOptions, error) {
+			var options workflow.DynamicRuntimeOptions
+			switch details.WorkflowType.Name {
+			case "some-workflow":
+				options.VersioningBehavior = workflow.VersioningBehaviorAutoUpgrade
+			case "behavior-pinned":
+				options.VersioningBehavior = workflow.VersioningBehaviorPinned
+			default:
+				options.VersioningBehavior = workflow.VersioningBehaviorUnspecified
+			}
+			return options, nil
+		},
+	}
+
+	w.RegisterDynamicWorkflow(dynamic.DynamicWorkflow, options)
 	w.RegisterDynamicActivity(dynamic.DynamicActivity, activity.DynamicRegisterOptions{})
 
 	err = w.Run(worker.InterruptCh())

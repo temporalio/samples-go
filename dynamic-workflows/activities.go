@@ -16,5 +16,6 @@ func DynamicActivity(ctx context.Context, args converter.EncodedValues) (string,
 
 	info := activity.GetInfo(ctx)
 	result := fmt.Sprintf("%s - %s - %s", info.WorkflowType.Name, arg1, arg2)
+
 	return result, nil
 }
