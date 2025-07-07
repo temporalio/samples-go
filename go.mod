@@ -2,8 +2,6 @@ module github.com/temporalio/samples-go
 
 go 1.23.0
 
-toolchain go1.24.3
-
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
 
 require (
