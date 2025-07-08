@@ -1,6 +1,6 @@
 # Nexus Cancellation
 
-This sample shows how to cancel a Nexus operation from a caller workflow.
+This sample shows how to cancel a Nexus operation from a caller workflow and specify a cancellation type. In this sample we will show using the `NexusOperationCancellationTypeWaitRequested` cancellation type, which allows the caller to return after the handler workflow has received the requested to be cancelled, but does not wait for the handler workflow to finish processing the cancellation request.
 
 For more details on Nexus and how to set up to run this sample, please see the [Nexus Sample](../nexus/README.md).
 
