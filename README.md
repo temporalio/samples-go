@@ -204,7 +204,9 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 - [**Worker-specific Task Queues**](./worker-specific-task-queues): Use a unique task queue per Worker to have certain Activities only run on that specific Worker. For instance for a file processing Workflow, where one Activity downloads a file and subsequent Activities need to operate on that file. (If multiple Workers were on the same queue, subsequent Activities may get run on different machines that don't have the downloaded file.)
 
 - [**Nexus**](./nexus): Demonstrates how to use the Nexus APIs to facilitate cross namespace calls.
+
 - [**Nexus Cancelation**](./nexus-cancelation): Demonstrates how to cancel a Nexus operation from a caller workflow.
+
 - [**Nexus Context Propagation**](./nexus-context-propagation): Demonstrates how to propagate context through client calls, workflows, and Nexus headers.
 
 ### Scenario based examples
