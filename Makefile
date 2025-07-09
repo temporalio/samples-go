@@ -53,5 +53,8 @@ update-sdk:
 	
 clean:
 	rm -rf bin
+
+start-local:
+	docker-compose up -d
 	
 ci-build: staticcheck errcheck workflowcheck bins test
