@@ -1,35 +1,43 @@
 {
-	"name": "Temporal",
-	// Update the 'dockerComposeFile' list if you have more compose files or use different names.
-	"dockerComposeFile": "docker-compose.yml",
-
-	// The 'service' property is the name of the service for the container that VS Code should
-	// use. Update this value and .devcontainer/docker-compose.yml to the real service name.
-	"service": "devcontainer",
-	"workspaceFolder": "/workspace",
-	"runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],
-
-	// Set *default* container specific settings.json values on container create.
-	"settings": {
-		"go.toolsManagement.checkForUpdates": "local",
-		"go.useLanguageServer": true,
-		"go.gopath": "/go"
+	"name": "Temporal Go Development",
+	"image": "mcr.microsoft.com/devcontainers/go:1-1.23-bullseye",
+	
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"go.toolsManagement.checkForUpdates": "local",
+				"go.useLanguageServer": true,
+				"terminal.integrated.defaultProfile.linux": "bash"
+			},
+			
+			"extensions": [
+				"golang.Go",
+				"ms-vscode.vscode-json",
+				"redhat.vscode-yaml",
+				"ms-vscode.makefile-tools"
+			]
+		}
 	},
 
-	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": [
-		"golang.Go"
-	],
+	"forwardPorts": [8233],
+	"portsAttributes": {
+		"8233": {
+			"label": "Temporal Dev Server & Web UI"
+		}
+	},
 
-	// Forward port for temporal UI automatically
-	"forwardPorts": [8088],
+	"containerEnv": {
+		"TEMPORAL_CLI_VERSION": "${localEnv:TEMPORAL_CLI_VERSION:1.4.1}"
+	},
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	"postCreateCommand": "curl -sSL https://github.com/temporalio/cli/releases/download/v${TEMPORAL_CLI_VERSION}/temporal_cli_${TEMPORAL_CLI_VERSION}_linux_$(dpkg --print-architecture).tar.gz | sudo tar -xz -C /usr/local/bin && go version && temporal --version && echo 'Ready! Run: temporal server start-dev'",
 
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "go version",
-
-	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-	"remoteUser": "vscode"
-}
+	"remoteUser": "vscode",
+	
+	"runArgs": [
+		"--cap-add=SYS_PTRACE",
+		"--security-opt", 
+		"seccomp=unconfined",
+		"--env-file", ".env"
+	]
+} 
