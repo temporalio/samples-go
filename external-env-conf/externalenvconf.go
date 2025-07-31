@@ -36,6 +36,8 @@ func LoadFromCustomFile() client.Options {
 }
 
 func LoadDefaultProfile() client.Options {
+	// Passing in an empty request will return an empty options struct. Go SDK
+	// will then use default values to connect to the Temporal server.
 	opts, err := envconfig.LoadClientOptions(envconfig.LoadClientOptionsRequest{})
 	if err != nil {
 		log.Fatalf("failed to load default client options: %v", err)

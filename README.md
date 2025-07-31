@@ -34,6 +34,9 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Basic apiKey hello world**](./helloworld-apiKey): Simple example of a
 Workflow Definition and an Activity Definition using API Key to authenticate with Temporal Cloud.
+
+- [**Basic external environment configuration**](./external-env-conf): Simple example showing how to configure a client
+with an external configuration file, like TOML, decoupling connection settings from application code.
 ### API demonstrations
 
 - **Async activity completion**: Example of
