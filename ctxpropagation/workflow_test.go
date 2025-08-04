@@ -24,7 +24,7 @@ func TestUnitTestSuite(t *testing.T) {
 	payload, _ := converter.GetDefaultDataConverter().ToPayload(Values{"some key", "some value"})
 	s.SetHeader(&commonpb.Header{
 		Fields: map[string]*commonpb.Payload{
-			propagationKey: payload,
+			HeaderKey: payload,
 		},
 	})
 

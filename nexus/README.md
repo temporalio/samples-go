@@ -11,9 +11,9 @@ This sample shows how to use Temporal for authoring a Nexus service and call it 
 
 ### Sample directory structure
 
-- [service](./service) - shared service defintion
-- [caller](./caller) - caller workflows, worker, and starter
-- [handler](./handler) - handler workflow, operations, and worker
+- [service](./service) - shared service definition
+- [caller](./caller) - caller workflows, worker, and starter, which execute Nexus operations
+- [handler](./handler) - handler workflow, operations, and worker, which defines Nexus operations and creates a Nexus service
 - [options](./options) - command line argument parsing utility
 
 ## Getting started locally
@@ -24,16 +24,14 @@ This sample shows how to use Temporal for authoring a Nexus service and call it 
    site](https://learn.temporal.io/getting_started/go/dev_environment/#set-up-a-local-temporal-service-for-development-with-temporal-cli)
    to install Temporal CLI.
 
-> NOTE: Required version is at least v1.1.0.
+> NOTE: The recommended version is at least v1.3.0.
 
 ### Spin up environment
 
 #### Start temporal server
 
-> HTTP port is required for Nexus communications
-
 ```
-temporal server start-dev --http-port 7243 --dynamic-config-value system.enableNexus=true
+temporal server start-dev
 ```
 
 ### Initialize environment
@@ -49,6 +47,8 @@ temporal operator namespace create --namespace my-caller-namespace
 
 #### Create Nexus endpoint
 
+> NOTE: this must be run in the `nexus` sample directory.
+
 ```
 temporal operator nexus endpoint create \
   --name my-nexus-endpoint-name \
@@ -58,9 +58,6 @@ temporal operator nexus endpoint create \
 ```
 
 ## Getting started with a self-hosted service or Temporal Cloud
-
-Nexus is currently available as
-[Public Preview](https://docs.temporal.io/evaluate/development-production-features/release-stages).
 
 Self hosted users can [try Nexus
 out](https://github.com/temporalio/temporal/blob/main/docs/architecture/nexus.md#trying-nexus-out) in single cluster
