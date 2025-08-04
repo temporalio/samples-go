@@ -6,10 +6,11 @@ import (
 
 	batch_sliding_window "github.com/temporalio/samples-go/batch-sliding-window"
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/contrib/envconfig"
 )
 
 func main() {
-	c, err := client.Dial(client.Options{})
+	c, err := client.Dial(envconfig.MustLoadDefaultClientOptions())
 	if err != nil {
 		panic(err)
 	}
