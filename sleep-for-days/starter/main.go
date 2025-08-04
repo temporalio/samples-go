@@ -6,10 +6,11 @@ import (
 
 	sleepfordays "github.com/temporalio/samples-go/sleep-for-days"
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/contrib/envconfig"
 )
 
 func main() {
-	c, err := client.Dial(client.Options{})
+	c, err := client.Dial(envconfig.MustLoadDefaultClientOptions())
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
