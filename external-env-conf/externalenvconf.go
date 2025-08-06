@@ -28,9 +28,7 @@ func LoadFromCustomFile() client.Options {
 		log.Fatalf("failed to load client config from custom file: %v", err)
 	}
 
-	fmt.Println("opts", opts)
-
-	fmt.Printf("✅ Connected using custom config: %s\n", configFilePath)
+	fmt.Printf("✅ Connecting using custom config: %s\n", configFilePath)
 
 	return opts
 }
@@ -38,14 +36,9 @@ func LoadFromCustomFile() client.Options {
 func LoadDefaultProfile() client.Options {
 	// Passing in an empty request will return an empty options struct. Go SDK
 	// will then use default values to connect to the Temporal server.
-	opts, err := envconfig.LoadClientOptions(envconfig.LoadClientOptionsRequest{})
-	if err != nil {
-		log.Fatalf("failed to load default client options: %v", err)
-	}
+	fmt.Printf("✅ Connecting to Temporal with default client options\n")
 
-	fmt.Printf("✅ Connected to Temporal with default client options\n")
-
-	return opts
+	return envconfig.MustLoadDefaultClientOptions()
 }
 
 // LoadSpecificProfile does not actually run due to invalid TLS config,
@@ -62,7 +55,7 @@ func LoadSpecificProfile() client.Options {
 		log.Fatalf("failed to load 'prod' profile: %v", err)
 	}
 
-	fmt.Printf("✅ Connected to Temporal using '%v' profile\n", profile)
+	fmt.Printf("✅ Connecting to Temporal using '%v' profile\n", profile)
 
 	return opts
 }
@@ -71,16 +64,13 @@ func LoadSpecificProfile() client.Options {
 // For this sample to work, "test-namespace" must already exist.
 func OverrideAfterLoading() client.Options {
 	// Load base config (e.g., default profile)
-	opts, err := envconfig.LoadClientOptions(envconfig.LoadClientOptionsRequest{})
-	if err != nil {
-		log.Fatalf("failed to load base client options: %v", err)
-	}
+	opts := envconfig.MustLoadDefaultClientOptions()
 
 	// Apply overrides programmatically
 	opts.HostPort = "localhost:7233"
 	opts.Namespace = "test-namespace"
 
-	fmt.Printf("✅ Connected with overridden config to: %s in namespace: %s\n", opts.HostPort, opts.Namespace)
+	fmt.Printf("✅ Connecting with overridden config to: %s in namespace: %s\n", opts.HostPort, opts.Namespace)
 
 	return opts
 }
