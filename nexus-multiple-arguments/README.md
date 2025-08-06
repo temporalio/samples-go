@@ -1,6 +1,6 @@
-# Nexus Cancellation
+# Nexus Context Propagation
 
-This sample shows how to cancel a Nexus operation from a caller workflow and specify a cancellation type. In this sample we will show using the `NexusOperationCancellationTypeWaitRequested` cancellation type, which allows the caller to return after the handler workflow has received the requested to be cancelled, but does not wait for the handler workflow to finish processing the cancellation request.
+This sample shows how to map a Nexus operation to a caller workflow that takes multiple input arguments using [temporalnexus.NewWorkflowRunOperationWithOptions](https://pkg.go.dev/go.temporal.io/sdk/temporalnexus#MustNewWorkflowRunOperationWithOptions)
 
 For more details on Nexus and how to set up to run this sample, please see the [Nexus Sample](../nexus/README.md).
 
@@ -40,5 +40,5 @@ go run ./starter \
 which should result in:
 ```
 2025/02/27 12:57:40 Started workflow WorkflowID nexus_hello_caller_workflow_20240723195740 RunID c9789128-2fcd-4083-829d-95e43279f6d7
-2025/02/27 12:57:40 Workflow result: ¡Hola! Nexus 👋
+2025/02/27 12:57:40 Workflow result: ¡Hola! Nexus, caller-id: samples-go 👋
 ```
