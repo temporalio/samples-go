@@ -9,6 +9,7 @@ import (
 	"github.com/nexus-rpc/sdk-go/nexus"
 
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/temporalnexus"
 	"go.temporal.io/sdk/workflow"
 
@@ -37,7 +38,22 @@ func HelloHandlerWorkflow(ctx workflow.Context, input service.HelloInput) (servi
 		return service.HelloOutput{}, err
 	}
 	if err := workflow.Sleep(ctx, duration); err != nil {
-		return service.HelloOutput{}, err
+		// Simulate some work after cancellation is requested
+		sleepErr := err
+		if temporal.IsCanceledError(err) {
+			ctx, _ = workflow.NewDisconnectedContext(ctx)
+			var duration time.Duration
+			err := workflow.SideEffect(ctx, func(ctx workflow.Context) any {
+				return time.Duration(rand.IntN(5)) * time.Second
+			}).Get(&duration)
+			if err != nil {
+				return service.HelloOutput{}, err
+			}
+			if err := workflow.Sleep(ctx, duration); err != nil {
+				return service.HelloOutput{}, err
+			}
+		}
+		return service.HelloOutput{}, sleepErr
 	}
 
 	switch input.Language {

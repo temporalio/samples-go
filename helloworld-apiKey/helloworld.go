@@ -11,8 +11,6 @@ import (
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/workflow"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 // Workflow is a Hello World workflow definition.
@@ -64,29 +62,10 @@ func ParseClientOptionFlags(args []string) (client.Options, error) {
 		return client.Options{}, fmt.Errorf("-api-key or TEMPORAL_CLIENT_API_KEY env is required required")
 	}
 
-	connectionOptions := client.ConnectionOptions{
-		TLS: &tls.Config{},
-		DialOptions: []grpc.DialOption{
-			grpc.WithUnaryInterceptor(
-				func(ctx context.Context, method string, req any, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-					return invoker(
-						metadata.AppendToOutgoingContext(ctx, "temporal-namespace", *namespace),
-						method,
-						req,
-						reply,
-						cc,
-						opts...,
-					)
-				},
-			),
-		},
-	}
-	credentials := client.NewAPIKeyStaticCredentials(*apiKey)
-
 	return client.Options{
 		HostPort:          *targetHost,
 		Namespace:         *namespace,
-		ConnectionOptions: connectionOptions,
-		Credentials:       credentials,
+		ConnectionOptions: client.ConnectionOptions{TLS: &tls.Config{}},
+		Credentials:       client.NewAPIKeyStaticCredentials(*apiKey),
 	}, nil
 }
