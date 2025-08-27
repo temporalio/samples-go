@@ -1,18 +1,16 @@
 package main
 
 import (
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/worker"
 	"log"
 
-	"go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/contrib/envconfig"
-	"go.temporal.io/sdk/worker"
-
-	"github.com/temporalio/samples-go/helloworld"
+	"github.com/temporalio/samples-go/external-env-conf"
 )
 
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
-	c, err := client.Dial(envconfig.MustLoadDefaultClientOptions())
+	c, err := client.Dial(externalenvconf.LoadProfile())
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
@@ -20,8 +18,8 @@ func main() {
 
 	w := worker.New(c, "hello-world", worker.Options{})
 
-	w.RegisterWorkflow(helloworld.Workflow)
-	w.RegisterActivity(helloworld.Activity)
+	w.RegisterWorkflow(externalenvconf.Workflow)
+	w.RegisterActivity(externalenvconf.Activity)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

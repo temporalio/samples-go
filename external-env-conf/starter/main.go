@@ -5,14 +5,13 @@ import (
 	"log"
 
 	"go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/contrib/envconfig"
 
-	"github.com/temporalio/samples-go/helloworld"
+	"github.com/temporalio/samples-go/external-env-conf"
 )
 
 func main() {
 	// The client is a heavyweight object that should be created once per process.
-	c, err := client.Dial(envconfig.MustLoadDefaultClientOptions())
+	c, err := client.Dial(externalenvconf.LoadProfile())
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
@@ -23,7 +22,7 @@ func main() {
 		TaskQueue: "hello-world",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, helloworld.Workflow, "Temporal")
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, externalenvconf.Workflow, "Temporal")
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
