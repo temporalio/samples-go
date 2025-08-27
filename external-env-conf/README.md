@@ -4,7 +4,7 @@ This directory contains samples that demonstrate how to use the external client 
 This feature allows you to configure a client using a TOML file and/or environment variables,
 decoupling connection settings from your application code.
 
-To see a very basic use of external env config, see the [hello world sample](./../helloworld) and how it uses
+To see a basic use of external env config, see the [hello world sample](./../helloworld) and how it uses
 `envconfig.MustLoadDefaultClientOptions`.
 
 ### Running
@@ -28,5 +28,5 @@ both by the worker and starter code, ensuring both clients use the same connecti
 NOTE: Any environment variables will override any value set in a config file.
 
 To see more details on external env configuration, including setting environment variables,
-see the [environment configuration docs page](TODO).****
+see the [environment configuration docs page](https://docs.temporal.io/develop/environment-configuration).
 
