@@ -4,6 +4,9 @@ This directory contains samples that demonstrate how to use the external client 
 This feature allows you to configure a client using a TOML file and/or environment variables,
 decoupling connection settings from your application code.
 
+To see a very basic use of external env config, see the [hello world sample](./../helloworld) and how it uses
+`envconfig.MustLoadDefaultClientOptions`.
+
 ### Running
 
 1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
