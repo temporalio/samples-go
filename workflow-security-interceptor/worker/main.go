@@ -1,16 +1,18 @@
 package main
 
 import (
+	"log"
+
 	securityinterceptor "github.com/temporalio/samples-go/workflow-security-interceptor"
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/contrib/envconfig"
 	sdkinterceptor "go.temporal.io/sdk/interceptor"
 	"go.temporal.io/sdk/worker"
-	"log"
 )
 
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
-	c, err := client.Dial(client.Options{})
+	c, err := client.Dial(envconfig.MustLoadDefaultClientOptions())
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
