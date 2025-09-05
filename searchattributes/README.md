@@ -1,5 +1,3 @@
-This sample is now out of data, please see the ./typed-searchattributes sample.
-
 ### Steps to run this sample:
 
 1. Run a Temporal dev server[Temporal Server](Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).

@@ -25,7 +25,7 @@ func main() {
 		ID:        "search_attributes_" + uuid.New(),
 		TaskQueue: "search-attributes",
 		TypedSearchAttributes: temporal.NewSearchAttributes(
-			temporal.NewSearchAttributeKeyInt64("CustomIntField").ValueSet(1),
+			searchattributes.CustomIntField.ValueSet(1),
 		),
 		Memo: map[string]interface{}{
 			"description": "Test search attributes workflow",

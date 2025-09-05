@@ -67,14 +67,14 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 		StartToCloseTimeout: 10 * time.Second,
 		HeartbeatTimeout:    time.Second,
 	}
-	ctx = workflow.WithActivityOptions(ctx, ao)
+	activityCtx := workflow.WithActivityOptions(ctx, ao)
 	query := fmt.Sprintf(
 		"%s=2 AND %s STARTS_WITH 'Keyword fields'",
 		CustomIntField.GetName(),
 		CustomKeywordField.GetName(),
 	)
 	var listResults []*workflowpb.WorkflowExecutionInfo
-	err = workflow.ExecuteActivity(ctx, ListExecutions, query).Get(ctx, &listResults)
+	err = workflow.ExecuteActivity(activityCtx, ListExecutions, query).Get(ctx, &listResults)
 	if err != nil {
 		logger.Error("Failed to list workflow executions.", "Error", err)
 		return err
