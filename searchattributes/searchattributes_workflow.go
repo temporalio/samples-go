@@ -54,7 +54,9 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 	printSearchAttributes(ctx)
 
 	// Unset values with ValueUnset.
-	err = workflow.UpsertTypedSearchAttributes(ctx, CustomDoubleField.ValueUnset())
+	if err := workflow.UpsertTypedSearchAttributes(ctx, CustomDoubleField.ValueUnset()); err != nil {
+		return err
+	}
 	printSearchAttributes(ctx)
 
 	// Yield to allow commands to be sent to the server and let the visibility store update.
@@ -98,6 +100,7 @@ func SearchAttributesWorkflow(ctx workflow.Context) error {
 func printSearchAttributes(ctx workflow.Context) {
 	logger := workflow.GetLogger(ctx)
 	sas := workflow.GetTypedSearchAttributes(ctx)
+	//workflowcheck:ignore Only iterates for logging reasons
 	for k, v := range sas.GetUntypedValues() {
 		logger.Info("Current search attribute value", k.GetName(), v)
 	}
