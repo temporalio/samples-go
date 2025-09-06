@@ -115,8 +115,8 @@ with an external configuration file, like TOML, decoupling connection settings f
 - [**Memo**](./memo): Demonstrates how to use Memo that can be used
   to store any kind of data.
 
-- [**Typed Search Attributes**](./typed-searchattributes): Demonstrates how to
-  use custom Search Attributes that can be used to find Workflow Executions using predicates/
+- [**Search Attributes**](./searchattributes): Demonstrates how to
+  use custom Search Attributes that can be used to find Workflow Executions using predicates.
 
 - [**Timer Futures**](./timer): The sample starts a long running
   order processing operation and starts a Timer (`workflow.NewTimer()`). If the processing time is too long, a
