@@ -15,6 +15,7 @@ import (
 
 // If you want to map a workflow with multiple arguments to a nexus operation use NewWorkflowRunOperationWithOptions or MustNewWorkflowRunOperationWithOptions.
 // See alternatives at https://pkg.go.dev/go.temporal.io/sdk/temporalnexus.
+// @@@SNIPSTART  samples-go-nexus-handler-multiargs
 var HelloOperation = temporalnexus.MustNewWorkflowRunOperationWithOptions(temporalnexus.WorkflowRunOperationOptions[service.HelloInput, service.HelloOutput]{
 	Name: service.HelloOperationName,
 	Handler: func(ctx context.Context, input service.HelloInput, options nexus.StartOperationOptions) (temporalnexus.WorkflowHandle[service.HelloOutput], error) {
@@ -33,6 +34,8 @@ var HelloOperation = temporalnexus.MustNewWorkflowRunOperationWithOptions(tempor
 		)
 	},
 })
+
+// @@@SNIPEND
 
 func HelloHandlerWorkflow(ctx workflow.Context, name string, language service.Language) (service.HelloOutput, error) {
 	switch language {
