@@ -31,7 +31,6 @@ func main() {
 	err = waitForWorkerAndMakeCurrent(c, "1.0")
 	if err != nil {
 		log.Fatalln("Unable to set current deployment version", err)
-		return
 	}
 
 	// Next we'll start two workflows, one which uses the `AutoUpgrade` behavior, and one which uses
@@ -66,12 +65,14 @@ func main() {
 	err = advanceWorkflows(ctx, c, autoUpgradeExecution, pinnedExecution)
 	if err != nil {
 		log.Fatalln("Unable to signal workflow", err)
-		return
 	}
 
 	// Now wait for the v1.1 worker to appear and become current
 	log.Println("Waiting for v1.1 worker to appear. Run `go run worker-versioning/workerv1.1/main.go` in another terminal")
-	waitForWorkerAndMakeCurrent(c, "1.1")
+	err = waitForWorkerAndMakeCurrent(c, "1.1")
+	if err != nil {
+		log.Fatalln("Unable to set current deployment version", err)
+	}
 
 	// Once it has, we will continue to advance the workflows.
 	// The auto-upgrade workflow will now make progress on the new worker, while the pinned one will
@@ -79,12 +80,14 @@ func main() {
 	err = advanceWorkflows(ctx, c, autoUpgradeExecution, pinnedExecution)
 	if err != nil {
 		log.Fatalln("Unable to signal workflow", err)
-		return
 	}
 
 	// Finally we'll start the v2 worker, and again it'll become the new current version
 	log.Println("Waiting for v2 worker to appear. Run `go run worker-versioning/workerv2/main.go` in another terminal")
-	waitForWorkerAndMakeCurrent(c, "2.0")
+	err = waitForWorkerAndMakeCurrent(c, "2.0")
+	if err != nil {
+		log.Fatalln("Unable to set current deployment version", err)
+	}
 
 	// Once it has we'll start one more new workflow, another pinned one, to demonstrate that new
 	// pinned worklfows start on the current version.
@@ -110,7 +113,10 @@ func main() {
 			log.Fatalln("Unable to signal workflow", err)
 			return
 		}
-		handle.Get(ctx, nil)
+		err = handle.Get(ctx, nil)
+		if err != nil {
+			log.Fatalln("Unable to get workflow result", err)
+		}
 	}
 }
 
