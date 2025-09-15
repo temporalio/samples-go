@@ -10,6 +10,11 @@ import (
 
 // AutoUpgradingWorkflowV1 will automatically move to the latest worker version. We'll be making
 // changes to it, which must be replay safe.
+//
+// Note that generally you won't want or need to include a version number in your workflow name if
+// you're using the worker versioning feature. This sample does it to illustrate changes to the
+// same code over time - but really what we're demonstrating here is the evolution of what would
+// have been one workflow definition.
 func AutoUpgradingWorkflowV1(ctx workflow.Context) error {
 	workflow.GetLogger(ctx).Info("Changing workflow v1 started.", "StartTime", workflow.Now(ctx))
 
@@ -93,6 +98,11 @@ func AutoUpgradingWorkflowV1b(ctx workflow.Context) error {
 
 // PinnedWorkflowV1 demonstrates a workflow that likely has a short lifetime, and we want to always
 // stay pinned to the same version it began on.
+//
+// Note that generally you won't want or need to include a version number in your workflow name if
+// you're using the worker versioning feature. This sample does it to illustrate changes to the
+// same code over time - but really what we're demonstrating here is the evolution of what would
+// have been one workflow definition.
 func PinnedWorkflowV1(ctx workflow.Context) error {
 	workflow.GetLogger(ctx).Info("Pinned Workflow v1 started.", "StartTime", workflow.Now(ctx))
 
