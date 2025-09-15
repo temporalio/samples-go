@@ -3,7 +3,7 @@
 This sample demonstrates how to use Temporal's Worker Versioning feature to safely deploy updates to workflow and activity code. It shows the difference between auto-upgrading and pinned workflows, and how to manage worker deployments with different build IDs.
 
 The sample creates multiple worker versions (1.0, 1.1, and 2.0) within one deployment and demonstrates:
-- **Auto-upgrading workflows**: Automatically migrate to newer worker versions
+- **Auto-upgrading workflows**: Automatically and controllably migrate to newer worker versions
 - **Pinned workflows**: Stay on the original worker version throughout their lifecycle
 - **Compatible vs incompatible changes**: How to make safe updates using `workflow.GetVersion`
 

@@ -37,9 +37,8 @@ func main() {
 	// `Pinned`.
 	autoUpgradeWorkflowId := "worker-versioning-versioning-autoupgrade_" + uuid.New()
 	autoUpgradeWorkflowOptions := client.StartWorkflowOptions{
-		ID:                       autoUpgradeWorkflowId,
-		TaskQueue:                worker_versioning.TaskQueue,
-		WorkflowExecutionTimeout: 5 * time.Minute,
+		ID:        autoUpgradeWorkflowId,
+		TaskQueue: worker_versioning.TaskQueue,
 	}
 	autoUpgradeExecution, err := c.ExecuteWorkflow(ctx, autoUpgradeWorkflowOptions, "AutoUpgradingWorkflow")
 	if err != nil {
@@ -50,9 +49,8 @@ func main() {
 
 	pinnedWorkflowId := "worker-versioning-versioning-pinned_" + uuid.New()
 	pinnedWorkflowOptions := client.StartWorkflowOptions{
-		ID:                       pinnedWorkflowId,
-		TaskQueue:                worker_versioning.TaskQueue,
-		WorkflowExecutionTimeout: 5 * time.Minute,
+		ID:        pinnedWorkflowId,
+		TaskQueue: worker_versioning.TaskQueue,
 	}
 	pinnedExecution, err := c.ExecuteWorkflow(ctx, pinnedWorkflowOptions, "PinnedWorkflow")
 	if err != nil {
@@ -93,9 +91,8 @@ func main() {
 	// pinned worklfows start on the current version.
 	pinnedWorkflow2Id := "worker-versioning-versioning-pinned-2_" + uuid.New()
 	pinnedWorkflow2Options := client.StartWorkflowOptions{
-		ID:                       pinnedWorkflow2Id,
-		TaskQueue:                worker_versioning.TaskQueue,
-		WorkflowExecutionTimeout: 5 * time.Minute,
+		ID:        pinnedWorkflow2Id,
+		TaskQueue: worker_versioning.TaskQueue,
 	}
 	pinnedExecution2, err := c.ExecuteWorkflow(ctx, pinnedWorkflow2Options, "PinnedWorkflow")
 	if err != nil {
