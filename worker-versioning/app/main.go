@@ -34,7 +34,10 @@ func main() {
 	}
 
 	// Next we'll start two workflows, one which uses the `AutoUpgrade` behavior, and one which uses
-	// `Pinned`.
+	// `Pinned`. Importantly, note that when we start the workflows, we are using a workflow type
+	// name which does *not* include the version number. We defined them with versioned names so
+	// we could show changes to the code, but here when the client invokes them, we're demonstrating
+	// that the client remains version-agnostic.
 	autoUpgradeWorkflowId := "worker-versioning-versioning-autoupgrade_" + uuid.New()
 	autoUpgradeWorkflowOptions := client.StartWorkflowOptions{
 		ID:        autoUpgradeWorkflowId,
