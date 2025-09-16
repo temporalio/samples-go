@@ -252,6 +252,9 @@ resource waiting for its successful completion
 - [**Early-Return**](./early-return):
   Demonstrates how to receive a response mid-workflow, while the workflow continues to run to completion.
 
+- [**Worker Versioning**](./worker-versioning):
+  Demonstrates how to use worker versioning to manage workflow code changes.
+
 ### Pending examples
 
 Mostly examples we haven't yet ported from https://github.com/temporalio/samples-java/
