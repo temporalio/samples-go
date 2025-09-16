@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/contrib/envconfig"
 
 	"github.com/temporalio/samples-go/branch"
 )
@@ -12,7 +13,7 @@ import (
 // @@@SNIPSTART samples-go-branch-workflow-execution-starter
 func main() {
 	// The client is a heavyweight object that should be created only once per process.
-	c, err := client.Dial(client.Options{})
+	c, err := client.Dial(envconfig.MustLoadDefaultClientOptions())
 	if err != nil {
 		panic(err)
 	}
