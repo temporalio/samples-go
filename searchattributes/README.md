@@ -3,7 +3,13 @@
 1. Run a Temporal dev server[Temporal Server](Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 
   ```
-  temporal server start-dev --search-attribute CustomIntField=Int
+  temporal server start-dev \
+    --search-attribute CustomIntField=Int \
+    --search-attribute CustomKeywordField=Keyword \
+    --search-attribute CustomBoolField=Bool  \
+    --search-attribute CustomDoubleField=Double  \
+    --search-attribute CustomDatetimeField=Datetime  \
+    --search-attribute CustomKeywordListField=KeywordList
   ```
 
 1. Run the following command to start the worker:
