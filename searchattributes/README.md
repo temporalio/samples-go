@@ -6,8 +6,8 @@
   temporal server start-dev \
     --search-attribute CustomIntField=Int \
     --search-attribute CustomKeywordField=Keyword \
-    --search-attribute CustomBoolField=Bool  \
-    --search-attribute CustomDoubleField=Double  \
+    --search-attribute CustomBoolField=Bool \
+    --search-attribute CustomDoubleField=Double \
     --search-attribute CustomDatetimeField=Datetime  \
     --search-attribute CustomKeywordListField=KeywordList
   ```
