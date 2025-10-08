@@ -24,7 +24,7 @@ func main() {
 			UseVersioning: true,
 			Version: worker.WorkerDeploymentVersion{
 				DeploymentName: worker_versioning.DeploymentName,
-				BuildId:        "1.1",
+				BuildID:        "1.1",
 			},
 		},
 	})

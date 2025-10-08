@@ -142,7 +142,7 @@ func waitForWorkerAndMakeCurrent(c client.Client, buildID string) error {
 	deploymentHandle := c.WorkerDeploymentClient().GetHandle(worker_versioning.DeploymentName)
 	version := worker.WorkerDeploymentVersion{
 		DeploymentName: worker_versioning.DeploymentName,
-		BuildId:        buildID,
+		BuildID:        buildID,
 	}
 
 Outer:
