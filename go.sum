@@ -315,9 +315,12 @@ go.opentelemetry.io/proto/otlp v0.7.0/go.mod h1:PqfVotwruBrMGOCsRd/89rSnXhoiJIqe
 go.temporal.io/api v1.5.0/go.mod h1:BqKxEJJYdxb5dqf0ODfzfMxh8UEQ5L3zKS51FiIYYkA=
 go.temporal.io/api v1.51.0 h1:9+e14GrIa7nWoWoudqj/PSwm33yYjV+u8TAR9If7s/g=
 go.temporal.io/api v1.51.0/go.mod h1:iaxoP/9OXMJcQkETTECfwYq4cw/bj4nwov8b3ZLVnXM=
+go.temporal.io/api v1.53.0/go.mod h1:iaxoP/9OXMJcQkETTECfwYq4cw/bj4nwov8b3ZLVnXM=
 go.temporal.io/sdk v1.12.0/go.mod h1:lSp3lH1lI0TyOsus0arnO3FYvjVXBZGi/G7DjnAnm6o=
 go.temporal.io/sdk v1.36.0 h1:WO9zetpybBNK7xsQth4Z+3Zzw1zSaM9MOUGrnnUjZMo=
 go.temporal.io/sdk v1.36.0/go.mod h1:8BxGRF0LcQlfQrLLGkgVajbsKUp/PY7280XTdcKc18Y=
+go.temporal.io/sdk v1.37.0 h1:RbwCkUQuqY4rfCzdrDZF9lgT7QWG/pHlxfZFq0NPpDQ=
+go.temporal.io/sdk v1.37.0/go.mod h1:tOy6vGonfAjrpCl6Bbw/8slTgQMiqvoyegRv2ZHPm5M=
 go.temporal.io/sdk/contrib/datadog v0.2.0 h1:YUpkVncR3dEg4dnkWTWoDPVh6duU079RWIswsQ2u6LM=
 go.temporal.io/sdk/contrib/datadog v0.2.0/go.mod h1:yOOdVth8SQUFZSAtCFY8NvTZ2joxnAVSK9/1OfAMsw0=
 go.temporal.io/sdk/contrib/envconfig v0.1.0 h1:s+G/Ujph+Xl2jzLiiIm2T1vuijDkUL4Kse49dgDVGBE=
