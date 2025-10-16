@@ -59,7 +59,7 @@ services:
       - temporal
     environment:
       - TEMPORAL_ADDRESS=temporal:7233 # used by temporal
-      - TEMPORAL_CLI_ADDRESS=temporal:7233 # used by tctl
+      - TEMPORAL_CLI_ADDRESS=temporal:7233 # used by CLI
     image: temporalio/admin-tools:${TEMPORAL_VERSION}
     networks:
       - temporal-network

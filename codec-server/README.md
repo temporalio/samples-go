@@ -32,7 +32,9 @@ Configuring OIDC is outside the scope of this sample, but please see the [server
 
 ## Summary
 
-This document outlines the HTTP protocol for codec servers. This functionality allows users to deploy a codec centrally rather than the previous architecture that required a `tctl` plugin on developer workstations. This makes it easier to secure access to any required encryption keys and simplifies the developer experience.
+This document outlines the HTTP protocol for codec servers. This functionality allows users to deploy a codec centrally 
+rather than the previous architecture that required a `Temporal CLI` plugin on developer workstations. This makes 
+it easier to secure access to any required encryption keys and simplifies the developer experience.
 
 ## Protocol
 

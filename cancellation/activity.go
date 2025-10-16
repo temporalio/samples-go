@@ -13,7 +13,7 @@ type Activities struct{}
 func (a *Activities) ActivityToBeCanceled(ctx context.Context) (string, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("activity started, to cancel the Workflow Execution, use 'go run cancellation/cancel/main.go " +
-		"-w <WorkflowID>' or use the CLI: 'tctl wf cancel -w <WorkflowID>'")
+		"-w <WorkflowID>' or use the CLI: 'temporal workflow cancel -w <WorkflowID>'")
 	for {
 		select {
 		case <-time.After(1 * time.Second):
