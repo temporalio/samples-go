@@ -85,7 +85,7 @@ with an external configuration file, like TOML, decoupling connection settings f
   encryption and compression)
 
 - [**Codec Server**](./codec-server): Demonstrates using a codec
-  server to decode payloads for display in tctl and Temporal Web. This setup can be used for any kind of codec, common
+  server to decode payloads for display in Temporal CLI and Temporal Web. This setup can be used for any kind of codec, common
   examples are compression or encryption.
 
 - [**Query Example**](./query): Demonstrates how to Query the state
