@@ -6,6 +6,7 @@ import (
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/contrib/envconfig"
 	"go.temporal.io/sdk/worker"
 
 	"github.com/temporalio/samples-go/helloworld"
@@ -15,7 +16,7 @@ const taskQueueName = "eager_wf_start"
 
 func main() {
 	// 1. Create the shared client.
-	c, err := client.Dial(client.Options{})
+	c, err := client.Dial(envconfig.MustLoadDefaultClientOptions())
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}

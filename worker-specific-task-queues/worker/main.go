@@ -8,6 +8,7 @@ import (
 
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/contrib/envconfig"
 	"go.temporal.io/sdk/worker"
 
 	"github.com/google/uuid"
@@ -16,7 +17,7 @@ import (
 func main() {
 	// The client and worker are heavyweight objects that should generally be created once per process.
 	// In this case, we create a single client but two workers since we need to handle Activities on multiple task queues.
-	c, err := client.Dial(client.Options{})
+	c, err := client.Dial(envconfig.MustLoadDefaultClientOptions())
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
