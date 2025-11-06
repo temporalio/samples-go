@@ -34,6 +34,9 @@ Each sample demonstrates one feature of the SDK, together with tests.
 
 - [**Basic apiKey hello world**](./helloworld-apiKey): Simple example of a
 Workflow Definition and an Activity Definition using API Key to authenticate with Temporal Cloud.
+
+- [**Basic external environment configuration**](./external-env-conf): Simple example showing how to configure a client
+with an external configuration file, like TOML, decoupling connection settings from application code.
 ### API demonstrations
 
 - **Async activity completion**: Example of
@@ -82,7 +85,7 @@ Workflow Definition and an Activity Definition using API Key to authenticate wit
   encryption and compression)
 
 - [**Codec Server**](./codec-server): Demonstrates using a codec
-  server to decode payloads for display in tctl and Temporal Web. This setup can be used for any kind of codec, common
+  server to decode payloads for display in Temporal CLI and Temporal Web. This setup can be used for any kind of codec, common
   examples are compression or encryption.
 
 - [**Query Example**](./query): Demonstrates how to Query the state
@@ -112,8 +115,8 @@ Workflow Definition and an Activity Definition using API Key to authenticate wit
 - [**Memo**](./memo): Demonstrates how to use Memo that can be used
   to store any kind of data.
 
-- [**Typed Search Attributes**](./typed-searchattributes): Demonstrates how to
-  use custom Search Attributes that can be used to find Workflow Executions using predicates/
+- [**Search Attributes**](./searchattributes): Demonstrates how to
+  use custom Search Attributes that can be used to find Workflow Executions using predicates.
 
 - [**Timer Futures**](./timer): The sample starts a long running
   order processing operation and starts a Timer (`workflow.NewTimer()`). If the processing time is too long, a
@@ -153,6 +156,9 @@ Workflow Definition and an Activity Definition using API Key to authenticate wit
 ### Dynamic Workflow logic examples
 
 These samples demonstrate some common control flow patterns using Temporal's Go SDK API.
+
+- [**Dynamic Workflows**](./dynamic-workflows): Demonstrates how to execute Workflows and Activities dynamically,
+  using a single "Dynamic Workflow"
 
 - [**Dynamic Execution**](./dynamic): Demonstrates how to execute
   Workflows and Activities using a name rather than a strongly typed function.
@@ -201,7 +207,9 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 - [**Worker-specific Task Queues**](./worker-specific-task-queues): Use a unique task queue per Worker to have certain Activities only run on that specific Worker. For instance for a file processing Workflow, where one Activity downloads a file and subsequent Activities need to operate on that file. (If multiple Workers were on the same queue, subsequent Activities may get run on different machines that don't have the downloaded file.)
 
 - [**Nexus**](./nexus): Demonstrates how to use the Nexus APIs to facilitate cross namespace calls.
+
 - [**Nexus Cancelation**](./nexus-cancelation): Demonstrates how to cancel a Nexus operation from a caller workflow.
+
 - [**Nexus Context Propagation**](./nexus-context-propagation): Demonstrates how to propagate context through client calls, workflows, and Nexus headers.
 
 ### Scenario based examples
@@ -243,6 +251,9 @@ resource waiting for its successful completion
 
 - [**Early-Return**](./early-return):
   Demonstrates how to receive a response mid-workflow, while the workflow continues to run to completion.
+
+- [**Worker Versioning**](./worker-versioning):
+  Demonstrates how to use worker versioning to manage workflow code changes.
 
 ### Pending examples
 

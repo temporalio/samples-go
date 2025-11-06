@@ -1,15 +1,21 @@
-package build_id_versioning
+package worker_versioning
 
 import (
 	"context"
+	"time"
+
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/workflow"
-	"time"
 )
 
-// SampleChangingWorkflowV1 is a workflow we'll be making changes to, and represents the first
-// version
-func SampleChangingWorkflowV1(ctx workflow.Context) error {
+// AutoUpgradingWorkflowV1 will automatically move to the latest worker version. We'll be making
+// changes to it, which must be replay safe.
+//
+// Note that generally you won't want or need to include a version number in your workflow name if
+// you're using the worker versioning feature. This sample does it to illustrate changes to the
+// same code over time - but really what we're demonstrating here is the evolution of what would
+// have been one workflow definition.
+func AutoUpgradingWorkflowV1(ctx workflow.Context) error {
 	workflow.GetLogger(ctx).Info("Changing workflow v1 started.", "StartTime", workflow.Now(ctx))
 
 	// This workflow will listen for signals from our starter, and upon each signal either run
@@ -36,14 +42,14 @@ func SampleChangingWorkflowV1(ctx workflow.Context) error {
 	}
 }
 
-// SampleChangingWorkflowV1b represents us having made *compatible* changes to
-// SampleChangingWorkflowV1.
+// AutoUpgradingWorkflowV1b represents us having made *compatible* changes to
+// AutoUpgradingWorkflowV1.
 //
 // The compatible changes we've made are:
 //   - Altering the log lines
 //   - Using the workflow.GetVersion API to properly introduce branching behavior while maintaining
 //     compatibility
-func SampleChangingWorkflowV1b(ctx workflow.Context) error {
+func AutoUpgradingWorkflowV1b(ctx workflow.Context) error {
 	workflow.GetLogger(ctx).Info("Changing workflow v1b started.", "StartTime", workflow.Now(ctx))
 
 	// This workflow will listen for signals from our starter, and upon each signal either run
@@ -90,20 +96,65 @@ func SampleChangingWorkflowV1b(ctx workflow.Context) error {
 	return nil
 }
 
-// SampleChangingWorkflowV2 is fully incompatible with the other workflows, since it alters the
-// sequence of commands without using workflow.GetVersion.
-func SampleChangingWorkflowV2(ctx workflow.Context) error {
-	workflow.GetLogger(ctx).Info("Changing workflow v2 started.", "StartTime", workflow.Now(ctx))
-	err := workflow.Sleep(ctx, 10*time.Second)
-	if err != nil {
-		return err
+// PinnedWorkflowV1 demonstrates a workflow that likely has a short lifetime, and we want to always
+// stay pinned to the same version it began on.
+//
+// Note that generally you won't want or need to include a version number in your workflow name if
+// you're using the worker versioning feature. This sample does it to illustrate changes to the
+// same code over time - but really what we're demonstrating here is the evolution of what would
+// have been one workflow definition.
+func PinnedWorkflowV1(ctx workflow.Context) error {
+	workflow.GetLogger(ctx).Info("Pinned Workflow v1 started.", "StartTime", workflow.Now(ctx))
 
+	signalChan := workflow.GetSignalChannel(ctx, "do-next-signal")
+	for {
+		var signal string
+		signalChan.Receive(ctx, &signal)
+		if signal == "conclude" {
+			break
+		}
 	}
+
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
 	}
 	ctx1 := workflow.WithActivityOptions(ctx, ao)
-	err = workflow.ExecuteActivity(ctx1, SomeActivity, "v2").Get(ctx, nil)
+	err := workflow.ExecuteActivity(ctx1, SomeActivity, "Pinned-v1").Get(ctx, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// PinnedWorkflowV2 has changes that would make it incompatible with v1, and aren't protected by
+// a patch.
+func PinnedWorkflowV2(ctx workflow.Context) error {
+	workflow.GetLogger(ctx).Info("Pinned Workflow v1 started.", "StartTime", workflow.Now(ctx))
+
+	ao := workflow.ActivityOptions{
+		StartToCloseTimeout: 10 * time.Second,
+	}
+	ctx1 := workflow.WithActivityOptions(ctx, ao)
+	// Here we call an activity where we didn't before, which is an incompatible change.
+	err := workflow.ExecuteActivity(ctx1, SomeActivity, "Pinned-v2").Get(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	signalChan := workflow.GetSignalChannel(ctx, "do-next-signal")
+	for {
+		var signal string
+		signalChan.Receive(ctx, &signal)
+		if signal == "conclude" {
+			break
+		}
+	}
+
+	// We've also changed the activity type here, another incompatible change
+	err = workflow.ExecuteActivity(ctx1, SomeIncompatibleActivity, &IncompatibleActivityInput{
+		CalledBy: "Pinned-v2",
+		MoreData: "hi",
+	}).Get(ctx, nil)
 	if err != nil {
 		return err
 	}
