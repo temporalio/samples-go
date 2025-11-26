@@ -8,7 +8,7 @@ require (
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/golang/snappy v0.0.4
 	github.com/google/uuid v1.6.0
-	github.com/nexus-rpc/sdk-go v0.3.0
+	github.com/nexus-rpc/sdk-go v0.5.1
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pborman/uuid v1.2.1
 	github.com/prometheus/client_golang v1.18.0
@@ -19,8 +19,8 @@ require (
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.16.0
 	go.opentelemetry.io/otel/sdk v1.27.0
 	go.opentelemetry.io/otel/trace v1.27.0
-	go.temporal.io/api v1.53.0
-	go.temporal.io/sdk v1.37.0
+	go.temporal.io/api v1.54.0
+	go.temporal.io/sdk v1.38.0
 	go.temporal.io/sdk/contrib/datadog v0.2.0
 	go.temporal.io/sdk/contrib/envconfig v0.1.0
 	go.temporal.io/sdk/contrib/opentelemetry v0.6.0
