@@ -46,7 +46,7 @@ func HelloCallerWorkflow(ctx workflow.Context, name string) (string, error) {
 				service.HelloOperationName,
 				service.HelloInput{Name: name, Language: lang},
 				workflow.NexusOperationOptions{
-					// Set the cancellation type to NexusOperationCancellationTypeWaitRequested. 
+					// Set the cancellation type to NexusOperationCancellationTypeWaitRequested.
 					// This means that the caller will wait for the cancellation request to be received by the handler before
 					// proceeding with the cancellation.
 					//
