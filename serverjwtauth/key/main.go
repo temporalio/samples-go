@@ -92,7 +92,7 @@ func tctlSystemToken() error {
 	config := serverjwtauth.JWTConfig{
 		Key:         key,
 		KeyID:       jwk.KeyID,
-		Permissions: []string{"system:admin"},
+		Permissions: []string{"temporal-system:admin"},
 		Expiration:  1 * time.Hour,
 	}
 	token, err := config.GenToken()
