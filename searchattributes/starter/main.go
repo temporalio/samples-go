@@ -6,6 +6,7 @@ import (
 
 	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/temporal"
 
 	"github.com/temporalio/samples-go/searchattributes"
 )
@@ -23,9 +24,9 @@ func main() {
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        "search_attributes_" + uuid.New(),
 		TaskQueue: "search-attributes",
-		SearchAttributes: map[string]interface{}{ // optional search attributes when start workflow
-			"CustomIntField": 1,
-		},
+		TypedSearchAttributes: temporal.NewSearchAttributes(
+			searchattributes.CustomIntField.ValueSet(1),
+		),
 		Memo: map[string]interface{}{
 			"description": "Test search attributes workflow",
 		},

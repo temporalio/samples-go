@@ -9,18 +9,18 @@ method has to return before it is actually approved. This is done by returning a
 the activity is not completed yet. 
   * When the expense is approved (or rejected), somewhere in the world needs to be notified, and it will need to call
   `client.CompleteActivity()` to tell Temporal service that that activity is now completed. 
-  In this sample case, the dummy server does this job. In real world, you will need to register some listener 
+  In this sample case, the sample expense system does this job. In real world, you will need to register some listener 
   to the expense system or you will need to have your own polling agent to check for the expense status periodically. 
-* After the wait activity is completed, it does the payment for the expense (dummy step in this sample case).
+* After the wait activity is completed, it does the payment for the expense (UI step in this sample case).
 
-This sample relies on an a dummy expense server to work.
+This sample relies on an a sample expense system to work.
 Get a Temporal service running [here](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 
 # Steps To Run Sample
 * You need a Temporal service running. README.md for more details.
-* Start the dummy server 
+* Start the sample expense system UI 
 ```
-go run expense/server/main.go
+go run expense/ui/main.go
 ```
 * Start workflow and activity workers
 ```

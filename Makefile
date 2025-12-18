@@ -6,8 +6,10 @@ install: clean staticcheck errcheck workflowcheck bins test
 ##### Variables ######
 UNIT_TEST_DIRS := $(sort $(dir $(shell find . -name "*_test.go")))
 MAIN_FILES := $(shell find . -name "main.go")
+MOD_FILES_DIR := $(sort $(dir $(shell find . -name "go.mod")))
 TEST_TIMEOUT := 20s
 COLOR := "\e[1;36m%s\e[0m\n"
+BIN_DIR := $(shell pwd)/bin
 
 define NEWLINE
 
@@ -17,7 +19,7 @@ endef
 ##### Targets ######
 bins:
 	@printf $(COLOR) "Build samples..."
-	$(foreach MAIN_FILE,$(MAIN_FILES), go build -o bin/$(shell dirname "$(MAIN_FILE)") $(shell dirname "$(MAIN_FILE)")$(NEWLINE))
+	$(foreach MAIN_FILE,$(MAIN_FILES), cd $(shell dirname "$(MAIN_FILE)") && go build -o $(BIN_DIR)/$(shell dirname "$(MAIN_FILE)") $(NEWLINE))
 
 test:
 	@printf $(COLOR) "Run unit tests..."
@@ -34,19 +36,21 @@ staticcheck:
 
 errcheck:
 	@printf $(COLOR) "Run error check..."
-	@GO111MODULE=off go get -u github.com/kisielk/errcheck
+	@go install github.com/kisielk/errcheck@latest
 	@errcheck ./...
 
 workflowcheck:
 	@printf $(COLOR) "Run workflow check..."
-	@go install go.temporal.io/sdk/contrib/tools/workflowcheck
+	@go install go.temporal.io/sdk/contrib/tools/workflowcheck@latest
 	@workflowcheck -show-pos ./...
 
 update-sdk:
-	go get -u go.temporal.io/api@main
-	go get -u go.temporal.io/sdk@main
-	go mod tidy
-
+	$(foreach MOD_FILES_DIR,$(MOD_FILES_DIR),\
+		cd $(MOD_FILES_DIR) && \
+		go get -u go.temporal.io/sdk@latest && \
+		go mod tidy \
+	$(NEWLINE))
+	
 clean:
 	rm -rf bin
 	

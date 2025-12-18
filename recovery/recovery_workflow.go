@@ -15,6 +15,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/temporalio/samples-go/recovery/cache"
 )
@@ -288,7 +289,7 @@ func extractStateFromEvent(workflowID string, event *historypb.HistoryEvent) (*R
 			Options: client.StartWorkflowOptions{
 				ID:                  workflowID,
 				TaskQueue:           attr.TaskQueue.GetName(),
-				WorkflowTaskTimeout: *attr.GetWorkflowTaskTimeout(),
+				WorkflowTaskTimeout: attr.GetWorkflowTaskTimeout().AsDuration(),
 				// RetryPolicy: attr.RetryPolicy,
 			},
 			State: state,
@@ -344,8 +345,8 @@ func getAllExecutionsOfType(ctx context.Context, c client.Client, workflowType s
 			MaximumPageSize: 10,
 			NextPageToken:   nextPageToken,
 			StartTimeFilter: &filterpb.StartTimeFilter{
-				EarliestTime: &zeroTime,
-				LatestTime:   &now,
+				EarliestTime: timestamppb.New(zeroTime),
+				LatestTime:   timestamppb.New(now),
 			},
 			Filters: &workflowservice.ListOpenWorkflowExecutionsRequest_TypeFilter{TypeFilter: &filterpb.WorkflowTypeFilter{
 				Name: workflowType,

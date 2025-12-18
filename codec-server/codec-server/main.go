@@ -106,7 +106,7 @@ func main() {
 	if providerFlag != "" {
 		p, err := newProvider(providerFlag)
 		if err != nil {
-			logger.Fatal("error", tag.NewErrorTag(err))
+			logger.Fatal("failed to create OIDC provider", tag.Error(err))
 		}
 		provider = p
 		fmt.Printf("oauth enabled for: %s\n", provider.Issuer)
@@ -138,6 +138,8 @@ func main() {
 	case <-sigCh:
 		_ = srv.Close()
 	case err := <-errCh:
-		logger.Fatal("error", tag.NewErrorTag(err))
+		if err != http.ErrServerClosed {
+				logger.Fatal("error from HTTP server", tag.Error(err))
+		}
 	}
 }
