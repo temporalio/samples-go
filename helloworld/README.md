@@ -34,7 +34,7 @@ For example:
 2025/12/22 15:00:16 INFO  Started Worker Namespace default TaskQueue hello-world WorkerID 82087
 ```
 
-4) From your terminal window, Run the following command to start the example
+4) From your terminal window, run the following command to start the example
 ```
 go run helloworld/starter/main.go
 ```
