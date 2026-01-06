@@ -20,7 +20,7 @@ temporal operator namespace list
 
 You should see a line with `NamespaceInfo.Name` set to `default`.
 
-3) Open another terminal, and Run the following command to start the worker. The worker is also a blocking process that runs until it receives a SIGINT (Ctrl + C) command.)
+3) Open another terminal, and run the following command to start the worker. The worker is a blocking process that runs until it receives a SIGINT (Ctrl + C) command.)
 ```
 go run helloworld/worker/main.go
 ```
