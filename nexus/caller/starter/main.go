@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -24,14 +25,20 @@ func main() {
 		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
-	runWorkflow(c, caller.EchoCallerWorkflow, "Nexus Echo 👋")
-	runWorkflow(c, caller.HelloCallerWorkflow, "Nexus", service.ES)
+	runWorkflow(c, fmt.Sprintf("nexus-caller-echo-%d", time.Now().UnixNano()), caller.EchoCallerWorkflow, "Nexus Echo 👋")
+	runWorkflow(
+		c,
+		fmt.Sprintf("nexus-caller-hello-%s-%s-%d", "Nexus", service.EN, time.Now().UnixNano()),
+		caller.HelloCallerWorkflow,
+		"Nexus",
+		service.EN,
+	)
 }
 
-func runWorkflow(c client.Client, workflow interface{}, args ...interface{}) {
+func runWorkflow(c client.Client, workflowID string, workflow interface{}, args ...interface{}) {
 	ctx := context.Background()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "nexus_hello_caller_workflow_" + time.Now().Format("20060102150405"),
+		ID:        workflowID,
 		TaskQueue: caller.TaskQueue,
 	}
 
@@ -49,4 +56,5 @@ func runWorkflow(c client.Client, workflow interface{}, args ...interface{}) {
 	}
 	log.Println("Workflow result:", result)
 }
+
 // @@@SNIPEND
