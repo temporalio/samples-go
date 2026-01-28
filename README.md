@@ -11,8 +11,6 @@ Server via the Temporal Go SDK.
 
 ## How to use
 
-- Run this in the browser with
-  Gitpod: [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/temporalio/samples-go/)
 - Or run Temporal Server locally with [VSCode Remote Containers](https://code.visualstudio.com/docs/remote/containers)
   . [![Open in Remote - Containers](https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/temporalio/samples-go)
 - Lastly, you can run Temporal Server locally on your own (follow
