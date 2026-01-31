@@ -33,4 +33,5 @@ type HelloInput struct {
 type HelloOutput struct {
 	Message string
 }
+
 // @@@SNIPEND

@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"context"
-	"fmt"
-	"math/rand/v2"
-	"time"
+        "context"
+        "fmt"
+        "math/rand/v2"
+        "time"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 
@@ -19,13 +19,17 @@ import (
 // Use the NewWorkflowRunOperation constructor, which is the easiest way to expose a workflow as an operation.
 // See alternatives at https://pkg.go.dev/go.temporal.io/sdk/temporalnexus.
 var HelloOperation = temporalnexus.NewWorkflowRunOperation(service.HelloOperationName, HelloHandlerWorkflow, func(ctx context.Context, input service.HelloInput, options nexus.StartOperationOptions) (client.StartWorkflowOptions, error) {
-	return client.StartWorkflowOptions{
-		// Workflow IDs should typically be business meaningful IDs and are used to dedupe workflow starts.
-		// For this example, we're using the request ID allocated by Temporal when the caller workflow schedules
-		// the operation, this ID is guaranteed to be stable across retries of this operation.
-		ID: options.RequestID,
-		// Task queue defaults to the task queue this operation is handled on.
-	}, nil
+        return client.StartWorkflowOptions{
+                // Workflow IDs should typically be business meaningful IDs and are used to dedupe workflow starts.
+                // Use the operation input to build an identifier that correlates to the customer request.
+                ID: fmt.Sprintf(
+                        "nexus-cancelation-hello-%s-%s-%d",
+                        input.Language,
+                        input.Name,
+                        time.Now().UnixNano(),
+                ),
+                // Task queue defaults to the task queue this operation is handled on.
+        }, nil
 })
 
 func HelloHandlerWorkflow(ctx workflow.Context, input service.HelloInput) (service.HelloOutput, error) {
