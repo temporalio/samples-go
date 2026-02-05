@@ -35,6 +35,9 @@ Workflow Definition and an Activity Definition using API Key to authenticate wit
 
 - [**Basic external environment configuration**](./external-env-conf): Simple example showing how to configure a client
 with an external configuration file, like TOML, decoupling connection settings from application code.
+
+- [**Standalone Activities**](standalone-activity/helloworld): Demonstrates how standalone activities work, where activities
+  can be called from the client directly and not wrapped in an activity.
 ### API demonstrations
 
 - **Async activity completion**: Example of
