@@ -15,11 +15,11 @@ The flow of calls is outlined in the diagram below.
 1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 2) Run the following command to start the worker
 ```shell
-go run worker/main.go
+go run synchronous-proxy/worker/main.go
 ```
 3) Run the following command to start the simple UI
 ```shell
-go run ui/main.go
+go run synchronous-proxy/ui/main.go
 ```
 
 Once the UI has exited you will be able to see delivery details in the worker output, as might have been emailed to you in a real implementation.
