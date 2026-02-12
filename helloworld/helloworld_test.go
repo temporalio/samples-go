@@ -47,6 +47,7 @@ func Test_Using_DevServer(t *testing.T) {
 	server, err := testsuite.StartDevServer(context.Background(), testsuite.DevServerOptions{ClientOptions: &client.Options{HostPort: hostPort}})
 	require.NoError(t, err)
 	require.NotNil(t, server)
+	defer func() { _ = server.Stop() }()
 
 	var (
 		c       client.Client
