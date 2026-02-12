@@ -123,7 +123,7 @@ func ListExecutions(ctx context.Context, query string) ([]*workflowpb.WorkflowEx
 	// current execution.
 	for hasMore := true; hasMore; hasMore = !seenCurrentExecution || len(nextPageToken) > 0 {
 		resp, err := c.ListWorkflow(ctx, &workflowservice.ListWorkflowExecutionsRequest{
-			Namespace:     info.WorkflowNamespace,
+			Namespace:     info.Namespace,
 			PageSize:      10,
 			NextPageToken: nextPageToken,
 			Query:         query,
