@@ -2,7 +2,9 @@ package caller_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"github.com/stretchr/testify/require"
@@ -22,8 +24,13 @@ var EchoOperation = nexus.NewSyncOperation(service.EchoOperationName, func(ctx c
 
 var HelloOperation = temporalnexus.NewWorkflowRunOperation(service.HelloOperationName, FakeHelloHandlerWorkflow, func(ctx context.Context, input service.HelloInput, options nexus.StartOperationOptions) (client.StartWorkflowOptions, error) {
 	return client.StartWorkflowOptions{
-		// Do not use RequestID for production use cases. ID should be a meaninful business ID.
-		ID: options.RequestID,
+		// Use operation input to build a business meaningful workflow ID for testing purposes as well.
+		ID: fmt.Sprintf(
+			"nexus-test-hello-%s-%s-%d",
+			input.Language,
+			input.Name,
+			time.Now().UnixNano(),
+		),
 	}, nil
 })
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -24,7 +25,7 @@ func main() {
 	defer c.Close()
 	ctx := context.Background()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "nexus_hello_caller_workflow_" + time.Now().Format("20060102150405"),
+		ID:        fmt.Sprintf("nexus-multiple-arguments-hello-caller-%s-%s-%d", "Nexus", service.ES, time.Now().UnixNano()),
 		TaskQueue: caller.TaskQueue,
 	}
 
