@@ -1,5 +1,7 @@
 This sample demonstrates how to use a Standalone Activity (executing an Activity without wrapping it in a Workflow)
 
+## NOTE: This new feature is not ready for use yet. It will only work once we release a special CLI server for pre-release, once that happens, this README will be updated.
+
 ### Steps to run this sample (with expected output):
 1) Run a [Temporal server](https://github.com/temporalio/samples-go/tree/main/#how-to-use). (If you are going to run locally, you will want to start it in another terminal; this command is blocking and runs until it receives a SIGINT (Ctrl + C) command.)
 
