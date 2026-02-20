@@ -4,6 +4,9 @@ go 1.23.0
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
 
+replace (
+	go.temporal.io/sdk v1.23.1 => ../sdk-go
+)
 require (
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/golang/snappy v0.0.4
