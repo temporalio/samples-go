@@ -213,6 +213,9 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 - [**Nexus Context Propagation**](./nexus-context-propagation): Demonstrates how to propagate context through client calls, workflows, and Nexus headers.
 
+- [**Async activities invocation**](./activities-async): Demonstrates how to invoke two activities in parallel and 
+  return when both of them have completed without blocking between one activity invocation and the following one
+
 ### Scenario based examples
 
 - [**Safe Message Handler**](./safe_message_handler): This demonstrates how to safely handle concurrent update and signal requests.
@@ -260,7 +263,6 @@ resource waiting for its successful completion
 
 Mostly examples we haven't yet ported from https://github.com/temporalio/samples-java/
 
-- Async activity calling: *Example to be completed*
 - Async lambda:  *Example to be completed*
 - Periodic Workflow: Workflow that executes some logic periodically. *Example to be completed*
 - Exception propagation and wrapping: *Example to be completed*
