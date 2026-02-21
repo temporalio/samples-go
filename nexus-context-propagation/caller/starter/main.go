@@ -27,16 +27,22 @@ func main() {
 	}
 	defer c.Close()
 	ctx := context.Background()
-	workflowOptions := client.StartWorkflowOptions{
-		ID:        "nexus_hello_caller_workflow_" + time.Now().Format("20060102150405"),
-		TaskQueue: caller.TaskQueue,
-	}
 
 	ctx = context.WithValue(ctx, ctxpropagation.PropagateKey, ctxpropagation.Values{
 		Key:   "caller-id",
 		Value: "samples-go",
 	})
-	wr, err := c.ExecuteWorkflow(ctx, workflowOptions, caller.HelloCallerWorkflow, "Nexus", service.ES)
+
+	runWorkflow(ctx, c, caller.EchoCallerWorkflow, "Nexus Echo 👋")
+	runWorkflow(ctx, c, caller.HelloCallerWorkflow, "Nexus", service.ES)
+}
+
+func runWorkflow(ctx context.Context, c client.Client, workflow interface{}, args ...interface{}) {
+	workflowOptions := client.StartWorkflowOptions{
+		ID:        "nexus_hello_caller_workflow_" + time.Now().Format("20060102150405"),
+		TaskQueue: caller.TaskQueue,
+	}
+	wr, err := c.ExecuteWorkflow(ctx, workflowOptions, workflow, args...)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
