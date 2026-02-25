@@ -31,7 +31,7 @@ func main() {
 	// Normally we would execute a workflow, but in this case we are executing an activity directly.
 	handle, err := c.ExecuteActivity(context.Background(), activityOptions, helloworld.Activity, "Temporal")
 	if err != nil {
-		log.Fatalln("Unable to execute workflow", err)
+		log.Fatalln("Unable to execute activity", err)
 	}
 
 	log.Println("Started standalone activity", "ActivityID", handle.GetID(), "RunID", handle.GetRunID())
@@ -43,4 +43,29 @@ func main() {
 		log.Fatalln("Unable get standalone activity result", err)
 	}
 	log.Println("Activity result:", result)
+
+	resp, err := c.ListActivities(context.Background(), client.ListActivitiesOptions{
+		Query: "TaskQueue = 'standalone-activity-helloworld'",
+	})
+	if err != nil {
+		log.Fatalln("Unable to list activities", err)
+	}
+
+	log.Println("ListActivity results")
+	for info, err := range resp.Results {
+		if err != nil {
+			log.Fatalln("Error iterating activities", err)
+		}
+		log.Printf("\tActivityID: %s, Type: %s, Status: %v\n",
+			info.ActivityID, info.ActivityType, info.Status)
+	}
+
+	resp1, err := c.CountActivities(context.Background(), client.CountActivitiesOptions{
+		Query: "TaskQueue = 'standalone-activity-helloworld'",
+	})
+	if err != nil {
+		log.Fatalln("Unable to count activities", err)
+	}
+
+	log.Println("Total activities:", resp1.Count)
 }
