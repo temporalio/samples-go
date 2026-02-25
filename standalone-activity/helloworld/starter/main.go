@@ -31,7 +31,7 @@ func main() {
 	// Normally we would execute a workflow, but in this case we are executing an activity directly.
 	handle, err := c.ExecuteActivity(context.Background(), activityOptions, helloworld.Activity, "Temporal")
 	if err != nil {
-		log.Fatalln("Unable to execute workflow", err)
+		log.Fatalln("Unable to execute activity", err)
 	}
 
 	log.Println("Started standalone activity", "ActivityID", handle.GetID(), "RunID", handle.GetRunID())
