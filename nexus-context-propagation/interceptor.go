@@ -98,15 +98,15 @@ func (n *nexusOperationInboundInterceptor) StartOperation(ctx context.Context, i
 	if h := input.Options.Header[ctxpropagation.HeaderKey]; h != "" {
 		data, err := base64.URLEncoding.WithPadding(base64.NoPadding).DecodeString(h)
 		if err != nil {
-			return nil, nexus.HandlerErrorf(nexus.HandlerErrorTypeBadRequest, "invalid %s header: %w", ctxpropagation.HeaderKey, err)
+			return nil, nexus.NewHandlerErrorf(nexus.HandlerErrorTypeBadRequest, "invalid %s header: %w", ctxpropagation.HeaderKey, err)
 		}
 		var payload common.Payload
 		if err := protojson.Unmarshal(data, &payload); err != nil {
-			return nil, nexus.HandlerErrorf(nexus.HandlerErrorTypeBadRequest, "invalid %s header: %w", ctxpropagation.HeaderKey, err)
+			return nil, nexus.NewHandlerErrorf(nexus.HandlerErrorTypeBadRequest, "invalid %s header: %w", ctxpropagation.HeaderKey, err)
 		}
 		var values ctxpropagation.Values
 		if err := n.parent.DataConverter.FromPayload(&payload, &values); err != nil {
-			return nil, nexus.HandlerErrorf(nexus.HandlerErrorTypeBadRequest, "invalid %s header: %w", ctxpropagation.HeaderKey, err)
+			return nil, nexus.NewHandlerErrorf(nexus.HandlerErrorTypeBadRequest, "invalid %s header: %w", ctxpropagation.HeaderKey, err)
 		}
 		ctx = context.WithValue(ctx, ctxpropagation.PropagateKey, values)
 	}
