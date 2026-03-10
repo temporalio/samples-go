@@ -1,7 +1,10 @@
 This sample Workflow Definition demonstrates how to use multiple workflow safe goroutines (instead of native ones) to
 process multiple sequences of activities in parallel.
 In Temporal Workflow Definition, you should not use `go` keyword to start goroutines. Instead, you use the `workflow.Go`
-function.
+function, which spawns a coroutine that is never run in parallel, but instead deterministically. 
+
+To see more information on goroutines and multithreading, see our
+[docs on Go SDK multithreading](https://docs.temporal.io/develop/go/go-sdk-multithreading).
 
 ### Steps to run this sample:
 

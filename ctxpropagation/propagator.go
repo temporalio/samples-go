@@ -25,9 +25,9 @@ type (
 // PropagateKey is the key used to store the value in the Context object
 var PropagateKey = contextKey{}
 
-// propagationKey is the key used by the propagator to pass values through the
+// HeaderKey is the key used by the propagator to pass values through the
 // Temporal server headers
-const propagationKey = "custom-header"
+const HeaderKey = "custom-header"
 
 // NewContextPropagator returns a context propagator that propagates a set of
 // string key-value pairs across a workflow
@@ -42,7 +42,7 @@ func (s *propagator) Inject(ctx context.Context, writer workflow.HeaderWriter) e
 	if err != nil {
 		return err
 	}
-	writer.Set(propagationKey, payload)
+	writer.Set(HeaderKey, payload)
 	return nil
 }
 
@@ -53,13 +53,13 @@ func (s *propagator) InjectFromWorkflow(ctx workflow.Context, writer workflow.He
 	if err != nil {
 		return err
 	}
-	writer.Set(propagationKey, payload)
+	writer.Set(HeaderKey, payload)
 	return nil
 }
 
 // Extract extracts values from headers and puts them into context
 func (s *propagator) Extract(ctx context.Context, reader workflow.HeaderReader) (context.Context, error) {
-	if value, ok := reader.Get(propagationKey); ok {
+	if value, ok := reader.Get(HeaderKey); ok {
 		var values Values
 		if err := converter.GetDefaultDataConverter().FromPayload(value, &values); err != nil {
 			return ctx, nil
@@ -72,7 +72,7 @@ func (s *propagator) Extract(ctx context.Context, reader workflow.HeaderReader) 
 
 // ExtractToWorkflow extracts values from headers and puts them into context
 func (s *propagator) ExtractToWorkflow(ctx workflow.Context, reader workflow.HeaderReader) (workflow.Context, error) {
-	if value, ok := reader.Get(propagationKey); ok {
+	if value, ok := reader.Get(HeaderKey); ok {
 		var values Values
 		if err := converter.GetDefaultDataConverter().FromPayload(value, &values); err != nil {
 			return ctx, nil

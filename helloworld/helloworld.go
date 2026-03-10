@@ -6,9 +6,6 @@ import (
 
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/workflow"
-
-	// TODO(cretz): Remove when tagged
-	_ "go.temporal.io/sdk/contrib/tools/workflowcheck/determinism"
 )
 
 // Workflow is a Hello World workflow definition.

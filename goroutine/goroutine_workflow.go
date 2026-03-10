@@ -9,7 +9,7 @@ import (
 )
 
 /**
-* This sample workflow demonstrates how to use multiple Temporal gorotinues (instead of native goroutine) to process a
+* This sample workflow demonstrates how to use multiple Temporal goroutines (instead of native goroutine) to process a
 * a sequence of activities in parallel.
 * In Temporal workflow, you should create goroutines using workflow.Go method.
  */
