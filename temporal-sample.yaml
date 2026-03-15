@@ -1,0 +1,36 @@
+version: 1
+language: go
+scaffold:
+  go.mod: |
+    module {{name}}
+    go 1.23.0
+    require (
+        go.temporal.io/sdk v1.41.0
+        go.temporal.io/sdk/contrib/envconfig v0.1.0
+    )
+rewrite_imports:
+  from: github.com/temporalio/samples-go
+  glob: "*.go"
+samples:
+  - path: helloworld
+    description: Basic hello world workflow
+  - path: standalone-activity
+    description: Execute Activities directly from a Client without a Workflow
+  - path: nexus
+    description: Nexus service definition and cross-namespace operation calls
+  - path: nexus-cancelation
+    description: Cancel a Nexus operation using WaitRequested cancellation type
+  - path: nexus-context-propagation
+    description: Propagate context through client calls, workflows, and Nexus headers
+  - path: nexus-multiple-arguments
+    description: Map a Nexus operation to a workflow with multiple input arguments
+  - path: expense
+    description: Asynchronous activity completion
+  - path: saga
+    description: Microservice orchestration using the Saga pattern
+  - path: shoppingcart
+    description: Update-with-Start and WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING
+  - path: dsl
+    description: DSL workflow interpreter driven by YAML step definitions
+  - path: encryption
+    description: Remote codec server for end-to-end encryption
