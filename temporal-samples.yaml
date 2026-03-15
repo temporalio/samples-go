@@ -1,0 +1,14 @@
+version: 1
+language: go
+repo: temporalio/samples-go
+scaffold:
+  go.mod: |
+    module {{name}}
+    go 1.23.0
+    require (
+        go.temporal.io/sdk v1.41.0
+        go.temporal.io/sdk/contrib/envconfig v0.1.0
+    )
+rewrite_imports:
+  from: github.com/temporalio/samples-go
+  glob: "*.go"
