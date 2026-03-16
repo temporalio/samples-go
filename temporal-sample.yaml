@@ -34,3 +34,123 @@ samples:
     description: DSL workflow interpreter driven by YAML step definitions
   - path: encryption
     description: Remote codec server for end-to-end encryption
+  - path: await-signals
+    description: Handle out-of-order signals with AwaitWithTimeout for sequential processing
+  - path: batch-sliding-window
+    description: Batch processing with a sliding window of parallel child workflows
+  - path: branch
+    description: Execute multiple activities in parallel and await all results
+  - path: cancellation
+    description: Workflow and activity cancellation handling
+  - path: child-workflow
+    description: Execute a child workflow from a parent workflow
+  - path: child-workflow-continue-as-new
+    description: Child workflow using continue-as-new transparently to the parent
+  - path: choice-exclusive
+    description: Run an activity chosen dynamically based on input
+  - path: choice-multi
+    description: Run multiple activities in parallel based on dynamic input
+  - path: codec-server
+    description: Remote codec server for decoding payloads in CLI and UI
+  - path: cron
+    description: Schedule a workflow to run on a cron expression
+  - path: ctxpropagation
+    description: Propagate context values and Jaeger tracing across workflows and activities
+  - path: datadog
+    description: Datadog interceptor for tracing, metrics, and correlated logging
+  - path: dynamic
+    description: Invoke workflows and activities by name rather than typed function
+  - path: dynamic-workflows
+    description: Register and dispatch dynamic workflows and activities at runtime
+  - path: dynamicmtls
+    description: mTLS client connection with dynamically reloadable certificates
+  - path: eager-workflow-start
+    description: Reduce start latency by co-locating starter and worker in one process
+  - path: early-return
+    description: Return a response mid-workflow using Update-with-Start
+  - path: external-env-conf
+    description: Configure client connections via TOML files and environment variables
+  - path: fileprocessing
+    description: File download and processing using the session API for host affinity
+  - path: goroutine
+    description: Parallel activity sequences using workflow.Go coroutines
+  - path: greetings
+    description: Sequential activity chain composing a greeting
+  - path: greetingslocal
+    description: Sequential activity chain using local activities
+  - path: grpc-proxy
+    description: Centralized payload compression via a gRPC proxy
+  - path: helloworld-apiKey
+    description: Connect to Temporal Cloud using API key authentication
+  - path: helloworldmtls
+    description: Connect to Temporal Cloud using mTLS authentication
+  - path: logger-interceptor
+    description: Worker interceptor that customizes workflow and activity loggers
+  - path: memo
+    description: Set and upsert memo fields on a workflow execution
+  - path: metrics
+    description: Expose Prometheus metrics from the Temporal SDK
+  - path: multi-history-replay
+    description: Replay multiple workflow histories for compatibility testing
+  - path: mutex
+    description: Cross-workflow mutex for exclusive access to a shared resource
+  - path: opentelemetry
+    description: OpenTelemetry tracing for workflows and activities
+  - path: pickfirst
+    description: Race parallel activities and cancel the rest when one completes
+  - path: polling
+    description: Polling patterns: frequent, infrequent, and periodic sequence
+  - path: pso
+    description: Particle swarm optimization using child workflows and continue-as-new
+  - path: query
+    description: Custom query handler to inspect workflow state at runtime
+  - path: recovery
+    description: Restart stuck workflows by replaying signals from previous executions
+  - path: reqrespactivity
+    description: Request-response pattern using activity-based callbacks
+  - path: reqrespquery
+    description: Request-response pattern using query-based polling
+  - path: reqrespupdate
+    description: Request-response pattern using workflow update
+  - path: retryactivity
+    description: Activity retry policy with heartbeat-based progress resumption
+  - path: safe_message_handler
+    description: Atomic signal and update handlers with locking and continue-as-new
+  - path: schedule
+    description: Schedule a workflow to run on a recurring basis
+  - path: searchattributes
+    description: Set and upsert custom search attributes on workflow executions
+  - path: serverjwtauth
+    description: JWT-based authorization with ECDSA key generation and JWKS serving
+  - path: session-failure
+    description: Recover from session worker failure by retrying on a new session
+  - path: sleep-for-days
+    description: Long-running workflow that sleeps for days between actions
+  - path: slogadapter
+    description: Use Go slog as the Temporal SDK logger
+  - path: snappycompress
+    description: Snappy payload compression with a codec server for decoding
+  - path: splitmerge-future
+    description: Parallel activities merged by awaiting futures in invocation order
+  - path: splitmerge-selector
+    description: Parallel activities merged by Selector in completion order
+  - path: start-delay
+    description: Start a workflow execution after a configurable delay
+  - path: synchronous-proxy
+    description: Synchronous interaction via a proxy workflow using signals
+  - path: timer
+    description: Timer racing an activity to send a notification on slow processing
+  - path: typed-searchattributes
+    description: Typed search attributes (see searchattributes sample)
+  - path: updatabletimer
+    description: Timer whose wake-up time can be updated via signals
+  - path: update
+    description: Workflow update with validation to mutate workflow state
+  - path: worker-specific-task-queues
+    description: Route activities to a specific worker using unique task queues
+  - path: worker-versioning
+    description: Safe workflow code deployment with worker versioning and build IDs
+  - path: workflow-security-interceptor
+    description: Interceptor that validates child workflow types before execution
+  - path: zapadapter
+    description: Use Zap as the Temporal SDK logger
