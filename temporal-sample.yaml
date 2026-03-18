@@ -14,579 +14,143 @@ rewrite_imports:
 samples:
   - path: helloworld
     description: Basic hello world workflow
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./helloworld/worker
-      - cmd: go run ./helloworld/starter
-        new_terminal: true
   - path: standalone-activity
     description: Execute Activities directly from a Client without a Workflow
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./standalone-activity/helloworld/worker
-      - cmd: go run ./standalone-activity/helloworld/starter
-        new_terminal: true
   - path: nexus
     description: Nexus service definition and cross-namespace operation calls
-    commands:
-      - cmd: go mod tidy
-      - cmd: temporal operator namespace create --namespace my-target-namespace
-      - cmd: temporal operator namespace create --namespace my-caller-namespace
-      - cmd: >-
-          temporal operator nexus endpoint create
-          --name my-nexus-endpoint-name
-          --target-namespace my-target-namespace
-          --target-task-queue my-handler-task-queue
-          --description-file ./nexus/service/description.md
-      - cmd: go run ./nexus/handler/worker -target-host localhost:7233 -namespace my-target-namespace
-      - cmd: go run ./nexus/caller/worker -target-host localhost:7233 -namespace my-caller-namespace
-        new_terminal: true
-      - cmd: go run ./nexus/caller/starter -target-host localhost:7233 -namespace my-caller-namespace
-        new_terminal: true
   - path: nexus-cancelation
     description: Cancel a Nexus operation using WaitRequested cancellation type
-    commands:
-      - cmd: go mod tidy
-      - cmd: temporal operator namespace create --namespace my-target-namespace
-      - cmd: temporal operator namespace create --namespace my-caller-namespace
-      - cmd: >-
-          temporal operator nexus endpoint create
-          --name my-nexus-endpoint-name
-          --target-namespace my-target-namespace
-          --target-task-queue my-handler-task-queue
-      - cmd: go run ./nexus-cancelation/handler/worker -target-host localhost:7233 -namespace my-target-namespace
-      - cmd: go run ./nexus-cancelation/caller/worker -target-host localhost:7233 -namespace my-caller-namespace
-        new_terminal: true
-      - cmd: go run ./nexus-cancelation/caller/starter -target-host localhost:7233 -namespace my-caller-namespace
-        new_terminal: true
   - path: nexus-context-propagation
     description: Propagate context through client calls, workflows, and Nexus headers
-    commands:
-      - cmd: go mod tidy
-      - cmd: temporal operator namespace create --namespace my-target-namespace
-      - cmd: temporal operator namespace create --namespace my-caller-namespace
-      - cmd: >-
-          temporal operator nexus endpoint create
-          --name my-nexus-endpoint-name
-          --target-namespace my-target-namespace
-          --target-task-queue my-handler-task-queue
-      - cmd: go run ./nexus-context-propagation/handler/worker -target-host localhost:7233 -namespace my-target-namespace
-      - cmd: go run ./nexus-context-propagation/caller/worker -target-host localhost:7233 -namespace my-caller-namespace
-        new_terminal: true
-      - cmd: go run ./nexus-context-propagation/caller/starter -target-host localhost:7233 -namespace my-caller-namespace
-        new_terminal: true
   - path: nexus-multiple-arguments
     description: Map a Nexus operation to a workflow with multiple input arguments
-    commands:
-      - cmd: go mod tidy
-      - cmd: temporal operator namespace create --namespace my-target-namespace
-      - cmd: temporal operator namespace create --namespace my-caller-namespace
-      - cmd: >-
-          temporal operator nexus endpoint create
-          --name my-nexus-endpoint-name
-          --target-namespace my-target-namespace
-          --target-task-queue my-handler-task-queue
-      - cmd: go run ./nexus-multiple-arguments/handler/worker -target-host localhost:7233 -namespace my-target-namespace
-      - cmd: go run ./nexus-multiple-arguments/caller/worker -target-host localhost:7233 -namespace my-caller-namespace
-        new_terminal: true
-      - cmd: go run ./nexus-multiple-arguments/caller/starter -target-host localhost:7233 -namespace my-caller-namespace
-        new_terminal: true
   - path: expense
     description: Asynchronous activity completion
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./expense/ui
-      - cmd: go run ./expense/worker
-        new_terminal: true
-      - cmd: go run ./expense/starter
-        new_terminal: true
   - path: saga
     description: Microservice orchestration using the Saga pattern
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./saga/worker
-      - cmd: go run ./saga/start
-        new_terminal: true
   - path: shoppingcart
     description: Update-with-Start and WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./shoppingcart/worker
-      - cmd: go run ./shoppingcart/ui
-        new_terminal: true
   - path: dsl
     description: DSL workflow interpreter driven by YAML step definitions
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./dsl/worker
-      - cmd: go run ./dsl/starter
-        new_terminal: true
   - path: encryption
     description: Remote codec server for end-to-end encryption
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./encryption/codec-server
-      - cmd: go run ./encryption/worker
-        new_terminal: true
-      - cmd: go run ./encryption/starter
-        new_terminal: true
   - path: await-signals
     description: Handle out-of-order signals with AwaitWithTimeout for sequential processing
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./await-signals/worker
-      - cmd: go run ./await-signals/starter
-        new_terminal: true
   - path: batch-sliding-window
     description: Batch processing with a sliding window of parallel child workflows
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./batch-sliding-window/worker
-      - cmd: go run ./batch-sliding-window/starter
-        new_terminal: true
   - path: branch
     description: Execute multiple activities in parallel and await all results
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./branch/worker
-      - cmd: go run ./branch/starter
-        new_terminal: true
   - path: cancellation
     description: Workflow and activity cancellation handling
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./cancellation/worker
-      - cmd: go run ./cancellation/starter
-        new_terminal: true
   - path: child-workflow
     description: Execute a child workflow from a parent workflow
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./child-workflow/worker
-      - cmd: go run ./child-workflow/starter
-        new_terminal: true
   - path: child-workflow-continue-as-new
     description: Child workflow using continue-as-new transparently to the parent
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./child-workflow-continue-as-new/worker
-      - cmd: go run ./child-workflow-continue-as-new/starter
-        new_terminal: true
   - path: choice-exclusive
     description: Run an activity chosen dynamically based on input
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./choice-exclusive/worker
-      - cmd: go run ./choice-exclusive/starter
-        new_terminal: true
   - path: choice-multi
     description: Run multiple activities in parallel based on dynamic input
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./choice-multi/worker
-      - cmd: go run ./choice-multi/starter
-        new_terminal: true
   - path: codec-server
     description: Remote codec server for decoding payloads in CLI and UI
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./codec-server/worker
-      - cmd: go run ./codec-server/starter
-        new_terminal: true
   - path: cron
     description: Schedule a workflow to run on a cron expression
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./cron/worker
-      - cmd: go run ./cron/starter
-        new_terminal: true
   - path: ctxpropagation
     description: Propagate context values and Jaeger tracing across workflows and activities
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./ctxpropagation/worker
-      - cmd: go run ./ctxpropagation/starter
-        new_terminal: true
   - path: datadog
     description: Datadog interceptor for tracing, metrics, and correlated logging
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./datadog/worker
-      - cmd: go run ./datadog/starter
-        new_terminal: true
   - path: dynamic
     description: Invoke workflows and activities by name rather than typed function
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./dynamic/worker
-      - cmd: go run ./dynamic/starter
-        new_terminal: true
   - path: dynamic-workflows
     description: Register and dispatch dynamic workflows and activities at runtime
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./dynamic-workflows/worker
-      - cmd: go run ./dynamic-workflows/starter
-        new_terminal: true
   - path: dynamicmtls
     description: mTLS client connection with dynamically reloadable certificates
-    commands:
-      - cmd: go mod tidy
-      - cmd: >-
-          go run ./dynamicmtls/worker
-          -target-host my.namespace.tmprl.cloud:7233
-          -namespace my.namespace
-          -client-cert path/to/cert.pem
-          -client-key path/to/key.pem
-      - cmd: >-
-          go run ./dynamicmtls/starter
-          -target-host my.namespace.tmprl.cloud:7233
-          -namespace my.namespace
-          -client-cert path/to/cert.pem
-          -client-key path/to/key.pem
-        new_terminal: true
   - path: eager-workflow-start
     description: Reduce start latency by co-locating starter and worker in one process
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./eager-workflow-start/main.go
   - path: early-return
     description: Return a response mid-workflow using Update-with-Start
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./early-return/worker
-      - cmd: go run ./early-return/starter
-        new_terminal: true
   - path: external-env-conf
     description: Configure client connections via TOML files and environment variables
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./external-env-conf/worker
-      - cmd: go run ./external-env-conf/starter
-        new_terminal: true
   - path: fileprocessing
     description: File download and processing using the session API for host affinity
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./fileprocessing/worker
-      - cmd: go run ./fileprocessing/starter
-        new_terminal: true
   - path: goroutine
     description: Parallel activity sequences using workflow.Go coroutines
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./goroutine/worker
-      - cmd: go run ./goroutine/starter
-        new_terminal: true
   - path: greetings
     description: Sequential activity chain composing a greeting
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./greetings/worker
-      - cmd: go run ./greetings/starter
-        new_terminal: true
   - path: greetingslocal
     description: Sequential activity chain using local activities
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./greetingslocal/worker
-      - cmd: go run ./greetingslocal/starter
-        new_terminal: true
   - path: grpc-proxy
     description: Centralized payload compression via a gRPC proxy
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./grpc-proxy/proxy-server
-      - cmd: go run ./grpc-proxy/worker
-        new_terminal: true
-      - cmd: go run ./grpc-proxy/starter
-        new_terminal: true
   - path: helloworld-apiKey
     description: Connect to Temporal Cloud using API key authentication
-    commands:
-      - cmd: go mod tidy
-      - cmd: >-
-          go run ./helloworld-apiKey/worker
-          -target-host my.namespace.tmprl.cloud:7233
-          -namespace my.namespace
-          -api-key CLIENT_API_KEY
-      - cmd: >-
-          go run ./helloworld-apiKey/starter
-          -target-host my.namespace.tmprl.cloud:7233
-          -namespace my.namespace
-          -api-key CLIENT_API_KEY
-        new_terminal: true
   - path: helloworldmtls
     description: Connect to Temporal Cloud using mTLS authentication
-    commands:
-      - cmd: go mod tidy
-      - cmd: >-
-          go run ./helloworldmtls/worker
-          -target-host my.namespace.tmprl.cloud:7233
-          -namespace my.namespace
-          -client-cert path/to/cert.pem
-          -client-key path/to/key.pem
-      - cmd: >-
-          go run ./helloworldmtls/starter
-          -target-host my.namespace.tmprl.cloud:7233
-          -namespace my.namespace
-          -client-cert path/to/cert.pem
-          -client-key path/to/key.pem
-        new_terminal: true
   - path: logger-interceptor
     description: Worker interceptor that customizes workflow and activity loggers
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./logger-interceptor/worker
-      - cmd: go run ./logger-interceptor/starter
-        new_terminal: true
   - path: memo
     description: Set and upsert memo fields on a workflow execution
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./memo/worker
-      - cmd: go run ./memo/starter
-        new_terminal: true
   - path: metrics
     description: Expose Prometheus metrics from the Temporal SDK
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./metrics/worker
-      - cmd: go run ./metrics/starter
-        new_terminal: true
   - path: multi-history-replay
     description: Replay multiple workflow histories for compatibility testing
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./multi-history-replay/worker
-      - cmd: go run ./multi-history-replay/starter
-        new_terminal: true
   - path: mutex
     description: Cross-workflow mutex for exclusive access to a shared resource
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./mutex/worker
-      - cmd: go run ./mutex/starter
-        new_terminal: true
   - path: opentelemetry
     description: OpenTelemetry tracing for workflows and activities
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./opentelemetry/worker
-      - cmd: go run ./opentelemetry/starter
-        new_terminal: true
   - path: pickfirst
     description: Race parallel activities and cancel the rest when one completes
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./pickfirst/worker
-      - cmd: go run ./pickfirst/starter
-        new_terminal: true
   - path: polling
-    description: "Polling patterns: frequent, infrequent, and periodic sequence"
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./polling/frequent/worker
-      - cmd: go run ./polling/frequent/starter
-        new_terminal: true
+    description: Polling patterns: frequent, infrequent, and periodic sequence
   - path: pso
     description: Particle swarm optimization using child workflows and continue-as-new
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./pso/worker
-      - cmd: go run ./pso/starter
-        new_terminal: true
   - path: query
     description: Custom query handler to inspect workflow state at runtime
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./query/worker
-      - cmd: go run ./query/starter
-        new_terminal: true
   - path: recovery
     description: Restart stuck workflows by replaying signals from previous executions
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./recovery/worker
-      - cmd: go run ./recovery/starter
-        new_terminal: true
   - path: reqrespactivity
     description: Request-response pattern using activity-based callbacks
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./reqrespactivity/worker
-      - cmd: go run ./reqrespactivity/starter
-        new_terminal: true
   - path: reqrespquery
     description: Request-response pattern using query-based polling
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./reqrespquery/worker
-      - cmd: go run ./reqrespquery/starter
-        new_terminal: true
   - path: reqrespupdate
     description: Request-response pattern using workflow update
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./reqrespupdate/worker
-      - cmd: go run ./reqrespupdate/starter
-        new_terminal: true
   - path: retryactivity
     description: Activity retry policy with heartbeat-based progress resumption
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./retryactivity/worker
-      - cmd: go run ./retryactivity/starter
-        new_terminal: true
   - path: safe_message_handler
     description: Atomic signal and update handlers with locking and continue-as-new
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./safe_message_handler/worker
-      - cmd: go run ./safe_message_handler/starter
-        new_terminal: true
   - path: schedule
     description: Schedule a workflow to run on a recurring basis
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./schedule/worker
-      - cmd: go run ./schedule/starter
-        new_terminal: true
   - path: searchattributes
     description: Set and upsert custom search attributes on workflow executions
-    commands:
-      - cmd: go mod tidy
-      - cmd: temporal operator search-attribute create --name CustomIntField --type Int
-      - cmd: temporal operator search-attribute create --name CustomKeywordField --type Keyword
-      - cmd: temporal operator search-attribute create --name CustomBoolField --type Bool
-      - cmd: temporal operator search-attribute create --name CustomDoubleField --type Double
-      - cmd: temporal operator search-attribute create --name CustomDatetimeField --type Datetime
-      - cmd: temporal operator search-attribute create --name CustomKeywordListField --type KeywordList
-      - cmd: go run ./searchattributes/worker
-      - cmd: go run ./searchattributes/starter
-        new_terminal: true
   - path: serverjwtauth
     description: JWT-based authorization with ECDSA key generation and JWKS serving
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./serverjwtauth/worker
-      - cmd: go run ./serverjwtauth/starter
-        new_terminal: true
   - path: session-failure
     description: Recover from session worker failure by retrying on a new session
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./session-failure/worker
-      - cmd: go run ./session-failure/starter
-        new_terminal: true
   - path: sleep-for-days
     description: Long-running workflow that sleeps for days between actions
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./sleep-for-days/worker
-      - cmd: go run ./sleep-for-days/starter
-        new_terminal: true
   - path: slogadapter
     description: Use Go slog as the Temporal SDK logger
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./slogadapter/worker
-      - cmd: go run ./slogadapter/starter
-        new_terminal: true
   - path: snappycompress
     description: Snappy payload compression with a codec server for decoding
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./snappycompress/codec-server
-      - cmd: go run ./snappycompress/worker
-        new_terminal: true
-      - cmd: go run ./snappycompress/starter
-        new_terminal: true
   - path: splitmerge-future
     description: Parallel activities merged by awaiting futures in invocation order
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./splitmerge-future/worker
-      - cmd: go run ./splitmerge-future/starter
-        new_terminal: true
   - path: splitmerge-selector
     description: Parallel activities merged by Selector in completion order
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./splitmerge-selector/worker
-      - cmd: go run ./splitmerge-selector/starter
-        new_terminal: true
   - path: start-delay
     description: Start a workflow execution after a configurable delay
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./start-delay/worker
-      - cmd: go run ./start-delay/starter
-        new_terminal: true
   - path: synchronous-proxy
     description: Synchronous interaction via a proxy workflow using signals
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./synchronous-proxy/worker
-      - cmd: go run ./synchronous-proxy/ui
-        new_terminal: true
   - path: timer
     description: Timer racing an activity to send a notification on slow processing
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./timer/worker
-      - cmd: go run ./timer/starter
-        new_terminal: true
   - path: typed-searchattributes
     description: Typed search attributes (see searchattributes sample)
-    commands:
-      - cmd: go mod tidy
-      - cmd: temporal operator search-attribute create --name CustomIntField --type Int
-      - cmd: temporal operator search-attribute create --name CustomKeywordField --type Keyword
-      - cmd: temporal operator search-attribute create --name CustomBoolField --type Bool
-      - cmd: temporal operator search-attribute create --name CustomDoubleField --type Double
-      - cmd: temporal operator search-attribute create --name CustomDatetimeField --type Datetime
-      - cmd: temporal operator search-attribute create --name CustomKeywordListField --type KeywordList
-      - cmd: go run ./searchattributes/worker
-      - cmd: go run ./searchattributes/starter
-        new_terminal: true
   - path: updatabletimer
     description: Timer whose wake-up time can be updated via signals
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./updatabletimer/worker
-      - cmd: go run ./updatabletimer/starter
-        new_terminal: true
   - path: update
     description: Workflow update with validation to mutate workflow state
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./update/worker
-      - cmd: go run ./update/starter
-        new_terminal: true
   - path: worker-specific-task-queues
     description: Route activities to a specific worker using unique task queues
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./worker-specific-task-queues/worker
-      - cmd: go run ./worker-specific-task-queues/starter
-        new_terminal: true
   - path: worker-versioning
     description: Safe workflow code deployment with worker versioning and build IDs
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./worker-versioning/app/main.go
   - path: workflow-security-interceptor
     description: Interceptor that validates child workflow types before execution
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./workflow-security-interceptor/worker
-      - cmd: go run ./workflow-security-interceptor/starter
-        new_terminal: true
   - path: zapadapter
     description: Use Zap as the Temporal SDK logger
-    commands:
-      - cmd: go mod tidy
-      - cmd: go run ./zapadapter/worker
-      - cmd: go run ./zapadapter/starter
-        new_terminal: true
