@@ -456,6 +456,12 @@ samples:
     description: Set and upsert custom search attributes on workflow executions
     commands:
       - cmd: go mod tidy
+      - cmd: temporal operator search-attribute create --name CustomIntField --type Int
+      - cmd: temporal operator search-attribute create --name CustomKeywordField --type Keyword
+      - cmd: temporal operator search-attribute create --name CustomBoolField --type Bool
+      - cmd: temporal operator search-attribute create --name CustomDoubleField --type Double
+      - cmd: temporal operator search-attribute create --name CustomDatetimeField --type Datetime
+      - cmd: temporal operator search-attribute create --name CustomKeywordListField --type KeywordList
       - cmd: go run ./searchattributes/worker
       - cmd: go run ./searchattributes/starter
         new_terminal: true
@@ -535,6 +541,12 @@ samples:
     description: Typed search attributes (see searchattributes sample)
     commands:
       - cmd: go mod tidy
+      - cmd: temporal operator search-attribute create --name CustomIntField --type Int
+      - cmd: temporal operator search-attribute create --name CustomKeywordField --type Keyword
+      - cmd: temporal operator search-attribute create --name CustomBoolField --type Bool
+      - cmd: temporal operator search-attribute create --name CustomDoubleField --type Double
+      - cmd: temporal operator search-attribute create --name CustomDatetimeField --type Datetime
+      - cmd: temporal operator search-attribute create --name CustomKeywordListField --type KeywordList
       - cmd: go run ./searchattributes/worker
       - cmd: go run ./searchattributes/starter
         new_terminal: true
