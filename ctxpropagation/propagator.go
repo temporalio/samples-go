@@ -7,6 +7,7 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
+// @@@SNIPSTART samples-go-ctx-propagation-propagator
 type (
 	// contextKey is an unexported type used as key for items stored in the
 	// Context object
@@ -69,6 +70,7 @@ func (s *propagator) Extract(ctx context.Context, reader workflow.HeaderReader) 
 
 	return ctx, nil
 }
+// @@@SNIPEND
 
 // ExtractToWorkflow extracts values from headers and puts them into context
 func (s *propagator) ExtractToWorkflow(ctx workflow.Context, reader workflow.HeaderReader) (workflow.Context, error) {

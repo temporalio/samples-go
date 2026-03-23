@@ -24,6 +24,7 @@ func main() {
 		log.Fatalf("Failed creating interceptor: %v", err)
 	}
 
+	// @@@SNIPSTART samples-go-ctx-propagation-starter
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.Dial(client.Options{
 		HostPort:           client.DefaultHostPort,
@@ -45,6 +46,7 @@ func main() {
 	ctx = context.WithValue(ctx, ctxpropagation.PropagateKey, &ctxpropagation.Values{Key: "test", Value: "tested"})
 
 	we, err := c.ExecuteWorkflow(ctx, workflowOptions, ctxpropagation.CtxPropWorkflow)
+	// @@@SNIPEND
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}

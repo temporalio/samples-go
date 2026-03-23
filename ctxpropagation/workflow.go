@@ -6,6 +6,7 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
+// @@@SNIPSTART samples-go-ctx-propagation-workflow
 // CtxPropWorkflow workflow definition
 func CtxPropWorkflow(ctx workflow.Context) (err error) {
 	ao := workflow.ActivityOptions{
@@ -27,3 +28,4 @@ func CtxPropWorkflow(ctx workflow.Context) (err error) {
 	workflow.GetLogger(ctx).Info("Workflow completed.")
 	return nil
 }
+// @@@SNIPEND
