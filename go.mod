@@ -4,6 +4,11 @@ go 1.25.0
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
 
+replace (
+	go.temporal.io/sdk/contrib/aws/lambdaworker => ../sdk-go/contrib/aws/lambdaworker
+	go.temporal.io/sdk/contrib/aws/lambdaworker/otel => ../sdk-go/contrib/aws/lambdaworker/otel
+)
+
 require (
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/golang/snappy v0.0.4
@@ -15,12 +20,14 @@ require (
 	github.com/stretchr/testify v1.11.1
 	github.com/uber-go/tally/v4 v4.1.7
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
-	go.opentelemetry.io/otel v1.39.0
+	go.opentelemetry.io/otel v1.42.0
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.16.0
-	go.opentelemetry.io/otel/sdk v1.39.0
-	go.opentelemetry.io/otel/trace v1.39.0
+	go.opentelemetry.io/otel/sdk v1.42.0
+	go.opentelemetry.io/otel/trace v1.42.0
 	go.temporal.io/api v1.62.7
-	go.temporal.io/sdk v1.42.0
+	go.temporal.io/sdk v1.43.0
+	go.temporal.io/sdk/contrib/aws/lambdaworker v0.1.0
+	go.temporal.io/sdk/contrib/aws/lambdaworker/otel v0.1.0
 	go.temporal.io/sdk/contrib/datadog v0.5.0
 	go.temporal.io/sdk/contrib/envconfig v1.0.1
 	go.temporal.io/sdk/contrib/opentelemetry v0.7.0
@@ -57,6 +64,7 @@ require (
 	github.com/DataDog/sketches-go v1.4.7 // indirect
 	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
 	github.com/Masterminds/semver/v3 v3.3.1 // indirect
+	github.com/aws/aws-lambda-go v1.47.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
@@ -73,7 +81,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.2 // indirect
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.28.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-version v1.7.0 // indirect
