@@ -256,6 +256,13 @@ resource waiting for its successful completion
 - [**Worker Versioning**](./worker-versioning):
   Demonstrates how to use worker versioning to manage workflow code changes.
 
+### Serverless
+
+- [**Lambda Worker**](./lambda-worker): Demonstrates how to run a Temporal Worker as an
+  AWS Lambda function using the `lambdaworker` contrib package, with OpenTelemetry
+  instrumentation via AWS Distro for OpenTelemetry (ADOT). Includes IAM role setup
+  and deployment scripts.
+
 ### Fixtures
 
 These are edge case examples useful for Temporal internal development and bug
