@@ -6,6 +6,7 @@ package retryactivitynohb
 
 import (
 	"context"
+	"math/rand"
 	"time"
 
 	"go.temporal.io/sdk/activity"
@@ -48,10 +49,10 @@ func BatchProcessingActivity(ctx context.Context, firstTaskID, batchSize int, pr
 
 	for i := firstTaskID; i < firstTaskID+batchSize; i++ {
 		// // Inject a 95% failure rate before doing any work on this task.
-		// if rand.Intn(100) < 95 {
-		// 	logger.Info("Simulating transient failure", "TaskID", i)
-		// 	return temporal.NewApplicationError("transient error", "SomeType")
-		// }
+		if rand.Intn(100) < 95 {
+			logger.Info("Simulating transient failure", "TaskID", i)
+			return temporal.NewApplicationError("transient error", "SomeType")
+		}
 
 		logger.Info("Processing task", "TaskID", i)
 		time.Sleep(processDelay)
