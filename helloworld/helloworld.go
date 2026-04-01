@@ -15,6 +15,7 @@ func Workflow(ctx workflow.Context, name string) (string, error) {
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
+	_ = workflow.Sleep(ctx, time.Second*30)
 	logger := workflow.GetLogger(ctx)
 	logger.Info("HelloWorld workflow started", "name", name)
 

@@ -4,6 +4,7 @@ import (
 	"github.com/golang/snappy"
 	commonpb "go.temporal.io/api/common/v1"
 	"go.temporal.io/sdk/converter"
+	"google.golang.org/protobuf/proto"
 )
 
 // AlwaysCompressDataConverter is a converter that will always perform
@@ -20,43 +21,57 @@ type Options struct {
 // NewDataConverter creates a new data converter that wraps the given data
 // converter with snappy compression.
 func NewDataConverter(underlying converter.DataConverter, options Options) converter.DataConverter {
-	return converter.NewEncodingDataConverter(underlying, &Encoder{Options: options})
+	return converter.NewCodecDataConverter(underlying, &Encoder{Options: options})
 }
 
-// Encoder implements converter.PayloadEncoder for snappy compression.
+// Encoder implements converter.PayloadCodec for snappy compression.
 type Encoder struct {
 	Options Options
 }
 
-// Encode implements converter.PayloadEncoder.Encode.
-func (e *Encoder) Encode(p *commonpb.Payload) error {
-	// Marshal proto
-	origBytes, err := p.Marshal()
-	if err != nil {
-		return err
+// Encode implements converter.PayloadCodec.Encode.
+func (e *Encoder) Encode(payloads []*commonpb.Payload) ([]*commonpb.Payload, error) {
+	result := make([]*commonpb.Payload, len(payloads))
+	for i, p := range payloads {
+		// Marshal proto
+		origBytes, err := proto.Marshal(p)
+		if err != nil {
+			return payloads, err
+		}
+		// Compress
+		b := snappy.Encode(nil, origBytes)
+		// Only apply if the compression is smaller or always encode is set
+		if len(b) < len(origBytes) || e.Options.AlwaysEncode {
+			result[i] = &commonpb.Payload{
+				Metadata: map[string][]byte{converter.MetadataEncoding: []byte("binary/snappy")},
+				Data:     b,
+			}
+		} else {
+			result[i] = p
+		}
 	}
-	// Compress
-	b := snappy.Encode(nil, origBytes)
-	// Only apply if the compression is smaller or always encode is set
-	if len(b) < len(origBytes) || e.Options.AlwaysEncode {
-		p.Metadata = map[string][]byte{converter.MetadataEncoding: []byte("binary/snappy")}
-		p.Data = b
-	}
-	return nil
+	return result, nil
 }
 
-// Decode implements converter.PayloadEncoder.Decode.
-func (*Encoder) Decode(p *commonpb.Payload) error {
-	// Only if it's our encoding
-	if string(p.Metadata[converter.MetadataEncoding]) != "binary/snappy" {
-		return nil
+// Decode implements converter.PayloadCodec.Decode.
+func (*Encoder) Decode(payloads []*commonpb.Payload) ([]*commonpb.Payload, error) {
+	result := make([]*commonpb.Payload, len(payloads))
+	for i, p := range payloads {
+		// Only if it's our encoding
+		if string(p.Metadata[converter.MetadataEncoding]) != "binary/snappy" {
+			result[i] = p
+			continue
+		}
+		// Uncompress
+		b, err := snappy.Decode(nil, p.Data)
+		if err != nil {
+			return payloads, err
+		}
+		// Unmarshal proto
+		result[i] = &commonpb.Payload{}
+		if err := proto.Unmarshal(b, result[i]); err != nil {
+			return payloads, err
+		}
 	}
-	// Uncompress
-	b, err := snappy.Decode(nil, p.Data)
-	if err != nil {
-		return err
-	}
-	// Unmarshal proto
-	p.Reset()
-	return p.Unmarshal(b)
+	return result, nil
 }
