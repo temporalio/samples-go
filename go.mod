@@ -4,11 +4,6 @@ go 1.25.0
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
 
-replace (
-	go.temporal.io/sdk/contrib/aws/lambdaworker => ../sdk-go/contrib/aws/lambdaworker
-	go.temporal.io/sdk/contrib/aws/lambdaworker/otel => ../sdk-go/contrib/aws/lambdaworker/otel
-)
-
 require (
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/golang/snappy v0.0.4
@@ -26,8 +21,8 @@ require (
 	go.opentelemetry.io/otel/trace v1.42.0
 	go.temporal.io/api v1.62.5
 	go.temporal.io/sdk v1.41.1
-	go.temporal.io/sdk/contrib/aws/lambdaworker v0.1.0
-	go.temporal.io/sdk/contrib/aws/lambdaworker/otel v0.1.0
+	go.temporal.io/sdk/contrib/aws/lambdaworker v0.1.1
+	go.temporal.io/sdk/contrib/aws/lambdaworker/otel v0.1.1
 	go.temporal.io/sdk/contrib/datadog v0.2.0
 	go.temporal.io/sdk/contrib/envconfig v1.0.0
 	go.temporal.io/sdk/contrib/opentelemetry v0.7.0

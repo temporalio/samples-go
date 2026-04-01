@@ -307,6 +307,10 @@ go.temporal.io/api v1.62.5/go.mod h1:iaxoP/9OXMJcQkETTECfwYq4cw/bj4nwov8b3ZLVnXM
 go.temporal.io/sdk v1.12.0/go.mod h1:lSp3lH1lI0TyOsus0arnO3FYvjVXBZGi/G7DjnAnm6o=
 go.temporal.io/sdk v1.41.1 h1:yOpvsHyDD1lNuwlGBv/SUodCPhjv9nDeC9lLHW/fJUA=
 go.temporal.io/sdk v1.41.1/go.mod h1:/InXQT5guZ6AizYzpmzr5avQ/GMgq1ZObcKlKE2AhTc=
+go.temporal.io/sdk/contrib/aws/lambdaworker v0.1.1 h1:AQBa7CN+EOWhZaf4vr46TfxTZM7yCsvrzAsKqrExxmQ=
+go.temporal.io/sdk/contrib/aws/lambdaworker v0.1.1/go.mod h1:Rgn/tlb4MDNAAjnXKNgHui4IY+MogMCk4Y4c2YA6Dcc=
+go.temporal.io/sdk/contrib/aws/lambdaworker/otel v0.1.1 h1:sMTtpD5jsb4FeJadYkoOOzb84oWYK2/g0keb3IRO6xY=
+go.temporal.io/sdk/contrib/aws/lambdaworker/otel v0.1.1/go.mod h1:QtqQsUTPtylgShFZi4ce1d12WqE35byx+YO1Cnn/0cg=
 go.temporal.io/sdk/contrib/datadog v0.2.0 h1:YUpkVncR3dEg4dnkWTWoDPVh6duU079RWIswsQ2u6LM=
 go.temporal.io/sdk/contrib/datadog v0.2.0/go.mod h1:yOOdVth8SQUFZSAtCFY8NvTZ2joxnAVSK9/1OfAMsw0=
 go.temporal.io/sdk/contrib/envconfig v1.0.0 h1:1Q/swVgB4EW/p3k7rI9/4hpU4/DC57FSRbU90+UisXw=
