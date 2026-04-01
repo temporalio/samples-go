@@ -15,7 +15,6 @@ import (
 // This is a helper program to start a workflow execution
 func main() {
 	// Create a Temporal client
-
 	c, err := client.Dial(envconfig.MustLoadDefaultClientOptions())
 	if err != nil {
 		log.Fatalln("Unable to create Temporal client", err)
