@@ -1,8 +1,11 @@
-package retryactivity
+// Package retryactivitynohb demonstrates an activity with a high failure rate and no heartbeating.
+// Compare with the retryactivity sample: without heartbeating there is no progress saved between
+// retries, so each attempt starts over from the beginning. This makes it useful for demonstrating
+// activity pause/unpause on a retrying activity that has no internal state to resume from.
+package retryactivitynohb
 
 import (
 	"context"
-	"math/rand"
 	"time"
 
 	"go.temporal.io/sdk/activity"
@@ -11,14 +14,12 @@ import (
 )
 
 // RetryWorkflow executes BatchProcessingActivity with a retry policy and no attempt cap.
-// The activity heartbeats progress after each task so retries resume from where they left off,
-// rather than starting over. This makes it suitable for demonstrating activity pause/unpause:
-// pausing mid-execution shows the last heartbeated task index in the UI, and unpausing
-// resumes from that point.
+// The activity does not heartbeat, so retries always restart from the beginning.
+// Use activity pause to stop the retry loop and unpause to resume it.
 func RetryWorkflow(ctx workflow.Context) error {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Minute,
-		HeartbeatTimeout:    10 * time.Second,
+		// No HeartbeatTimeout — this activity does not heartbeat.
 		RetryPolicy: &temporal.RetryPolicy{
 			InitialInterval:    5 * time.Second,
 			BackoffCoefficient: 1.0,
@@ -39,34 +40,21 @@ func RetryWorkflow(ctx workflow.Context) error {
 }
 
 // BatchProcessingActivity processes tasks one at a time, sleeping to simulate real work.
-// After each task it heartbeats the task index as progress. On retry the activity resumes
-// from the last heartbeated index rather than starting over.
+// Unlike the heartbeating variant, no progress is recorded between tasks, so each retry
+// starts over from task 0 regardless of how far the previous attempt got.
 // It always fails after 3 tasks, creating a high failure rate that keeps the retry loop going.
 func BatchProcessingActivity(ctx context.Context, firstTaskID, batchSize int, processDelay time.Duration) error {
 	logger := activity.GetLogger(ctx)
 
-	i := firstTaskID
-	if activity.HasHeartbeatDetails(ctx) {
-		// Resume from reported progress on retry.
-		var completedIdx int
-		if err := activity.GetHeartbeatDetails(ctx, &completedIdx); err == nil {
-			i = completedIdx + 1
-			logger.Info("Resuming from previous attempt", "ResumedAt", i)
-		}
-	}
-
-	taskProcessedInThisAttempt := 0
-	for ; i < firstTaskID+batchSize; i++ {
-		// Inject a 95% failure rate before doing any work on this task.
-		if rand.Intn(100) < 95 {
-			logger.Info("Simulating transient failure", "TaskID", i)
-			return temporal.NewApplicationError("transient error", "SomeType")
-		}
+	for i := firstTaskID; i < firstTaskID+batchSize; i++ {
+		// // Inject a 95% failure rate before doing any work on this task.
+		// if rand.Intn(100) < 95 {
+		// 	logger.Info("Simulating transient failure", "TaskID", i)
+		// 	return temporal.NewApplicationError("transient error", "SomeType")
+		// }
 
 		logger.Info("Processing task", "TaskID", i)
 		time.Sleep(processDelay)
-		activity.RecordHeartbeat(ctx, i)
-		taskProcessedInThisAttempt++
 	}
 
 	logger.Info("Activity succeeded.")
