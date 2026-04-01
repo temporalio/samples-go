@@ -39,7 +39,9 @@ any Workflow/Activity definitions.
 
 Edit `temporal.toml` with your Temporal Cloud namespace address and credentials. In production,
 we'd recommend reading your credentials from a secret store, but to keep this example simple
-the toml file defaults to reading them from keys bundled along with the Lambda code.
+the toml file defaults to reading them from keys bundled along with the Lambda code. You may
+also set environment variables if you prefer not to use a file. For more information, see
+our [docs on environment config](https://docs.temporal.io/develop/environment-configuration).
 
 ### 2. Create the IAM role
 
