@@ -30,7 +30,7 @@ any Workflow/Activity definitions.
 | `otel-collector-config.yaml` | OpenTelemetry Collector sidecar configuration for ADOT |
 | `deploy-lambda.sh` | Builds and deploys the Lambda function |
 | `mk-iam-role.sh` | Creates the IAM role that allows Temporal Cloud to invoke the Lambda |
-| `iam-role-for-temporal-lambda-invoke-test.yaml` | CloudFormation template for the IAM role |
+| `iam-role-for-temporal-lambda-invoke.yaml` | CloudFormation template for the IAM role |
 | `extra-setup-steps` | Additional IAM and Lambda configuration for OpenTelemetry support |
 
 ## Setup

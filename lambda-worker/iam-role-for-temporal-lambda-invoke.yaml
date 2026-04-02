@@ -45,7 +45,14 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: [arn:aws:iam::031568301006:role/wci-lambda-invoke]
+              AWS:
+                [
+                  arn:aws:iam::902542641901:role/wci-lambda-invoke,
+                  arn:aws:iam::160190466495:role/wci-lambda-invoke,
+                  arn:aws:iam::819232936619:role/wci-lambda-invoke,
+                  arn:aws:iam::829909441867:role/wci-lambda-invoke,
+                  arn:aws:iam::354116250941:role/wci-lambda-invoke,
+                ]
             Action: sts:AssumeRole
             Condition:
               StringEquals:
