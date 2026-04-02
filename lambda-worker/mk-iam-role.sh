@@ -10,7 +10,7 @@ LAMBDA_ARN="${3:?Usage: mk-iam-role.sh <stack-name> <external-id> <lambda-arn>}"
 
 aws cloudformation create-stack \
   --stack-name "$STACK_NAME" \
-  --template-body file://iam-role-for-temporal-lambda-invoke-test.yaml \
+  --template-body file://iam-role-for-temporal-lambda-invoke.yaml \
   --parameters \
     ParameterKey=AssumeRoleExternalId,ParameterValue="$EXTERNAL_ID" \
     ParameterKey=LambdaFunctionARN,ParameterValue="$LAMBDA_ARN" \
