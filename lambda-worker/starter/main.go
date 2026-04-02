@@ -9,7 +9,6 @@ import (
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/contrib/envconfig"
-	"go.temporal.io/sdk/worker"
 )
 
 // This is a helper program to start a workflow execution
@@ -26,12 +25,6 @@ func main() {
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        "serverless-workflow-id-1",
 		TaskQueue: "serverless-task-queue-1",
-		VersioningOverride: &client.PinnedVersioningOverride{
-			Version: worker.WorkerDeploymentVersion{
-				DeploymentName: "my-app",
-				BuildID:        "build-1",
-			},
-		},
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, greeting.SampleWorkflow, "Serverless Lambda Worker!")
