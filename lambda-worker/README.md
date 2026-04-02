@@ -15,8 +15,8 @@ any Workflow/Activity definitions.
 - AWS CLI configured with permissions to create Lambda functions, IAM roles, and
   CloudFormation stacks
 - mTLS client certificate and key for your Temporal namespace (place as `client.pem` and
-  `client.key` in this directory)
-- Go 1.23+
+  `client.key` in this directory). See more [here](https://docs.temporal.io/cloud/certificates).
+- Go 1.25+
 
 ## Files
 
@@ -25,7 +25,7 @@ any Workflow/Activity definitions.
 | `main.go` | Lambda worker entry point -- configures the worker, registers Workflows/Activities, and starts the Lambda handler |
 | `greeting/workflow.go` | Sample Workflow that executes a greeting Activity |
 | `greeting/activity.go` | Sample Activity that returns a greeting string |
-| `start/main.go` | Helper program to start a Workflow execution against the Lambda worker |
+| `starter/main.go` | Helper program to start a Workflow execution against the Lambda worker |
 | `temporal.toml` | Temporal client connection configuration (update with your namespace) |
 | `otel-collector-config.yaml` | OpenTelemetry Collector sidecar configuration for ADOT |
 | `deploy-lambda.sh` | Builds and deploys the Lambda function |
@@ -80,5 +80,5 @@ Use the starter program to execute a Workflow on the Lambda worker, using
 the same config file the Lambda uses for connecting to the server:
 
 ```bash
-TEMPORAL_CONFIG_FILE=temporal.toml go run start/main.go
+TEMPORAL_CONFIG_FILE=temporal.toml go run starter/main.go
 ```
