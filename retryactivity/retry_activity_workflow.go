@@ -60,6 +60,7 @@ func BatchProcessingActivity(ctx context.Context, firstTaskID, batchSize int, pr
 		// Inject a 95% failure rate before doing any work on this task.
 		if rand.Intn(100) < 95 {
 			logger.Info("Simulating transient failure", "TaskID", i)
+			time.Sleep(5 * time.Second)
 			return temporal.NewApplicationError("transient error", "SomeType")
 		}
 
