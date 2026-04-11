@@ -4,6 +4,10 @@ go 1.24.0
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
 
+replace go.temporal.io/sdk => /Users/quinnklassen/Documents/Code/sdk-go
+
+replace go.temporal.io/api => /Users/quinnklassen/go/pkg/mod/go.temporal.io/api@v1.62.7-0.20260406221216-94affc798a96
+
 require (
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/golang/snappy v0.0.4
@@ -73,7 +77,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.2 // indirect
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-version v1.7.0 // indirect
@@ -126,7 +130,7 @@ require (
 	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
-	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
+	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260120221211-b8f7ae30c516 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260120221211-b8f7ae30c516 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
