@@ -33,14 +33,12 @@ const (
 func devServerExtraArgs() []string {
 	return []string{
 		"--http-port", "7243",
-		"--dynamic-config-value", "frontend.activityAPIsEnabled=true",
+		// TODO Use correct DC values once the dev server build supporting standalone Nexus is released.
 		"--dynamic-config-value", `component.callbacks.allowedAddresses=[{"Pattern":"*","AllowInsecure":true}]`,
 		"--dynamic-config-value", `system.refreshNexusEndpointsMinWait="0s"`,
 		"--dynamic-config-value", "component.nexusoperations.recordCancelRequestCompletionEvents=true",
 		"--dynamic-config-value", "history.enableRequestIdRefLinks=true",
-		"--dynamic-config-value", "activity.enableStandalone=true",
 		"--dynamic-config-value", "history.enableChasm=true",
-		"--dynamic-config-value", "history.enableTransitionHistory=true",
 		"--dynamic-config-value", "component.nexusoperations.useSystemCallbackURL=false",
 		"--dynamic-config-value", `component.nexusoperations.callback.endpoint.template="http://localhost:7243/namespaces/{{.NamespaceName}}/nexus/callback"`,
 	}
