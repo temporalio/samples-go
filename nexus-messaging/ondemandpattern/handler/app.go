@@ -7,7 +7,6 @@ import (
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 
-	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/temporalnexus"
@@ -32,7 +31,7 @@ func getWorkflowID(userID string) string {
 
 // RunFromRemoteOperation starts a new GreetingWorkflow on demand.
 // We use MustNewWorkflowRunOperationWithOptions + ExecuteUntypedWorkflow because
-// GreetingWorkflow takes no input parameter.
+// the operation input (RunFromRemoteInput) doesn't match the workflow signature (no input).
 var RunFromRemoteOperation = temporalnexus.MustNewWorkflowRunOperationWithOptions(
 	temporalnexus.WorkflowRunOperationOptions[service.RunFromRemoteInput, string]{
 		Name: service.RunFromRemoteOperationName,
@@ -109,7 +108,7 @@ var ApproveOperation = nexus.NewSyncOperation(service.ApproveOperationName, func
 	return service.ApproveOutput{}, nil
 })
 
-// GreetingWorkflow is a long-running entity workflow that supports queries, updates, and signals.
+// GreetingWorkflow is a long-running workflow that supports queries, updates, and signals.
 // It takes no user-specific input — the workflow ID is used as the identity.
 func GreetingWorkflow(ctx workflow.Context) (string, error) {
 	logger := workflow.GetLogger(ctx)
@@ -193,16 +192,14 @@ func GreetingWorkflow(ctx workflow.Context) (string, error) {
 		return "", err
 	}
 
-	// Handle approve signal in a goroutine.
+	// Handle approve signal.
 	approveCh := workflow.GetSignalChannel(ctx, signalApprove)
 	workflow.Go(ctx, func(ctx workflow.Context) {
-		for {
-			var name string
-			approveCh.Receive(ctx, &name)
-			approved = true
-			approvedBy = name
-			logger.Info("Workflow approved", "by", name)
-		}
+		var name string
+		approveCh.Receive(ctx, &name)
+		approved = true
+		approvedBy = name
+		logger.Info("Workflow approved", "by", name)
 	})
 
 	// Wait for approve signal and all handlers to finish.
@@ -220,8 +217,7 @@ func GreetingWorkflow(ctx workflow.Context) (string, error) {
 }
 
 // GreetingActivity returns a map of all supported language greetings.
-func GreetingActivity(ctx context.Context) (map[service.Language]string, error) {
-	_ = activity.GetInfo(ctx)
+func GreetingActivity(_ context.Context) (map[service.Language]string, error) {
 	return map[service.Language]string{
 		service.Arabic:     "مرحبا بالعالم",
 		service.Chinese:    "你好，世界",

@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"os"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 	enumspb "go.temporal.io/api/enums/v1"
@@ -12,28 +11,20 @@ import (
 
 	"github.com/temporalio/samples-go/nexus-messaging/callerpattern/handler"
 	"github.com/temporalio/samples-go/nexus-messaging/callerpattern/service"
-	"github.com/temporalio/samples-go/nexus/options"
 )
 
-const (
-	handlerNamespace = "my-target-namespace"
-	starterUserID    = "default-user"
-)
+const starterUserID = "default-user"
 
 func main() {
-	clientOptions, err := options.ParseClientOptionFlags(os.Args[1:])
-	if err != nil {
-		log.Fatalf("Invalid arguments: %v", err)
-	}
-	clientOptions.Namespace = handlerNamespace
-
-	c, err := client.Dial(clientOptions)
+	// Connect to the handler's target namespace. For a non-local setup, provide additional
+	// client options such as HostPort and TLS credentials.
+	c, err := client.Dial(client.Options{Namespace: "my-target-namespace"})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
 	defer c.Close()
 
-	// Start the entity workflow for the default user at boot, using WorkflowIDConflictPolicyUseExisting
+	// Start the GreetingWorkflow for the default user at boot, using WorkflowIDConflictPolicyUseExisting
 	// so it's idempotent.
 	workflowID := handler.GetWorkflowID(starterUserID)
 	_, err = c.ExecuteWorkflow(context.Background(), client.StartWorkflowOptions{
@@ -42,9 +33,9 @@ func main() {
 		WorkflowIDConflictPolicy: enumspb.WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING,
 	}, handler.GreetingWorkflow, starterUserID)
 	if err != nil {
-		log.Fatalln("Unable to start entity workflow", err)
+		log.Fatalln("Unable to start caller workflow", err)
 	}
-	log.Println("Entity workflow started or already running", "WorkflowID", workflowID)
+	log.Println("GreetingWorkflow started or already running", "WorkflowID", workflowID)
 
 	w := worker.New(c, handler.HandlerTaskQueue, worker.Options{})
 

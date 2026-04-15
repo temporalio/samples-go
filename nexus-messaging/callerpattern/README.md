@@ -1,49 +1,58 @@
-# Nexus Messaging — Caller Pattern (Entity Pattern)
+## Caller pattern
 
-This example shows the **entity pattern**: the handler worker pre-starts a `GreetingWorkflow` for a user at boot. Nexus operations receive a `userID` and route to the long-running workflow via the `GreetingWorkflow_for_<userID>` workflow ID prefix.
+The handler worker starts a `GreetingWorkflow` for a user ID.
+The Nexus handler holds that ID and routes every Nexus operation to it.
+The caller's input does not have that workflow ID as the caller doesn't know it -- but the caller sends in the User ID,
+and the handler knows how to get the desired workflow ID from that User ID (see the `GetWorkflowID` call).
 
-## Operations (NexusGreetingService)
+The handler worker uses the same `GetWorkflowID` call to generate a workflow ID from a user ID when it launches the workflow.
 
-| Operation | Type | Description |
-|-----------|------|-------------|
-| `getLanguages` | Sync | Queries the entity workflow for supported languages |
-| `getLanguage` | Sync | Queries the entity workflow for the current language |
-| `setLanguage` | Sync | Sends an update to change the language |
-| `approve` | Sync | Sends a signal to approve and complete the workflow |
+The caller workflow:
+1. Queries for supported languages (`getLanguages` -- backed by a query handler)
+2. Changes the language to Arabic (`setLanguage` -- backed by an update handler that calls an activity)
+3. Confirms the change via a second query (`getLanguage`)
+4. Approves the workflow (`approve` -- backed by a signal handler)
 
-## Running
+### Running
 
-For more details on Nexus and how to set up to run this sample, please see the [Nexus Sample](../nexus/README.md).
+Start a Temporal server:
 
-### 1. Start the handler worker (pre-starts the entity workflow)
+```bash
+temporal server start-dev
+```
+
+Create the namespaces and Nexus endpoint:
+
+```bash
+temporal operator namespace create --namespace my-target-namespace
+temporal operator namespace create --namespace my-caller-namespace
+
+temporal operator nexus endpoint create \
+  --name my-nexus-endpoint-name \
+  --target-namespace my-target-namespace \
+  --target-task-queue my-handler-task-queue
+```
+
+In one terminal, staare thrt the handler worker:
 
 ```bash
 go run ./nexus-messaging/callerpattern/handler/worker/main.go
 ```
 
-### 2. Start the caller worker
+In a second terminal, start the caller worker:
 
 ```bash
-go run ./nexus-messaging/callerpattern/caller/worker/main.go \
-  -namespace my-caller-namespace
+go run ./nexus-messaging/callerpattern/caller/worker/main.go
 ```
 
-### 3. Run the caller workflow
+In a third terminal, start the caller workflow:
 
 ```bash
-go run ./nexus-messaging/callerpattern/caller/starter/main.go \
-  -namespace my-caller-namespace
+go run ./nexus-messaging/callerpattern/caller/starter/main.go
 ```
 
-The caller workflow will:
-1. Call `getLanguages` to retrieve supported languages
-2. Call `setLanguage(Arabic)` to change the language
-3. Call `getLanguage` to verify the language is Arabic
-4. Call `approve` to signal and complete the entity workflow
+Expected output:
 
-### 4. Output
-
-which should result in:
 ```
 [1] getLanguages returned 2 languages
 [2] setLanguage(Arabic) returned previous language: English

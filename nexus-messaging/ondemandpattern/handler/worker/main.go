@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"go.temporal.io/sdk/client"
@@ -10,19 +9,12 @@ import (
 
 	"github.com/temporalio/samples-go/nexus-messaging/ondemandpattern/handler"
 	"github.com/temporalio/samples-go/nexus-messaging/ondemandpattern/service"
-	"github.com/temporalio/samples-go/nexus/options"
 )
 
-const handlerNamespace = "my-target-namespace"
-
 func main() {
-	clientOptions, err := options.ParseClientOptionFlags(os.Args[1:])
-	if err != nil {
-		log.Fatalf("Invalid arguments: %v", err)
-	}
-	clientOptions.Namespace = handlerNamespace
-
-	c, err := client.Dial(clientOptions)
+	// Connect to the handler's target namespace. For a non-local setup, provide additional
+	// client options such as HostPort and TLS credentials.
+	c, err := client.Dial(client.Options{Namespace: "my-target-namespace"})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}

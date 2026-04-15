@@ -2,25 +2,17 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
 	"github.com/temporalio/samples-go/nexus-messaging/ondemandpattern/caller"
-	"github.com/temporalio/samples-go/nexus/options"
 )
 
-const callerNamespace = "my-caller-namespace"
-
 func main() {
-	clientOptions, err := options.ParseClientOptionFlags(os.Args[1:])
-	if err != nil {
-		log.Fatalf("Invalid arguments: %v", err)
-	}
-	clientOptions.Namespace = callerNamespace
-
-	c, err := client.Dial(clientOptions)
+	// Connect to the caller's namespace. For a non-local setup, provide additional
+	// client options such as HostPort and TLS credentials.
+	c, err := client.Dial(client.Options{Namespace: "my-caller-namespace"})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
