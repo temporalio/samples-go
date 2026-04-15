@@ -1,52 +1,58 @@
-# Nexus Messaging — On-Demand Pattern
+## On-demand pattern
 
-This example shows the **on-demand pattern**: no workflow is pre-started. The caller creates `GreetingWorkflow` instances on demand via the `runFromRemote` operation (`WorkflowRunOperation`). The other operations take a `workflowID` directly to route to a specific workflow instance.
+No workflow is pre-started. The caller creates and controls workflow instances through Nexus
+operations. `NexusRemoteGreetingService` adds a `runFromRemote` operation that starts a new
+`GreetingWorkflow`, and every other operation includes a user ID so the handler knows which
+instance to target.
 
-## Operations (NexusRemoteGreetingService)
+The caller workflow:
+1. Starts two remote `GreetingWorkflow` instances via `runFromRemote` (backed by `WorkflowRunOperation`)
+2. Queries each for supported languages
+3. Changes the language on each (French and Spanish)
+4. Confirms the changes via queries
+5. Approves both workflows
+6. Waits for each to complete and returns their results
 
-| Operation | Type | Description |
-|-----------|------|-------------|
-| `runFromRemote` | Async (WorkflowRunOperation) | Starts a new GreetingWorkflow |
-| `getLanguages` | Sync | Queries the workflow for supported languages |
-| `getLanguage` | Sync | Queries the workflow for the current language |
-| `setLanguage` | Sync | Sends an update to change the language |
-| `approve` | Sync | Sends a signal to approve and complete the workflow |
+### Running
 
-## Running
+Start a Temporal server:
 
-For more details on Nexus and how to set up to run this sample, please see the [Nexus Sample](../nexus/README.md).
+```bash
+temporal server start-dev
+```
 
-### 1. Start the handler worker
+Create the namespaces and Nexus endpoint:
+
+```bash
+temporal operator namespace create --namespace my-target-namespace
+temporal operator namespace create --namespace my-caller-namespace
+
+temporal operator nexus endpoint create \
+  --name my-nexus-endpoint-name \
+  --target-namespace my-target-namespace \
+  --target-task-queue my-handler-task-queue
+```
+
+In one terminal, start the handler worker:
 
 ```bash
 go run ./nexus-messaging/ondemandpattern/handler/worker/main.go
 ```
 
-### 2. Start the caller worker
+In a second terminal, start the caller worker:
 
 ```bash
-go run ./nexus-messaging/ondemandpattern/caller/worker/main.go \
-  -namespace my-caller-namespace
+go run ./nexus-messaging/ondemandpattern/caller/worker/main.go
 ```
 
-### 3. Run the caller workflow
+In a third terminal, start the caller workflow:
 
 ```bash
-go run ./nexus-messaging/ondemandpattern/caller/starter/main.go \
-  -namespace my-caller-namespace
+go run ./nexus-messaging/ondemandpattern/caller/starter/main.go
 ```
 
-The caller workflow will:
-1. Start two remote `GreetingWorkflow` instances via `runFromRemote`
-2. Query languages from both workflows
-3. Set language to French on workflow one, Spanish on workflow two
-4. Confirm the current language on both
-5. Approve both workflows
-6. Wait for both workflows to return their greeting results
+Expected output:
 
-### 4. Output
-
-which should result in:
 ```
 [1] started remote workflow one: nexus-messaging-greeting-one
 [2] started remote workflow two: nexus-messaging-greeting-two

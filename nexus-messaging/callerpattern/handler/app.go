@@ -7,7 +7,6 @@ import (
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 
-	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/temporalnexus"
@@ -31,7 +30,7 @@ func GetWorkflowID(userID string) string {
 	return WorkflowIDPrefix + userID
 }
 
-// GetLanguagesOperation queries an entity workflow for the supported languages.
+// GetLanguagesOperation queries a workflow for the supported languages.
 var GetLanguagesOperation = nexus.NewSyncOperation(service.GetLanguagesOperationName, func(ctx context.Context, input service.GetLanguagesInput, options nexus.StartOperationOptions) (service.GetLanguagesOutput, error) {
 	c := temporalnexus.GetClient(ctx)
 	workflowID := GetWorkflowID(input.UserID)
@@ -47,7 +46,7 @@ var GetLanguagesOperation = nexus.NewSyncOperation(service.GetLanguagesOperation
 	return output, nil
 })
 
-// GetLanguageOperation queries an entity workflow for the current language.
+// GetLanguageOperation queries a workflow for the current language.
 var GetLanguageOperation = nexus.NewSyncOperation(service.GetLanguageOperationName, func(ctx context.Context, input service.GetLanguageInput, options nexus.StartOperationOptions) (service.Language, error) {
 	c := temporalnexus.GetClient(ctx)
 	workflowID := GetWorkflowID(input.UserID)
@@ -63,7 +62,7 @@ var GetLanguageOperation = nexus.NewSyncOperation(service.GetLanguageOperationNa
 	return lang, nil
 })
 
-// SetLanguageOperation updates an entity workflow's language.
+// SetLanguageOperation updates a workflow's language.
 var SetLanguageOperation = nexus.NewSyncOperation(service.SetLanguageOperationName, func(ctx context.Context, input service.SetLanguageInput, options nexus.StartOperationOptions) (service.Language, error) {
 	c := temporalnexus.GetClient(ctx)
 	workflowID := GetWorkflowID(input.UserID)
@@ -84,7 +83,7 @@ var SetLanguageOperation = nexus.NewSyncOperation(service.SetLanguageOperationNa
 	return prevLang, nil
 })
 
-// ApproveOperation signals an entity workflow to approve.
+// ApproveOperation signals a workflow to approve.
 var ApproveOperation = nexus.NewSyncOperation(service.ApproveOperationName, func(ctx context.Context, input service.ApproveInput, options nexus.StartOperationOptions) (service.ApproveOutput, error) {
 	c := temporalnexus.GetClient(ctx)
 	workflowID := GetWorkflowID(input.UserID)
@@ -95,7 +94,7 @@ var ApproveOperation = nexus.NewSyncOperation(service.ApproveOperationName, func
 	return service.ApproveOutput{}, nil
 })
 
-// GreetingWorkflow is a long-running entity workflow that supports queries, updates, and signals.
+// GreetingWorkflow is a long-running workflow that supports queries, updates, and signals.
 func GreetingWorkflow(ctx workflow.Context, userID string) (string, error) {
 	logger := workflow.GetLogger(ctx)
 
@@ -178,16 +177,14 @@ func GreetingWorkflow(ctx workflow.Context, userID string) (string, error) {
 		return "", err
 	}
 
-	// Handle approve signal in a goroutine.
+	// Handle approve signal.
 	approveCh := workflow.GetSignalChannel(ctx, signalApprove)
 	workflow.Go(ctx, func(ctx workflow.Context) {
-		for {
-			var name string
-			approveCh.Receive(ctx, &name)
-			approved = true
-			approvedBy = name
-			logger.Info("Workflow approved", "by", name)
-		}
+		var name string
+		approveCh.Receive(ctx, &name)
+		approved = true
+		approvedBy = name
+		logger.Info("Workflow approved", "by", name)
 	})
 
 	// Wait for approve signal and all handlers to finish.
@@ -205,8 +202,7 @@ func GreetingWorkflow(ctx workflow.Context, userID string) (string, error) {
 }
 
 // GreetingActivity returns a map of all supported language greetings.
-func GreetingActivity(ctx context.Context) (map[service.Language]string, error) {
-	_ = activity.GetInfo(ctx)
+func GreetingActivity(_ context.Context) (map[service.Language]string, error) {
 	return map[service.Language]string{
 		service.Arabic:     "مرحبا بالعالم",
 		service.Chinese:    "你好，世界",
