@@ -25,6 +25,11 @@ const (
 	signalApprove     = "approve"
 )
 
+var allLanguages = []service.Language{
+	service.Arabic, service.Chinese, service.English,
+	service.French, service.Hindi, service.Portuguese, service.Spanish,
+}
+
 func getWorkflowID(userID string) string {
 	return WorkflowIDPrefix + userID
 }
@@ -126,16 +131,13 @@ func GreetingWorkflow(ctx workflow.Context) (string, error) {
 	// Register query: getLanguages
 	if err := workflow.SetQueryHandler(ctx, queryGetLanguages, func(includeUnsupported bool) (service.GetLanguagesOutput, error) {
 		if includeUnsupported {
-			return service.GetLanguagesOutput{
-				Languages: []service.Language{
-					service.Arabic, service.Chinese, service.English,
-					service.French, service.Hindi, service.Portuguese, service.Spanish,
-				},
-			}, nil
+			return service.GetLanguagesOutput{Languages: append([]service.Language(nil), allLanguages...)}, nil
 		}
 		supported := make([]service.Language, 0, len(initialGreetings))
-		for lang := range initialGreetings {
-			supported = append(supported, lang)
+		for _, lang := range allLanguages {
+			if _, ok := initialGreetings[lang]; ok {
+				supported = append(supported, lang)
+			}
 		}
 		return service.GetLanguagesOutput{Languages: supported}, nil
 	}); err != nil {
@@ -171,8 +173,10 @@ func GreetingWorkflow(ctx workflow.Context) (string, error) {
 				if err := workflow.ExecuteActivity(actCtx, GreetingActivity).Get(actCtx, &greetingsMap); err != nil {
 					return 0, fmt.Errorf("activity failed: %w", err)
 				}
-				for lang, greeting := range greetingsMap {
-					initialGreetings[lang] = greeting
+				for _, lang := range allLanguages {
+					if greeting, ok := greetingsMap[lang]; ok {
+						initialGreetings[lang] = greeting
+					}
 				}
 			}
 
