@@ -14,10 +14,10 @@ jobs:
     steps:
       - name: Print build information
         run: "echo head_ref: ${{ github.head_ref }}, ref: ${{ github.ref }}"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           submodules: recursive
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
         with:
           go-version: "1.24"
       - name: CI Build
