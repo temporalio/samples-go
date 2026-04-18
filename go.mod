@@ -1,6 +1,6 @@
 module github.com/temporalio/samples-go
 
-go 1.24.0
+go 1.25.0
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
 
