@@ -292,16 +292,15 @@ func (cm *ClusterManager) run(ctx workflow.Context) (ClusterManagerResult, error
 	cm.logger.Info("Cluster started")
 	for {
 		selector := workflow.NewSelector(ctx)
-		shouldShutdown := false
 		selector.AddReceive(cm.shutdownCh, func(c workflow.ReceiveChannel, _ bool) {
 			c.Receive(ctx, nil)
-			shouldShutdown = true
+			cm.state.ClusterShutdown = true
 		})
 		selector.AddFuture(workflow.NewTimer(ctx, cm.sleepInterval), func(f workflow.Future) {
 			cm.performHealthCheck(ctx)
 		})
 		selector.Select(ctx)
-		if shouldShutdown {
+		if cm.state.ClusterShutdown {
 			break
 		}
 		if cm.shouldContinueAsNew(ctx) {
