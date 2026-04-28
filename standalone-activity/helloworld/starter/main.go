@@ -40,7 +40,7 @@ func main() {
 	var result string
 	err = handle.Get(context.Background(), &result)
 	if err != nil {
-		log.Fatalln("Unable get standalone activity result", err)
+		log.Fatalln("Unable to get standalone activity result", err)
 	}
 	log.Println("Activity result:", result)
 
