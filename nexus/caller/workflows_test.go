@@ -22,8 +22,8 @@ var EchoOperation = nexus.NewSyncOperation(service.EchoOperationName, func(ctx c
 
 var HelloOperation = temporalnexus.NewWorkflowRunOperation(service.HelloOperationName, FakeHelloHandlerWorkflow, func(ctx context.Context, input service.HelloInput, options nexus.StartOperationOptions) (client.StartWorkflowOptions, error) {
 	return client.StartWorkflowOptions{
-		// Do not use RequestID for production use cases. ID should be a meaninful business ID.
-		ID: options.RequestID,
+		// Use the same business ID strategy as the production handler.
+		ID: service.HelloWorkflowID(input),
 	}, nil
 })
 

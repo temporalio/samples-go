@@ -24,9 +24,9 @@ var HelloOperation = temporalnexus.MustNewWorkflowRunOperationWithOptions(tempor
 			options,
 			client.StartWorkflowOptions{
 				// Workflow IDs should typically be business meaningful IDs and are used to dedupe workflow starts.
-				// For this example, we're using the request ID allocated by Temporal when the caller workflow schedules
-				// the operation, this ID is guaranteed to be stable across retries of this operation.
-				ID: options.RequestID,
+				// Use a business ID derived from the operation input instead of the Nexus request ID. The request ID
+				// is still available separately as an idempotency key for retries of the operation.
+				ID: service.HelloWorkflowID(input),
 			},
 			HelloHandlerWorkflow,
 			input.Name,
