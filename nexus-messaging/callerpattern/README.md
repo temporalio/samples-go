@@ -44,7 +44,7 @@ In a second terminal, start the caller worker:
 go run ./nexus-messaging/callerpattern/caller/worker/main.go
 ```
 
-In a third terminal, start the caller workflow:
+In a third terminal, run the following command to start the example
 
 ```bash
 go run ./nexus-messaging/callerpattern/caller/starter/main.go
