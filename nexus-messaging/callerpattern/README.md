@@ -2,8 +2,7 @@
 
 The handler worker starts a `GreetingWorkflow` for a user ID.
 The Nexus handler holds that ID and routes every Nexus operation to it.
-The caller's input does not have that workflow ID as the caller doesn't know it -- but the caller sends in the User ID,
-and the handler knows how to get the desired workflow ID from that User ID (see the `GetWorkflowID` call).
+The caller’s input doesn’t include the Workflow ID because it isn’t known. Instead, the caller provides the User ID, and the handler derives the Workflow ID from it (see `GetWorkflowID`).
 
 The handler worker uses the same `GetWorkflowID` call to generate a workflow ID from a user ID when it launches the workflow.
 
