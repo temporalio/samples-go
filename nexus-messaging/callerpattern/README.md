@@ -32,7 +32,7 @@ temporal operator nexus endpoint create \
   --target-task-queue my-handler-task-queue
 ```
 
-In one terminal, staare thrt the handler worker:
+In one terminal, start the handler worker:
 
 ```bash
 go run ./nexus-messaging/callerpattern/handler/worker/main.go
