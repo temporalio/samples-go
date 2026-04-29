@@ -1,16 +1,16 @@
 ## Caller pattern
 
-The handler worker starts a `GreetingWorkflow` for a user ID.
+The handler worker starts a `GreetingWorkflow` for a User ID.
 The Nexus handler holds that ID and routes every Nexus operation to it.
 The caller’s input doesn’t include the Workflow ID because it isn’t known. Instead, the caller provides the User ID, and the handler derives the Workflow ID from it (see `GetWorkflowID`).
 
-The handler worker uses the same `GetWorkflowID` call to generate a workflow ID from a user ID when it launches the workflow.
+The handler worker uses the same `GetWorkflowID` call to generate a Workflow ID from a User ID when it launches the Workflow.
 
-The caller workflow:
+The caller Workflow:
 1. Queries for supported languages (`getLanguages` -- backed by a query handler)
 2. Changes the language to Arabic (`setLanguage` -- backed by an update handler that calls an activity)
 3. Confirms the change via a second query (`getLanguage`)
-4. Approves the workflow (`approve` -- backed by a signal handler)
+4. Approves the Workflow (`approve` -- backed by a signal handler)
 
 ### Running
 

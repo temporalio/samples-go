@@ -1,16 +1,16 @@
 ## On-demand pattern
 
-No workflow is pre-started. The caller creates and controls workflow instances through Nexus
+No Workflow is pre-started. The caller creates and controls Workflow instances through Nexus
 operations. `NexusRemoteGreetingService` adds a `runFromRemote` operation that starts a new
-`GreetingWorkflow`, and every other operation includes a user ID so the handler knows which
+`GreetingWorkflow`, and every other operation includes a User ID so the handler knows which
 instance to target.
 
-The caller workflow:
+The caller :
 1. Starts two remote `GreetingWorkflow` instances via `runFromRemote` (backed by `WorkflowRunOperation`)
 2. Queries each for supported languages
 3. Changes the language on each (French and Spanish)
 4. Confirms the changes via queries
-5. Approves both workflows
+5. Approves both Workflows
 6. Waits for each to complete and returns their results
 
 ### Running
@@ -45,7 +45,7 @@ In a second terminal, start the caller worker:
 go run ./nexus-messaging/ondemandpattern/caller/worker/main.go
 ```
 
-In a third terminal, start the caller workflow:
+In a third terminal, run the following command to start the example:
 
 ```bash
 go run ./nexus-messaging/ondemandpattern/caller/starter/main.go
@@ -54,7 +54,7 @@ go run ./nexus-messaging/ondemandpattern/caller/starter/main.go
 Expected output:
 
 ```
-[1] started remote workflow one: nexus-messaging-greeting-one
+[1] started remote  one: nexus-messaging-greeting-one
 [2] started remote workflow two: nexus-messaging-greeting-two
 [3] getLanguages (one) returned 2 languages
 [4] getLanguages (two) with unsupported returned 7 languages
