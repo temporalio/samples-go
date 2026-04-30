@@ -21,7 +21,7 @@ func main() {
 		}
 
 		opts.RegisterWorkflowWithOptions(greeting.SampleWorkflow, workflow.RegisterOptions{
-			VersioningBehavior: workflow.VersioningBehaviorAutoUpgrade,
+			VersioningBehavior: workflow.VersioningBehaviorPinned,
 		})
 		opts.RegisterActivity(greeting.HelloActivity)
 
