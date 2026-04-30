@@ -19,3 +19,4 @@ bin/
 **/client.key
 **/client.pem
 lambda-worker/bootstrap
+.claude/settings.local.json
