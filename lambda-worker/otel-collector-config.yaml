@@ -1,3 +1,4 @@
+# @@@SNIPSTART go-lambda-worker-otel-collector-config
 receivers:
     otlp:
         protocols:
@@ -33,3 +34,4 @@ service:
             level: debug
         metrics:
             address: localhost:8888
+# @@@SNIPEND

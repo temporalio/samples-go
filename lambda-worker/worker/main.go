@@ -1,3 +1,4 @@
+// @@@SNIPSTART go-lambda-worker
 package main
 
 import (
@@ -28,3 +29,4 @@ func main() {
 		return nil
 	})
 }
+// @@@SNIPEND
