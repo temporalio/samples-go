@@ -213,9 +213,15 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 - [**Nexus Context Propagation**](./nexus-context-propagation): Demonstrates how to propagate context through client calls, workflows, and Nexus headers.
 
+
+
 ### Scenario based examples
 
 - [**Safe Message Handler**](./safe_message_handler): This demonstrates how to safely handle concurrent update and signal requests.
+
+- [**Nexus Messaging**](./nexus-messaging): Demonstrates how send signal, update and query messages through Nexus.
+  This contains two samples, one sending messages to an existing workflow and a second that creates a workflow through Nexus
+  and sends messages to it.
 
 - [**DSL Workflow**](./dsl): Demonstrates how to implement a
   DSL-based Workflow. This sample contains 2 yaml files that each define a custom "workflow" which instructs the
