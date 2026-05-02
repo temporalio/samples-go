@@ -29,6 +29,7 @@ import (
 	triage "github.com/temporalio/samples-go/toolregistry-incident-triage"
 	"github.com/temporalio/samples-go/toolregistry-incident-triage/workflows"
 	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
 	tr "go.temporal.io/sdk/contrib/toolregistry"
 )
@@ -64,7 +65,7 @@ Be terse. Conversation history is heartbeated to Temporal — keep tool inputs s
 type TriageDeps struct {
 	MCPListTools         func(baseURL string) ([]MCPToolInfo, error)
 	MCPCallTool          func(baseURL, name string, args map[string]any) (string, error)
-	RequestHumanApproval func(alert triage.AlertPayload, req triage.ApprovalRequest) (triage.ApprovalResponse, error)
+	RequestHumanApproval func(ctx context.Context, alert triage.AlertPayload, req triage.ApprovalRequest) (triage.ApprovalResponse, error)
 	ExecShellCommand     func(cmd string) (string, string, error)
 }
 
@@ -160,7 +161,11 @@ func envOrDefault(name, def string) string {
 
 // BuildTriageRegistry builds a populated *ToolRegistry plus a getResult()
 // accessor for the final verdict. Pure modulo deps.
+//
+// ctx is the activity context, captured into handlers that need to record
+// heartbeats while waiting on long external operations (e.g. human approval).
 func BuildTriageRegistry(
+	ctx context.Context,
 	alert triage.AlertPayload,
 	session *tr.AgenticSession,
 	deps TriageDeps,
@@ -243,7 +248,7 @@ func BuildTriageRegistry(
 				Diagnosis:      fmt.Sprint(inp["diagnosis"]),
 				ProposedAction: fmt.Sprint(inp["proposedAction"]),
 			}
-			resp, err := deps.RequestHumanApproval(alert, req)
+			resp, err := deps.RequestHumanApproval(ctx, alert, req)
 			if err != nil {
 				return "", err
 			}
@@ -373,7 +378,7 @@ func TriageIncidentActivity(ctx context.Context, alert triage.AlertPayload) (*tr
 	deps := DefaultDeps()
 	var result *triage.TriageResult
 	err := tr.RunWithSession(ctx, func(ctx context.Context, session *tr.AgenticSession) error {
-		registry, getResult := BuildTriageRegistry(alert, session, deps)
+		registry, getResult := BuildTriageRegistry(ctx, alert, session, deps)
 		cfg := tr.AnthropicConfig{APIKey: os.Getenv("ANTHROPIC_API_KEY")}
 		provider := tr.NewAnthropicProvider(cfg, registry, SystemPrompt)
 		if err := session.RunToolLoop(ctx, provider, registry, BuildPrompt(alert)); err != nil {
@@ -393,7 +398,12 @@ func TriageIncidentActivity(ctx context.Context, alert triage.AlertPayload) (*tr
 
 // realRequestHumanApproval signal-with-starts ApprovalWorkflow against a
 // deterministic ID per alert group and waits for the result.
-func realRequestHumanApproval(alert triage.AlertPayload, req triage.ApprovalRequest) (triage.ApprovalResponse, error) {
+//
+// Heartbeats every 30 seconds while waiting so the activity does not die from
+// heartbeat timeout during long operator deliberations. AgenticSession only
+// heartbeats between LLM turns, so this handler is responsible for keeping
+// the activity alive during its own blocking call.
+func realRequestHumanApproval(ctx context.Context, alert triage.AlertPayload, req triage.ApprovalRequest) (triage.ApprovalResponse, error) {
 	apiKey := os.Getenv("TEMPORAL_API_KEY")
 	address := os.Getenv("TEMPORAL_ADDRESS")
 	namespace := os.Getenv("TEMPORAL_NAMESPACE")
@@ -440,6 +450,22 @@ func realRequestHumanApproval(alert triage.AlertPayload, req triage.ApprovalRequ
 	if err != nil {
 		return triage.ApprovalResponse{}, err
 	}
+
+	// Heartbeat ticker: keeps the activity alive while we block on the operator.
+	tickerDone := make(chan struct{})
+	defer close(tickerDone)
+	go func() {
+		t := time.NewTicker(30 * time.Second)
+		defer t.Stop()
+		for {
+			select {
+			case <-tickerDone:
+				return
+			case <-t.C:
+				activity.RecordHeartbeat(ctx)
+			}
+		}
+	}()
 
 	var resp triage.ApprovalResponse
 	if err := run.Get(ctx, &resp); err != nil {

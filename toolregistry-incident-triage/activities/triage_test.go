@@ -9,6 +9,7 @@
 package activities
 
 import (
+	"context"
 	"strings"
 	"testing"
 	"time"
@@ -66,7 +67,7 @@ func makeDeps(over func(*TriageDeps)) TriageDeps {
 		MCPCallTool: func(_ string, name string, _ map[string]any) (string, error) {
 			return "(mocked " + name + ")", nil
 		},
-		RequestHumanApproval: func(_ triage.AlertPayload, _ triage.ApprovalRequest) (triage.ApprovalResponse, error) {
+		RequestHumanApproval: func(_ context.Context, _ triage.AlertPayload, _ triage.ApprovalRequest) (triage.ApprovalResponse, error) {
 			return triage.ApprovalResponse{Decision: "approved", Reason: "default-mock"}, nil
 		},
 		ExecShellCommand: func(cmd string) (string, string, error) {
@@ -90,7 +91,7 @@ type scriptedCall struct {
 func drive(t *testing.T, deps TriageDeps, calls []scriptedCall) (*triage.TriageResult, []map[string]any) {
 	t.Helper()
 	session := &tr.AgenticSession{}
-	registry, getResult := BuildTriageRegistry(makeAlert(), session, deps)
+	registry, getResult := BuildTriageRegistry(context.Background(), makeAlert(), session, deps)
 	for _, c := range calls {
 		if _, err := registry.Dispatch(c.name, c.input); err != nil {
 			t.Fatalf("dispatch %s: %v", c.name, err)
@@ -102,7 +103,7 @@ func drive(t *testing.T, deps TriageDeps, calls []scriptedCall) (*triage.TriageR
 func TestHappyPathResolved(t *testing.T) {
 	approvalCalls := 0
 	deps := makeDeps(func(d *TriageDeps) {
-		d.RequestHumanApproval = func(_ triage.AlertPayload, _ triage.ApprovalRequest) (triage.ApprovalResponse, error) {
+		d.RequestHumanApproval = func(_ context.Context, _ triage.AlertPayload, _ triage.ApprovalRequest) (triage.ApprovalResponse, error) {
 			approvalCalls++
 			return triage.ApprovalResponse{Decision: "approved", Reason: "go ahead"}, nil
 		}
@@ -150,7 +151,7 @@ func TestHappyPathResolved(t *testing.T) {
 
 func TestRejectedApprovalUnresolved(t *testing.T) {
 	deps := makeDeps(func(d *TriageDeps) {
-		d.RequestHumanApproval = func(_ triage.AlertPayload, _ triage.ApprovalRequest) (triage.ApprovalResponse, error) {
+		d.RequestHumanApproval = func(_ context.Context, _ triage.AlertPayload, _ triage.ApprovalRequest) (triage.ApprovalResponse, error) {
 			return triage.ApprovalResponse{Decision: "rejected", Reason: "off-hours; defer until tomorrow"}, nil
 		}
 	})
@@ -214,7 +215,7 @@ func TestExecuteRefusesWithoutApproval(t *testing.T) {
 func TestExecuteRefusesWhenActionDoesNotMatch(t *testing.T) {
 	var executedCmd string
 	deps := makeDeps(func(d *TriageDeps) {
-		d.RequestHumanApproval = func(_ triage.AlertPayload, _ triage.ApprovalRequest) (triage.ApprovalResponse, error) {
+		d.RequestHumanApproval = func(_ context.Context, _ triage.AlertPayload, _ triage.ApprovalRequest) (triage.ApprovalResponse, error) {
 			return triage.ApprovalResponse{Decision: "approved", Reason: "ok"}, nil
 		}
 		d.ExecShellCommand = func(cmd string) (string, string, error) {
@@ -244,7 +245,7 @@ func TestExecuteRefusesWhenActionDoesNotMatch(t *testing.T) {
 func TestMCPToolsRegistered(t *testing.T) {
 	deps := makeDeps(nil)
 	session := &tr.AgenticSession{}
-	registry, _ := BuildTriageRegistry(makeAlert(), session, deps)
+	registry, _ := BuildTriageRegistry(context.Background(), makeAlert(), session, deps)
 	defs := registry.Defs()
 	names := make(map[string]bool)
 	for _, d := range defs {
