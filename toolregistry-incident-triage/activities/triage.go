@@ -28,6 +28,7 @@ import (
 
 	triage "github.com/temporalio/samples-go/toolregistry-incident-triage"
 	"github.com/temporalio/samples-go/toolregistry-incident-triage/workflows"
+	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/client"
 	tr "go.temporal.io/sdk/contrib/toolregistry"
 )
@@ -425,7 +426,14 @@ func realRequestHumanApproval(alert triage.AlertPayload, req triage.ApprovalRequ
 		approvalWfID,
 		workflows.ApprovalRequestSignal,
 		req,
-		client.StartWorkflowOptions{ID: approvalWfID, TaskQueue: taskQueue},
+		client.StartWorkflowOptions{
+			ID:        approvalWfID,
+			TaskQueue: taskQueue,
+			// If the activity retries while the approval workflow is still running,
+			// attach to the existing one rather than starting a new approval. The
+			// operator should not get a second prompt for the same incident.
+			WorkflowIDConflictPolicy: enumspb.WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING,
+		},
 		"ApprovalWorkflow",
 		key,
 	)
