@@ -4,6 +4,9 @@ go 1.25.0
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
 
+// TODO: replace with a published version once the toolregistry contrib module is released.
+replace go.temporal.io/sdk/contrib/toolregistry => ../sdk-go/contrib/toolregistry
+
 require (
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/golang/snappy v0.0.4
@@ -26,6 +29,7 @@ require (
 	go.temporal.io/sdk/contrib/opentelemetry v0.7.0
 	go.temporal.io/sdk/contrib/opentracing v0.3.0
 	go.temporal.io/sdk/contrib/tally v0.2.0
+	go.temporal.io/sdk/contrib/toolregistry v0.0.0-00010101000000-000000000000
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.79.3
@@ -58,6 +62,7 @@ require (
 	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
 	github.com/Masterminds/semver/v3 v3.3.1 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
+	github.com/anthropics/anthropic-sdk-go v1.35.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -96,10 +101,15 @@ require (
 	github.com/prometheus/procfs v0.16.1 // indirect
 	github.com/puzpuzpuz/xsync/v3 v3.5.1 // indirect
 	github.com/robfig/cron v1.2.0 // indirect
+	github.com/sashabaranov/go-openai v1.41.2 // indirect
 	github.com/secure-systems-lab/go-securesystemslib v0.9.0 // indirect
 	github.com/shirou/gopsutil/v4 v4.25.8-0.20250809033336-ffcdc2b7662f // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/theckman/httpforwarded v0.4.0 // indirect
+	github.com/tidwall/gjson v1.18.0 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.1 // indirect
+	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/tinylib/msgp v1.3.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.15 // indirect
 	github.com/tklauser/numcpus v0.10.0 // indirect
