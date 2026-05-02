@@ -262,6 +262,9 @@ resource waiting for its successful completion
 - [**Worker Versioning**](./worker-versioning):
   Demonstrates how to use worker versioning to manage workflow code changes.
 
+- [**Tool Registry: Incident Triage**](./toolregistry-incident-triage):
+  LLM-driven incident triage activity using `go.temporal.io/sdk/contrib/toolregistry`. Demonstrates `RunWithSession`, MCP HTTP integration, human-in-the-loop via a companion workflow, and a testable activity refactor.
+
 ### Fixtures
 
 These are edge case examples useful for Temporal internal development and bug
