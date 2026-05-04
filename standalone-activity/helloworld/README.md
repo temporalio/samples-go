@@ -1,7 +1,7 @@
 This sample demonstrates how to use a Standalone Activity (executing an Activity without wrapping it in a Workflow).
 It also shows you how to use the `ListActivities` and `CountActivities` APIs.
 
-## Note: Standalone activities are supported in CLI version [v1.6.2](https://github.com/temporalio/cli/releases/tag/v1.6.2-standalone-activity).
+## Note: Standalone activities are supported in CLI version [v1.7.0](https://github.com/temporalio/cli/releases/tag/v1.7.0).
 
 ### Steps to run this sample (with expected output):
 1) Run a [Temporal server](https://github.com/temporalio/samples-go/tree/main/#how-to-use). (If you are going to run locally, you will want to start it in another terminal; this command is blocking and runs until it receives a SIGINT (Ctrl + C) command.)
@@ -11,7 +11,7 @@ If you used the above instructions to start the server, you should see a line ab
 
 ```bash
 > temporal server start-dev
-CLI 1.5.1 (Server 1.29.1, UI 2.42.1)
+Temporal CLI 1.7.0 (Server 1.31.0, UI 2.49.1)
 
 Server:  localhost:7233
 UI:      http://localhost:8233
