@@ -10,7 +10,64 @@ A SaaS rendering platform receives urgent previews, normal renders, and backgrou
 
 Priority determines which priority sub-queue Tasks go into. Fairness determines ordering within a given priority level. Fairness ordering is probabilistic and observational, so the exact order can vary between runs.
 
-## Run the backlog demo
+## Workload definition
+
+This sample uses a fixed workload on one shared Activity Task Queue so readers
+can predict expected behavior before running it.
+
+Tenants and fairness weights:
+
+- `premium-media`: `FairnessWeight=3.0`
+- `large-studio`: `FairnessWeight=1.0`
+- `small-studio-a`: `FairnessWeight=1.0`
+- `small-studio-b`: `FairnessWeight=1.0`
+
+Job mix:
+
+- Urgent preview (`PriorityKey=1`)
+  - `premium-media`: 2 jobs
+  - `small-studio-a`: 2 jobs
+- Normal render (`PriorityKey=3`)
+  - `large-studio`: 18 jobs
+  - `small-studio-a`: 3 jobs
+  - `small-studio-b`: 3 jobs
+  - `premium-media`: 9 jobs
+- Background archive (`PriorityKey=5`)
+  - `large-studio`: 4 jobs
+
+Total jobs: `41` (`4 urgent + 33 normal + 4 background`)
+
+`BuildJobs()` scheduling order:
+
+1. `large-studio` normal jobs
+2. `small-studio-a` normal jobs
+3. `small-studio-b` normal jobs
+4. `premium-media` normal jobs
+5. `large-studio` background jobs
+6. Urgent jobs last
+
+Urgent jobs are intentionally enqueued last so the sample can show that
+dispatching follows `PriorityKey` (with backlog), not submission order.
+
+## Expected ordering at runtime
+
+In the backlog sample flow (workflow worker first, then starter, then activity
+worker), expected behavior is:
+
+1. Priority across levels:
+all urgent (`priority=1`) jobs should appear before queued normal
+(`priority=3`) and background (`priority=5`) jobs.
+2. Fairness within normal priority:
+small-tenant fairness keys should appear before `large-studio` drains all of
+its normal backlog.
+3. Weighted fairness within normal priority:
+`premium-media` should appear repeatedly near the front of normal-priority
+dispatch while it still has backlog.
+
+Fairness is probabilistic, so exact row-by-row ordering can vary between runs.
+The sample is designed to validate these patterns, not a deterministic sequence.
+
+## Run the backlog sample
 
 ### 1. Start Temporal Server with Fairness enabled
 
@@ -23,6 +80,12 @@ temporal server start-dev \
   --dynamic-config-value matching.numTaskqueueReadPartitions=1 \
   --dynamic-config-value matching.numTaskqueueWritePartitions=1
 ```
+
+Why these options:
+
+- `matching.useNewMatcher=true`: enables the matcher implementation that supports task queue priority/fairness behavior used by this sample.
+- `matching.enableFairness=true`: turns on fairness-aware dispatch so `FairnessKey` and `FairnessWeight` affect ordering within a priority level.
+- `matching.numTaskqueueReadPartitions=1` and `matching.numTaskqueueWritePartitions=1`: forces a single partition for this sample, which makes observed ordering easier to interpret and less noisy than multi-partition dispatch.
 
 ### 2. Start only the Workflow Worker
 
@@ -62,7 +125,7 @@ A successful run should look similar to this.
 
 ```text
 2026/05/05 00:45:09 Started workflow. WorkflowID task-queue-priority-fairness-<example-id> RunID <example-run-id>
-If you are running the full backlog demo, start the Activity Worker now:
+If you are running the full backlog sample, start the Activity Worker now:
 go run task-queue-priority-fairness/worker/main.go -mode activity
 Activity start order:
 

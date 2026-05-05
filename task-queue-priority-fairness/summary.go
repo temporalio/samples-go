@@ -102,7 +102,7 @@ func SummarizeResults(results []RenderResult) Summary {
 			}
 		case 5:
 			// Background work should wait behind urgent work in the priority
-			// demo, so track the first background start time.
+			// sample, so track the first background start time.
 			if firstBackground.IsZero() || result.StartedAt.Before(firstBackground) {
 				firstBackground = result.StartedAt
 			}

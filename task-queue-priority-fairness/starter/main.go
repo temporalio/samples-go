@@ -32,7 +32,7 @@ func main() {
 	}
 
 	log.Println("Started workflow.", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
-	fmt.Println("If you are running the full backlog demo, start the Activity Worker now:")
+	fmt.Println("If you are running the full backlog sample, start the Activity Worker now:")
 	fmt.Println("go run task-queue-priority-fairness/worker/main.go -mode activity")
 
 	var results []task_queue_priority_fairness.RenderResult
