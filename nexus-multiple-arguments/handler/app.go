@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 
@@ -24,9 +25,13 @@ var HelloOperation = temporalnexus.MustNewWorkflowRunOperationWithOptions(tempor
 			options,
 			client.StartWorkflowOptions{
 				// Workflow IDs should typically be business meaningful IDs and are used to dedupe workflow starts.
-				// For this example, we're using the request ID allocated by Temporal when the caller workflow schedules
-				// the operation, this ID is guaranteed to be stable across retries of this operation.
-				ID: options.RequestID,
+				// Use the operation input to build an identifier that correlates to the customer request.
+				ID: fmt.Sprintf(
+					"nexus-multiargs-hello-%s-%s-%d",
+					input.Language,
+					input.Name,
+					time.Now().UnixNano(),
+				),
 			},
 			HelloHandlerWorkflow,
 			input.Name,

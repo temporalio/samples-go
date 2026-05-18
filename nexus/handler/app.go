@@ -4,6 +4,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 
@@ -27,9 +28,13 @@ var EchoOperation = nexus.NewSyncOperation(service.EchoOperationName, func(ctx c
 var HelloOperation = temporalnexus.NewWorkflowRunOperation(service.HelloOperationName, HelloHandlerWorkflow, func(ctx context.Context, input service.HelloInput, options nexus.StartOperationOptions) (client.StartWorkflowOptions, error) {
 	return client.StartWorkflowOptions{
 		// Workflow IDs should typically be business meaningful IDs and are used to dedupe workflow starts.
-		// For this example, we're using the request ID allocated by Temporal when the caller workflow schedules
-		// the operation, this ID is guaranteed to be stable across retries of this operation.
-		ID: options.RequestID,
+		// Use the operation input to build an identifier that correlates to the customer request.
+		ID: fmt.Sprintf(
+			"nexus-handler-hello-%s-%s-%d",
+			input.Language,
+			input.Name,
+			time.Now().UnixNano(),
+		),
 		// Task queue defaults to the task queue this operation is handled on.
 	}, nil
 })
