@@ -21,9 +21,9 @@ import (
 var HelloOperation = temporalnexus.NewWorkflowRunOperation(service.HelloOperationName, HelloHandlerWorkflow, func(ctx context.Context, input service.HelloInput, options nexus.StartOperationOptions) (client.StartWorkflowOptions, error) {
 	return client.StartWorkflowOptions{
 		// Workflow IDs should typically be business meaningful IDs and are used to dedupe workflow starts.
-		// For this example, we're using the request ID allocated by Temporal when the caller workflow schedules
-		// the operation, this ID is guaranteed to be stable across retries of this operation.
-		ID: options.RequestID,
+		// For this example, use a business ID derived from the greeting input so repeated operations
+		// for the same name and language resolve to the same workflow.
+		ID: service.HelloWorkflowID(input),
 		// Task queue defaults to the task queue this operation is handled on.
 	}, nil
 })

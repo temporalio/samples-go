@@ -1,6 +1,11 @@
 // @@@SNIPSTART samples-go-nexus-service
 package service
 
+import (
+	"fmt"
+	"strings"
+)
+
 const HelloServiceName = "my-hello-service"
 
 // Echo operation
@@ -33,4 +38,10 @@ type HelloInput struct {
 type HelloOutput struct {
 	Message string
 }
+
+func HelloWorkflowID(input HelloInput) string {
+	name := strings.ToLower(strings.ReplaceAll(strings.TrimSpace(input.Name), " ", "-"))
+	return fmt.Sprintf("hello-%s-%s", input.Language, name)
+}
+
 // @@@SNIPEND
