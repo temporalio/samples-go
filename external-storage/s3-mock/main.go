@@ -41,20 +41,29 @@ func newLoggingHTTPHandler(next http.Handler) http.Handler {
 	})
 }
 
+// newHandler builds an in-memory S3 handler with a single bucket pre-created.
+// Callers (main, tests) typically wrap the result with newLoggingHTTPHandler.
+func newHandler(bucket string) (http.Handler, error) {
+	backend := s3mem.New()
+	if err := backend.CreateBucket(bucket); err != nil {
+		return nil, err
+	}
+	return gofakes3.New(backend).Server(), nil
+}
+
 func main() {
 	var port int
 	flag.IntVar(&port, "port", 5000, "Port to listen on")
 	flag.Parse()
 
-	backend := s3mem.New()
-	if err := backend.CreateBucket(externalstorage.S3Bucket); err != nil {
-		log.Fatalf("create bucket: %v", err)
+	handler, err := newHandler(externalstorage.S3Bucket)
+	if err != nil {
+		log.Fatalf("new handler: %v", err)
 	}
-	faker := gofakes3.New(backend)
 
 	srv := &http.Server{
 		Addr:    "localhost:" + strconv.Itoa(port),
-		Handler: newLoggingHTTPHandler(faker.Server()),
+		Handler: newLoggingHTTPHandler(handler),
 	}
 
 	errCh := make(chan error, 1)
