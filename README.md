@@ -89,6 +89,10 @@ with an external configuration file, like TOML, decoupling connection settings f
   server to decode payloads for display in Temporal CLI and Temporal Web. This setup can be used for any kind of codec, common
   examples are compression or encryption.
 
+- [**External Storage**](./external-storage): Offload large payloads to
+  S3-compatible object storage plus a codec server built on
+  the SDK's payload HTTP handler so the Web UI and CLI can decode and download the externally-stored payloads.
+
 - [**Query Example**](./query): Demonstrates how to Query the state
   of a single Workflow Execution using the `QueryWorkflow` and `SetQueryHandler` APIs. Additional
   documentation: [How to Query a Workflow Execution in Go](https://docs.temporal.io/application-development/features/#queries).
