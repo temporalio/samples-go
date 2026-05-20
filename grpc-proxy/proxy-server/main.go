@@ -9,6 +9,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/converter"
 	"go.temporal.io/server/common/authorization"
+	"go.temporal.io/server/common/dynamicconfig"
 	"go.temporal.io/server/common/log/tag"
 	"go.temporal.io/server/common/metrics"
 	"google.golang.org/grpc"
@@ -79,6 +80,9 @@ func main() {
 				provider,
 				"",
 				"",
+				dynamicconfig.GetBoolPropertyFn(false),
+				dynamicconfig.GetBoolPropertyFn(false),
+				dynamicconfig.GetBoolPropertyFnFilteredByNamespace(false),
 			).Intercept,
 		)
 	}
