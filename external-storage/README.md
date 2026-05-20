@@ -26,7 +26,7 @@ on demand for the Temporal Web UI.
 ## Steps to run this sample
 
 1. Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
-2. In a separte terminal, run the mock S3 server. It listens on `:5000` and
+2. In a separate terminal, run the mock S3 server. It listens on `:5000` and
    creates the `temporal-payloads` bucket. Leave it running.
     ```
     go run ./external-storage/s3-mock
