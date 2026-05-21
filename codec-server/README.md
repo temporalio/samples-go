@@ -6,24 +6,28 @@ Temporal UI can be configured to pass the user's OIDC access token to the codec 
 Configuring OIDC is outside the scope of this sample, but please see the [serverjwtauth repo](../serverjwtauth/) for more details about authentication.
 
 1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
-2) Run the following command to start the worker
+2) `codec-server/` is a separate Go module. Run all `go run` commands below from the `codec-server/` directory:
    ```
-   go run worker/main.go
+   cd codec-server
    ```
-3) Run the following command to start the example
+3) Run the following command to start the worker
    ```
-   go run starter/main.go
+   go run ./worker
    ```
-4) Run the following command and see that the CLI cannot display the payloads as they are encoded (compressed)
+4) Run the following command to start the example
+   ```
+   go run ./starter
+   ```
+5) Run the following command and see that the CLI cannot display the payloads as they are encoded (compressed)
    ```
    temporal workflow show -w codecserver_workflowID
    ```
-5) Run the following command to start the remote codec server.
+6) Run the following command to start the remote codec server.
    The `-web` flag is needed for Temporal UI for CORS.
    ```
    go run ./codec-server -web=http://localhost:8080
    ```
-6) Run the following command to see that the CLI can now decode (uncompress) the payloads via the remote codec server
+7) Run the following command to see that the CLI can now decode (uncompress) the payloads via the remote codec server
    ```
    temporal workflow show -w codecserver_workflowID --codec-endpoint http://localhost:8081/{namespace}
    ```
