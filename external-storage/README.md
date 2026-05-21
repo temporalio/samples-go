@@ -26,6 +26,15 @@ on demand for the Temporal Web UI.
 ## Steps to run this sample
 
 1. Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
+   For local development, `temporal server start-dev` is the easiest option:
+    ```
+    > temporal server start-dev
+    Temporal CLI 1.7.0 (Server 1.31.0, UI 2.49.1)
+
+    Temporal Server:  localhost:7233
+    Temporal UI:      http://localhost:8233
+    Temporal Metrics: http://localhost:59980/metrics
+    ```
 2. In a separate terminal, run the mock S3 server. It listens on `:5000` and
    creates the `temporal-payloads` bucket. Leave it running.
     ```
@@ -52,6 +61,13 @@ on demand for the Temporal Web UI.
     ```
     go run ./external-storage/codec-server
     ```
+   The codec server exists purely so the Temporal Web UI (and CLI) can
+   visualize this sample's payloads. It decompresses inline zlib payloads
+   and resolves external storage references against the mock S3. The worker
+   and starter don't talk to it; they apply the same codec + S3 driver
+   themselves via the shared [data_converter.go](./data_converter.go), so the
+   sample runs end-to-end without the codec server.
+
    In the Temporal Web UI (http://localhost:8233), open Settings → Data Encoder
    and set the Remote Codec Endpoint to `http://localhost:8081`. Reload the
    workflow page; the inline compressed payloads will be shown as readable
@@ -66,16 +82,30 @@ on demand for the Temporal Web UI.
    | `POST /encode` | Compress the payload, then offload to S3 if it exceeds the threshold. |
    | `POST /decode` | Retrieve any external storage references from S3, then decompress. Pass `?preserveStorageRefs=true` to leave references as-is. |
    | `POST /download` | All inputs must be storage references. Retrieves them from S3 and decompresses. |
-6. Run `temporal workflow show` to see how payloads are stored:
+6. Run `temporal workflow show` to see how payloads are stored. Use the
+   workflow ID printed by the starter in step 4 (the `external-storage-<timestamp>`
+   value on the `Starting workflow ...` line):
     ```
     temporal workflow show --workflow-id external-storage-<timestamp>
     ```
-   The workflow's input (`OrderBatchRequest`) and result (`BatchSummary`) are
-   zlib-encoded and stored inline in Temporal — small enough to compress to a
-   few hundred bytes. The two activity payloads carrying the order list — the
-   output of `FetchOrders` and the input to `ProcessOrders` — exceed 256 KiB
-   even after compression, so they appear as external-storage references,
-   confirming the SDK offloaded them to S3.
+   A single run of this workflow produces six payloads. After zlib compression,
+   four stay inline in Temporal history (a few hundred bytes to a few KiB
+   each) and two are offloaded to S3 because they exceed the 256 KiB threshold
+   even when compressed:
+
+   | Payload | Type | Storage |
+   | --- | --- | --- |
+   | Workflow input | `OrderBatchRequest` | Inline |
+   | `FetchOrders` input | `OrderBatchRequest` | Inline |
+   | `FetchOrders` output | `[]Order` (~400 KiB) | **External (S3)** |
+   | `ProcessOrders` input | `[]Order` (~400 KiB) | **External (S3)** |
+   | `ProcessOrders` output | `[]ProcessedOrder` (~5 KiB) | Inline |
+   | Workflow result | `BatchSummary` | Inline |
+
+   The two offloaded payloads carry the same order list passed from one
+   activity to the next, which is exactly what external storage is designed to
+   handle: large blobs that flow between activities without bloating workflow
+   history.
 
 ## How it works
 
@@ -99,7 +129,7 @@ client.Dial(client.Options{
 })
 ```
 
-On the encode path the SDK:
+While encoding a payload, the SDK:
 
 1. Serializes the Go value to a `Payload`.
 2. Runs the zlib codec to compress the payload bytes.
@@ -108,12 +138,12 @@ On the encode path the SDK:
    the SDK's `s3driver` and replaces the inline payload with a claim-check
    reference.
 
-On the decode path the SDK reverses these steps, transparently retrieving from
-S3 and decompressing as needed.
+While decoding a payload, the SDK reverses these steps, transparently retrieving
+from S3 and decompressing as needed.
 
 The worker, the starter, and the codec server must use the **same** codec and
 external storage configuration so each side can read what the other wrote. In
-this sample the shared wiring lives in
+this sample, the shared wiring lives in
 [data_converter.go](./data_converter.go) for the worker and starter, and is
 mirrored in [codec-server/main.go](./codec-server/main.go) for the codec
 server.
@@ -131,3 +161,26 @@ two thin layers around it:
   codec chains and storage backends.
 - A **CORS middleware** that allows the Web UI origin to call the codec
   server.
+
+### Which codec server should I build?
+
+The SDK offers two HTTP handler constructors, intended for different consumers:
+
+- **`converter.NewPayloadHTTPHandler` (used in this sample)** — for the
+  Temporal Web UI and CLI. It serves `/encode`, `/decode`, and `/download`,
+  and understands external storage references so users can inspect and
+  retrieve offloaded payloads from a browser. It is **not** meant to be
+  plugged into an SDK client's `DataConverter`.
+- **`converter.NewPayloadCodecHTTPHandler`** — for SDK clients that want to
+  offload their codec chain to a remote service (e.g. to centralize key
+  material or codec configuration). It serves the older `/encode` + `/decode`
+  protocol without external storage semantics. Clients consume it via
+  `converter.NewRemoteDataConverter` or `converter.NewRemotePayloadCodec`,
+  both of which expect that protocol.
+
+If you need both — codec-as-a-service for clients/workers **and** Web UI / CLI
+visualization that includes external storage — run one handler of each kind,
+bound at distinct routes (e.g. `/ui/encode`, `/ui/decode`, `/ui/download` for
+the Web UI handler and `/codec/encode`, `/codec/decode` for the client
+handler) so the two protocols don't collide on `/encode` and `/decode`.
+Configure each consumer with the URL prefix that matches its handler.
