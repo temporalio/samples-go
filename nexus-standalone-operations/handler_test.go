@@ -3,7 +3,6 @@ package nexus_standalone_operations_test
 import (
 	"context"
 	"fmt"
-	"os"
 	"testing"
 	"time"
 
@@ -27,40 +26,19 @@ const (
 	endpointName = "nexus-standalone-operations-test-endpoint"
 )
 
-// devServerExtraArgs returns the CLI flags needed to enable standalone Nexus
-// operations on the dev server. These mirror the flags used in the SDK's own
-// integration tests (sdk-go/internal/cmd/build/main.go:152-162).
-func devServerExtraArgs() []string {
-	return []string{
-		"--http-port", "7243",
-		// TODO Use correct DC values once the dev server build supporting standalone Nexus is released.
-		"--dynamic-config-value", `component.callbacks.allowedAddresses=[{"Pattern":"*","AllowInsecure":true}]`,
-		"--dynamic-config-value", `system.refreshNexusEndpointsMinWait="0s"`,
-		"--dynamic-config-value", "component.nexusoperations.recordCancelRequestCompletionEvents=true",
-		"--dynamic-config-value", "history.enableRequestIdRefLinks=true",
-		"--dynamic-config-value", "history.enableChasm=true",
-		"--dynamic-config-value", "component.nexusoperations.useSystemCallbackURL=false",
-		"--dynamic-config-value", `component.nexusoperations.callback.endpoint.template="http://localhost:7243/namespaces/{{.NamespaceName}}/nexus/callback"`,
-	}
-}
-
 func Test_StandaloneNexusOperations_Using_DevServer(t *testing.T) {
-	// Skip until a dev server version supporting standalone Nexus operations is available.
-	// Set ENABLE_STANDALONE_NEXUS_TESTS=1 to run this test once a compatible server exists.
-	if os.Getenv("ENABLE_STANDALONE_NEXUS_TESTS") == "" {
-		t.Skip("Skipping: standalone Nexus operations not yet supported by dev server. Set ENABLE_STANDALONE_NEXUS_TESTS=1 to enable.")
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	// Start the dev server with standalone Nexus support.
-	// TODO: Update the Version once a dev server build supporting standalone Nexus is released.
 	server, err := testsuite.StartDevServer(ctx, testsuite.DevServerOptions{
 		CachedDownload: testsuite.CachedDownload{
-			Version: "v1.5.2-standalone-activity-server",
+			Version: "v1.7.1-standalone-nexus-operations",
 		},
-		ExtraArgs: devServerExtraArgs(),
+		ExtraArgs: []string{
+			"--dynamic-config-value", "nexusoperation.enableStandalone=true",
+			"--dynamic-config-value", "history.enableChasmCallbacks=true",
+		},
 	})
 	require.NoError(t, err)
 	defer func() { _ = server.Stop() }()

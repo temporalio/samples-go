@@ -70,7 +70,7 @@ func main() {
 	}
 	log.Println("Hello result:", helloResult.Message)
 
-	// List Nexus operations using the base client (not NexusClient).
+	// List Nexus operations using client.Client (not client.NexusClient).
 	listResp, err := c.ListNexusOperations(context.Background(), client.ListNexusOperationsOptions{
 		Query: fmt.Sprintf("Endpoint = '%s'", endpointName),
 	})
