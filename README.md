@@ -158,6 +158,8 @@ with an external configuration file, like TOML, decoupling connection settings f
 
 - [**Eager Workflow Start**](./eager-workflow-start): Demonstrates how to start a workflow in eager mode, an experimental latency optimization.
 
+- [**Task Queue Priority and Fairness**](./task-queue-priority-fairness): Demonstrates Activity Task dispatch using `PriorityKey`, `FairnessKey`, and `FairnessWeight` with a multi-tenant backlog.
+
 ### Dynamic Workflow logic examples
 
 These samples demonstrate some common control flow patterns using Temporal's Go SDK API.
