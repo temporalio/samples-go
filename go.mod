@@ -25,7 +25,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.42.0
 	go.opentelemetry.io/otel/trace v1.42.0
 	go.temporal.io/api v1.62.12
-	go.temporal.io/sdk v1.43.1-0.20260521135715-ad514adf9cc3
+	go.temporal.io/sdk v1.44.0
 	go.temporal.io/sdk/contrib/aws/lambdaworker v0.1.1
 	go.temporal.io/sdk/contrib/aws/lambdaworker/otel v0.1.1
 	go.temporal.io/sdk/contrib/aws/s3driver v0.2.0
