@@ -83,6 +83,34 @@ func newCORSHTTPHandler(origin string, next http.Handler) http.Handler {
 	})
 }
 
+// newCodecServerHandler builds the codec server's HTTP handler stack against the given
+// external storage driver.
+//
+// PreStorageCodecs runs before storage on encode and after retrieval on
+// decode, mirroring what the client-side DataConverter does. The handler must
+// use the same codec + external storage configuration as the worker and
+// starter so each side can read what the other wrote.
+func newCodecServerHandler(driver converter.StorageDriver) (http.Handler, error) {
+	defaultNamespaceHandler, err := converter.NewPayloadHTTPHandler(converter.PayloadHTTPHandlerOptions{
+		PreStorageCodecs: []converter.PayloadCodec{
+			converter.NewZlibCodec(converter.ZlibCodecOptions{AlwaysEncode: true}),
+		},
+		ExternalStorage: converter.ExternalStorage{
+			Drivers: []converter.StorageDriver{driver},
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Per-namespace map: extend this to host additional namespaces with their
+	// own codec chain and/or storage backend.
+	h := newPayloadNamespacesHTTPHandler(map[string]http.Handler{
+		"default": defaultNamespaceHandler,
+	})
+	return newCORSHTTPHandler(webUIOrigin, h), nil
+}
+
 func main() {
 	var port int
 	flag.IntVar(&port, "port", 8081, "Port to listen on")
@@ -94,28 +122,10 @@ func main() {
 		log.Fatalf("new s3 driver: %v", err)
 	}
 
-	// Build the payload handler with the same codec + external storage that
-	// the worker and starter use. PreStorageCodecs runs before storage on
-	// encode and after retrieval on decode, mirroring what the client-side
-	// DataConverter does.
-	defaultNamespaceHandler, err := converter.NewPayloadHTTPHandler(converter.PayloadHTTPHandlerOptions{
-		PreStorageCodecs: []converter.PayloadCodec{
-			converter.NewZlibCodec(converter.ZlibCodecOptions{AlwaysEncode: true}),
-		},
-		ExternalStorage: converter.ExternalStorage{
-			Drivers: []converter.StorageDriver{driver},
-		},
-	})
+	handler, err := newCodecServerHandler(driver)
 	if err != nil {
-		log.Fatalf("new payload handler: %v", err)
+		log.Fatalf("new handler: %v", err)
 	}
-
-	// Per-namespace map: extend this to host additional namespaces with their
-	// own codec chain and/or storage backend.
-	handler := newPayloadNamespacesHTTPHandler(map[string]http.Handler{
-		"default": defaultNamespaceHandler,
-	})
-	handler = newCORSHTTPHandler(webUIOrigin, handler)
 	handler = newLoggingHTTPHandler(handler)
 
 	srv := &http.Server{
