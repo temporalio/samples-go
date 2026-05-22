@@ -1,6 +1,7 @@
 package child_workflow
 
 import (
+	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -13,12 +14,19 @@ func SampleParentWorkflow(ctx workflow.Context) (string, error) {
 	logger := workflow.GetLogger(ctx)
 
 	cwo := workflow.ChildWorkflowOptions{
-		WorkflowID: "ABC-SIMPLE-CHILD-WORKFLOW-ID",
+		WorkflowID:            "ABC-SIMPLE-CHILD-WORKFLOW-ID",
+		WorkflowIDReusePolicy: enumspb.WORKFLOW_ID_REUSE_POLICY_TERMINATE_IF_RUNNING,
 	}
 	ctx = workflow.WithChildOptions(ctx, cwo)
 
 	var result string
-	err := workflow.ExecuteChildWorkflow(ctx, SampleChildWorkflow, "World").Get(ctx, &result)
+	err := workflow.ExecuteChildWorkflow(ctx, SampleChildWorkflow, "World").GetChildWorkflowExecution().Get(ctx, nil)
+	if err != nil {
+		logger.Error("Parent execution received child execution failure.", "Error", err)
+		return "", err
+	}
+
+	err = workflow.ExecuteChildWorkflow(ctx, SampleChildWorkflow, "Foo").Get(ctx, &result)
 	if err != nil {
 		logger.Error("Parent execution received child execution failure.", "Error", err)
 		return "", err
