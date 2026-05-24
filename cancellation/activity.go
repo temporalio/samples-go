@@ -21,7 +21,7 @@ func (a *Activities) ActivityToBeCanceled(ctx context.Context) (string, error) {
 			activity.RecordHeartbeat(ctx, "")
 		case <-ctx.Done():
 			logger.Info("context is cancelled")
-			return "I am canceled by Done", nil
+			return "", ctx.Err()
 		}
 	}
 }
@@ -31,11 +31,4 @@ func (a *Activities) CleanupActivity(ctx context.Context) error {
 	logger.Info("Cleanup Activity started")
 	return nil
 }
-
-func (a *Activities) ActivityToBeSkipped(ctx context.Context) error {
-	logger := activity.GetLogger(ctx)
-	logger.Info("this Activity will be skipped due to cancellation")
-	return nil
-}
-
 // @@@SNIPEND
