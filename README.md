@@ -158,6 +158,13 @@ with an external configuration file, like TOML, decoupling connection settings f
 
 - [**Eager Workflow Start**](./eager-workflow-start): Demonstrates how to start a workflow in eager mode, an experimental latency optimization.
 
+- [**Workflow Streams**](./workflowstreams): Demonstrates a durable publish/subscribe
+  log hosted inside a workflow using the `workflowstreams` contrib package: external code
+  publishes to named topics via signals, subscribers long-poll via updates, and a query
+  exposes the current offset. Includes five scenarios — basic publish/subscribe, a
+  reconnecting subscriber, an external publisher, a truncating ticker, and LLM token
+  streaming.
+
 ### Dynamic Workflow logic examples
 
 These samples demonstrate some common control flow patterns using Temporal's Go SDK API.
