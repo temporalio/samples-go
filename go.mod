@@ -4,14 +4,6 @@ go 1.25.0
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
 
-// TODO: The workflowstreams contrib package is not yet published, and it relies
-// on a reserved-name carve-out (the "__temporal_workflow_stream_" handler
-// prefix) that is not in a released SDK yet. Both replaces point at the local
-// sdk-go checkout for now; drop them once a tagged SDK + contrib release ships.
-replace go.temporal.io/sdk => ../sdk-go
-
-replace go.temporal.io/sdk/contrib/workflowstreams => ../sdk-go/contrib/workflowstreams
-
 require (
 	github.com/aws/aws-sdk-go-v2 v1.41.7
 	github.com/aws/aws-sdk-go-v2/config v1.32.17
@@ -34,7 +26,10 @@ require (
 	go.opentelemetry.io/otel/sdk v1.42.0
 	go.opentelemetry.io/otel/trace v1.42.0
 	go.temporal.io/api v1.62.12
-	go.temporal.io/sdk v1.44.1
+	// The workflowstreams contrib package needs the reserved-name carve-out for
+	// "__temporal_workflow_stream_" handlers, which is on sdk-go main but not in
+	// a tagged core SDK release yet. Pin to the carve-out commit until then.
+	go.temporal.io/sdk v1.44.2-0.20260611213708-56f93036ec43
 	go.temporal.io/sdk/contrib/aws/lambdaworker v0.1.1
 	go.temporal.io/sdk/contrib/aws/lambdaworker/otel v0.1.1
 	go.temporal.io/sdk/contrib/aws/s3driver v0.2.0
@@ -44,7 +39,7 @@ require (
 	go.temporal.io/sdk/contrib/opentelemetry v0.7.0
 	go.temporal.io/sdk/contrib/opentracing v0.3.0
 	go.temporal.io/sdk/contrib/tally v0.2.0
-	go.temporal.io/sdk/contrib/workflowstreams v0.0.0-00010101000000-000000000000
+	go.temporal.io/sdk/contrib/workflowstreams v0.1.0
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.79.3

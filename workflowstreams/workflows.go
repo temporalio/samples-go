@@ -16,10 +16,10 @@ const drainDelay = 500 * time.Millisecond
 // and runs an activity that publishes fine-grained progress events to the same
 // stream. A subscriber consumes both topics.
 func OrderWorkflow(ctx workflow.Context, input OrderInput) (string, error) {
-	// NewStream is workflow-safe; workflowcheck only flags it because it copies
+	// NewWorkflowStream is workflow-safe; workflowcheck only flags it because it copies
 	// maps when restoring continue-as-new state, which is order-independent.
 	//workflowcheck:ignore
-	stream, err := workflowstreams.NewStream(ctx, input.StreamState)
+	stream, err := workflowstreams.NewWorkflowStream(ctx, input.StreamState)
 	if err != nil {
 		return "", err
 	}
@@ -55,8 +55,8 @@ func OrderWorkflow(ctx workflow.Context, input OrderInput) (string, error) {
 // PipelineWorkflow (scenario 2) publishes a sequence of stage events with delays
 // between them, giving a subscriber time to disconnect and reconnect mid-stream.
 func PipelineWorkflow(ctx workflow.Context, input PipelineInput) (string, error) {
-	//workflowcheck:ignore order-independent map copy in NewStream; see OrderWorkflow
-	stream, err := workflowstreams.NewStream(ctx, input.StreamState)
+	//workflowcheck:ignore order-independent map copy in NewWorkflowStream; see OrderWorkflow
+	stream, err := workflowstreams.NewWorkflowStream(ctx, input.StreamState)
 	if err != nil {
 		return "", err
 	}
@@ -79,8 +79,8 @@ func PipelineWorkflow(ctx workflow.Context, input PipelineInput) (string, error)
 // HubWorkflow (scenario 3) does no work of its own; it exists only to host the
 // stream for an external publisher and shuts down on a close signal.
 func HubWorkflow(ctx workflow.Context, input HubInput) (string, error) {
-	//workflowcheck:ignore order-independent map copy in NewStream; see OrderWorkflow
-	if _, err := workflowstreams.NewStream(ctx, input.StreamState); err != nil {
+	//workflowcheck:ignore order-independent map copy in NewWorkflowStream; see OrderWorkflow
+	if _, err := workflowstreams.NewWorkflowStream(ctx, input.StreamState); err != nil {
 		return "", err
 	}
 
@@ -119,8 +119,8 @@ func TickerWorkflow(ctx workflow.Context, input TickerInput) (string, error) {
 		interval = 200 * time.Millisecond
 	}
 
-	//workflowcheck:ignore order-independent map copy in NewStream; see OrderWorkflow
-	stream, err := workflowstreams.NewStream(ctx, input.StreamState)
+	//workflowcheck:ignore order-independent map copy in NewWorkflowStream; see OrderWorkflow
+	stream, err := workflowstreams.NewWorkflowStream(ctx, input.StreamState)
 	if err != nil {
 		return "", err
 	}
@@ -148,8 +148,8 @@ func TickerWorkflow(ctx workflow.Context, input TickerInput) (string, error) {
 // LLMWorkflow (scenario 5) hosts the stream while a streaming activity owns the
 // non-deterministic OpenAI call and publishes token deltas back to subscribers.
 func LLMWorkflow(ctx workflow.Context, input LLMInput) (string, error) {
-	//workflowcheck:ignore order-independent map copy in NewStream; see OrderWorkflow
-	if _, err := workflowstreams.NewStream(ctx, input.StreamState); err != nil {
+	//workflowcheck:ignore order-independent map copy in NewWorkflowStream; see OrderWorkflow
+	if _, err := workflowstreams.NewWorkflowStream(ctx, input.StreamState); err != nil {
 		return "", err
 	}
 

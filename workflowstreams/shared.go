@@ -34,7 +34,7 @@ const CloseSignal = "close"
 
 // Each workflow input carries an optional *workflowstreams.WorkflowStreamState
 // so the stream can survive continue-as-new: thread the prior run's state back
-// in and pass it to NewStream. It is nil on a fresh start.
+// in and pass it to NewWorkflowStream. It is nil on a fresh start.
 
 // OrderInput is the input to OrderWorkflow (scenario 1).
 type OrderInput struct {

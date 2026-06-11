@@ -23,7 +23,7 @@ workflow streams samples. It contains five scenarios.
 Workflow side — construct a stream once at the start of the workflow and publish to topics:
 
 ```go
-stream, err := workflowstreams.NewStream(ctx, input.StreamState)
+stream, err := workflowstreams.NewWorkflowStream(ctx, input.StreamState)
 _ = stream.Topic("status").Publish(StatusEvent{Kind: "received"})
 ```
 
