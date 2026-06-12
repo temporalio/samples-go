@@ -8,16 +8,6 @@ messages to named topics via **signals**; subscribers long-poll for new items vi
 Temporal's durable execution, delivery is ordered, durable, and exactly-once, with
 client-side batching, publisher dedup, continue-as-new survival, and truncation.
 
-This sample mirrors the
-[TypeScript](https://github.com/temporalio/samples-typescript/pull/470) and
-[Python](https://github.com/temporalio/samples-python/tree/main/workflow_streams)
-workflow streams samples. It contains five scenarios.
-
-> **Note:** This sample currently depends on the unreleased `workflowstreams`
-> contrib package and a reserved-name carve-out in the SDK, both wired up via local
-> `replace` directives in the repo's root `go.mod` pointing at a sibling `../sdk-go`
-> checkout. Those replaces must be dropped once a tagged SDK and contrib release ship.
-
 ### Key APIs
 
 Workflow side — construct a stream once at the start of the workflow and publish to topics:
