@@ -30,8 +30,18 @@ for item, err := range c.Subscribe(ctx, workflowstreams.SubscribeOptions{Topics:
 }
 ```
 
-Offsets are **global** across topics; resume a subscription by passing
-`FromOffset: item.Offset + 1`.
+Offsets are **global** across topics. To resume a subscription from where a
+previous one left off, set `FromOffset` in `SubscribeOptions` to one past the
+last item you consumed:
+
+```go
+for item, err := range c.Subscribe(ctx, workflowstreams.SubscribeOptions{
+    Topics:     []string{"status"},
+    FromOffset: lastItem.Offset + 1, // zero (the default) starts from the beginning
+}) {
+    // ...
+}
+```
 
 ### Steps to run this sample
 
