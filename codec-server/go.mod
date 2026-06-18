@@ -3,7 +3,7 @@ module github.com/temporalio/samples-go/codec-server
 go 1.26.2
 
 require (
-	github.com/golang/snappy v0.0.4
+	github.com/golang/snappy v1.0.0
 	github.com/google/uuid v1.6.0
 	go.temporal.io/api v1.62.12
 	go.temporal.io/sdk v1.44.0
