@@ -217,6 +217,8 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 - [**Nexus Context Propagation**](./nexus-context-propagation): Demonstrates how to propagate context through client calls, workflows, and Nexus headers.
 
+- [**Nexus Activity Operation**](./nexus-activity-operation): Demonstrates how to back a Nexus operation with an activity using `temporalnexus.NewTemporalOperation` and invoke it via the standalone `client.NexusClient`.
+
 
 
 ### Scenario based examples
