@@ -24,6 +24,7 @@ var IncrOperation = temporalnexus.MustNewTemporalOperation(
 			return temporalnexus.StartUpdateWorkflow[api.Output](ctx, nc, client.UpdateWorkflowOptions{
 				WorkflowID:   input.WorkflowID,
 				UpdateName:   api.IncrUpdateName,
+				Args:         []any{input.Incr},
 				WaitForStage: client.WorkflowUpdateStageAccepted,
 			})
 		},
@@ -39,10 +40,13 @@ func CounterWorkflow(ctx workflow.Context) (int, error) {
 	if err := workflow.SetUpdateHandler(
 		ctx,
 		api.IncrUpdateName,
-		func(ctx workflow.Context) (api.Output, error) {
-			count++
+		func(ctx workflow.Context, incr int) (api.Output, error) {
+			if incr <= 0 {
+				incr = 1
+			}
+			count += incr
 			newCount := count
-			logger.Info("counter updated", "newValue", newCount)
+			logger.Info("counter updated", "incr", incr, "newValue", newCount)
 			var randomSeconds int
 			if err := workflow.SideEffect(ctx, func(ctx workflow.Context) interface{} {
 				return rand.Intn(6) // sleep upto 5 seconds

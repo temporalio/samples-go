@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"os"
 	"time"
@@ -10,13 +11,17 @@ import (
 
 	"github.com/temporalio/samples-go/nexus-operations/update-workflow/api"
 	"github.com/temporalio/samples-go/nexus-operations/update-workflow/caller"
-	"github.com/temporalio/samples-go/nexus/options"
+	"github.com/temporalio/samples-go/nexus-operations/update-workflow/options"
 )
 
 func main() {
-	clientOptions, err := options.ParseClientOptionFlags(os.Args[1:])
+	set := flag.NewFlagSet("nexus-update-op-caller-starter", flag.ExitOnError)
+	fp := options.NewClientFlagParser(set)
+	incrementAmount := set.Int("incr", 1, "increment amount, defaults to 1 if <= 0")
+	set.Parse(os.Args[1:])
+	clientOptions, err := fp.ClientOptions()
 	if err != nil {
-		log.Fatalf("Invalid arguments: %v", err)
+		log.Fatalf("Invalid options: %v", err)
 	}
 	c, err := client.Dial(clientOptions)
 	if err != nil {
@@ -29,7 +34,7 @@ func main() {
 		ID:        "counter-update-caller-" + time.Now().Format("20060102150405"),
 		TaskQueue: caller.TaskQueue,
 	}
-	input := api.Input{WorkflowID: api.CounterWorkflowID}
+	input := api.Input{WorkflowID: api.CounterWorkflowID, Incr: *incrementAmount}
 
 	log.Println("Invoking incr operation")
 	wr, err := c.ExecuteWorkflow(ctx, workflowOptions, caller.UpdateRemoteCounterWorkflow, input)

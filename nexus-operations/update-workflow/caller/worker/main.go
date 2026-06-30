@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 
@@ -8,13 +9,16 @@ import (
 	"go.temporal.io/sdk/worker"
 
 	"github.com/temporalio/samples-go/nexus-operations/update-workflow/caller"
-	"github.com/temporalio/samples-go/nexus/options"
+	"github.com/temporalio/samples-go/nexus-operations/update-workflow/options"
 )
 
 func main() {
-	clientOptions, err := options.ParseClientOptionFlags(os.Args[1:])
+	set := flag.NewFlagSet("nexus-update-op-caller-worker", flag.ExitOnError)
+	fp := options.NewClientFlagParser(set)
+	set.Parse(os.Args[1:])
+	clientOptions, err := fp.ClientOptions()
 	if err != nil {
-		log.Fatalf("Invalid arguments: %v", err)
+		log.Fatalf("Invalid options: %v", err)
 	}
 	c, err := client.Dial(clientOptions)
 	if err != nil {

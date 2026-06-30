@@ -6,13 +6,12 @@ import (
 )
 
 const (
-	TaskQueue    = "remote-update-caller-tq"
-	endpointName = "counter-update-endpoint"
+	TaskQueue = "remote-update-caller-tq"
 )
 
 // Executes the UpdateWorkflow on the handler namespace's workflow via Nexus Operation
 func UpdateRemoteCounterWorkflow(ctx workflow.Context, input api.Input) (api.Output, error) {
-	c := workflow.NewNexusClient(endpointName, api.CounterUpdateServiceName)
+	c := workflow.NewNexusClient(api.EndpointName, api.CounterUpdateServiceName)
 
 	fut := c.ExecuteOperation(ctx, api.IncrOperationName, input, workflow.NexusOperationOptions{})
 
