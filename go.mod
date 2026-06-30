@@ -1,8 +1,10 @@
 module github.com/temporalio/samples-go
 
-go 1.25.4
+go 1.26.0
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
+
+replace go.temporal.io/sdk => ../sdk-go
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.41.7
@@ -27,7 +29,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.43.0
 	go.opentelemetry.io/otel/sdk/metric v1.43.0
 	go.opentelemetry.io/otel/trace v1.43.0
-	go.temporal.io/api v1.63.4
+	go.temporal.io/api v1.63.5
 	go.temporal.io/sdk v1.48.0
 	go.temporal.io/sdk/contrib/aws/lambdaworker v0.1.1
 	go.temporal.io/sdk/contrib/aws/lambdaworker/otel v0.1.1
