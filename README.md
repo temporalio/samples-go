@@ -165,6 +165,11 @@ with an external configuration file, like TOML, decoupling connection settings f
   reconnecting subscriber, an external publisher, a truncating ticker, and LLM token
   streaming.
 
+- [**Google ADK agent**](./googleadk): Demonstrates running a Google ADK (`adk-go`) agent
+  durably using the `googleadk` contrib integration: the agent loop runs in a Workflow, the
+  model call runs as an Activity, and a tool is exposed as a durable Activity via
+  `ActivityAsTool`.
+
 ### Dynamic Workflow logic examples
 
 These samples demonstrate some common control flow patterns using Temporal's Go SDK API.
