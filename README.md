@@ -165,10 +165,12 @@ with an external configuration file, like TOML, decoupling connection settings f
   reconnecting subscriber, an external publisher, a truncating ticker, and LLM token
   streaming.
 
-- [**Google ADK agent**](./googleadk): Demonstrates running a Google ADK (`adk-go`) agent
+- [**Google ADK agent**](./googleadk): Demonstrates running Google ADK (`adk-go`) agents
   durably using the `googleadk` contrib integration: the agent loop runs in a Workflow, the
   model call runs as an Activity, and a tool is exposed as a durable Activity via
-  `ActivityAsTool`.
+  `ActivityAsTool`. Includes scenario subdirectories for a [multi-agent](./googleadk/multiagent)
+  system, [human-in-the-loop](./googleadk/humanintheloop) tool approval (durable wait on a
+  signal), and a [continue-as-new chat](./googleadk/chat).
 
 ### Dynamic Workflow logic examples
 
