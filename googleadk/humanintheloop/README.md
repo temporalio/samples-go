@@ -23,6 +23,20 @@ How it works:
 can sit blocked for minutes or days and survive worker restarts — no state is lost.
 When the approval signal finally arrives, the agent resumes exactly where it paused.
 
+### Notes
+
+- **`delete_resource` runs in-workflow and only *simulates* the delete** (it returns
+  a status map) to keep the demo deterministic. A real destructive operation does I/O
+  and must not run in the workflow — expose it with `googleadk.ActivityAsTool` so it
+  runs worker-side under Temporal's retry/timeout policy. The confirmation gate is
+  identical either way: the tool still calls `ctx.RequestConfirmation(...)` before
+  doing the work.
+- **The workflow handles one pending confirmation per resume pass.** If a single
+  model turn asked to approve several tool calls at once, you would collect a
+  decision for each and pass them together to
+  `googleadk.ConfirmationResponse(decisions...)`. This sample keeps to the common
+  single-confirmation case.
+
 ### Prerequisites
 
 - A running [Temporal server](https://github.com/temporalio/samples-go/tree/main/#how-to-use)

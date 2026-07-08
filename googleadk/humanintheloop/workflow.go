@@ -51,6 +51,13 @@ type Result struct {
 // no confirmation yet, so it requests one (via ctx.RequestConfirmation) and
 // returns without doing the work — this pauses the agent. On the resumed
 // invocation ADK supplies a ToolConfirmation, so the delete proceeds.
+//
+// NOTE: this runs in-workflow and only simulates the delete (it returns a status
+// map), which keeps the sample deterministic. A real destructive operation does
+// I/O and must NOT run in the workflow — expose it with googleadk.ActivityAsTool
+// so it runs worker-side under Temporal's retry/timeout policy. The confirmation
+// gate is identical either way: request confirmation first, do the work only once
+// confirmed.
 func deleteResource(tctx agent.Context, args DeleteArgs) (map[string]any, error) {
 	if tctx.ToolConfirmation() == nil {
 		if err := tctx.RequestConfirmation("Delete "+args.Resource+"?", nil); err != nil {
@@ -133,6 +140,11 @@ func ApprovalWorkflow(ctx workflow.Context, request string) (Result, error) {
 		// The agent paused. Durably wait for the human's decision to arrive as a
 		// Temporal signal. This is the whole point: the workflow can sit here for
 		// as long as it takes — across worker restarts — without losing state.
+		//
+		// This handles one pending confirmation per pass (the common case). If a
+		// single model turn requested several confirmations at once, collect a
+		// decision for each and pass them together:
+		// googleadk.ConfirmationResponse(decisions...).
 		var decision googleadk.ConfirmationDecision
 		workflow.GetSignalChannel(ctx, googleadk.ConfirmationSignalName).Receive(ctx, &decision)
 		res.Approved = decision.Confirmed
