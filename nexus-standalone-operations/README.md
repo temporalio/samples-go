@@ -24,7 +24,7 @@ The starter and worker connect to two different namespaces (a "caller" namespace
   --target-task-queue nexus-handler-queue
 ```
 
-3) In a new terminal, start the worker in the target namespace:
+3) In a new terminal, start the worker in the handler namespace:
 
 ```bash
 TEMPORAL_NAMESPACE=my-handler-namespace \
