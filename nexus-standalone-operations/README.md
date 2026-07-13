@@ -7,7 +7,7 @@ The starter and worker connect to two different namespaces (a "caller" namespace
 
 ## Run locally against a dev server
 
-1) Start the [Temporal dev server build that supports standalone Nexus operations](https://github.com/temporalio/cli/releases/tag/v1.7.3-standalone-nexus-operations) with the required namespaces pre-created:
+1) Start the [Temporal dev server build that supports standalone Nexus operations](https://docs.temporal.io/standalone-nexus-operation#temporal-cli-support) with the required namespaces pre-created:
 
 ```bash
 ./temporal server start-dev \
