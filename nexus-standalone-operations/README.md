@@ -21,7 +21,7 @@ The starter and worker connect to two different namespaces (a "caller" namespace
 ./temporal operator nexus endpoint create \
   --name my-nexus-endpoint \
   --target-namespace my-handler-namespace \
-  --target-task-queue nexus-standalone-operations
+  --target-task-queue nexus-handler-queue
 ```
 
 3) In a new terminal, start the worker in the target namespace:
