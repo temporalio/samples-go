@@ -12,7 +12,7 @@ The starter and worker connect to two different namespaces (a "caller" namespace
 ```bash
 ./temporal server start-dev \
   --namespace my-caller-namespace \
-  --namespace nexus-standalone-target-namespace
+  --namespace my-handler-namespace
 ```
 
 2) Create a Nexus endpoint that routes to the target namespace and the worker's task queue:
