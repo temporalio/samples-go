@@ -27,7 +27,7 @@ The starter and worker connect to two different namespaces (a "caller" namespace
 3) In a new terminal, start the worker in the target namespace:
 
 ```bash
-TEMPORAL_NAMESPACE=nexus-standalone-target-namespace \
+TEMPORAL_NAMESPACE=my-handler-namespace \
   go run nexus-standalone-operations/worker/main.go
 ```
 
