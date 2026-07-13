@@ -88,7 +88,7 @@ For mTLS instead of API keys, set `tls.client_cert_path` and `tls.client_key_pat
 4) Run the worker and starter in separate terminals, selecting the appropriate profile in each:
 
 ```bash
-# terminal 1 (worker, target namespace)
+# terminal 1 (worker, handler namespace)
 export TEMPORAL_PROFILE="handler"
 go run nexus-standalone-operations/worker/main.go
 ```
