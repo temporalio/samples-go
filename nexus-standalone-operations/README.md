@@ -61,9 +61,9 @@ If you run the starter multiple times, additional entries will appear in the `Li
 
 ## Run against Temporal Cloud
 
-1) Create two namespaces in Temporal Cloud (for example `my-caller-namespace.<account>` and `my-target-namespace.<account>`) and generate an API key (or mTLS cert) that can access both.
+1) Create two namespaces in Temporal Cloud (for example `my-caller-namespace.<account>` and `my-handler-namespace.<account>`) and generate an API key (or mTLS cert) that can access both.
 
-2) Create a Nexus endpoint that routes to the target namespace and the worker's task queue. See the Temporal Cloud instructions at https://docs.temporal.io/nexus/registry#create-a-nexus-endpoint. Use:
+2) Create a Nexus endpoint that targets the handler namespace and the worker's task queue. See the Temporal Cloud instructions at https://docs.temporal.io/nexus/registry#create-a-nexus-endpoint. Use:
 - Endpoint name: `my-nexus-endpoint`
 - Target namespace: `my-handler-namespace.<account>`
 - Target task queue: `nexus-handler-queue`
