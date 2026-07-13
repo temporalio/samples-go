@@ -20,7 +20,7 @@ The starter and worker connect to two different namespaces (a "caller" namespace
 ```bash
 ./temporal operator nexus endpoint create \
   --name my-nexus-endpoint \
-  --target-namespace nexus-standalone-target-namespace \
+  --target-namespace my-handler-namespace \
   --target-task-queue nexus-standalone-operations
 ```
 
