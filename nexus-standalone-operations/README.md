@@ -72,7 +72,7 @@ If you run the starter multiple times, additional entries will appear in the `Li
 3) Add two profiles to your [environment configuration file](https://docs.temporal.io/develop/environment-configuration), one per namespace. Using API keys:
 
 ```toml
-[profile.target]
+[profile.handler]
 address = "<region>.<cloud>.api.temporal.io:7233"
 namespace = "my-target-namespace.<account>"
 api_key = "<your-api-key>"
