@@ -89,7 +89,7 @@ For mTLS instead of API keys, set `tls.client_cert_path` and `tls.client_key_pat
 
 ```bash
 # terminal 1 (worker, target namespace)
-export TEMPORAL_PROFILE="target"
+export TEMPORAL_PROFILE="handler"
 go run nexus-standalone-operations/worker/main.go
 ```
 
