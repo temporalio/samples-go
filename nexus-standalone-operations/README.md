@@ -40,7 +40,7 @@ You should see a log line similar to:
 4) In a third terminal, run the starter in the caller namespace:
 
 ```bash
-TEMPORAL_NAMESPACE=nexus-standalone-caller-namespace \
+TEMPORAL_NAMESPACE=my-caller-namespace \
   go run nexus-standalone-operations/starter/main.go
 ```
 
