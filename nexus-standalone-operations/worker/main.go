@@ -14,7 +14,7 @@ import (
 	"github.com/temporalio/samples-go/nexus/service"
 )
 
-const taskQueue = "nexus-standalone-operations"
+const taskQueue = "nexus-handler-queue"
 
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.

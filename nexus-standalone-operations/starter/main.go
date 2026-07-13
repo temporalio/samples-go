@@ -16,7 +16,7 @@ import (
 // This sample demonstrates standalone Nexus operations — executing Nexus operations
 // directly from client code without wrapping them in a workflow.
 
-const endpointName = "nexus-standalone-operations-endpoint"
+const endpointName = "my-nexus-endpoint"
 
 func main() {
 	// The client is a heavyweight object that should be created once per process.
