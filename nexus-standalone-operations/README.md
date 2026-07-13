@@ -11,7 +11,7 @@ The starter and worker connect to two different namespaces (a "caller" namespace
 
 ```bash
 ./temporal server start-dev \
-  --namespace nexus-standalone-caller-namespace \
+  --namespace my-caller-namespace \
   --namespace nexus-standalone-target-namespace
 ```
 
