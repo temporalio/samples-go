@@ -15,7 +15,7 @@ The starter and worker connect to two different namespaces (a "caller" namespace
   --namespace my-handler-namespace
 ```
 
-2) Create a Nexus endpoint that routes to the target namespace and the worker's task queue:
+2) Create a Nexus endpoint that routes to the handler namespace and the worker's task queue:
 
 ```bash
 ./temporal operator nexus endpoint create \
