@@ -74,7 +74,7 @@ If you run the starter multiple times, additional entries will appear in the `Li
 ```toml
 [profile.handler]
 address = "<region>.<cloud>.api.temporal.io:7233"
-namespace = "my-target-namespace.<account>"
+namespace = "my-handler-namespace.<account>"
 api_key = "<your-api-key>"
 
 [profile.caller]
