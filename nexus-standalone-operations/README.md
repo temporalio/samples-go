@@ -65,7 +65,7 @@ If you run the starter multiple times, additional entries will appear in the `Li
 
 2) Create a Nexus endpoint that routes to the target namespace and the worker's task queue. See the Temporal Cloud instructions at https://docs.temporal.io/nexus/registry#create-a-nexus-endpoint. Use:
 - Endpoint name: `hello-service`
-- Target namespace: `my-target-namespace.<account>`
+- Target namespace: `my-handler-namespace.<account>`
 - Target task queue: `nexus-standalone-operations`
 - Allowed caller namespaces: include `my-caller-namespace.<account>` (endpoints reject callers that are not on this list)
 
