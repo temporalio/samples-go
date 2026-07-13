@@ -34,7 +34,7 @@ TEMPORAL_NAMESPACE=my-handler-namespace \
 You should see a log line similar to:
 
 ```bash
-2026/05/21 08:59:49 INFO  Started Worker Namespace nexus-standalone-target-namespace TaskQueue nexus-standalone-operations WorkerID 71172
+2026/05/21 08:59:49 INFO  Started Worker Namespace my-handler-namespace TaskQueue nexus-handler-queue WorkerID 71172
 ```
 
 4) In a third terminal, run the starter in the caller namespace:
