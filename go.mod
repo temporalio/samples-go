@@ -1,6 +1,6 @@
 module github.com/temporalio/samples-go
 
-go 1.25.0
+go 1.25.4
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
 
@@ -25,8 +25,8 @@ require (
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.16.0
 	go.opentelemetry.io/otel/sdk v1.43.0
 	go.opentelemetry.io/otel/trace v1.43.0
-	go.temporal.io/api v1.62.12
-	go.temporal.io/sdk v1.45.0
+	go.temporal.io/api v1.63.0
+	go.temporal.io/sdk v1.46.0
 	go.temporal.io/sdk/contrib/aws/lambdaworker v0.1.1
 	go.temporal.io/sdk/contrib/aws/lambdaworker/otel v0.1.1
 	go.temporal.io/sdk/contrib/aws/s3driver v0.2.0
@@ -125,6 +125,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/nexus-rpc/nexus-proto-annotations v0.1.0 // indirect
 	github.com/outcaste-io/ristretto v0.2.3 // indirect
 	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
