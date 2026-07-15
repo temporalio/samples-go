@@ -1,8 +1,9 @@
-// Package chat demonstrates a long-lived, signal-driven Google ADK (adk-go) chat
+// Package chat demonstrates a long-lived, update-driven Google ADK (adk-go) chat
 // running durably on Temporal with the go.temporal.io/sdk/contrib/googleadk
 // integration. A single Workflow serves an ongoing conversation: each user message
-// arrives as a Temporal signal, the agent answers it on the SAME ADK session (so
-// history accumulates), and the latest answer is readable via a query.
+// arrives as a Temporal Update, the agent answers it on the SAME ADK session (so
+// history accumulates), and the answer is returned on the Update itself — no signal
+// + query polling.
 //
 // To keep history bounded, the Workflow continues-as-new once Temporal suggests it
 // (or after a demo turn cap): it exports the session with googleadk.ExportSession,
@@ -12,6 +13,8 @@
 package chat
 
 import (
+	"fmt"
+
 	"go.temporal.io/sdk/workflow"
 
 	"google.golang.org/adk/v2/agent"
@@ -30,11 +33,10 @@ const (
 	// ModelName is the Gemini model name the agent ships in-workflow.
 	ModelName = "gemini-2.0-flash"
 
-	// UserMessageSignalName delivers a new user message to the chat workflow.
-	UserMessageSignalName = "user-message"
-
-	// LatestAnswerQueryType reads the most recent agent answer.
-	LatestAnswerQueryType = "latest-answer"
+	// SendMessageUpdateName is the Update that delivers a user message and returns
+	// the agent's answer. An Update (rather than a signal + query) lets the caller
+	// send the message and receive the answer on one call, with no polling.
+	SendMessageUpdateName = "send-message"
 
 	// AppName / UserID / SessionID identify the single conversation session.
 	AppName   = "chat"
@@ -53,10 +55,10 @@ type ChatInput struct {
 	MaxTurns int
 }
 
-// ChatWorkflow serves a long-lived conversation. It imports any prior session,
-// then loops receiving user-message signals, running the agent per message on the
-// shared session, and recording each answer (readable via a query). When Temporal
-// suggests continue-as-new (or MaxTurns is reached) it exports the session and
+// ChatWorkflow serves a long-lived conversation. It imports any prior session, then
+// registers a SendMessage Update handler that runs one agent turn per message on the
+// shared session and returns the answer. When Temporal suggests continue-as-new (or
+// MaxTurns is reached) it drains any in-flight turn, exports the session, and
 // continues-as-new carrying the snapshot forward.
 // @@@SNIPSTART googleadk-chat-workflow
 func ChatWorkflow(ctx workflow.Context, in ChatInput) error {
@@ -83,10 +85,8 @@ func ChatWorkflow(ctx workflow.Context, in ChatInput) error {
 	}
 
 	r, err := runner.New(runner.Config{
-		AppName: AppName,
-		Agent:   root,
-		// AutoCreateSession creates the session on first use when we did not import
-		// one; when we imported, the session already exists.
+		AppName:           AppName,
+		Agent:             root,
 		SessionService:    svc,
 		AutoCreateSession: true,
 	})
@@ -94,76 +94,76 @@ func ChatWorkflow(ctx workflow.Context, in ChatInput) error {
 		return err
 	}
 
-	// latestAnswer is served by the query handler.
-	var latestAnswer string
-	if err := workflow.SetQueryHandler(ctx, LatestAnswerQueryType, func() (string, error) {
-		return latestAnswer, nil
+	turns := 0
+	// One agent turn runs at a time: serialize concurrent Updates so they can't
+	// interleave on the shared ADK session.
+	busy := false
+
+	err = workflow.SetUpdateHandlerWithOptions(
+		ctx,
+		SendMessageUpdateName,
+		func(ctx workflow.Context, text string) (string, error) {
+			if err := workflow.Await(ctx, func() bool { return !busy }); err != nil {
+				return "", err
+			}
+			busy = true
+			defer func() { busy = false }()
+
+			// Build the ADK context from this Update handler's own workflow.Context so
+			// the model Activity is scheduled on the handler's coroutine.
+			turnCtx := googleadk.NewContext(ctx)
+			var answer string
+			msg := genai.NewContentFromText(text, genai.RoleUser)
+			for ev, err := range r.Run(turnCtx, UserID, SessionID, msg, agent.RunConfig{}) {
+				if err != nil {
+					return "", err
+				}
+				if ev == nil || ev.Content == nil {
+					continue
+				}
+				for _, p := range ev.Content.Parts {
+					if p != nil && p.Text != "" {
+						answer = p.Text
+					}
+				}
+			}
+			turns++
+			return answer, nil
+		},
+		workflow.UpdateHandlerOptions{
+			Validator: func(ctx workflow.Context, text string) error {
+				if text == "" {
+					return fmt.Errorf("message must not be empty")
+				}
+				return nil
+			},
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	// Serve messages until Temporal suggests continue-as-new (history getting large)
+	// or the demo turn cap is reached.
+	if err := workflow.Await(ctx, func() bool {
+		return workflow.GetInfo(ctx).GetContinueAsNewSuggested() || (in.MaxTurns > 0 && turns >= in.MaxTurns)
 	}); err != nil {
 		return err
 	}
 
-	msgCh := workflow.GetSignalChannel(ctx, UserMessageSignalName)
-
-	turns := 0
-	for {
-		// Wait for the next user message.
-		var text string
-		msgCh.Receive(ctx, &text)
-		turns++
-
-		msg := genai.NewContentFromText(text, genai.RoleUser)
-		for ev, err := range r.Run(adkCtx, UserID, SessionID, msg, agent.RunConfig{}) {
-			if err != nil {
-				return err
-			}
-			if ev == nil || ev.Content == nil {
-				continue
-			}
-			for _, p := range ev.Content.Parts {
-				if p != nil && p.Text != "" {
-					latestAnswer = p.Text
-				}
-			}
-		}
-
-		// Continue-as-new to keep history bounded: either when Temporal suggests it
-		// (history/event count getting large) or after the demo turn cap.
-		suggested := workflow.GetInfo(ctx).GetContinueAsNewSuggested()
-		capReached := in.MaxTurns > 0 && turns >= in.MaxTurns
-		if suggested || capReached {
-			// Drain any messages that arrived while we were serving this turn, so
-			// they aren't lost across the continue-as-new boundary.
-			for {
-				var pending string
-				if !msgCh.ReceiveAsync(&pending) {
-					break
-				}
-				pmsg := genai.NewContentFromText(pending, genai.RoleUser)
-				for ev, err := range r.Run(adkCtx, UserID, SessionID, pmsg, agent.RunConfig{}) {
-					if err != nil {
-						return err
-					}
-					if ev == nil || ev.Content == nil {
-						continue
-					}
-					for _, p := range ev.Content.Parts {
-						if p != nil && p.Text != "" {
-							latestAnswer = p.Text
-						}
-					}
-				}
-			}
-
-			snap, err := googleadk.ExportSession(adkCtx, svc, AppName, UserID, SessionID)
-			if err != nil {
-				return err
-			}
-			return workflow.NewContinueAsNewError(ctx, ChatWorkflow, ChatInput{
-				Snapshot: snap,
-				MaxTurns: in.MaxTurns,
-			})
-		}
+	// Let any in-flight Update finish so its turn is captured in the snapshot.
+	if err := workflow.Await(ctx, func() bool { return workflow.AllHandlersFinished(ctx) }); err != nil {
+		return err
 	}
+
+	snap, err := googleadk.ExportSession(adkCtx, svc, AppName, UserID, SessionID)
+	if err != nil {
+		return err
+	}
+	return workflow.NewContinueAsNewError(ctx, ChatWorkflow, ChatInput{
+		Snapshot: snap,
+		MaxTurns: in.MaxTurns,
+	})
 }
 
 // @@@SNIPEND

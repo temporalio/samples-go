@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"time"
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/contrib/envconfig"
@@ -37,21 +36,22 @@ func main() {
 		"What's a fun fact about durable execution?",
 	}
 	for _, m := range messages {
-		if err := c.SignalWorkflow(context.Background(), workflowID, "", chat.UserMessageSignalName, m); err != nil {
-			log.Fatalln("Unable to send message signal", err)
-		}
-		log.Printf("Sent message: %q", m)
-		// Give the agent time to answer before querying.
-		time.Sleep(2 * time.Second)
-
-		resp, err := c.QueryWorkflow(context.Background(), workflowID, "", chat.LatestAnswerQueryType)
+		// Send the message as an Update and get the agent's answer back on the same
+		// call — no signal + query polling.
+		handle, err := c.UpdateWorkflow(context.Background(), client.UpdateWorkflowOptions{
+			WorkflowID:   workflowID,
+			UpdateName:   chat.SendMessageUpdateName,
+			WaitForStage: client.WorkflowUpdateStageCompleted,
+			Args:         []interface{}{m},
+		})
 		if err != nil {
-			log.Fatalln("Unable to query latest answer", err)
+			log.Fatalln("Unable to send message update", err)
 		}
 		var answer string
-		if err := resp.Get(&answer); err != nil {
-			log.Fatalln("Unable to decode query result", err)
+		if err := handle.Get(context.Background(), &answer); err != nil {
+			log.Fatalln("Unable to get update result", err)
 		}
+		log.Printf("You: %q", m)
 		log.Printf("Assistant: %q", answer)
 	}
 

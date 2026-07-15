@@ -23,7 +23,7 @@ import (
 
 // recordingModel wraps a FakeModel and records the number of Contents in each
 // request it serves, so a test can prove that a later turn's request carried the
-// prior conversation history (proving the session persisted across signals).
+// prior conversation history (proving the session persisted across turns).
 type recordingModel struct {
 	inner *googleadk.FakeModel
 
@@ -51,8 +51,18 @@ func (m *recordingModel) contentsAt(turn int) int {
 	return m.requestContents[turn]
 }
 
+// failOnReject returns update callbacks that fail the test if the update is
+// rejected or completes with an error.
+func failOnReject(t *testing.T) *testsuite.TestUpdateCallback {
+	return &testsuite.TestUpdateCallback{
+		OnAccept:   func() {},
+		OnReject:   func(err error) { t.Errorf("update rejected: %v", err) },
+		OnComplete: func(_ interface{}, err error) {},
+	}
+}
+
 // TestChatCarriesHistory drives two user messages through the chat workflow via
-// signals and asserts the second turn's model request carried more Contents than
+// Updates and asserts the second turn's model request carried more Contents than
 // the first — proving the two messages ran on the SAME ADK session, so history
 // accumulated. MaxTurns is high enough that no continue-as-new fires here.
 func TestChatCarriesHistory(t *testing.T) {
@@ -75,12 +85,12 @@ func TestChatCarriesHistory(t *testing.T) {
 	// Send two messages, spaced so each is served before the next arrives. Use a
 	// high MaxTurns so this test does not hit the continue-as-new path.
 	env.RegisterDelayedCallback(func() {
-		env.SignalWorkflow(chat.UserMessageSignalName, "Hi! My name is David.")
+		env.UpdateWorkflow(chat.SendMessageUpdateName, "msg-1", failOnReject(t), "Hi! My name is David.")
 	}, time.Second)
 	env.RegisterDelayedCallback(func() {
-		env.SignalWorkflow(chat.UserMessageSignalName, "What is durable execution?")
+		env.UpdateWorkflow(chat.SendMessageUpdateName, "msg-2", failOnReject(t), "What is durable execution?")
 	}, 5*time.Second)
-	// End the (otherwise infinite) workflow by cancelling after both are served.
+	// End the (otherwise long-lived) workflow by cancelling after both are served.
 	env.RegisterDelayedCallback(func() {
 		env.CancelWorkflow()
 	}, 10*time.Second)
@@ -117,7 +127,7 @@ func TestChatContinueAsNew(t *testing.T) {
 	env.RegisterActivityWithOptions(acts.InvokeModel, activity.RegisterOptions{Name: googleadk.InvokeModelActivityName})
 
 	env.RegisterDelayedCallback(func() {
-		env.SignalWorkflow(chat.UserMessageSignalName, "Hi there!")
+		env.UpdateWorkflow(chat.SendMessageUpdateName, "msg-1", failOnReject(t), "Hi there!")
 	}, time.Second)
 
 	env.ExecuteWorkflow(chat.ChatWorkflow, chat.ChatInput{MaxTurns: 1})
