@@ -49,14 +49,18 @@ type GetWeatherOutput struct {
 // googleadk.ActivityAsTool, it runs durably worker-side (retried, timed-out,
 // visible in the UI) whenever the model calls it — the recommended pattern for a
 // tool that does I/O. A real implementation would call a weather API here.
+// @@@SNIPSTART googleadk-hello-tool
 func GetWeather(ctx context.Context, in GetWeatherInput) (GetWeatherOutput, error) {
 	return GetWeatherOutput{City: in.City, Conditions: "sunny, 72°F"}, nil
 }
+
+// @@@SNIPEND
 
 // AgentWorkflow runs a native ADK agent durably. The model call inside r.Run is
 // dispatched to the InvokeModel Activity by googleadk.NewModel, and the
 // get_weather tool call is dispatched to the GetWeather Activity by
 // googleadk.ActivityAsTool.
+// @@@SNIPSTART googleadk-hello-workflow
 func AgentWorkflow(ctx workflow.Context, question string) (string, error) {
 	weatherTool, err := googleadk.ActivityAsTool(GetWeather, googleadk.ActivityToolOptions{
 		Name:        WeatherToolName,
@@ -109,3 +113,5 @@ func AgentWorkflow(ctx workflow.Context, question string) (string, error) {
 	}
 	return answer, nil
 }
+
+// @@@SNIPEND

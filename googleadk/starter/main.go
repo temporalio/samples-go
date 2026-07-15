@@ -23,6 +23,7 @@ func main() {
 		TaskQueue: adk.TaskQueue,
 	}
 
+	// @@@SNIPSTART googleadk-hello-starter
 	question := "What's the weather in San Francisco?"
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, adk.AgentWorkflow, question)
 	if err != nil {
@@ -37,4 +38,5 @@ func main() {
 		log.Fatalln("Unable to get workflow result", err)
 	}
 	log.Println("Agent answer:", answer)
+	// @@@SNIPEND
 }

@@ -58,6 +58,7 @@ type ChatInput struct {
 // shared session, and recording each answer (readable via a query). When Temporal
 // suggests continue-as-new (or MaxTurns is reached) it exports the session and
 // continues-as-new carrying the snapshot forward.
+// @@@SNIPSTART googleadk-chat-workflow
 func ChatWorkflow(ctx workflow.Context, in ChatInput) error {
 	// A fresh in-memory session service, kept in a local so we can Export it later.
 	svc := session.InMemoryService()
@@ -164,3 +165,5 @@ func ChatWorkflow(ctx workflow.Context, in ChatInput) error {
 		}
 	}
 }
+
+// @@@SNIPEND

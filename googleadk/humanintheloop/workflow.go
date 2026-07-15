@@ -73,6 +73,7 @@ func deleteResource(tctx agent.Context, args DeleteArgs) (map[string]any, error)
 // googleadk.ConfirmationSignalName carrying a googleadk.ConfirmationDecision. Once
 // the decision arrives it resumes the agent with googleadk.ConfirmationResponse,
 // so the tool runs (or is blocked) according to the human's choice.
+// @@@SNIPSTART googleadk-hitl-workflow
 func ApprovalWorkflow(ctx workflow.Context, request string) (Result, error) {
 	delTool, err := functiontool.New[DeleteArgs, map[string]any](
 		functiontool.Config{
@@ -158,3 +159,5 @@ func ApprovalWorkflow(ctx workflow.Context, request string) (Result, error) {
 		msg = googleadk.ConfirmationResponse(decision)
 	}
 }
+
+// @@@SNIPEND

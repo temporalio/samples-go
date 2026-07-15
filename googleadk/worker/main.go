@@ -25,6 +25,7 @@ func main() {
 	}
 	defer c.Close()
 
+	// @@@SNIPSTART googleadk-hello-worker
 	w := worker.New(c, adk.TaskQueue, worker.Options{})
 
 	w.RegisterWorkflow(adk.AgentWorkflow)
@@ -52,4 +53,5 @@ func main() {
 	if err := w.Run(worker.InterruptCh()); err != nil {
 		log.Fatalln("Unable to start worker", err)
 	}
+	// @@@SNIPEND
 }

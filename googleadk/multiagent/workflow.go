@@ -63,6 +63,7 @@ func GetWeather(ctx context.Context, in GetWeatherInput) (GetWeatherOutput, erro
 // runs the question through the tree. The coordinator decides which specialist to
 // delegate to (emitting a transfer_to_agent call, which ADK resolves in-workflow);
 // the chosen specialist then answers. The workflow returns the final text.
+// @@@SNIPSTART googleadk-multiagent-workflow
 func MultiAgentWorkflow(ctx workflow.Context, question string) (string, error) {
 	weatherTool, err := googleadk.ActivityAsTool(GetWeather, googleadk.ActivityToolOptions{
 		Name:        WeatherToolName,
@@ -141,3 +142,5 @@ func MultiAgentWorkflow(ctx workflow.Context, question string) (string, error) {
 	}
 	return answer, nil
 }
+
+// @@@SNIPEND

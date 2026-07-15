@@ -5,3 +5,4 @@
 * @temporalio/sdk
 
 /workflowstreams/ @temporalio/sdk @temporalio/ai-sdk
+/googleadk/ @temporalio/sdk @temporalio/ai-sdk
