@@ -6,10 +6,11 @@ import (
 
 	"github.com/temporalio/samples-go/update"
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/contrib/envconfig"
 )
 
 func main() {
-	c, err := client.Dial(client.Options{})
+	c, err := client.Dial(envconfig.MustLoadDefaultClientOptions())
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
@@ -31,7 +32,13 @@ func main() {
 	for i := 0; i < 10; i++ {
 		addend := mult * i
 		mult *= -1 // flip addend between negative and positive for each iteration
-		handle, err := c.UpdateWorkflow(context.Background(), we.GetID(), we.GetRunID(), update.FetchAndAdd, addend)
+		handle, err := c.UpdateWorkflow(context.Background(), client.UpdateWorkflowOptions{
+			WorkflowID:   we.GetID(),
+			RunID:        we.GetRunID(),
+			UpdateName:   update.FetchAndAdd,
+			WaitForStage: client.WorkflowUpdateStageCompleted,
+			Args:         []interface{}{addend},
+		})
 		if err != nil {
 			log.Fatal("error issuing update request", err)
 		}

@@ -1,0 +1,6 @@
+[profile.default]
+address = "<your-namespace>.<account>.tmprl.cloud:7233"
+namespace = "<your-namespace>.<account>"
+[profile.default.tls]
+client_cert_path = "client.pem"
+client_key_path = "client.key"

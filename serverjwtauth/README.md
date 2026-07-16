@@ -7,7 +7,7 @@ endpoint that hosts the public keys used to sign tokens (in JWK format, ref
 [Temporal security documentation](https://docs.temporal.io/security) for more details.
 
 This example creates a ECDSA key pair, serves the public key for use by the server, and creates keys as needed for
-using `tctl`, running workers, and starting workflows.
+using `Temporal CLI`, running workers, and starting workflows.
 
 Note: Since we are not authorizing the UI in this sample, the server UI will not work with this restricted access.
 [Configuration of SSO for the Temporal Web UI](https://github.com/temporalio/web/#configuring-authentication-optional) is
@@ -38,6 +38,8 @@ variables should be set:
 * `TEMPORAL_JWT_KEY_SOURCE1=http://host.docker.internal:61884/jwks.json`
 * `TEMPORAL_AUTH_AUTHORIZER=default`
 * `TEMPORAL_AUTH_CLAIM_MAPPER=default`
+* `USE_INTERNAL_FRONTEND=1`
+* `SERVICES=frontend:history:matching:worker:internal-frontend`
 
 If using the docker-compose local install, these can be set in `docker-compose.yml`. If using a standalone server
 locally, the config is:
@@ -55,7 +57,7 @@ global:
 
 With these set, start the server in the background via whatever install method chosen.
 
-### Using `tctl` and registering the `default` namespace
+### Using `Temporal CLI` and registering the `default` namespace
 
 When starting the server using the docker container, the following excerpt will appear in the logs:
 
@@ -64,29 +66,29 @@ When starting the server using the docker container, the following excerpt will 
 This is because by default the docker container attempts to register the `default` namespace, but cannot because we have
 restricted access to the server to only authorized uses.
 
-To create this manually, we will use `tctl`.
+To create this manually, we will use the `Temporal CLI`.
 
 We must set the `TEMPORAL_CLI_AUTH` environment variable with an authorization header value that includes
 the JWT key. The following command generates a 1 hour key with `admin` permissions on the `system` namespace:
 
-    go run ./serverjwtauth/key tctl-system-token
+    go run ./serverjwtauth/key cli-system-token
 
 This will output something like:
 
     TEMPORAL_CLI_AUTH=Bearer abcde...
 
-See [this documentation](https://docs.temporal.io/tctl-v1/#run-the-cli) on how to run `tctl` with environment
+See [this documentation](https://docs.temporal.io/cli#environment-variables) on how to run the `Temporal CLI` with environment
 variables. If using the docker approach from bash, an argument could be added like:
 
-    --env "$(go run ./serverjwtauth/key tctl-system-token)"
+    --env "$(go run ./serverjwtauth/key cli-system-token)"
 
-Or if using `tctl` standalone from bash, an `export` for the environment can be added:
+Or if using `Temporal CLI` standalone from bash, an `export` for the environment can be added:
 
-    export "$(go run ./serverjwtauth/key tctl-system-token)"
+    export "$(go run ./serverjwtauth/key cli-system-token)"
 
-Once `tctl` is set to take an environment variable, it can be run to create the `default` namespace:
+Once `Temporal CLI` is set to take an environment variable, it can be run to create the `default` namespace:
 
-    tctl --ns default namespace register -rd 1
+    temporal operator namespace create default --retention 1d
 
 ### Running the worker and starting the workflow
 

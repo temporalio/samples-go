@@ -2,7 +2,7 @@ package pso
 
 import (
 	"context"
-	"errors"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -58,10 +58,10 @@ func Test_Workflow(t *testing.T) {
 	//queryAndVerify(t, env, "iteration", "???")
 	// consider recreating a new test env on every iteration and calling execute workflow
 	// with the arguments from the previous iteration (contained in ContinueAsNewError)
-	err := env.GetWorkflowError()
-	var continueAsNewErr *workflow.ContinueAsNewError
-	require.True(t, errors.As(err, &continueAsNewErr))
-	require.Equal(t, "continue as new", continueAsNewErr.Error())
+	require.NoError(t, env.GetWorkflowError())
+	var result string
+	require.NoError(t, env.GetWorkflowResult(&result))
+	require.True(t, strings.HasPrefix(result, "Optimization was successful at attempt #1"))
 }
 
 func queryAndVerify(t *testing.T, env *testsuite.TestWorkflowEnvironment, query string, expectedState string) {

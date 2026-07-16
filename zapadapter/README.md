@@ -2,11 +2,11 @@
 1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 2) Run the following command to start the worker
 ```
-go run zaplogger/worker/main.go
+go run zapadapter/worker/main.go
 ```
 3) Run the following command to start the example
 ```
-go run zaplogger/starter/main.go
+go run zapadapter/starter/main.go
 ```
 4) Check worker logs in colorful JSON format:
 ```json

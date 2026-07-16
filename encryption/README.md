@@ -14,12 +14,12 @@ go run starter/main.go
 ```
 5) Run the following command and see the payloads cannot be decoded
 ```
-tctl workflow show --wid encryption_workflowID
+temporal workflow show --workflow-id encryption_workflowID
 ```
 6) Run the following command and see the decoded payloads
 ```
-tctl --codec_endpoint 'http://localhost:8081/' workflow show --wid encryption_workflowID
+temporal workflow show --workflow-id encryption_workflowID --codec-endpoint 'http://localhost:8081/'
 ```
 
-Note: The codec server provided in this sample does not support decoding payloads for the Temporal Web UI, only tctl.
+Note: The codec server provided in this sample does not support decoding payloads for the Temporal Web UI, only Temporal CLI.
 Please see the [codec-server](../codec-server/) sample for a more complete example of a codec server which provides UI decoding and oauth.

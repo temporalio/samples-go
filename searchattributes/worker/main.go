@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log"
 
 	"go.temporal.io/sdk/client"
@@ -20,11 +19,7 @@ func main() {
 	}
 	defer c.Close()
 
-	ctx := context.WithValue(context.Background(), searchattributes.ClientCtxKey, c)
-
-	w := worker.New(c, "search-attributes", worker.Options{
-		BackgroundActivityContext: ctx,
-	})
+	w := worker.New(c, "search-attributes", worker.Options{})
 
 	w.RegisterWorkflow(searchattributes.SearchAttributesWorkflow)
 	w.RegisterActivity(searchattributes.ListExecutions)

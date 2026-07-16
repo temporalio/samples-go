@@ -8,6 +8,7 @@ import (
 	"log"
 
 	"github.com/pborman/uuid"
+	"google.golang.org/protobuf/types/known/durationpb"
 
 	"strconv"
 
@@ -35,7 +36,7 @@ func main() {
 			Namespace:                        uuidvar + "_" + strconv.Itoa(i),
 			Description:                      "Namespace Description " + strconv.Itoa(i),
 			OwnerEmail:                       "owner@mail.com",
-			WorkflowExecutionRetentionPeriod: &retention,
+			WorkflowExecutionRetentionPeriod: durationpb.New(retention),
 		}
 		if err = c.Register(context.Background(), req); err != nil {
 			log.Fatalln("Unable to register namespace", err)

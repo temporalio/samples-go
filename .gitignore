@@ -15,3 +15,8 @@ vendor/
 # Executables produced by temporal-go-samples repo
 bin/
 .fossa.yml
+*~
+**/client.key
+**/client.pem
+lambda-worker/bootstrap
+.claude/settings.local.json

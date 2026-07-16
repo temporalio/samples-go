@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/contrib/envconfig"
 	"go.temporal.io/sdk/worker"
 
 	"github.com/temporalio/samples-go/saga"
@@ -11,7 +12,7 @@ import (
 
 func main() {
 	// Create the client object just once per process
-	c, err := client.Dial(client.Options{})
+	c, err := client.Dial(envconfig.MustLoadDefaultClientOptions())
 	if err != nil {
 		log.Fatalln("unable to create Temporal client", err)
 	}

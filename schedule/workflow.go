@@ -23,13 +23,14 @@ func SampleScheduleWorkflow(ctx workflow.Context) error {
 	info := workflow.GetInfo(ctx1)
 
 	// Workflow Executions started by a Schedule have the following additional properties appended to their search attributes
+	//lint:ignore SA1019 - this is a sample
 	scheduledByIDPayload := info.SearchAttributes.IndexedFields["TemporalScheduledById"]
 	var scheduledByID string
 	err := converter.GetDefaultDataConverter().FromPayload(scheduledByIDPayload, &scheduledByID)
 	if err != nil {
 		return err
 	}
-
+	//lint:ignore SA1019 - this is a sample
 	startTimePayload := info.SearchAttributes.IndexedFields["TemporalScheduledStartTime"]
 	var startTime time.Time
 	err = converter.GetDefaultDataConverter().FromPayload(startTimePayload, &startTime)

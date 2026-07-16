@@ -8,6 +8,7 @@ import (
 
 	"go.temporal.io/server/common/authorization"
 	"go.temporal.io/server/common/config"
+	"go.temporal.io/server/common/namespace"
 	"google.golang.org/grpc"
 )
 
@@ -59,4 +60,14 @@ func newClaimMapper(providerKeysURL string) authorization.ClaimMapper {
 	)
 
 	return authorization.NewDefaultJWTClaimMapper(provider, &authConfig, logger)
+}
+
+type noopNamespaceChecker struct{}
+
+func (n noopNamespaceChecker) Exists(name namespace.Name) error {
+	return nil
+}
+
+func newNamespaceChecker() authorization.NamespaceChecker {
+	return noopNamespaceChecker{}
 }

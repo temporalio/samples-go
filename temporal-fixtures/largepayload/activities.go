@@ -2,7 +2,7 @@ package largepayload
 
 import (
 	"context"
-	"math/rand"
+	"crypto/rand"
 
 	"go.temporal.io/sdk/activity"
 )
@@ -19,8 +19,8 @@ func (a *Activities) CreateLargeResultActivity(ctx context.Context, sizeBytes in
 	logger.Info("Creating large result payload...", sizeBytes)
 
 	token := make([]byte, sizeBytes)
-	rand.Read(token)
-	return token, nil
+	_, err := rand.Read(token)
+	return token, err
 }
 
 func (a *Activities) ProcessLargeInputActivity(ctx context.Context, input []byte) error {

@@ -33,8 +33,8 @@ func run() error {
 				err = serve()
 			}
 			return err
-		} else if os.Args[1] == "tctl-system-token" {
-			return tctlSystemToken()
+		} else if os.Args[1] == "cli-system-token" {
+			return cliSystemToken()
 		}
 	}
 	return fmt.Errorf("only a single argument of 'gen', 'serve', or 'gen-and-serve' is supported")
@@ -81,7 +81,7 @@ func serve() error {
 	}
 }
 
-func tctlSystemToken() error {
+func cliSystemToken() error {
 	// Load key
 	key, jwk, err := serverjwtauth.ReadKey()
 	if err != nil {
@@ -92,7 +92,7 @@ func tctlSystemToken() error {
 	config := serverjwtauth.JWTConfig{
 		Key:         key,
 		KeyID:       jwk.KeyID,
-		Permissions: []string{"system:admin"},
+		Permissions: []string{"temporal-system:admin"},
 		Expiration:  1 * time.Hour,
 	}
 	token, err := config.GenToken()

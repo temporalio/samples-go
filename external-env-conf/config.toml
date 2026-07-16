@@ -1,0 +1,48 @@
+# Default profile for local development
+[profile.default]
+address = "localhost:7233"
+namespace = "default"
+
+
+# Optional: Add custom gRPC headers
+[profile.default.grpc_meta]
+my-custom-header = "development-value"
+trace-id = "dev-trace-123"
+
+
+# Production profile for Temporal Cloud
+[profile.prod]
+address = "your-namespace.a1b2c.tmprl.cloud:7233"
+namespace = "your-namespace"
+api_key = "your-api-key-here"
+
+
+# TLS configuration for production
+[profile.prod.tls]
+# TLS is auto-enabled when this TLS config or API key is present, but you can configure it explicitly
+# disabled = false
+# Use certificate files for mTLS
+client_cert_path = "/etc/temporal/certs/client.pem"
+client_key_path = "/etc/temporal/certs/client.key"
+
+
+# Custom headers for production
+[profile.prod.grpc_meta]
+environment = "production"
+service-version = "v1.2.3"
+
+
+# Staging profile with inline certificate data
+[profile.staging]
+address = "staging.temporal.example.com:7233"
+namespace = "staging"
+
+
+[profile.staging.tls]
+# Example of providing certificate data directly (base64 or PEM format)
+client_cert_data = """-----BEGIN CERTIFICATE-----
+MIICertificateDataHere...
+-----END CERTIFICATE-----"""
+client_key_data = """-----BEGIN PRIVATE KEY-----
+MIIPrivateKeyDataHere...
+-----END PRIVATE KEY-----"""
