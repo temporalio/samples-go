@@ -55,9 +55,13 @@ func (m *recordingModel) contentsAt(turn int) int {
 // rejected or completes with an error.
 func failOnReject(t *testing.T) *testsuite.TestUpdateCallback {
 	return &testsuite.TestUpdateCallback{
-		OnAccept:   func() {},
-		OnReject:   func(err error) { t.Errorf("update rejected: %v", err) },
-		OnComplete: func(_ interface{}, err error) {},
+		OnAccept: func() {},
+		OnReject: func(err error) { t.Errorf("update rejected: %v", err) },
+		OnComplete: func(_ interface{}, err error) {
+			if err != nil {
+				t.Errorf("update completed with error: %v", err)
+			}
+		},
 	}
 }
 
