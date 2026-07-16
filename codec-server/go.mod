@@ -1,13 +1,13 @@
 module github.com/temporalio/samples-go/codec-server
 
-go 1.26.2
+go 1.26.4
 
 require (
 	github.com/golang/snappy v0.0.4
 	github.com/google/uuid v1.6.0
 	go.temporal.io/api v1.63.0
 	go.temporal.io/sdk v1.46.0
-	go.temporal.io/server v1.31.0
+	go.temporal.io/server v1.31.1
 )
 
 require (
@@ -91,7 +91,7 @@ require (
 	go.uber.org/mock v0.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.1 // indirect
-	golang.org/x/crypto v0.51.0 // indirect
+	golang.org/x/crypto v0.52.0 // indirect
 	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546 // indirect
 	golang.org/x/net v0.55.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
