@@ -5,7 +5,7 @@ go 1.26.2
 require (
 	github.com/golang/snappy v0.0.4
 	github.com/google/uuid v1.6.0
-	go.temporal.io/api v1.63.0
+	go.temporal.io/api v1.63.1
 	go.temporal.io/sdk v1.46.0
 	go.temporal.io/server v1.31.0
 )
