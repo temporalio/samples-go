@@ -4,5 +4,5 @@
 # someone opens a pull request.
 * @temporalio/sdk
 
+/googleadk/       @temporalio/sdk @temporalio/ai-sdk
 /workflowstreams/ @temporalio/sdk @temporalio/ai-sdk
-/googleadk/ @temporalio/sdk @temporalio/ai-sdk
