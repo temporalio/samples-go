@@ -33,7 +33,6 @@ require (
 	go.temporal.io/sdk/contrib/aws/s3driver/awssdkv2 v0.2.0
 	go.temporal.io/sdk/contrib/datadog v0.5.0
 	go.temporal.io/sdk/contrib/envconfig v1.0.1
-	go.temporal.io/sdk/contrib/googleadk v0.0.0-00010101000000-000000000000
 	go.temporal.io/sdk/contrib/opentelemetry v0.7.0
 	go.temporal.io/sdk/contrib/opentracing v0.3.0
 	go.temporal.io/sdk/contrib/tally v0.2.0
