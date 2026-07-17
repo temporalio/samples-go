@@ -142,10 +142,11 @@ func ApprovalWorkflow(ctx workflow.Context, request string) (Result, error) {
 		// Temporal signal. This is the whole point: the workflow can sit here for
 		// as long as it takes — across worker restarts — without losing state.
 		//
-		// This handles one pending confirmation per pass (the common case). If a
-		// single model turn requested several confirmations at once, collect a
-		// decision for each and pass them together:
-		// googleadk.ConfirmationResponse(decisions...).
+		// This handles one pending confirmation per pass — the recommended
+		// pattern (see the googleadk.ConfirmationResponse docs): resuming
+		// several decisions at once can re-dispatch the approved tool calls in
+		// an order that is not replay-stable. Any other pending confirmations
+		// simply surface again on the next pass.
 		var decision googleadk.ConfirmationDecision
 		workflow.GetSignalChannel(ctx, googleadk.ConfirmationSignalName).Receive(ctx, &decision)
 		res.Approved = decision.Confirmed

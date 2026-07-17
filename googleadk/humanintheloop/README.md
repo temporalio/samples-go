@@ -31,11 +31,12 @@ When the approval signal finally arrives, the agent resumes exactly where it pau
   runs worker-side under Temporal's retry/timeout policy. The confirmation gate is
   identical either way: the tool still calls `ctx.RequestConfirmation(...)` before
   doing the work.
-- **The workflow handles one pending confirmation per resume pass.** If a single
-  model turn asked to approve several tool calls at once, you would collect a
-  decision for each and pass them together to
-  `googleadk.ConfirmationResponse(decisions...)`. This sample keeps to the common
-  single-confirmation case.
+- **The workflow handles one pending confirmation per resume pass.** This is also
+  the recommended pattern: as the `googleadk.ConfirmationResponse` docs note,
+  resuming several decisions in one pass can re-dispatch the approved tool calls
+  in an order that is not replay-stable, so when the confirmed tools dispatch
+  Activities, answer one decision per `Run` pass (additional pending
+  confirmations surface again on the next pass).
 
 ### Prerequisites
 

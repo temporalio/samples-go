@@ -7,7 +7,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/contrib/envconfig"
 
-	chat "github.com/temporalio/samples-go/googleadk/chat"
+	"github.com/temporalio/samples-go/googleadk/chat"
 )
 
 func main() {
