@@ -167,7 +167,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.43.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.10.0 // indirect
 	go.shabbyrobe.org/gocovmerge v0.0.0-20230507111327-fa4f82cfbf4d // indirect
-	go.temporal.io/sdk/contrib/googleadk v0.0.0-20260717224236-b77dd17ed4ce
+	go.temporal.io/sdk/contrib/googleadk v0.1.0
 	go.uber.org/atomic v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	go4.org/intern v0.0.0-20230525184215-6c62f75575cb // indirect
@@ -190,11 +190,3 @@ require (
 	rsc.io/omap v1.2.0 // indirect
 	rsc.io/ordered v1.1.1 // indirect
 )
-
-// TEMPORARY: contrib/googleadk is merged (temporalio/sdk-go#2439) but the
-// go.temporal.io vanity server does not serve the new module path yet
-// (temporalio/vanity-imports#23), so consume it via the GitHub path pinned at
-// the merged commit. Drop this replace once the vanity page deploys (or a
-// contrib/googleadk tag exists) — the require line above already carries the
-// real version.
-replace go.temporal.io/sdk/contrib/googleadk => github.com/temporalio/sdk-go/contrib/googleadk v0.0.0-20260717224236-b77dd17ed4ce
