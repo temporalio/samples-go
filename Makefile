@@ -42,7 +42,7 @@ errcheck:
 workflowcheck:
 	@printf $(COLOR) "Run workflow check..."
 	@go install go.temporal.io/sdk/contrib/tools/workflowcheck@latest
-	@workflowcheck -show-pos ./...
+	@workflowcheck -show-pos -config workflowcheck.config.yaml ./...
 
 update-sdk:
 	$(foreach MOD_FILES_DIR,$(MOD_FILES_DIR),\

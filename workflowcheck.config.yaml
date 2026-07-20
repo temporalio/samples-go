@@ -1,0 +1,16 @@
+# Configuration for workflowcheck (go.temporal.io/sdk/contrib/tools/workflowcheck),
+# run by the Makefile's workflowcheck target.
+#
+# The functions below are ones the checker cannot statically prove
+# deterministic but that are deterministic by construction. The googleadk
+# samples drive Google ADK agents in-workflow through
+# go.temporal.io/sdk/contrib/googleadk, whose NewContext installs
+# Temporal-deterministic time/UUID/task-fan-out providers and dispatches model
+# calls and I/O tools as Activities; the ADK internals the checker flags
+# (channels, map iteration, reflection) run on the workflow dispatcher with
+# those seams. Determinism is replay-tested in the contrib package.
+decls:
+  "(*google.golang.org/adk/v2/runner.Runner).Run": false
+  "go.temporal.io/sdk/contrib/googleadk.ExportSession": false
+  "go.temporal.io/sdk/contrib/googleadk.PendingConfirmations": false
+  "google.golang.org/adk/v2/tool/functiontool.New": false
