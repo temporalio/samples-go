@@ -24,12 +24,9 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, chat.TaskQueue, worker.Options{})
-
-	w.RegisterWorkflow(chat.ChatWorkflow)
-	// The chat agent has no tools, so only the model Activity is registered.
-
-	acts, err := googleadk.NewActivities(googleadk.Config{
+	// The plugin registers the integration's model Activity on the worker. The
+	// chat agent has no tools, so that is the only registration it brings.
+	adkPlugin, err := googleadk.NewPlugin(googleadk.Config{
 		Models: map[string]googleadk.ModelFactory{
 			chat.ModelName: func(ctx context.Context, name string) (model.LLM, error) {
 				// nil config reads GEMINI_API_KEY / GOOGLE_API_KEY from the env.
@@ -38,9 +35,14 @@ func main() {
 		},
 	})
 	if err != nil {
-		log.Fatalln("Unable to build googleadk activities", err)
+		log.Fatalln("Unable to build googleadk plugin", err)
 	}
-	acts.Register(w)
+
+	w := worker.New(c, chat.TaskQueue, worker.Options{
+		Plugins: []worker.Plugin{adkPlugin},
+	})
+
+	w.RegisterWorkflow(chat.ChatWorkflow)
 
 	if err := w.Run(worker.InterruptCh()); err != nil {
 		log.Fatalln("Unable to start worker", err)

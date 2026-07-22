@@ -11,8 +11,11 @@ and the whole run is replayable.
 Agents are built the native ADK way (`llmagent.New` + `runner.New`); the only
 Temporal-specific pieces are `googleadk.NewModel(...)` as the agent's model,
 `googleadk.NewContext(ctx)` passed to `Run`, and the worker-side
-`googleadk.NewActivities(...)` registry that holds the real Gemini client (so the
-API key stays worker-side, never crossing into the workflow).
+`googleadk.NewPlugin(...)` in `worker.Options.Plugins`, whose config holds the
+real Gemini client (so the API key stays worker-side, never crossing into the
+workflow). The tests register the integration's Activities directly with
+`googleadk.NewActivities(...)` instead, since the test environments run no
+plugins.
 
 Every sample runs against a scripted `FakeModel` in its `*_test.go`, so
 `go test ./googleadk/...` needs no API key or network.

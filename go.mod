@@ -167,7 +167,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.43.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.10.0 // indirect
 	go.shabbyrobe.org/gocovmerge v0.0.0-20230507111327-fa4f82cfbf4d // indirect
-	go.temporal.io/sdk/contrib/googleadk v0.1.0
+	go.temporal.io/sdk/contrib/googleadk v0.2.0
 	go.uber.org/atomic v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	go4.org/intern v0.0.0-20230525184215-6c62f75575cb // indirect
