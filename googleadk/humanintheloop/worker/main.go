@@ -24,14 +24,10 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, humanintheloop.TaskQueue, worker.Options{})
-
-	w.RegisterWorkflow(humanintheloop.ApprovalWorkflow)
-	// The delete_resource tool is an in-workflow function tool (not an
-	// ActivityAsTool), so there is no tool activity to register here — only the
-	// model Activity below.
-
-	acts, err := googleadk.NewActivities(googleadk.Config{
+	// The plugin registers the integration's model Activity on the worker. The
+	// delete_resource tool is an in-workflow function tool (not an
+	// ActivityAsTool), so there is no tool activity to register.
+	adkPlugin, err := googleadk.NewPlugin(googleadk.Config{
 		Models: map[string]googleadk.ModelFactory{
 			humanintheloop.ModelName: func(ctx context.Context, name string) (model.LLM, error) {
 				// nil config reads GEMINI_API_KEY / GOOGLE_API_KEY from the env.
@@ -40,9 +36,14 @@ func main() {
 		},
 	})
 	if err != nil {
-		log.Fatalln("Unable to build googleadk activities", err)
+		log.Fatalln("Unable to build googleadk plugin", err)
 	}
-	acts.Register(w)
+
+	w := worker.New(c, humanintheloop.TaskQueue, worker.Options{
+		Plugins: []worker.Plugin{adkPlugin},
+	})
+
+	w.RegisterWorkflow(humanintheloop.ApprovalWorkflow)
 
 	if err := w.Run(worker.InterruptCh()); err != nil {
 		log.Fatalln("Unable to start worker", err)

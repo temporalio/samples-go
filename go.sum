@@ -522,6 +522,8 @@ go.temporal.io/sdk/contrib/envconfig v1.0.1 h1:HZCcS6vNPJiUxJrkc5Wdeen+056LWmYe2
 go.temporal.io/sdk/contrib/envconfig v1.0.1/go.mod h1:aCFIuADlPNv6bYK5Zp4YfB/PnGfpiSPVzJfvaSTCYtw=
 go.temporal.io/sdk/contrib/googleadk v0.1.0 h1:ICu1nswKKu3TlO2hzVHRjdliZIq7aiUegGBMP5aCWMc=
 go.temporal.io/sdk/contrib/googleadk v0.1.0/go.mod h1:blDAd6sIyExkjtPP1Q52mUXHNJCfkRyWaNPtr51977g=
+go.temporal.io/sdk/contrib/googleadk v0.1.1-0.20260722181424-4e16e7db1f70 h1:oC2e7FKh+WrKaTrqdu0Ujh/vGLm7BG28YHnH6jh+Egs=
+go.temporal.io/sdk/contrib/googleadk v0.1.1-0.20260722181424-4e16e7db1f70/go.mod h1:blDAd6sIyExkjtPP1Q52mUXHNJCfkRyWaNPtr51977g=
 go.temporal.io/sdk/contrib/opentelemetry v0.7.0 h1:GSna1HP+1ibNXZ9xlVdQU2zFVqdt5VcdF0dzpeaYccQ=
 go.temporal.io/sdk/contrib/opentelemetry v0.7.0/go.mod h1:oQJC6UIl3FbSYh4f2MlUAIYSE6FPw02X1Tw8/bOvfxg=
 go.temporal.io/sdk/contrib/opentracing v0.3.0 h1:IKJgyvZiaOSFl0YHSxJpwXwQa08W3KaZCJkbx05rX7Q=
