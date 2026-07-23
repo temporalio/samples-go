@@ -41,7 +41,7 @@ require (
 	go.uber.org/zap v1.27.0
 	google.golang.org/adk/v2 v2.0.1-0.20260707195420-2a04f92f1776
 	google.golang.org/genai v1.62.0
-	google.golang.org/grpc v1.81.0
+	google.golang.org/grpc v1.82.1
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/DataDog/dd-trace-go.v1 v1.59.0
 	gopkg.in/square/go-jose.v2 v2.6.0
