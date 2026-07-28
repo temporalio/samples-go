@@ -25,8 +25,8 @@ require (
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.16.0
 	go.opentelemetry.io/otel/sdk v1.43.0
 	go.opentelemetry.io/otel/trace v1.43.0
-	go.temporal.io/api v1.63.0
-	go.temporal.io/sdk v1.46.0
+	go.temporal.io/api v1.63.4
+	go.temporal.io/sdk v1.47.0
 	go.temporal.io/sdk/contrib/aws/lambdaworker v0.1.1
 	go.temporal.io/sdk/contrib/aws/lambdaworker/otel v0.1.1
 	go.temporal.io/sdk/contrib/aws/s3driver v0.2.0
@@ -41,7 +41,7 @@ require (
 	go.uber.org/zap v1.27.0
 	google.golang.org/adk/v2 v2.0.1-0.20260707195420-2a04f92f1776
 	google.golang.org/genai v1.62.0
-	google.golang.org/grpc v1.81.0
+	google.golang.org/grpc v1.82.1
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/DataDog/dd-trace-go.v1 v1.59.0
 	gopkg.in/square/go-jose.v2 v2.6.0
