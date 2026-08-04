@@ -49,7 +49,13 @@ func processFile(ctx workflow.Context) (err error) {
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
-	downloadPath := filepath.Join("/tmp", uuid.New().String())
+	var fileID string
+	if err = workflow.SideEffect(ctx, func(ctx workflow.Context) interface{} {
+		return uuid.New().String()
+	}).Get(&fileID); err != nil {
+		return
+	}
+	downloadPath := filepath.Join("/tmp", fileID)
 	err = workflow.ExecuteActivity(ctx, DownloadFile, "https://temporal.io", downloadPath).Get(ctx, nil)
 	if err != nil {
 		return
