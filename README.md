@@ -231,6 +231,8 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 - [**Nexus Context Propagation**](./nexus-context-propagation): Demonstrates how to propagate context through client calls, workflows, and Nexus headers.
 
+- [**Nexus Per-Endpoint Encryption**](./nexus-per-endpoint-encryption): Demonstrates context-aware encryption with a different key for each Nexus endpoint.
+
 
 
 ### Scenario based examples
