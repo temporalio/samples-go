@@ -138,6 +138,14 @@ with an external configuration file, like TOML, decoupling connection settings f
 - [**OpenTelemetry**](./opentelemetry): Demonstrates how to instrument the Workflows and
   Activities with OpenTelemetry.
 
+- [**OpenTelemetry v2**](./opentelemetry-v2): Demonstrates replay-safe OpenTelemetry
+  instrumentation with the v2 plugin. The
+  [automatic instrumentation](./opentelemetry-v2/automatic-instrumentation) sample enables
+  Temporal SDK operation spans and metrics. The custom
+  [Workflow-to-Activity](./opentelemetry-v2/custom-instrumentation/workflow-activity-propagation)
+  and [Client-to-Update](./opentelemetry-v2/custom-instrumentation/client-update-propagation)
+  samples create application spans.
+
 - [**Updatable Timer**](./updatabletimer): Demonstrates timer
   cancellation and use of a Selector to wait on a Future and a Channel simultaneously.
 
