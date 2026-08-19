@@ -28,5 +28,12 @@ temporal workflow execute \
 ```
 
 5. Inspect the `temporal-otel-v2-automatic-worker` service in the
-   [Jaeger UI](http://127.0.0.1:16686), and inspect the Temporal SDK metrics at
-   [127.0.0.1:9090/metrics](http://127.0.0.1:9090/metrics).
+   [Jaeger UI](http://127.0.0.1:16686). The plugin automatically creates
+   Temporal SDK operation spans (`RunWorkflow:Workflow`,
+   `StartActivity:Activity`, and `RunActivity:Activity`). 
+
+   ![Jaeger trace with automatically created Temporal SDK operation spans](result.png)
+
+   The metrics endpoint at
+   [127.0.0.1:9090/metrics](http://127.0.0.1:9090/metrics) exposes Temporal SDK
+   metrics in Prometheus text format.

@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	roototel "github.com/temporalio/samples-go/opentelemetry-v2"
+	otelsetup "github.com/temporalio/samples-go/opentelemetry-v2"
 	workflowactivity "github.com/temporalio/samples-go/opentelemetry-v2/workflow-activity-propagation"
 	"go.temporal.io/sdk/client"
 	temporalotel "go.temporal.io/sdk/contrib/opentelemetry-v2"
@@ -26,7 +26,7 @@ func main() {
 
 func run() error {
 	ctx := context.Background()
-	tp, err := roototel.InitializeGlobalTracerProvider(ctx, serviceName)
+	tp, err := otelsetup.InitializeGlobalTracerProvider(ctx, serviceName)
 	if err != nil {
 		return fmt.Errorf("unable to create global tracer provider: %w", err)
 	}

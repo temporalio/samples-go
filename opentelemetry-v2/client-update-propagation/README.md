@@ -24,5 +24,9 @@ go run opentelemetry-v2/client-update-propagation/worker/main.go
 go run opentelemetry-v2/client-update-propagation/starter/main.go
 ```
 
-5. Inspect the `temporal-otel-v2-custom-client-update-propagation-client` service in the
-   [Jaeger UI](http://127.0.0.1:16686).
+5. Inspect the `temporal-otel-v2-custom-client-update-propagation-client`
+   service in the [Jaeger UI](http://127.0.0.1:16686). The `send-update`,
+   `validate-update`, and `handle-update` spans show custom span context
+   propagation from the Client to the Workflow Update.
+
+   ![Jaeger trace with custom Client-to-Update span propagation](result.png)

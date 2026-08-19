@@ -30,4 +30,8 @@ temporal workflow execute \
 
 5. Inspect the
    `temporal-otel-v2-custom-workflow-activity-propagation-worker` service in the
-   [Jaeger UI](http://127.0.0.1:16686).
+   [Jaeger UI](http://127.0.0.1:16686). The `workflow-operation` and
+   `activity-operation` spans show custom span context propagation from the
+   Workflow to the Activity.
+
+   ![Jaeger trace with custom Workflow-to-Activity span propagation](result.png)

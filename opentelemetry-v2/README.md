@@ -6,10 +6,10 @@ for replay-safe tracing and metrics.
 
 ## Jaeger
 
-[Jaeger](https://www.jaegertracing.io/docs/) is an open-source trace viewer. It
-shows a timeline of how an operation moved through your code. These samples
-export traces with OpenTelemetry and view them in Jaeger. See
-[how Jaeger relates to OpenTelemetry](https://www.jaegertracing.io/docs/latest/#relationship-with-opentelemetry).
+These samples export traces through OpenTelemetry to
+[Jaeger, an OpenTelemetry-compatible tracing backend](https://www.jaegertracing.io/docs/latest/#relationship-with-opentelemetry).
+Jaeger visualizes each trace as a timeline showing how an operation moved
+through your code.
 
 ## Samples
 
