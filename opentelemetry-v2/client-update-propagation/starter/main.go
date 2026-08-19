@@ -7,14 +7,14 @@ import (
 	"time"
 
 	roototel "github.com/temporalio/samples-go/opentelemetry-v2"
-	clientupdate "github.com/temporalio/samples-go/opentelemetry-v2/custom-instrumentation/client-update-propagation"
+	clientupdate "github.com/temporalio/samples-go/opentelemetry-v2/client-update-propagation"
 	"go.opentelemetry.io/otel"
 	"go.temporal.io/sdk/client"
 	temporalotel "go.temporal.io/sdk/contrib/opentelemetry-v2"
 )
 
 const (
-	instrumentationName = "github.com/temporalio/samples-go/opentelemetry-v2/custom-instrumentation/client-update-propagation/starter"
+	instrumentationName = "github.com/temporalio/samples-go/opentelemetry-v2/client-update-propagation/starter"
 	serviceName         = "temporal-otel-v2-custom-client-update-propagation-client"
 	shutdownTimeout     = 5 * time.Second
 )
@@ -52,7 +52,7 @@ func run() error {
 
 	we, err := c.ExecuteWorkflow(
 		ctx,
-		client.StartWorkflowOptions{TaskQueue: clientupdate.TaskQueueName},
+		client.StartWorkflowOptions{TaskQueue: roototel.TaskQueueName},
 		clientupdate.Workflow,
 	)
 	if err != nil {

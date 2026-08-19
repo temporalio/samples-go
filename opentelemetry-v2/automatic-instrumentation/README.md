@@ -21,10 +21,12 @@ go run opentelemetry-v2/automatic-instrumentation/worker/main.go
 4. In another terminal, start the Workflow:
 
 ```bash
-go run opentelemetry-v2/automatic-instrumentation/starter/main.go
+temporal workflow execute \
+  --task-queue opentelemetry-v2 \
+  --type Workflow \
+  --input '"Temporal"'
 ```
 
 5. Inspect the `temporal-otel-v2-automatic-worker` service in the
    [Jaeger UI](http://127.0.0.1:16686), and inspect the Temporal SDK metrics at
    [127.0.0.1:9090/metrics](http://127.0.0.1:9090/metrics).
-

@@ -142,8 +142,8 @@ with an external configuration file, like TOML, decoupling connection settings f
   instrumentation with the v2 plugin. The
   [automatic instrumentation](./opentelemetry-v2/automatic-instrumentation) sample enables
   Temporal SDK operation spans and metrics. The custom
-  [Workflow-to-Activity](./opentelemetry-v2/custom-instrumentation/workflow-activity-propagation)
-  and [Client-to-Update](./opentelemetry-v2/custom-instrumentation/client-update-propagation)
+  [Workflow-to-Activity](./opentelemetry-v2/workflow-activity-propagation)
+  and [Client-to-Update](./opentelemetry-v2/client-update-propagation)
   samples create application spans.
 
 - [**Updatable Timer**](./updatabletimer): Demonstrates timer

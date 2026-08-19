@@ -15,15 +15,14 @@ docker compose -f opentelemetry-v2/docker-compose.yaml up -d
 3. Start the Worker:
 
 ```bash
-go run opentelemetry-v2/custom-instrumentation/client-update-propagation/worker/main.go
+go run opentelemetry-v2/client-update-propagation/worker/main.go
 ```
 
 4. In another terminal, start the Workflow and send the Update:
 
 ```bash
-go run opentelemetry-v2/custom-instrumentation/client-update-propagation/starter/main.go
+go run opentelemetry-v2/client-update-propagation/starter/main.go
 ```
 
 5. Inspect the `temporal-otel-v2-custom-client-update-propagation-client` service in the
    [Jaeger UI](http://127.0.0.1:16686).
-

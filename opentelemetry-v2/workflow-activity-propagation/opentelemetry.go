@@ -10,10 +10,8 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-const TaskQueueName = "otel-v2-custom-workflow-activity-propagation"
-
 // @@@SNIPSTART samples-go-opentelemetry-v2-application-spans
-const instrumentationName = "github.com/temporalio/samples-go/opentelemetry-v2/custom-instrumentation/workflow-activity-propagation"
+const instrumentationName = "github.com/temporalio/samples-go/opentelemetry-v2/workflow-activity-propagation"
 
 func Workflow(ctx workflow.Context, name string) (string, error) {
 	tracer := temporalotel.Tracer(instrumentationName)

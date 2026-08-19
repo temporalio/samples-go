@@ -8,8 +8,7 @@ import (
 )
 
 const (
-	instrumentationName = "github.com/temporalio/samples-go/opentelemetry-v2/custom-instrumentation/client-update-propagation"
-	TaskQueueName       = "otel-v2-custom-client-update-propagation"
+	instrumentationName = "github.com/temporalio/samples-go/opentelemetry-v2/client-update-propagation"
 	UpdateName          = "greet"
 )
 

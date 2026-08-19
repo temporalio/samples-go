@@ -16,13 +16,16 @@ docker compose -f opentelemetry-v2/docker-compose.yaml up -d
 3. Start the Worker:
 
 ```bash
-go run opentelemetry-v2/custom-instrumentation/workflow-activity-propagation/worker/main.go
+go run opentelemetry-v2/workflow-activity-propagation/worker/main.go
 ```
 
 4. In another terminal, start the Workflow:
 
 ```bash
-go run opentelemetry-v2/custom-instrumentation/workflow-activity-propagation/starter/main.go
+temporal workflow execute \
+  --task-queue opentelemetry-v2 \
+  --type Workflow \
+  --input '"Temporal"'
 ```
 
 5. Inspect the

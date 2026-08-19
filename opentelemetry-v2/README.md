@@ -7,7 +7,7 @@ for replay-safe tracing and metrics.
 ## Samples
 
 - [Automatic instrumentation](automatic-instrumentation)
-- [Workflow-to-Activity propagation](custom-instrumentation/workflow-activity-propagation)
-- [Client-to-Update propagation](custom-instrumentation/client-update-propagation)
+- [Workflow-to-Activity propagation](workflow-activity-propagation)
+- [Client-to-Update propagation](client-update-propagation)
 
 Shared setup lives in [`setup.go`](setup.go)
