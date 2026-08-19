@@ -1,0 +1,56 @@
+# @@@SNIPSTART go-cloud-run-worker-otel-collector-config
+# Google-Built OpenTelemetry Collector configuration for a Cloud Run worker pool
+# sidecar. The Temporal worker exports OTLP gRPC to localhost:4317; this collector
+# adds GCP resource attributes and exports to Google Cloud.
+#
+# Metrics use googlemanagedprometheus with NO batch processor: batching can merge
+# periodic and forced-shutdown snapshots of the same cumulative series into a
+# single Google Monitoring write, which Managed Service for Prometheus rejects as
+# duplicate data. Traces may be batched independently.
+receivers:
+    otlp:
+        protocols:
+            grpc:
+                endpoint: localhost:4317
+
+processors:
+    # Guard the sidecar against unbounded memory growth.
+    memory_limiter:
+        check_interval: 1s
+        limit_percentage: 65
+        spike_limit_percentage: 20
+    # Detect Google Cloud resource attributes (project, region, revision, ...).
+    resourcedetection:
+        detectors: [gcp]
+        timeout: 10s
+    # Batch is used ONLY for traces.
+    batch:
+        send_batch_size: 200
+        timeout: 5s
+
+exporters:
+    debug:
+    googlemanagedprometheus:
+    googlecloud:
+
+extensions:
+    # Health check used as the container startup probe.
+    health_check:
+        endpoint: localhost:13133
+
+service:
+    extensions: [health_check]
+    pipelines:
+        # No batch processor in the metrics pipeline.
+        metrics:
+            receivers: [otlp]
+            processors: [memory_limiter, resourcedetection]
+            exporters: [googlemanagedprometheus, debug]
+        traces:
+            receivers: [otlp]
+            processors: [memory_limiter, resourcedetection, batch]
+            exporters: [googlecloud, debug]
+    telemetry:
+        logs:
+            level: info
+# @@@SNIPEND

@@ -4,6 +4,16 @@ go 1.25.4
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
 
+// TEMPORARY: go.temporal.io/sdk/contrib/gcp/cloudrun and its shared
+// go.temporal.io/sdk/contrib/opentelemetry/otlpworker dependency are not yet
+// published. These local replaces let the sample build against the in-repo
+// modules. Remove them before publishing the sample PR (and after the modules
+// are released).
+replace (
+	go.temporal.io/sdk/contrib/gcp/cloudrun => ../sdk-go/contrib/gcp/cloudrun
+	go.temporal.io/sdk/contrib/opentelemetry/otlpworker => ../sdk-go/contrib/opentelemetry/otlpworker
+)
+
 require (
 	github.com/aws/aws-sdk-go-v2 v1.41.7
 	github.com/aws/aws-sdk-go-v2/config v1.32.17
@@ -33,7 +43,8 @@ require (
 	go.temporal.io/sdk/contrib/aws/s3driver/awssdkv2 v0.2.0
 	go.temporal.io/sdk/contrib/datadog v0.5.0
 	go.temporal.io/sdk/contrib/envconfig v1.0.1
-	go.temporal.io/sdk/contrib/opentelemetry v0.7.0
+	go.temporal.io/sdk/contrib/gcp/cloudrun v0.1.0
+	go.temporal.io/sdk/contrib/opentelemetry v0.8.1
 	go.temporal.io/sdk/contrib/opentracing v0.3.0
 	go.temporal.io/sdk/contrib/tally v0.2.0
 	go.temporal.io/sdk/contrib/workflowstreams v0.1.1
@@ -47,6 +58,8 @@ require (
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gopkg.in/yaml.v3 v3.0.1
 )
+
+require go.temporal.io/sdk/contrib/opentelemetry/otlpworker v0.1.0 // indirect
 
 require (
 	cloud.google.com/go v0.123.0 // indirect
