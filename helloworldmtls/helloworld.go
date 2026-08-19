@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"time"
 
@@ -69,8 +70,14 @@ func ParseClientOptionFlags(args []string) (client.Options, error) {
 
 	// Load server CA if given
 	var serverCAPool *x509.CertPool
+	caCert, err := ioutil.ReadFile("letsencrypt-stg-root-x1.pem")
+	if err != nil {
+		panic(err)
+	}
+	serverCAPool = x509.NewCertPool()
+	serverCAPool.AppendCertsFromPEM(caCert)
 	if *serverRootCACert != "" {
-		serverCAPool = x509.NewCertPool()
+		//serverCAPool = x509.NewCertPool()
 		b, err := os.ReadFile(*serverRootCACert)
 		if err != nil {
 			return client.Options{}, fmt.Errorf("failed reading server CA: %w", err)
