@@ -1,0 +1,71 @@
+# @@@SNIPSTART go-cloud-run-worker-pool
+# Cloud Run worker pool running the Temporal worker with a Google-Built
+# OpenTelemetry Collector sidecar. Worker pools are the recommended deployment
+# for Temporal workers because they are continuous, pull-based background
+# workloads with no request ingress.
+#
+# Deploy with:
+#   gcloud beta run worker-pools replace worker-pool.yaml --region=<REGION>
+#
+# Replace <PROJECT>, <REGION>, <REPO>, and the Temporal connection values below.
+apiVersion: run.googleapis.com/v1
+kind: WorkerPool
+metadata:
+  name: temporal-cloud-run-worker
+  labels:
+    cloud.googleapis.com/location: <REGION>
+spec:
+  template:
+    metadata:
+      annotations:
+        # Keep at least one instance active so the worker keeps polling.
+        run.googleapis.com/minScale: "1"
+    spec:
+      containers:
+        # Temporal worker. It depends on the collector so telemetry has somewhere
+        # to go as soon as the worker starts.
+        - name: worker
+          image: <REGION>-docker.pkg.dev/<PROJECT>/<REPO>/cloud-run-worker:latest
+          dependsOn:
+            - collector
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          env:
+            - name: TEMPORAL_ADDRESS
+              value: <namespace>.<account>.tmprl.cloud:7233
+            - name: TEMPORAL_NAMESPACE
+              value: <namespace>.<account>
+            # Prefer Secret Manager for the API key in production.
+            - name: TEMPORAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: temporal-api-key
+                  key: latest
+            # OTEL_EXPORTER_OTLP_ENDPOINT defaults to http://localhost:4317, which
+            # matches the collector sidecar below. CLOUD_RUN_WORKER_POOL supplies
+            # the service.name automatically.
+
+        # Google-Built OpenTelemetry Collector sidecar.
+        - name: collector
+          image: us-docker.pkg.dev/cloud-ops-agents-artifacts/google-cloud-opentelemetry-collector/otelcol-google:latest
+          args:
+            - --config=/etc/otelcol-google/config.yaml
+          startupProbe:
+            httpGet:
+              path: /
+              port: 13133
+            periodSeconds: 5
+            failureThreshold: 12
+          volumeMounts:
+            - name: otel-config
+              mountPath: /etc/otelcol-google
+      volumes:
+        - name: otel-config
+          secret:
+            secretName: otel-collector-config
+            items:
+              - key: latest
+                path: config.yaml
+# @@@SNIPEND
