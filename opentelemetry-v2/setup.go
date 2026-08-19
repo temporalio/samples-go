@@ -19,8 +19,6 @@ import (
 	temporalotel "go.temporal.io/sdk/contrib/opentelemetry-v2"
 )
 
-const TaskQueueName = "opentelemetry-v2"
-
 // InitializeGlobalTracerProvider installs the replay-safe provider required by
 // the OpenTelemetry v2 plugin and Workflow tracer.
 // @@@SNIPSTART samples-go-opentelemetry-v2-tracer-provider

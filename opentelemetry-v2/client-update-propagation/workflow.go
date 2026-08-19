@@ -9,6 +9,7 @@ import (
 
 const (
 	instrumentationName = "github.com/temporalio/samples-go/opentelemetry-v2/client-update-propagation"
+	TaskQueueName       = "client-update-propagation"
 	UpdateName          = "greet"
 )
 

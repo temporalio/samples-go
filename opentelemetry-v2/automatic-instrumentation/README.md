@@ -22,7 +22,7 @@ go run opentelemetry-v2/automatic-instrumentation/worker/main.go
 
 ```bash
 temporal workflow execute \
-  --task-queue opentelemetry-v2 \
+  --task-queue automatic-instrumentation \
   --type Workflow \
   --input '"Temporal"'
 ```

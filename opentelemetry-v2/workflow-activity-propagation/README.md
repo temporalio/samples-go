@@ -23,7 +23,7 @@ go run opentelemetry-v2/workflow-activity-propagation/worker/main.go
 
 ```bash
 temporal workflow execute \
-  --task-queue opentelemetry-v2 \
+  --task-queue workflow-activity-propagation \
   --type Workflow \
   --input '"Temporal"'
 ```

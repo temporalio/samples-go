@@ -51,7 +51,7 @@ func run() error {
 	defer c.Close()
 	// @@@SNIPEND
 
-	w := worker.New(c, roototel.TaskQueueName, worker.Options{})
+	w := worker.New(c, workflowactivity.TaskQueueName, worker.Options{})
 	w.RegisterWorkflow(workflowactivity.Workflow)
 	w.RegisterActivity(workflowactivity.Activity)
 

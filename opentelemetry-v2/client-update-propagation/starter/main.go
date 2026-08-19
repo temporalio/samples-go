@@ -52,7 +52,7 @@ func run() error {
 
 	we, err := c.ExecuteWorkflow(
 		ctx,
-		client.StartWorkflowOptions{TaskQueue: roototel.TaskQueueName},
+		client.StartWorkflowOptions{TaskQueue: clientupdate.TaskQueueName},
 		clientupdate.Workflow,
 	)
 	if err != nil {

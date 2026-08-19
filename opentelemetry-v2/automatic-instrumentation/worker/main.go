@@ -84,7 +84,7 @@ func run() error {
 	}
 	defer c.Close()
 
-	w := worker.New(c, roototel.TaskQueueName, worker.Options{})
+	w := worker.New(c, automatic.TaskQueueName, worker.Options{})
 	w.RegisterWorkflow(automatic.Workflow)
 	w.RegisterActivity(automatic.Activity)
 

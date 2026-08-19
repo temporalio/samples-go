@@ -8,6 +8,8 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
+const TaskQueueName = "automatic-instrumentation"
+
 func Workflow(ctx workflow.Context, name string) (string, error) {
 	ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,

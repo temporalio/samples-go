@@ -48,7 +48,7 @@ func run() error {
 	}
 	defer c.Close()
 
-	w := worker.New(c, roototel.TaskQueueName, worker.Options{})
+	w := worker.New(c, clientupdate.TaskQueueName, worker.Options{})
 	w.RegisterWorkflow(clientupdate.Workflow)
 
 	if err := w.Run(worker.InterruptCh()); err != nil {
