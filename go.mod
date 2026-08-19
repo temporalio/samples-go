@@ -52,10 +52,6 @@ require (
 )
 
 require (
-	github.com/prometheus/otlptranslator v1.0.0 // indirect
-	go.yaml.in/yaml/v2 v2.4.4 // indirect
-)
-require (
 	cloud.google.com/go v0.123.0 // indirect
 	cloud.google.com/go/auth v0.20.0 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
@@ -140,6 +136,7 @@ require (
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.67.5 // indirect
+	github.com/prometheus/otlptranslator v1.0.0 // indirect
 	github.com/prometheus/procfs v0.20.1 // indirect
 	github.com/puzpuzpuz/xsync/v3 v3.5.1 // indirect
 	github.com/robfig/cron v1.2.0 // indirect
@@ -175,6 +172,7 @@ require (
 	go.shabbyrobe.org/gocovmerge v0.0.0-20230507111327-fa4f82cfbf4d // indirect
 	go.temporal.io/sdk/contrib/googleadk v0.2.0
 	go.uber.org/atomic v1.11.0 // indirect
+	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	go4.org/intern v0.0.0-20230525184215-6c62f75575cb // indirect
 	go4.org/unsafe/assume-no-moving-gc v0.0.0-20231121144256-b99613f794b6 // indirect
