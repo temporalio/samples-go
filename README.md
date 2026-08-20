@@ -233,21 +233,9 @@ These samples demonstrate some common control flow patterns using Temporal's Go 
 
 - [**Worker-specific Task Queues**](./worker-specific-task-queues): Use a unique task queue per Worker to have certain Activities only run on that specific Worker. For instance for a file processing Workflow, where one Activity downloads a file and subsequent Activities need to operate on that file. (If multiple Workers were on the same queue, subsequent Activities may get run on different machines that don't have the downloaded file.)
 
-- [**Nexus**](./nexus): Demonstrates how to use the Nexus APIs to facilitate cross namespace calls.
-
-- [**Nexus Cancelation**](./nexus-cancelation): Demonstrates how to cancel a Nexus operation from a caller workflow.
-
-- [**Nexus Context Propagation**](./nexus-context-propagation): Demonstrates how to propagate context through client calls, workflows, and Nexus headers.
-
-
-
 ### Scenario based examples
 
 - [**Safe Message Handler**](./safe_message_handler): This demonstrates how to safely handle concurrent update and signal requests.
-
-- [**Nexus Messaging**](./nexus-messaging): Demonstrates how send signal, update and query messages through Nexus.
-  This contains two samples, one sending messages to an existing workflow and a second that creates a workflow through Nexus
-  and sends messages to it.
 
 - [**DSL Workflow**](./dsl): Demonstrates how to implement a
   DSL-based Workflow. This sample contains 2 yaml files that each define a custom "workflow" which instructs the
@@ -287,6 +275,28 @@ resource waiting for its successful completion
 
 - [**Worker Versioning**](./worker-versioning):
   Demonstrates how to use worker versioning to manage workflow code changes.
+
+### Nexus examples
+
+- [**Nexus**](./nexus): Demonstrates how to use the Nexus APIs to facilitate cross namespace calls.
+
+- [**Nexus Cancelation**](./nexus-cancelation): Demonstrates how to cancel a Nexus Operation from a caller Workflow.
+
+- [**Nexus Context Propagation**](./nexus-context-propagation): Demonstrates how to propagate context through client 
+  calls, Workflows, and Nexus headers.
+
+- [**Nexus Messaging**](./nexus-messaging): Demonstrates how to send signal, update and query messages through Nexus.
+  This contains two samples, one sending messages to an existing Workflow and a second that creates a Workflow through
+  Nexus and sends messages to it.
+
+- [**Nexus Multiple Arguments**](./nexus-multiple-arguments): Demonstrates how to map a Nexus Operation to a Workflow
+  that takes multiple arguments.
+
+- [**Standalone Nexus Operations**](./nexus-standalone-operations): Demonstrates how to execute Nexus Operations
+  directly from a Temporal Client, without a caller Workflow.
+
+- [**Nexus Standalone Activity**](./nexus-standalone-activity): Demonstrates how to back a Nexus Operation with a
+  Standalone Activity.
 
 ### Serverless
 
