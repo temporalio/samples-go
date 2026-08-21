@@ -20,14 +20,14 @@ spec:
       annotations:
         # Keep at least one instance active so the worker keeps polling.
         run.googleapis.com/minScale: "1"
+        # Start the collector before the worker so telemetry has somewhere to go.
+        run.googleapis.com/container-dependencies: '{"worker":["collector"]}'
     spec:
       containers:
         # Temporal worker. It depends on the collector so telemetry has somewhere
         # to go as soon as the worker starts.
         - name: worker
           image: <REGION>-docker.pkg.dev/<PROJECT>/<REPO>/cloud-run-worker:latest
-          dependsOn:
-            - collector
           resources:
             limits:
               cpu: "1"

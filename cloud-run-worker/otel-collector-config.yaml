@@ -34,9 +34,10 @@ exporters:
     googlecloud:
 
 extensions:
-    # Health check used as the container startup probe.
+    # Health check used as the container startup probe. Bind on all interfaces
+    # so the Cloud Run startup probe can reach it.
     health_check:
-        endpoint: localhost:13133
+        endpoint: 0.0.0.0:13133
 
 service:
     extensions: [health_check]
