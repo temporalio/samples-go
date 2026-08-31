@@ -4,11 +4,11 @@ go 1.26.0
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
 
-// TEMPORARY: go.temporal.io/sdk/contrib/gcp/cloudrun is not yet published. This local replace lets
+// TEMPORARY: go.temporal.io/sdk/contrib/gcp/cloudrun/workerid is not yet published. This local replace lets
 // the cloud-run-worker-id sample build against the in-repo module. Remove it (and switch to the
 // released version) before merging; that is why the sample PR is a draft. Adjust the path if your
 // SDK checkout does not live at ../sdk-go-2.
-replace go.temporal.io/sdk/contrib/gcp/cloudrun => ../sdk-go-2/contrib/gcp/cloudrun
+replace go.temporal.io/sdk/contrib/gcp/cloudrun/workerid => ../sdk-go-2/contrib/gcp/cloudrun/workerid
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.41.7
@@ -41,7 +41,7 @@ require (
 	go.temporal.io/sdk/contrib/aws/s3driver/awssdkv2 v0.2.0
 	go.temporal.io/sdk/contrib/datadog v0.5.0
 	go.temporal.io/sdk/contrib/envconfig v1.0.1
-	go.temporal.io/sdk/contrib/gcp/cloudrun v0.0.0-00010101000000-000000000000
+	go.temporal.io/sdk/contrib/gcp/cloudrun/workerid v0.0.0-00010101000000-000000000000
 	go.temporal.io/sdk/contrib/opentelemetry v0.7.0
 	go.temporal.io/sdk/contrib/opentelemetry-v2 v0.1.0
 	go.temporal.io/sdk/contrib/opentracing v0.3.0

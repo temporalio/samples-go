@@ -1,6 +1,6 @@
 # Builds the Cloud Run worker image.
 #
-# NOTE: While the go.temporal.io/sdk/contrib/gcp/cloudrun module is unreleased, samples-go/go.mod
+# NOTE: While the go.temporal.io/sdk/contrib/gcp/cloudrun/workerid module is unreleased, samples-go/go.mod
 # carries a local `replace` to ../sdk-go-2. A container build's context is the samples repo, so it
 # cannot reach that sibling directory: this Dockerfile builds as-is only once the module is
 # published and the replace is removed. See the README for details.

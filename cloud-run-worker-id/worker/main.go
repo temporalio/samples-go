@@ -11,7 +11,7 @@ import (
 	greeting "github.com/temporalio/samples-go/cloud-run-worker-id/greeting"
 
 	"go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/contrib/gcp/cloudrun"
+	"go.temporal.io/sdk/contrib/gcp/cloudrun/workerid"
 	"go.temporal.io/sdk/worker"
 )
 
@@ -29,7 +29,7 @@ func main() {
 	//
 	// The Temporal connection is read from the standard TEMPORAL_* environment variables; this
 	// sample uses a plaintext connection for simplicity.
-	plugin := cloudrun.NewPlugin(cloudrun.PluginOptions{})
+	plugin := workerid.NewPlugin(workerid.PluginOptions{})
 	clientOptions := client.Options{
 		HostPort:  getenv("TEMPORAL_ADDRESS", client.DefaultHostPort),
 		Namespace: getenv("TEMPORAL_NAMESPACE", client.DefaultNamespace),

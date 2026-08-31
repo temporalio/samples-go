@@ -2,8 +2,8 @@
 
 This sample demonstrates how to run a long-running Temporal Worker on
 [Google Cloud Run](https://cloud.google.com/run) using the
-[`cloudrun`](https://pkg.go.dev/go.temporal.io/sdk/contrib/gcp/cloudrun) contrib package. The worker
-registers `cloudrun.Plugin` on its client; the plugin derives the worker's **identity** and **Worker
+[`workerid`](https://pkg.go.dev/go.temporal.io/sdk/contrib/gcp/cloudrun/workerid) contrib package. The worker
+registers `workerid.Plugin` on its client; the plugin derives the worker's **identity** and **Worker
 Deployment Version** from the Cloud Run environment.
 
 When the client connects, the plugin reads the Cloud Run instance metadata once and uses it to:
@@ -25,7 +25,7 @@ Workflow/Activity definitions.
 
 | File | Description |
 |------|-------------|
-| `worker/main.go` | Long-running worker entry point -- registers `cloudrun.Plugin` (which applies the derived identity and PINNED deployment version), registers Workflows/Activities, and shuts down gracefully on SIGTERM |
+| `worker/main.go` | Long-running worker entry point -- registers `workerid.Plugin` (which applies the derived identity and PINNED deployment version), registers Workflows/Activities, and shuts down gracefully on SIGTERM |
 | `starter/main.go` | Helper program to start a Workflow execution against the worker |
 | `greeting/workflow.go` | Sample Workflow that executes a greeting Activity |
 | `greeting/activity.go` | Sample Activity that returns a greeting string |
@@ -80,11 +80,11 @@ TEMPORAL_ADDRESS=<...> TEMPORAL_NAMESPACE=<...> TEMPORAL_TASK_QUEUE=cloud-run-ta
 
 ## Temporary module replace
 
-`go.temporal.io/sdk/contrib/gcp/cloudrun` is not yet published, so `samples-go/go.mod` contains a
+`go.temporal.io/sdk/contrib/gcp/cloudrun/workerid` is not yet published, so `samples-go/go.mod` contains a
 local `replace` pointing at an in-repo checkout of the module:
 
 ```
-replace go.temporal.io/sdk/contrib/gcp/cloudrun => ../sdk-go-2/contrib/gcp/cloudrun
+replace go.temporal.io/sdk/contrib/gcp/cloudrun/workerid => ../sdk-go-2/contrib/gcp/cloudrun/workerid
 ```
 
 The helper compiles against the released `go.temporal.io/sdk`, so no replace is needed for the SDK
