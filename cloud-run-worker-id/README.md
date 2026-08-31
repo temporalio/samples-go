@@ -2,10 +2,11 @@
 
 This sample demonstrates how to run a long-running Temporal Worker on
 [Google Cloud Run](https://cloud.google.com/run) using the
-[`cloudrun`](https://pkg.go.dev/go.temporal.io/sdk/contrib/gcp/cloudrun) contrib package to derive
-the worker's **identity** and **Worker Deployment Version** from the Cloud Run environment.
+[`cloudrun`](https://pkg.go.dev/go.temporal.io/sdk/contrib/gcp/cloudrun) contrib package. The worker
+registers `cloudrun.Plugin` on its client; the plugin derives the worker's **identity** and **Worker
+Deployment Version** from the Cloud Run environment.
 
-At startup the worker reads its Cloud Run instance metadata once and uses it to:
+When the client connects, the plugin reads the Cloud Run instance metadata once and uses it to:
 
 - set a client **identity** of `<instanceID>@<revision>` (falling back to `<instanceID>@<name>`, then
   a bare `<instanceID>`), so each running instance is identifiable in the Temporal UI, and
@@ -24,7 +25,7 @@ Workflow/Activity definitions.
 
 | File | Description |
 |------|-------------|
-| `worker/main.go` | Long-running worker entry point -- reads Cloud Run metadata, applies the derived identity and PINNED deployment version, registers Workflows/Activities, and shuts down gracefully on SIGTERM |
+| `worker/main.go` | Long-running worker entry point -- registers `cloudrun.Plugin` (which applies the derived identity and PINNED deployment version), registers Workflows/Activities, and shuts down gracefully on SIGTERM |
 | `starter/main.go` | Helper program to start a Workflow execution against the worker |
 | `greeting/workflow.go` | Sample Workflow that executes a greeting Activity |
 | `greeting/activity.go` | Sample Activity that returns a greeting string |
@@ -47,7 +48,7 @@ key for Temporal Cloud as needed.
 ## Deploy to a Cloud Run worker pool
 
 Deploy the worker straight from source. Cloud Run injects `CLOUD_RUN_WORKER_POOL` and
-`CLOUD_RUN_REVISION`, which the helper reads to build the identity and deployment version:
+`CLOUD_RUN_REVISION`, which the plugin reads to build the identity and deployment version:
 
 ```bash
 gcloud run worker-pools deploy temporal-cloud-run-worker \
@@ -62,7 +63,7 @@ deployment version, existing workflows keep running on the revision that started
 them; new workflows start on the newest revision. Depending on your `gcloud` version, worker pools
 may be under the `beta` track (`gcloud beta run worker-pools deploy ...`).
 
-> Cloud Run does **not** expose the instance ID as an environment variable, so the worker fetches it
+> Cloud Run does **not** expose the instance ID as an environment variable, so the plugin fetches it
 > from the GCP metadata server at `http://metadata.google.internal`. That server is reachable on
 > Cloud Run worker pools and services but not when running locally, so the worker is meant to run on
 > Cloud Run; use the starter below to drive it from your machine.

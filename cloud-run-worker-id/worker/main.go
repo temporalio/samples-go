@@ -18,44 +18,40 @@ import (
 func main() {
 	ctx := context.Background()
 
-	// Read the Cloud Run instance metadata once, at worker startup. FetchMetadata reads the
-	// deployment name and revision from environment variables and fetches the unique instance ID
-	// from the GCP metadata server. It performs a network request, so it must never be called from
-	// workflow code. It fails when the process is not running on a Cloud Run worker pool or service
-	// (for example, when running locally), because the metadata server is unreachable.
-	md, err := cloudrun.FetchMetadata(ctx)
-	if err != nil {
-		log.Fatalf("fetching Cloud Run metadata (is this running on a Cloud Run worker pool or service?): %v", err)
-	}
-	log.Printf("Cloud Run metadata: name=%q revision=%q instanceID=%q", md.Name, md.Revision, md.InstanceID)
-
-	// Derive the worker identity ("<instanceID>@<revision>") from the metadata and apply it to the
-	// client options. A user-provided identity always wins, so applying it is safe. The Temporal
-	// connection is read from the standard TEMPORAL_* environment variables; this sample uses a
-	// plaintext connection for simplicity.
+	// Register the Cloud Run plugin on the client. When the client connects, the plugin reads the
+	// Cloud Run instance metadata once — the deployment name and revision from environment
+	// variables and the unique instance ID from the GCP metadata server — then sets the derived
+	// worker identity ("<instanceID>@<revision>", unless one is already set) on the client and opts
+	// every worker created from the client into Worker Deployment Versioning, pinning workflows to
+	// this version by default. The metadata fetch performs a network request, so it never runs from
+	// workflow code. It fails fast when the process is not running on a Cloud Run worker pool or
+	// service (for example, when running locally), because the metadata server is unreachable.
+	//
+	// The Temporal connection is read from the standard TEMPORAL_* environment variables; this
+	// sample uses a plaintext connection for simplicity.
+	plugin := cloudrun.NewPlugin(cloudrun.PluginOptions{})
 	clientOptions := client.Options{
 		HostPort:  getenv("TEMPORAL_ADDRESS", client.DefaultHostPort),
 		Namespace: getenv("TEMPORAL_NAMESPACE", client.DefaultNamespace),
+		Plugins:   []client.Plugin{plugin},
 	}
-	md.ApplyToClientOptions(&clientOptions)
-	log.Printf("Worker identity: %s", clientOptions.Identity)
 
 	c, err := client.Dial(clientOptions)
 	if err != nil {
-		log.Fatalln("Unable to create Temporal client", err)
+		log.Fatalf("Unable to create Temporal client (is this running on a Cloud Run worker pool or service?): %v", err)
 	}
 	defer c.Close()
 
-	// Opt the worker into Worker Deployment Versioning using the Cloud Run deployment name and
-	// revision (as the build ID), pinning workflows to this version by default. Cloud Run creates a
-	// new revision for each deployment, which makes it a natural worker build ID.
-	workerOptions := worker.Options{}
-	if err := md.ApplyToWorkerOptions(&workerOptions); err != nil {
-		log.Fatalf("configuring worker deployment versioning: %v", err)
-	}
+	// The plugin fetched and cached the metadata during Dial. Read it back for logging.
+	md := plugin.Metadata()
+	log.Printf("Cloud Run metadata: name=%q revision=%q instanceID=%q", md.Name, md.Revision, md.InstanceID)
+	log.Printf("Worker identity: %s", md.WorkerIdentity())
 
+	// The plugin sets the worker's DeploymentOptions (deployment name + revision as the build ID,
+	// pinned) automatically, so a zero worker.Options is all that is needed here. Cloud Run creates
+	// a new revision for each deployment, which makes it a natural worker build ID.
 	taskQueue := getenv("TEMPORAL_TASK_QUEUE", "cloud-run-task-queue")
-	w := worker.New(c, taskQueue, workerOptions)
+	w := worker.New(c, taskQueue, worker.Options{})
 	w.RegisterWorkflow(greeting.SampleWorkflow)
 	w.RegisterActivity(greeting.HelloActivity)
 
