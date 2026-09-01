@@ -11,6 +11,7 @@ import (
 
 	"go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/temporal"
 )
 
 var (
@@ -44,14 +45,14 @@ func main() {
 			workflowOptions := client.StartWorkflowOptions{
 				ID:        id + "_" + s.String(),
 				TaskQueue: "rainbow-statuses",
-				SearchAttributes: map[string]interface{}{
-					"CustomKeywordField":  "rainbow-statuses-" + id,
-					"CustomIntField":      i,
-					"CustomDoubleField":   float64(i),
-					"CustomBoolField":     i%2 == 0,
-					"CustomDatetimeField": time.Now().UTC(),
-					"CustomStringField":   "rainbow statuses " + id + " " + s.String(),
-				},
+				TypedSearchAttributes: temporal.NewSearchAttributes(
+					temporal.NewSearchAttributeKeyKeyword("CustomKeywordField").ValueSet("rainbow-statuses-"+id),
+					temporal.NewSearchAttributeKeyInt64("CustomIntField").ValueSet(int64(i)),
+					temporal.NewSearchAttributeKeyFloat64("CustomDoubleField").ValueSet(float64(i)),
+					temporal.NewSearchAttributeKeyBool("CustomBoolField").ValueSet(i%2 == 0),
+					temporal.NewSearchAttributeKeyTime("CustomDatetimeField").ValueSet(time.Now().UTC()),
+					temporal.NewSearchAttributeKeyString("CustomStringField").ValueSet("rainbow statuses "+id+" "+s.String()),
+				),
 			}
 
 			if s == enums.WORKFLOW_EXECUTION_STATUS_TIMED_OUT {
