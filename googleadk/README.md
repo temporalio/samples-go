@@ -35,6 +35,9 @@ Every sample runs against a scripted `FakeModel` in its `*_test.go`, so
 - **[chat/](chat)** — a long-lived, signal-driven conversation on one ADK session
   that **continues-as-new** (exporting/importing the session) to keep history
   bounded.
+- **[metrics/](metrics)** — records model calls, errors, and token usage through
+  Temporal's replay-aware Workflow metrics handler and exports them through
+  Prometheus.
 
 ### Prerequisites (for running against a live model)
 

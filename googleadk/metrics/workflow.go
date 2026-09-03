@@ -32,6 +32,9 @@ func AgentWorkflow(ctx workflow.Context, prompt string) (string, error) {
 		Model:               googleadk.NewModel(ModelName),
 		Instruction:         "Answer the user's question concisely.",
 		AfterModelCallbacks: []llmagent.AfterModelCallback{afterModelMetricsCallback(handler)},
+		OnModelErrorCallbacks: []llmagent.OnModelErrorCallback{
+			modelErrorMetricsCallback(handler),
+		},
 	})
 	if err != nil {
 		return "", err
@@ -67,11 +70,11 @@ func AgentWorkflow(ctx workflow.Context, prompt string) (string, error) {
 func afterModelMetricsCallback(handler client.MetricsHandler) llmagent.AfterModelCallback {
 	return func(_ agent.Context, response *model.LLMResponse, responseErr error) (*model.LLMResponse, error) {
 		if responseErr != nil || response == nil {
-			return response, responseErr
+			return nil, nil
 		}
 		handler.Counter("google_adk_model_calls").Inc(1)
 		if response.UsageMetadata == nil {
-			return response, nil
+			return nil, nil
 		}
 		usage := response.UsageMetadata
 		handler.Counter("google_adk_input_tokens").Inc(int64(usage.PromptTokenCount))
@@ -79,6 +82,13 @@ func afterModelMetricsCallback(handler client.MetricsHandler) llmagent.AfterMode
 		handler.Counter("google_adk_reasoning_tokens").Inc(int64(usage.ThoughtsTokenCount))
 		handler.Counter("google_adk_cached_input_tokens").Inc(int64(usage.CachedContentTokenCount))
 		handler.Counter("google_adk_total_tokens").Inc(int64(usage.TotalTokenCount))
-		return response, nil
+		return nil, nil
+	}
+}
+
+func modelErrorMetricsCallback(handler client.MetricsHandler) llmagent.OnModelErrorCallback {
+	return func(_ agent.Context, _ *model.LLMRequest, _ error) (*model.LLMResponse, error) {
+		handler.Counter("google_adk_model_errors").Inc(1)
+		return nil, nil
 	}
 }

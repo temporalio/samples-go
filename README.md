@@ -178,7 +178,8 @@ with an external configuration file, like TOML, decoupling connection settings f
   model call runs as an Activity, and a tool is exposed as a durable Activity via
   `ActivityAsTool`. Includes scenario subdirectories for a [multi-agent](./googleadk/multiagent)
   system, [human-in-the-loop](./googleadk/humanintheloop) tool approval (durable wait on a
-  signal), and a [continue-as-new chat](./googleadk/chat).
+  signal), a [continue-as-new chat](./googleadk/chat), and [model-usage
+  metrics](./googleadk/metrics).
 
 ### Dynamic Workflow logic examples
 
