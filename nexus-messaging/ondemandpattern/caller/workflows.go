@@ -22,7 +22,21 @@ func CallerRemoteWorkflow(ctx workflow.Context) ([]string, error) {
 	userID1 := "nexus-messaging-greeting-one"
 	userID2 := "nexus-messaging-greeting-two"
 
-	// Start both remote workflows asynchronously.
+	// Attach information before the Workflow exists. Because attachApprovalContext is backed by
+	// Signal-with-Start on the handler, this call creates the Workflow and delivers the note to it.
+	attachFut1 := c.ExecuteOperation(ctx, service.AttachApprovalContextOperationName, service.AttachApprovalContextInput{
+		Note:   "queued for localization review by the nightly batch",
+		UserID: userID1,
+	}, workflow.NexusOperationOptions{})
+	var attachOut1 service.AttachApprovalContextOutput
+	if err := attachFut1.Get(ctx, &attachOut1); err != nil {
+		return nil, fmt.Errorf("attachApprovalContext (one) failed: %w", err)
+	}
+	log = append(log, fmt.Sprintf("attached approval context before the workflow existed: %s", userID1))
+
+	// Start both remote Workflows asynchronously. The Workflow for the first user is already running
+	// due to the call above. The handler sets the conflict policy to USE_EXISTING, so that call attaches
+	// the Operation's completion callback to the running execution instead of failing.
 	fut1 := c.ExecuteOperation(ctx, service.RunFromRemoteOperationName, service.RunFromRemoteInput{
 		UserID: userID1,
 	}, workflow.NexusOperationOptions{})
@@ -42,6 +56,18 @@ func CallerRemoteWorkflow(ctx workflow.Context) ([]string, error) {
 		return nil, fmt.Errorf("runFromRemote (two) start failed: %w", err)
 	}
 	log = append(log, fmt.Sprintf("started remote workflow two: %s", userID2))
+
+	// This user's Workflow was created by runFromRemote just above, so here Signal-with-Start skips
+	// the start and only delivers the Signal.
+	attachFut2 := c.ExecuteOperation(ctx, service.AttachApprovalContextOperationName, service.AttachApprovalContextInput{
+		Note:   "translation approved by the localization team",
+		UserID: userID2,
+	}, workflow.NexusOperationOptions{})
+	var attachOut2 service.AttachApprovalContextOutput
+	if err := attachFut2.Get(ctx, &attachOut2); err != nil {
+		return nil, fmt.Errorf("attachApprovalContext (two) failed: %w", err)
+	}
+	log = append(log, fmt.Sprintf("attached approval context to the running workflow: %s", userID2))
 
 	// Query languages from workflow one.
 	langsFut1 := c.ExecuteOperation(ctx, service.GetLanguagesOperationName, service.GetLanguagesInput{
