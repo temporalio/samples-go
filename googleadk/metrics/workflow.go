@@ -20,6 +20,7 @@ const (
 	agentName = "metrics-assistant"
 )
 
+// @@@SNIPSTART googleadk-metrics-workflow
 func AgentWorkflow(ctx workflow.Context, prompt string) (string, error) {
 	handler := workflow.GetMetricsHandler(ctx).WithTags(map[string]string{
 		"agent": agentName,
@@ -67,6 +68,9 @@ func AgentWorkflow(ctx workflow.Context, prompt string) (string, error) {
 	return answer, nil
 }
 
+// @@@SNIPEND
+
+// @@@SNIPSTART googleadk-metrics-callback
 func afterModelMetricsCallback(handler client.MetricsHandler) llmagent.AfterModelCallback {
 	return func(_ agent.Context, response *model.LLMResponse, responseErr error) (*model.LLMResponse, error) {
 		if responseErr != nil || response == nil {
@@ -85,6 +89,8 @@ func afterModelMetricsCallback(handler client.MetricsHandler) llmagent.AfterMode
 		return nil, nil
 	}
 }
+
+// @@@SNIPEND
 
 func modelErrorMetricsCallback(handler client.MetricsHandler) llmagent.OnModelErrorCallback {
 	return func(_ agent.Context, _ *model.LLMRequest, _ error) (*model.LLMResponse, error) {
