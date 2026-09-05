@@ -15,11 +15,17 @@ The caller :
 
 ### Running
 
-Start a Temporal server:
+Start a Temporal server with Workflow Update callbacks enabled:
 
 ```bash
-temporal server start-dev
+temporal server start-dev \
+  --dynamic-config-value history.enableUpdateCallbacks=true \
+  --dynamic-config-value history.enableCHASMSignalBacklinks=true
 ```
+
+`history.enableUpdateCallbacks` defaults to `false`. The `setLanguage` operation starts its Update
+through the Nexus client, so its result is delivered over a Nexus completion callback; without this
+flag the callback is never registered and the operation never completes.
 
 Create the namespaces and Nexus endpoint:
 
