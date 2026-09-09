@@ -4,5 +4,13 @@
 # someone opens a pull request.
 * @temporalio/sdk
 
+# SDK & Nexus teams share ownership of these files
+/README.md @temporalio/sdk @temporalio/nexus
+/go.mod @temporalio/sdk @temporalio/nexus
+/go.sum @temporalio/sdk @temporalio/nexus
+
+# The Nexus team owns any folder whose name starts with "nexus"
+/nexus*/ @temporalio/nexus
+
 /googleadk/       @temporalio/sdk @temporalio/ai-sdk
 /workflowstreams/ @temporalio/sdk @temporalio/ai-sdk
