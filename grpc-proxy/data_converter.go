@@ -33,8 +33,9 @@ func (e *Codec) Encode(payloads []*commonpb.Payload) ([]*commonpb.Payload, error
 		// Compress
 		b := snappy.Encode(nil, origBytes)
 		result[i] = &commonpb.Payload{
-			Metadata: map[string][]byte{converter.MetadataEncoding: []byte("binary/snappy")},
-			Data:     b,
+			Metadata:         map[string][]byte{converter.MetadataEncoding: []byte("binary/snappy")},
+			Data:             b,
+			ExternalPayloads: p.ExternalPayloads,
 		}
 	}
 
