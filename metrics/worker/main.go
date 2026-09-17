@@ -18,7 +18,7 @@ func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := client.Dial(client.Options{
 		MetricsHandler: sdktally.NewMetricsHandler(newPrometheusScope(prometheus.Configuration{
-			ListenAddress: "0.0.0.0:9090",
+			ListenAddress: "0.0.0.0:9092",
 			TimerType:     "histogram",
 		})),
 	})
@@ -55,6 +55,8 @@ func newPrometheusScope(c prometheus.Configuration) tally.Scope {
 		Separator:       prometheus.DefaultSeparator,
 		SanitizeOptions: &sdktally.PrometheusSanitizeOptions,
 		Prefix:          "temporal_samples",
+		Tags: map[string]string{"my_key1": "my_value1",
+			"my_key2": "my_value2"},
 	}
 	scope, _ := tally.NewRootScope(scopeOpts, time.Second)
 	scope = sdktally.NewPrometheusNamingScope(scope)
