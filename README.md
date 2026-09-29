@@ -290,6 +290,9 @@ resource waiting for its successful completion
   This contains two samples, one sending messages to an existing Workflow and a second that creates a Workflow through
   Nexus and sends messages to it.
 
+- [**Nexus Messaging V2**](./nexus-messaging-v2): Demonstrates how to send signal, update and query messages through Nexus.
+  This version contains additional pre-release features.
+
 - [**Nexus Multiple Arguments**](./nexus-multiple-arguments): Demonstrates how to map a Nexus Operation to a Workflow
   that takes multiple arguments.
 

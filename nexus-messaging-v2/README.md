@@ -1,5 +1,6 @@
 This sample shows how to expose a long-running Workflow's queries, updates, and signals as Nexus
-operations. There are two self-contained examples, each in its own directory:
+operations. The V2 sample contains pre-release features. There are two self-contained examples,
+each in its own directory:
 
 |                                | `callerpattern/`                     | `ondemandpattern/`                                           |
 |--------------------------------|--------------------------------------|--------------------------------------------------------------|
