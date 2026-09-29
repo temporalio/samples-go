@@ -29,7 +29,6 @@ func main() {
 		handler.GetLanguageOperation,
 		handler.SetLanguageOperation,
 		handler.ApproveOperation,
-		handler.AttachApprovalContextOperation,
 	)
 	if err != nil {
 		log.Fatalln("Unable to register operations", err)
