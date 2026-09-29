@@ -1,13 +1,11 @@
 # Cloud Run worker
 
 Runs a Temporal Worker on a [Google Cloud Run](https://cloud.google.com/run) worker pool using two
-GCP Cloud Run contrib plugins together. Cloud Run worker pools are the recommended way to run
-Temporal Workers: continuous, pull-based background workloads with no request ingress.
+GCP Cloud Run contrib plugins together.
 
 - [`cloudrun/id`](https://pkg.go.dev/go.temporal.io/sdk/contrib/gcp/cloudrun/id) sets the Temporal
   client identity to `<instanceID>@<revision>` from Cloud Run instance metadata, so each instance is
-  identifiable in the Temporal UI. It reads the GCP metadata server, which is unreachable locally, so
-  the worker is meant to run on Cloud Run.
+  identifiable in the Temporal UI.
 - [`cloudrun/otel`](https://pkg.go.dev/go.temporal.io/sdk/contrib/gcp/cloudrun/otel) exports SDK
   traces and metrics over OTLP to a Google-Built OpenTelemetry Collector sidecar (`worker-pool.yaml`),
   which forwards them to Cloud Trace and Google Managed Service for Prometheus.
@@ -48,5 +46,5 @@ gcloud beta run worker-pools replace gcp/cloudrun/worker-pool.yaml --region=<REG
 ```
 
 On SIGTERM the worker stops polling, closes the client, and flushes telemetry via `plugin.Shutdown`.
-Metrics go to `googlemanagedprometheus` without a collector `batch` processor, because batching can
-merge cumulative-series snapshots into a duplicate Monitoring write; traces go to `googlecloud`.
+Metrics go to Managed Service for Prometheus without a collector `batch` processor, because batching
+can merge cumulative-series snapshots into a duplicate Monitoring write; traces go to Cloud Trace.
