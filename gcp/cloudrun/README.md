@@ -50,7 +50,3 @@ gcloud beta run worker-pools replace gcp/cloudrun/worker-pool.yaml --region=<REG
 On SIGTERM the worker stops polling, closes the client, and flushes telemetry via `plugin.Shutdown`.
 Metrics go to `googlemanagedprometheus` without a collector `batch` processor, because batching can
 merge cumulative-series snapshots into a duplicate Monitoring write; traces go to `googlecloud`.
-
-> `cloudrun/id`, `cloudrun/otel`, and their `opentelemetry/otlpworker` dependency are unreleased, so
-> `go.mod` uses local `replace` directives to a sibling `sdk-go` checkout. A `--source`/container
-> build cannot reach that path, so this stays a draft until the modules ship.
