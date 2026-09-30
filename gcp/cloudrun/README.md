@@ -21,19 +21,11 @@ The worker and starter load their connection from the environment via
 [`envconfig`](https://pkg.go.dev/go.temporal.io/sdk/contrib/envconfig): set `TEMPORAL_ADDRESS`,
 `TEMPORAL_NAMESPACE`, and `TEMPORAL_API_KEY` (or a `temporal.toml`).
 
-## Run locally
-
-The Cloud Run Id plugin needs the GCP metadata server, so run the worker on Cloud Run and drive it
-from your machine with the starter:
-
-```bash
-go run ./gcp/cloudrun/starter
-```
-
 ## Deploy to a Cloud Run worker pool
 
 ```bash
-# 1. Build and push the image.
+# 1. Create the Artifact Registry repo (once), then build and push the image.
+gcloud artifacts repositories create <REPO> --repository-format=docker --location=<REGION>
 gcloud builds submit --config=gcp/cloudrun/cloudbuild.yaml \
   --substitutions=_IMAGE=<REGION>-docker.pkg.dev/<PROJECT>/<REPO>/cloud-run-worker:latest .
 
@@ -44,6 +36,19 @@ printf '%s' "<temporal-api-key>" | gcloud secrets create temporal-api-key --data
 # 3. Edit worker-pool.yaml (image, region, Temporal connection) and deploy.
 gcloud beta run worker-pools replace gcp/cloudrun/worker-pool.yaml --region=<REGION>
 ```
+
+`replace` prints `Done.` once the pool is ready and the worker starts polling.
+
+## Start a workflow
+
+The Cloud Run Id plugin needs the GCP metadata server, so the worker runs on Cloud Run. Once it is
+deployed, drive it from your machine:
+
+```bash
+go run ./gcp/cloudrun/starter
+```
+
+This prints `Workflow result: Hello, Cloud Run Worker!`, confirming the deployed worker ran the task.
 
 On SIGTERM the worker stops polling, closes the client, and flushes telemetry via `plugin.Shutdown`.
 Metrics go to Managed Service for Prometheus without a collector `batch` processor, because batching
