@@ -4,6 +4,12 @@ go 1.26.0
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client/v5 v5.0.0
 
+// TEMPORARY: cloudrun/otel and opentelemetry/otlpworker are unreleased; replace with a sibling sdk-go checkout until they ship.
+replace (
+	go.temporal.io/sdk/contrib/gcp/cloudrun/otel => ../sdk-go/contrib/gcp/cloudrun/otel
+	go.temporal.io/sdk/contrib/opentelemetry/otlpworker => ../sdk-go/contrib/opentelemetry/otlpworker
+)
+
 require (
 	github.com/aws/aws-sdk-go-v2 v1.41.7
 	github.com/aws/aws-sdk-go-v2/config v1.32.17
@@ -35,7 +41,8 @@ require (
 	go.temporal.io/sdk/contrib/aws/s3driver/awssdkv2 v0.2.0
 	go.temporal.io/sdk/contrib/datadog v0.5.0
 	go.temporal.io/sdk/contrib/envconfig v1.0.1
-	go.temporal.io/sdk/contrib/opentelemetry v0.7.0
+	go.temporal.io/sdk/contrib/gcp/cloudrun/otel v0.0.0-00010101000000-000000000000
+	go.temporal.io/sdk/contrib/opentelemetry v0.8.1
 	go.temporal.io/sdk/contrib/opentelemetry-v2 v0.1.0
 	go.temporal.io/sdk/contrib/opentracing v0.3.0
 	go.temporal.io/sdk/contrib/tally v0.2.0
@@ -50,6 +57,8 @@ require (
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gopkg.in/yaml.v3 v3.0.1
 )
+
+require go.temporal.io/sdk/contrib/opentelemetry/otlpworker v0.1.0 // indirect
 
 require (
 	cloud.google.com/go v0.123.0 // indirect
