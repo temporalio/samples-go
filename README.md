@@ -43,7 +43,7 @@ with an external configuration file, like TOML, decoupling connection settings f
 - **Async activity completion**: Example of
   an [Expense reporting](./expense) Workflow that communicates with a
   server API. Additional
-  documentation: [How to complete an Activity Execution asynchronously in Go](https://docs.temporal.io/application-development/foundations/#develop-activities)
+  documentation: [How to complete an Activity Execution asynchronously in Go](https://docs.temporal.io/develop/go/activities/asynchronous-activity)
 
 - [**Retry Activity Execution**](./retryactivity): This sample
   executes an unreliable Activity. The Activity is executed with a custom Retry Policy. If the Activity Execution fails,

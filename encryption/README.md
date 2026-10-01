@@ -2,15 +2,15 @@
 1) Run a [Temporal service](https://github.com/temporalio/samples-go/tree/main/#how-to-use).
 2) Run the following command to start the remote codec server
 ```
-go run ./codec-server
+go run encryption/codec-server/main.go
 ```
 3) Run the following command to start the worker
 ```
-go run worker/main.go
+go run encryption/worker/main.go
 ```
 4) Run the following command to start the example
 ```
-go run starter/main.go
+go run encryption/starter/main.go
 ```
 5) Run the following command and see the payloads cannot be decoded
 ```
