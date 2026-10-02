@@ -8,7 +8,7 @@ import (
 
 	"go.temporal.io/sdk/client"
 
-	"github.com/temporalio/samples-go/nexus-messaging-v2/callerpattern/caller"
+	"github.com/temporalio/samples-go/nexus-messaging-temporal-operation/ondemandpattern/caller"
 )
 
 func main() {
@@ -22,11 +22,11 @@ func main() {
 
 	ctx := context.Background()
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "nexus-messaging-caller-workflow-" + time.Now().Format("20060102150405"),
+		ID:        "nexus-messaging-caller-remote-workflow-" + time.Now().Format("20060102150405"),
 		TaskQueue: caller.CallerTaskQueue,
 	}
 
-	wr, err := c.ExecuteWorkflow(ctx, workflowOptions, caller.CallerWorkflow, "default-user")
+	wr, err := c.ExecuteWorkflow(ctx, workflowOptions, caller.CallerRemoteWorkflow)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}

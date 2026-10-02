@@ -9,8 +9,8 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	"github.com/temporalio/samples-go/nexus-messaging-v2/callerpattern/handler"
-	"github.com/temporalio/samples-go/nexus-messaging-v2/callerpattern/service"
+	"github.com/temporalio/samples-go/nexus-messaging-temporal-operation/callerpattern/handler"
+	"github.com/temporalio/samples-go/nexus-messaging-temporal-operation/callerpattern/service"
 )
 
 const starterUserID = "default-user"

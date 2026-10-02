@@ -7,8 +7,8 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	"github.com/temporalio/samples-go/nexus-messaging-v2/ondemandpattern/handler"
-	"github.com/temporalio/samples-go/nexus-messaging-v2/ondemandpattern/service"
+	"github.com/temporalio/samples-go/nexus-messaging-temporal-operation/ondemandpattern/handler"
+	"github.com/temporalio/samples-go/nexus-messaging-temporal-operation/ondemandpattern/service"
 )
 
 func main() {

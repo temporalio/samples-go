@@ -45,19 +45,19 @@ Create the Nexus endpoint:
 In one terminal, start the handler worker:
 
 ```bash
-go run ./nexus-messaging-v2/ondemandpattern/handler/worker/main.go
+go run ./nexus-messaging-temporal-operation/ondemandpattern/handler/worker/main.go
 ```
 
 In a second terminal, start the caller worker:
 
 ```bash
-go run ./nexus-messaging-v2/ondemandpattern/caller/worker/main.go
+go run ./nexus-messaging-temporal-operation/ondemandpattern/caller/worker/main.go
 ```
 
 In a third terminal, run the following command to start the example:
 
 ```bash
-go run ./nexus-messaging-v2/ondemandpattern/caller/starter/main.go
+go run ./nexus-messaging-temporal-operation/ondemandpattern/caller/starter/main.go
 ```
 
 Expected output:

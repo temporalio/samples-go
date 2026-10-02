@@ -6,7 +6,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	"github.com/temporalio/samples-go/nexus-messaging-v2/callerpattern/caller"
+	"github.com/temporalio/samples-go/nexus-messaging-temporal-operation/callerpattern/caller"
 )
 
 func main() {

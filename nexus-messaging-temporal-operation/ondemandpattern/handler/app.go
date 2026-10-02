@@ -11,7 +11,7 @@ import (
 	"go.temporal.io/sdk/temporalnexus"
 	"go.temporal.io/sdk/workflow"
 
-	"github.com/temporalio/samples-go/nexus-messaging-v2/ondemandpattern/service"
+	"github.com/temporalio/samples-go/nexus-messaging-temporal-operation/ondemandpattern/service"
 )
 
 const (
