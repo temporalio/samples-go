@@ -35,7 +35,9 @@ require (
 	go.temporal.io/sdk/contrib/aws/s3driver/awssdkv2 v0.2.0
 	go.temporal.io/sdk/contrib/datadog v0.5.0
 	go.temporal.io/sdk/contrib/envconfig v1.0.1
-	go.temporal.io/sdk/contrib/opentelemetry v0.7.0
+	go.temporal.io/sdk/contrib/gcp/cloudrun/id v0.1.0
+	go.temporal.io/sdk/contrib/gcp/cloudrun/otel v0.1.0
+	go.temporal.io/sdk/contrib/opentelemetry v0.8.1
 	go.temporal.io/sdk/contrib/opentelemetry-v2 v0.1.0
 	go.temporal.io/sdk/contrib/opentracing v0.3.0
 	go.temporal.io/sdk/contrib/tally v0.2.0
@@ -50,6 +52,8 @@ require (
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gopkg.in/yaml.v3 v3.0.1
 )
+
+require go.temporal.io/sdk/contrib/opentelemetry/otlpworker v0.1.0 // indirect
 
 require (
 	cloud.google.com/go v0.123.0 // indirect
