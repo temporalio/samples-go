@@ -1,0 +1,20 @@
+This sample shows how to expose a long-running Workflow's queries, updates, and signals as Nexus operations. This
+version uses an experimental generic Nexus handler API in `temporalnexus` so one operation can return either a sync
+result or start a Workflow-backed async run from a single `Start` callback, instead of choosing up front between 
+`NewSyncOperation` and `NewWorkflowRunOperation`.
+
+There are two self-contained examples, each in its own directory:
+
+|                                | `callerpattern/`                     | `ondemandpattern/`                                           |
+|--------------------------------|--------------------------------------|--------------------------------------------------------------|
+| **Pattern**                    | Signal an existing Workflow          | Create and run Workflows on demand, and send signals to them |
+| **Who creates the Workflow?**  | The handler worker starts it on boot | The caller starts it via a Nexus operation                   |
+| **Who knows the Workflow ID?** | Only the handler                     | The caller chooses and passes it in every operation          |
+| **Nexus service**              | `NexusGreetingService`               | `NexusRemoteGreetingService`                                 |
+
+Each directory is fully self-contained for clarity. The
+`GreetingWorkflow`, `GreetingActivity`, and `Language` type are pretty much the same between the two -- only the
+Nexus service definition and its handler implementation differ. This highlights that the same Workflow can be
+exposed through Nexus in different ways depending on whether the caller needs lifecycle control.
+
+See each directory's README for running instructions.

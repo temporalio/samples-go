@@ -33,19 +33,14 @@ func (l Language) String() string {
 	return "Unknown"
 }
 
-const ServiceName = "NexusRemoteGreetingService"
+const ServiceName = "NexusGreetingService"
 
 const (
-	RunFromRemoteOperationName = "runFromRemote"
-	GetLanguagesOperationName  = "getLanguages"
-	GetLanguageOperationName   = "getLanguage"
-	SetLanguageOperationName   = "setLanguage"
-	ApproveOperationName       = "approve"
+	GetLanguagesOperationName = "getLanguages"
+	GetLanguageOperationName  = "getLanguage"
+	SetLanguageOperationName  = "setLanguage"
+	ApproveOperationName      = "approve"
 )
-
-type RunFromRemoteInput struct {
-	UserID string
-}
 
 type GetLanguagesInput struct {
 	IncludeUnsupported bool
