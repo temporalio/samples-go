@@ -47,7 +47,7 @@ func main() {
 		},
 	})
 	service := nexus.NewService(service.HelloServiceName)
-	err = service.Register(handler.HelloOperation)
+	err = service.Register(handler.HelloOperation, handler.EchoOperation)
 	if err != nil {
 		log.Fatalln("Unable to register operations", err)
 	}
