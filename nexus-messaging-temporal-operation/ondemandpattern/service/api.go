@@ -36,11 +36,12 @@ func (l Language) String() string {
 const ServiceName = "NexusRemoteGreetingService"
 
 const (
-	RunFromRemoteOperationName = "runFromRemote"
-	GetLanguagesOperationName  = "getLanguages"
-	GetLanguageOperationName   = "getLanguage"
-	SetLanguageOperationName   = "setLanguage"
-	ApproveOperationName       = "approve"
+	RunFromRemoteOperationName         = "runFromRemote"
+	GetLanguagesOperationName          = "getLanguages"
+	GetLanguageOperationName           = "getLanguage"
+	SetLanguageOperationName           = "setLanguage"
+	ApproveOperationName               = "approve"
+	AttachApprovalContextOperationName = "attachApprovalContext"
 )
 
 type RunFromRemoteInput struct {
@@ -71,3 +72,10 @@ type ApproveInput struct {
 }
 
 type ApproveOutput struct{}
+
+type AttachApprovalContextInput struct {
+	Note   string
+	UserID string
+}
+
+type AttachApprovalContextOutput struct{}

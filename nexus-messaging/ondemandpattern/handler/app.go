@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
+	"github.com/nexus-rpc/sdk-go/nexus"
+
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/temporalnexus"
@@ -17,12 +18,11 @@ import (
 const (
 	HandlerTaskQueue = "my-handler-task-queue"
 
-	WorkflowIDPrefix            = "GreetingWorkflow_for_"
-	queryGetLanguages           = "getLanguages"
-	queryGetLanguage            = "getLanguage"
-	updateSetLanguage           = "setLanguage"
-	signalApprove               = "approve"
-	signalAttachApprovalContext = "attachApprovalContext"
+	WorkflowIDPrefix  = "GreetingWorkflow_for_"
+	queryGetLanguages = "getLanguages"
+	queryGetLanguage  = "getLanguage"
+	updateSetLanguage = "setLanguage"
+	signalApprove     = "approve"
 )
 
 var allLanguages = []service.Language{
@@ -34,156 +34,84 @@ func getWorkflowID(userID string) string {
 	return WorkflowIDPrefix + userID
 }
 
-// RunFromRemoteOperation starts a new GreetingWorkflow, or attaches to one that is already running.
-// We use StartUntypedWorkflow rather than the type-safe StartWorkflow because the operation input
-// (RunFromRemoteInput) doesn't match the workflow signature (no input).
-var RunFromRemoteOperation = temporalnexus.MustNewTemporalOperation(
-	temporalnexus.TemporalOperationOptions[service.RunFromRemoteInput, string]{
+// RunFromRemoteOperation starts a new GreetingWorkflow on demand.
+// We use MustNewWorkflowRunOperationWithOptions + ExecuteUntypedWorkflow because
+// the operation input (RunFromRemoteInput) doesn't match the workflow signature (no input).
+var RunFromRemoteOperation = temporalnexus.MustNewWorkflowRunOperationWithOptions(
+	temporalnexus.WorkflowRunOperationOptions[service.RunFromRemoteInput, string]{
 		Name: service.RunFromRemoteOperationName,
-		Start: func(
-			ctx context.Context,
-			nc temporalnexus.NexusClient,
-			input service.RunFromRemoteInput,
-			options temporalnexus.StartTemporalOperationOptions,
-		) (temporalnexus.TemporalOperationResult[string], error) {
-			return temporalnexus.StartUntypedWorkflow[string](ctx, nc, client.StartWorkflowOptions{
-				ID: getWorkflowID(input.UserID),
-				// By default, starting a Workflow whose ID is already running fails the operation.
-				// Since attachApprovalContext below can create the GreetingWorkflow first, this
-				// Operation needs to attach to the running execution rather than fail.
-				WorkflowIDConflictPolicy: enumspb.WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING,
-			}, GreetingWorkflow)
+		Handler: func(ctx context.Context, input service.RunFromRemoteInput, options nexus.StartOperationOptions) (temporalnexus.WorkflowHandle[string], error) {
+			return temporalnexus.ExecuteUntypedWorkflow[string](
+				ctx,
+				options,
+				client.StartWorkflowOptions{
+					ID: getWorkflowID(input.UserID),
+				},
+				GreetingWorkflow,
+			)
 		},
 	},
 )
 
 // GetLanguagesOperation queries a workflow for the supported languages.
-var GetLanguagesOperation = temporalnexus.MustNewTemporalOperation(
-	temporalnexus.TemporalOperationOptions[service.GetLanguagesInput, service.GetLanguagesOutput]{
-		Name: service.GetLanguagesOperationName,
-		Start: func(
-			ctx context.Context,
-			nc temporalnexus.NexusClient,
-			input service.GetLanguagesInput,
-			options temporalnexus.StartTemporalOperationOptions,
-		) (temporalnexus.TemporalOperationResult[service.GetLanguagesOutput], error) {
-			var zero temporalnexus.TemporalOperationResult[service.GetLanguagesOutput]
+var GetLanguagesOperation = nexus.NewSyncOperation(service.GetLanguagesOperationName, func(ctx context.Context, input service.GetLanguagesInput, options nexus.StartOperationOptions) (service.GetLanguagesOutput, error) {
+	c := temporalnexus.GetClient(ctx)
 
-			encodedVal, err := nc.GetWorkflowClient().QueryWorkflow(ctx, getWorkflowID(input.UserID), "", queryGetLanguages, input.IncludeUnsupported)
-			if err != nil {
-				return zero, fmt.Errorf("failed to query workflow: %w", err)
-			}
-			var output service.GetLanguagesOutput
-			if err := encodedVal.Get(&output); err != nil {
-				return zero, fmt.Errorf("failed to decode query result: %w", err)
-			}
-			return temporalnexus.NewSyncResult(output), nil
-		},
-	},
-)
+	encodedVal, err := c.QueryWorkflow(ctx, getWorkflowID(input.UserID), "", queryGetLanguages, input.IncludeUnsupported)
+	if err != nil {
+		return service.GetLanguagesOutput{}, fmt.Errorf("failed to query workflow: %w", err)
+	}
+	var output service.GetLanguagesOutput
+	if err := encodedVal.Get(&output); err != nil {
+		return service.GetLanguagesOutput{}, fmt.Errorf("failed to decode query result: %w", err)
+	}
+	return output, nil
+})
 
 // GetLanguageOperation queries a workflow for the current language.
-var GetLanguageOperation = temporalnexus.MustNewTemporalOperation(
-	temporalnexus.TemporalOperationOptions[service.GetLanguageInput, service.Language]{
-		Name: service.GetLanguageOperationName,
-		Start: func(
-			ctx context.Context,
-			nc temporalnexus.NexusClient,
-			input service.GetLanguageInput,
-			options temporalnexus.StartTemporalOperationOptions,
-		) (temporalnexus.TemporalOperationResult[service.Language], error) {
-			var zero temporalnexus.TemporalOperationResult[service.Language]
+var GetLanguageOperation = nexus.NewSyncOperation(service.GetLanguageOperationName, func(ctx context.Context, input service.GetLanguageInput, options nexus.StartOperationOptions) (service.Language, error) {
+	c := temporalnexus.GetClient(ctx)
 
-			encodedVal, err := nc.GetWorkflowClient().QueryWorkflow(ctx, getWorkflowID(input.UserID), "", queryGetLanguage)
-			if err != nil {
-				return zero, fmt.Errorf("failed to query workflow: %w", err)
-			}
-			var lang service.Language
-			if err := encodedVal.Get(&lang); err != nil {
-				return zero, fmt.Errorf("failed to decode query result: %w", err)
-			}
-			return temporalnexus.NewSyncResult(lang), nil
-		},
-	},
-)
+	encodedVal, err := c.QueryWorkflow(ctx, getWorkflowID(input.UserID), "", queryGetLanguage)
+	if err != nil {
+		return 0, fmt.Errorf("failed to query workflow: %w", err)
+	}
+	var lang service.Language
+	if err := encodedVal.Get(&lang); err != nil {
+		return 0, fmt.Errorf("failed to decode query result: %w", err)
+	}
+	return lang, nil
+})
 
 // SetLanguageOperation updates a workflow's language.
-var SetLanguageOperation = temporalnexus.MustNewTemporalOperation(
-	temporalnexus.TemporalOperationOptions[service.SetLanguageInput, service.Language]{
-		Name: service.SetLanguageOperationName,
-		Start: func(
-			ctx context.Context,
-			nc temporalnexus.NexusClient,
-			input service.SetLanguageInput,
-			options temporalnexus.StartTemporalOperationOptions,
-		) (temporalnexus.TemporalOperationResult[service.Language], error) {
-			return temporalnexus.StartUpdateWorkflow[service.Language](ctx, nc, client.UpdateWorkflowOptions{
-				WorkflowID: getWorkflowID(input.UserID),
-				UpdateName: updateSetLanguage,
-				Args:       []interface{}{input.Language},
-				// An Update-backed Operation must wait for the accepted stage. Any other stage is
-				// rejected with "nexus op workflow updates only support
-				// WorkflowUpdateStageAccepted for async updates".
-				WaitForStage: client.WorkflowUpdateStageAccepted,
-			})
-		},
-	},
-)
+var SetLanguageOperation = nexus.NewSyncOperation(service.SetLanguageOperationName, func(ctx context.Context, input service.SetLanguageInput, options nexus.StartOperationOptions) (service.Language, error) {
+	c := temporalnexus.GetClient(ctx)
+
+	handle, err := c.UpdateWorkflow(ctx, client.UpdateWorkflowOptions{
+		WorkflowID:   getWorkflowID(input.UserID),
+		UpdateName:   updateSetLanguage,
+		Args:         []interface{}{input.Language},
+		WaitForStage: client.WorkflowUpdateStageCompleted,
+	})
+	if err != nil {
+		return 0, fmt.Errorf("failed to update workflow: %w", err)
+	}
+	var prevLang service.Language
+	if err := handle.Get(ctx, &prevLang); err != nil {
+		return 0, fmt.Errorf("failed to get update result: %w", err)
+	}
+	return prevLang, nil
+})
 
 // ApproveOperation signals a workflow to approve.
-var ApproveOperation = temporalnexus.MustNewTemporalOperation(
-	temporalnexus.TemporalOperationOptions[service.ApproveInput, service.ApproveOutput]{
-		Name: service.ApproveOperationName,
-		Start: func(
-			ctx context.Context,
-			nc temporalnexus.NexusClient,
-			input service.ApproveInput,
-			options temporalnexus.StartTemporalOperationOptions,
-		) (temporalnexus.TemporalOperationResult[service.ApproveOutput], error) {
-			if err := nc.GetWorkflowClient().SignalWorkflow(ctx, getWorkflowID(input.UserID), "", signalApprove, input.Name); err != nil {
-				return temporalnexus.TemporalOperationResult[service.ApproveOutput]{}, fmt.Errorf("failed to signal workflow: %w", err)
-			}
-			return temporalnexus.NewSyncResult(service.ApproveOutput{}), nil
-		},
-	},
-)
+var ApproveOperation = nexus.NewSyncOperation(service.ApproveOperationName, func(ctx context.Context, input service.ApproveInput, options nexus.StartOperationOptions) (service.ApproveOutput, error) {
+	c := temporalnexus.GetClient(ctx)
 
-// AttachApprovalContextOperation is backed by Signal-with-Start. Supporting information for an
-// approval is often produced by a different system than the one requesting it, so the two messages
-// can arrive in either order. This Operation is written so that either works, which means it may
-// have to create the Workflow itself: SignalWithStartWorkflow delivers the Signal, starting the
-// Workflow first if it is not already running. When the Workflow already exists, only the Signal is
-// delivered.
-//
-// Both this and runFromRemote derive the same Workflow ID from the same user ID, which is what lets
-// them agree on which execution they mean regardless of which arrives first.
-var AttachApprovalContextOperation = temporalnexus.MustNewTemporalOperation(
-	temporalnexus.TemporalOperationOptions[service.AttachApprovalContextInput, service.AttachApprovalContextOutput]{
-		Name: service.AttachApprovalContextOperationName,
-		Start: func(
-			ctx context.Context,
-			nc temporalnexus.NexusClient,
-			input service.AttachApprovalContextInput,
-			options temporalnexus.StartTemporalOperationOptions,
-		) (temporalnexus.TemporalOperationResult[service.AttachApprovalContextOutput], error) {
-			_, err := nc.GetWorkflowClient().SignalWithStartWorkflow(
-				ctx,
-				getWorkflowID(input.UserID),
-				signalAttachApprovalContext,
-				input.Note,
-				client.StartWorkflowOptions{
-					ID:        getWorkflowID(input.UserID),
-					TaskQueue: HandlerTaskQueue,
-				},
-				GreetingWorkflow,
-			)
-			if err != nil {
-				return temporalnexus.TemporalOperationResult[service.AttachApprovalContextOutput]{}, fmt.Errorf("failed to signal-with-start workflow: %w", err)
-			}
-			return temporalnexus.NewSyncResult(service.AttachApprovalContextOutput{}), nil
-		},
-	},
-)
+	if err := c.SignalWorkflow(ctx, getWorkflowID(input.UserID), "", signalApprove, input.Name); err != nil {
+		return service.ApproveOutput{}, fmt.Errorf("failed to signal workflow: %w", err)
+	}
+	return service.ApproveOutput{}, nil
+})
 
 // GreetingWorkflow is a long-running workflow that supports queries, updates, and signals.
 // It takes no user-specific input — the workflow ID is used as the identity.
@@ -193,7 +121,6 @@ func GreetingWorkflow(ctx workflow.Context) (string, error) {
 	language := service.English
 	approved := false
 	approvedBy := ""
-	approvalContext := ""
 	lock := workflow.NewMutex(ctx)
 
 	initialGreetings := map[service.Language]string{
@@ -269,18 +196,6 @@ func GreetingWorkflow(ctx workflow.Context) (string, error) {
 		return "", err
 	}
 
-	// Handle attachApprovalContext Signal. Delivered with Signal-with-Start, so this may be the
-	// message that created this Workflow.
-	contextCh := workflow.GetSignalChannel(ctx, signalAttachApprovalContext)
-	workflow.Go(ctx, func(ctx workflow.Context) {
-		for {
-			var note string
-			contextCh.Receive(ctx, &note)
-			approvalContext = note
-			logger.Info("Approval context attached", "note", note)
-		}
-	})
-
 	// Handle approve signal.
 	approveCh := workflow.GetSignalChannel(ctx, signalApprove)
 	workflow.Go(ctx, func(ctx workflow.Context) {
@@ -288,7 +203,7 @@ func GreetingWorkflow(ctx workflow.Context) (string, error) {
 		approveCh.Receive(ctx, &name)
 		approved = true
 		approvedBy = name
-		logger.Info("Workflow approved", "by", name, "context", approvalContext)
+		logger.Info("Workflow approved", "by", name)
 	})
 
 	// Wait for approve signal and all handlers to finish.

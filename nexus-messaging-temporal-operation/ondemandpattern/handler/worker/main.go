@@ -7,8 +7,8 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	"github.com/temporalio/samples-go/nexus-messaging/ondemandpattern/handler"
-	"github.com/temporalio/samples-go/nexus-messaging/ondemandpattern/service"
+	"github.com/temporalio/samples-go/nexus-messaging-temporal-operation/ondemandpattern/handler"
+	"github.com/temporalio/samples-go/nexus-messaging-temporal-operation/ondemandpattern/service"
 )
 
 func main() {
@@ -29,6 +29,7 @@ func main() {
 		handler.GetLanguageOperation,
 		handler.SetLanguageOperation,
 		handler.ApproveOperation,
+		handler.AttachApprovalContextOperation,
 	)
 	if err != nil {
 		log.Fatalln("Unable to register operations", err)
