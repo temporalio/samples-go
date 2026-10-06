@@ -4,13 +4,14 @@
 # someone opens a pull request.
 * @temporalio/sdk
 
-# SDK & Nexus teams share ownership of these files
-/README.md @temporalio/sdk @temporalio/nexus
-/go.mod @temporalio/sdk @temporalio/nexus
-/go.sum @temporalio/sdk @temporalio/nexus
+# IMPORTANT: Make sure to add `@temporalio/sdk` on every override below.
+# This is required so that SDK team can do repo-wide maintenance tasks.
 
-# The Nexus team owns any folder whose name starts with "nexus"
-/nexus*/ @temporalio/nexus
+/README.md @temporalio/sdk @temporalio/nexus @temporalio/ai-sdk
+/go.mod @temporalio/sdk @temporalio/nexus @temporalio/ai-sdk
+/go.sum @temporalio/sdk @temporalio/nexus @temporalio/ai-sdk
+
+/nexus*/ @temporalio/sdk @temporalio/nexus
 
 /googleadk/       @temporalio/sdk @temporalio/ai-sdk
 /workflowstreams/ @temporalio/sdk @temporalio/ai-sdk
