@@ -8,4 +8,5 @@ go run metrics/worker/main.go
 ```
 go run metrics/starter/main.go
 ```
-4) Check metrics at http://localhost:9090/metrics (this is where the Prometheus agent scrapes it from).
+4) Check metrics at http://localhost:9092/metrics
+You can set up Prometheus scrape point config to use this url
