@@ -15,6 +15,7 @@ spec:
         # Start the collector before the worker so telemetry has somewhere to go.
         run.googleapis.com/container-dependencies: '{"worker":["collector"]}'
     spec:
+      serviceAccountName: <SERVICE_ACCOUNT>
       containers:
         # Temporal worker; depends on the collector (see container-dependencies above).
         - name: worker

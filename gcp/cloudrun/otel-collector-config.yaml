@@ -12,7 +12,7 @@ processors:
         check_interval: 1s
         limit_percentage: 65
         spike_limit_percentage: 20
-    resourcedetection:
+    resource_detection:
         detectors: [gcp]
         timeout: 10s
     # Batch traces for throughput. Do NOT batch the cumulative-metrics pipeline: a shutdown flush
@@ -63,11 +63,11 @@ service:
     pipelines:
         metrics:
             receivers: [otlp]
-            processors: [memory_limiter, resourcedetection, transform/collision]
+            processors: [memory_limiter, resource_detection, transform/collision]
             exporters: [googlemanagedprometheus]
         traces:
             receivers: [otlp]
-            processors: [memory_limiter, resourcedetection, transform/set_project_id, batch/traces]
+            processors: [memory_limiter, resource_detection, transform/set_project_id, batch/traces]
             exporters: [otlp_grpc]
     telemetry:
         logs:

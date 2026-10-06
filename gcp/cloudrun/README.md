@@ -34,8 +34,10 @@ gcloud secrets create otel-collector-config --data-file=gcp/cloudrun/otel-collec
 printf '%s' "<temporal-api-key>" | gcloud secrets create temporal-api-key --data-file=-
 
 # 3. Edit worker-pool.yaml (image, region, Temporal connection) and deploy.
-gcloud beta run worker-pools replace gcp/cloudrun/worker-pool.yaml --region=<REGION>
+gcloud beta run worker-pools replace gcp/cloudrun/worker-pool.yaml
 ```
+
+Set `<SERVICE_ACCOUNT>` in `worker-pool.yaml` to a service account holding `roles/monitoring.metricWriter`, `roles/telemetry.tracesWriter`, and `roles/secretmanager.secretAccessor`.
 
 `replace` prints `Done.` once the pool is ready and the worker starts polling.
 
