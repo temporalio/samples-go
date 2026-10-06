@@ -23,7 +23,7 @@ func main() {
 		TaskQueue: "cloud-run-task-queue",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, greeting.SampleWorkflow, "Cloud Run Worker!")
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, greeting.SampleWorkflow, "Cloud Run Worker")
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}
