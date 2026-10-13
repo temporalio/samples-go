@@ -7,7 +7,7 @@ Server via the Temporal Go SDK.
 
 - Temporal Server repo: [temporalio/temporal](https://github.com/temporalio/temporal)
 - Temporal Go SDK repo: [temporalio/sdk-go](https://github.com/temporalio/sdk-go)
-- Go SDK docs: [docs.temporal.io/dev-guide/go](https://docs.temporal.io/dev-guide/go)
+- Go SDK docs: [docs.temporal.io/develop/go](https://docs.temporal.io/develop/go)
 
 ## How to use
 
@@ -65,7 +65,7 @@ with an external configuration file, like TOML, decoupling connection settings f
   Workflow Execution has been cancelled.
 
 - **Coroutines**: Do not use native `go` routines in Workflows. Instead use Temporal coroutines (`workflow.Go()`) to
-  maintain a [deterministic](https://docs.temporal.io/application-development/foundations/#develop-workflows) Workflow. Can be
+  maintain a [deterministic](https://docs.temporal.io/develop/go/best-practices/multithreading) Workflow. Can be
   seen in the [Goroutine](./goroutine)
   , [DSL](./dsl)
   , [Recovery](./recovery)
@@ -75,7 +75,7 @@ with an external configuration file, like TOML, decoupling connection settings f
   Execution that occurs according to a cron schedule. This sample showcases the `HasLastCompletionResult` and
   `GetLastCompletionResult` APIs which are used to pass information between executions. **Note that we recommend
   using Schedules instead of Cron Jobs.**
-  Additional documentation: [What is a Temporal Cron Job?](https://docs.temporal.io/docs/content/what-is-a-temporal-cron-job).
+  Additional documentation: [What is a Temporal Cron Job?](https://docs.temporal.io/develop/go/workflows/schedules#temporal-cron-jobs).
 
 - [**Schedule Workflow**](./schedule): Demonstrates a recurring Workflow
   Execution that occurs according to a schedule.
@@ -95,11 +95,11 @@ with an external configuration file, like TOML, decoupling connection settings f
 
 - [**Query Example**](./query): Demonstrates how to Query the state
   of a single Workflow Execution using the `QueryWorkflow` and `SetQueryHandler` APIs. Additional
-  documentation: [How to Query a Workflow Execution in Go](https://docs.temporal.io/application-development/features/#queries).
+  documentation: [How to Query a Workflow Execution in Go](https://docs.temporal.io/develop/go/workflows/message-passing#queries).
 
 - **Selectors**: Do not use the native Go `select` statement. Instead
-  use [Go SDK Selectors](https://docs.temporal.io/docs/go/selectors) (`selector.Select(ctx)`) to maintain
-  a [deterministic](https://docs.temporal.io/application-development/foundations/#develop-workflows) Workflow. Can be seen in
+  use [Go SDK Selectors](https://docs.temporal.io/develop/go/workflows/selectors) (`selector.Select(ctx)`) to maintain
+  a [deterministic](https://docs.temporal.io/develop/go/best-practices/multithreading) Workflow. Can be seen in
   the [Pick First](./pickfirst)
   , [Mutex](./mutex)
   , [DSL](./dsl),
@@ -108,11 +108,11 @@ with an external configuration file, like TOML, decoupling connection settings f
 - **Sessions**: Demonstrates how to bind a set of Activity Executions to a specific Worker after the first Activity
   executes. This feature is showcased in
   the [File Processing example](./fileprocessing). Addition
-  documentation: [How to use Sessions in Go](https://docs.temporal.io/tasks/#sessions).
+  documentation: [How to use Sessions in Go](https://docs.temporal.io/develop/go/workers/sessions).
 
 - **Signals**: Can be seen in the [Recovery](./recovery)
   and [Mutex](./mutex) examples. Additional
-  documentation: [eCommerce application tutorial](https://learn.temporal.io/tutorials/go/ecommerce/)
+  documentation: [eCommerce application tutorial](https://learn.temporal.io/tutorials/go/build-an-ecommerce-app/)
   , [How to send Signals](https://docs.temporal.io/sending-messages#sending-signals)
   , [How to handle Signals](https://docs.temporal.io/handling-messages)
   .
@@ -133,7 +133,7 @@ with an external configuration file, like TOML, decoupling connection settings f
   the `context.Context` object across the Workflow Execution. The `context.Context` object is populated with information
   prior to calling `StartWorkflow`. This example demonstrates that the information is available in the Workflow
   Execution and Activity Executions. Additional
-  documentation: [How to use tracing in Go](https://docs.temporal.io/go/tracing).
+  documentation: [How to use tracing in Go](https://docs.temporal.io/develop/go/platform/observability#tracing).
 
 - [**OpenTelemetry**](./opentelemetry): Demonstrates how to instrument the Workflows and
   Activities with OpenTelemetry.
