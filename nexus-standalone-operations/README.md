@@ -5,6 +5,11 @@ The starter and worker connect to two different namespaces (a "caller" namespace
 
 ## Note: Standalone Nexus operations require a server version that supports this feature. Use the dev server build at https://github.com/temporalio/cli/releases/tag/v1.7.4-standalone-nexus-operations.
 
+## Availability
+
+Standalone Nexus Operations are in [Public Preview](https://docs.temporal.io/evaluate/development-production-features/release-stages#public-preview).
+We aim to preserve backward compatibility and avoid breaking changes.
+
 ## Run locally against a dev server
 
 1) Start the [Temporal dev server build that supports standalone Nexus operations](https://docs.temporal.io/standalone-nexus-operation#temporal-cli-support) with the required namespaces pre-created:
