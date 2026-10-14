@@ -3,7 +3,7 @@ It shows both sync and async (workflow-backed) operations, and how to use the `L
 
 The starter and worker connect to two different namespaces (a "caller" namespace and a "handler" namespace) — this mirrors how Nexus is typically used to cross namespace boundaries. The client is configured via the SDK's [environment configuration](https://docs.temporal.io/develop/environment-configuration) support, which reads `TEMPORAL_NAMESPACE`, `TEMPORAL_ADDRESS`, etc. from the environment (and optionally profiles from `temporal.toml`).
 
-## Note: Standalone Nexus operations require a server version that supports this feature. Use the dev server build at https://github.com/temporalio/cli/releases/tag/v1.7.4-standalone-nexus-operations.
+## Note: Standalone Nexus operations require a server that supports this feature. For a local dev server, use [Temporal CLI v1.9.1 or later](https://github.com/temporalio/cli/releases/tag/v1.9.1) and enable SANO as shown below.
 
 ## Availability
 
@@ -12,10 +12,11 @@ We aim to preserve backward compatibility and avoid breaking changes.
 
 ## Run locally against a dev server
 
-1) Start the [Temporal dev server build that supports standalone Nexus operations](https://docs.temporal.io/standalone-nexus-operation#temporal-cli-support) with the required namespaces pre-created:
+1) Start a [Temporal dev server](https://docs.temporal.io/cli/setup-cli) with SANO enabled and the required namespaces pre-created:
 
 ```bash
-./temporal server start-dev \
+temporal server start-dev \
+  --dynamic-config-value "nexusoperation.enableStandalone=true" \
   --namespace my-caller-namespace \
   --namespace my-handler-namespace
 ```
