@@ -25,7 +25,7 @@ temporal server start-dev \
 2) Create a Nexus endpoint that routes to the handler namespace and the worker's task queue:
 
 ```bash
-./temporal operator nexus endpoint create \
+temporal operator nexus endpoint create \
   --name my-nexus-endpoint \
   --target-namespace my-handler-namespace \
   --target-task-queue nexus-handler-queue
