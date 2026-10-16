@@ -16,7 +16,7 @@ import (
 	"google.golang.org/adk/v2/model"
 	"google.golang.org/adk/v2/model/gemini"
 
-	"go.temporal.io/sdk/contrib/googleadk"
+	"go.temporal.io/googleadk"
 
 	metrics "github.com/temporalio/samples-go/googleadk/metrics"
 )

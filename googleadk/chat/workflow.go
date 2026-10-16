@@ -1,5 +1,5 @@
 // Package chat demonstrates a long-lived, update-driven Google ADK (adk-go) chat
-// running durably on Temporal with the go.temporal.io/sdk/contrib/googleadk
+// running durably on Temporal with the go.temporal.io/googleadk
 // integration. A single Workflow serves an ongoing conversation: each user message
 // arrives as a Temporal Update, the agent answers it on the SAME ADK session (so
 // history accumulates), and the answer is returned on the Update itself — no signal
@@ -23,7 +23,7 @@ import (
 	"google.golang.org/adk/v2/session"
 	"google.golang.org/genai"
 
-	"go.temporal.io/sdk/contrib/googleadk"
+	"go.temporal.io/googleadk"
 )
 
 const (

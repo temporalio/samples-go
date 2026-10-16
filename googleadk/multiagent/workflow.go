@@ -1,5 +1,5 @@
 // Package multiagent demonstrates a multi-agent Google ADK (adk-go) system
-// running durably on Temporal with the go.temporal.io/sdk/contrib/googleadk
+// running durably on Temporal with the go.temporal.io/googleadk
 // integration. A "coordinator" root agent delegates to one of two specialist
 // SubAgents — a weather specialist (which owns the get_weather ActivityAsTool)
 // and a jokes specialist — via ADK's built-in transfer_to_agent mechanism.
@@ -21,7 +21,7 @@ import (
 	"google.golang.org/adk/v2/tool"
 	"google.golang.org/genai"
 
-	"go.temporal.io/sdk/contrib/googleadk"
+	"go.temporal.io/googleadk"
 )
 
 const (

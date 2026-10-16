@@ -1,8 +1,8 @@
 ### Google ADK human-in-the-loop (durable approval)
 
 A **human-in-the-loop** Google ADK agent running durably on Temporal with the
-[`googleadk`](https://pkg.go.dev/go.temporal.io/sdk/contrib/googleadk) contrib
-integration. The agent has a sensitive `delete_resource` function tool that must
+[`googleadk`](https://pkg.go.dev/go.temporal.io/googleadk) integration. The agent has
+a sensitive `delete_resource` function tool that must
 not run without a human's approval.
 
 How it works:

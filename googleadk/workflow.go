@@ -1,5 +1,5 @@
 // Package adk demonstrates running a Google ADK (adk-go) agent durably on
-// Temporal with the go.temporal.io/sdk/contrib/googleadk integration. The agent's
+// Temporal with the go.temporal.io/googleadk integration. The agent's
 // orchestration loop runs inside the workflow; the model call runs as a Temporal
 // Activity, and the get_weather tool is an existing Temporal activity exposed to
 // the agent via googleadk.ActivityAsTool.
@@ -17,7 +17,7 @@ import (
 	"google.golang.org/adk/v2/tool"
 	"google.golang.org/genai"
 
-	"go.temporal.io/sdk/contrib/googleadk"
+	"go.temporal.io/googleadk"
 )
 
 const (

@@ -16,7 +16,7 @@ import (
 	"google.golang.org/adk/v2/model"
 	"google.golang.org/genai"
 
-	"go.temporal.io/sdk/contrib/googleadk"
+	"go.temporal.io/googleadk"
 )
 
 func TestAgentWorkflowRecordsUsageMetrics(t *testing.T) {

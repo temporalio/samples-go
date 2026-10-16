@@ -1,6 +1,6 @@
 // Package humanintheloop demonstrates a human-in-the-loop (HITL) Google ADK
 // (adk-go) agent running durably on Temporal with the
-// go.temporal.io/sdk/contrib/googleadk integration. The agent has a sensitive
+// go.temporal.io/googleadk integration. The agent has a sensitive
 // delete_resource tool that pauses for human approval; the Workflow durably waits
 // for a Temporal signal carrying the human's decision before letting the tool run.
 //
@@ -20,7 +20,7 @@ import (
 	"google.golang.org/adk/v2/tool/functiontool"
 	"google.golang.org/genai"
 
-	"go.temporal.io/sdk/contrib/googleadk"
+	"go.temporal.io/googleadk"
 )
 
 const (
