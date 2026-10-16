@@ -76,7 +76,7 @@ func serve() error {
 	case <-sigCh:
 		_ = srv.Close()
 		return nil
-	case err := <-errCh:
+	case <-errCh:
 		return fmt.Errorf("server failed: %w", err)
 	}
 }
