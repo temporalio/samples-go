@@ -1,8 +1,8 @@
 ### Google ADK multi-agent (coordinator + specialists)
 
 A **multi-agent** Google ADK system running durably on Temporal with the
-[`googleadk`](https://pkg.go.dev/go.temporal.io/sdk/contrib/googleadk) contrib
-integration. A `coordinator` root agent delegates the user's request to one of two
+[`googleadk`](https://pkg.go.dev/go.temporal.io/googleadk) integration. A
+`coordinator` root agent delegates the user's request to one of two
 specialist **SubAgents**:
 
 - a `weather` specialist that owns the `get_weather` tool (an ordinary Temporal

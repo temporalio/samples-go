@@ -8,7 +8,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/contrib/envconfig"
 
-	"go.temporal.io/sdk/contrib/googleadk"
+	"go.temporal.io/googleadk"
 
 	humanintheloop "github.com/temporalio/samples-go/googleadk/humanintheloop"
 )

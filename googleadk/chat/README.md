@@ -1,8 +1,8 @@
 ### Google ADK long-lived chat (bounded history via continue-as-new)
 
 A **long-lived, update-driven** Google ADK chat running durably on Temporal with
-the [`googleadk`](https://pkg.go.dev/go.temporal.io/sdk/contrib/googleadk) contrib
-integration. A single `ChatWorkflow` serves an ongoing conversation:
+the [`googleadk`](https://pkg.go.dev/go.temporal.io/googleadk) integration. A single
+`ChatWorkflow` serves an ongoing conversation:
 
 - each user message arrives as a Temporal **Update** (`send-message`);
 - the agent answers it on the **same** ADK session, so conversation history

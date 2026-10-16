@@ -174,7 +174,7 @@ with an external configuration file, like TOML, decoupling connection settings f
   streaming.
 
 - [**Google ADK agent**](./googleadk): Demonstrates running Google ADK (`adk-go`) agents
-  durably using the `googleadk` contrib integration: the agent loop runs in a Workflow, the
+  durably using the `googleadk` integration: the agent loop runs in a Workflow, the
   model call runs as an Activity, and a tool is exposed as a durable Activity via
   `ActivityAsTool`. Includes scenario subdirectories for a [multi-agent](./googleadk/multiagent)
   system, [human-in-the-loop](./googleadk/humanintheloop) tool approval (durable wait on a

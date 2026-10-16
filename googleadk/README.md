@@ -1,8 +1,8 @@
 ## Google ADK on Temporal
 
 Run [Google ADK](https://google.github.io/adk-docs/) (`adk-go`) agents **durably on
-Temporal** using the [`googleadk`](https://pkg.go.dev/go.temporal.io/sdk/contrib/googleadk)
-contrib integration. The agent's orchestration loop runs inside a Workflow; each
+Temporal** using the standalone [`googleadk`](https://pkg.go.dev/go.temporal.io/googleadk)
+integration. The agent's orchestration loop runs inside a Workflow; each
 model call runs as a Temporal Activity (via `googleadk.NewModel`), and tools can be
 ordinary Temporal activities exposed to the agent with `googleadk.ActivityAsTool`
 — so model calls and tools are retried, timed-out, and visible in the Temporal UI,
@@ -41,6 +41,7 @@ Every sample runs against a scripted `FakeModel` in its `*_test.go`, so
 
 ### Prerequisites (for running against a live model)
 
+- Go 1.26.6 or later.
 - A running [Temporal server](https://github.com/temporalio/samples-go/tree/main/#how-to-use)
   (e.g. `temporal server start-dev`).
 - A Gemini API key from <https://aistudio.google.com/apikey>, exported worker-side:
@@ -77,7 +78,7 @@ Each scenario subdirectory has its own README with run and test instructions.
 ### Test without a live LLM
 
 `workflow_test.go` (and each scenario's `*_test.go`) drives the workflow through a
-scripted `FakeModel` from the `googleadk` contrib package, so it needs no API key
+scripted `FakeModel` from the `googleadk` package, so it needs no API key
 or network:
 ```bash
 go test ./googleadk/...

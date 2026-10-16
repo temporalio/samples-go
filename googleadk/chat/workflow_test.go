@@ -16,7 +16,7 @@ import (
 
 	"google.golang.org/adk/v2/model"
 
-	"go.temporal.io/sdk/contrib/googleadk"
+	"go.temporal.io/googleadk"
 
 	chat "github.com/temporalio/samples-go/googleadk/chat"
 )
