@@ -94,8 +94,8 @@ func run(ctx workflow.Context, txRequest TransactionRequest) (*Transaction, erro
 		return nil, fmt.Errorf("completing the transaction failed: %w", err)
 	}
 
+	tx.Status = "completed"
 	workflow.GetLogger(ctx).Info("Transaction completed successfully", "ID", tx.ID)
-
 	return tx, nil
 }
 
@@ -120,6 +120,5 @@ func CompleteTransaction(ctx context.Context, tx *Transaction) error {
 	logger := activity.GetLogger(ctx)
 	time.Sleep(1 * time.Second)
 	logger.Info("Transaction completed")
-	tx.Status = "completed"
 	return nil
 }
