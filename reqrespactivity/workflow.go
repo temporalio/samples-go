@@ -53,6 +53,8 @@ type uppercaser struct {
 	requestCh                   workflow.ReceiveChannel
 	requestsBeforeContinueAsNew int
 	responseActivityOptions     workflow.ActivityOptions
+	// Number of futures added to the selector that have not been handled yet.
+	pendingFutures int
 }
 
 func newUppercaser(ctx workflow.Context) (*uppercaser, error) {
@@ -110,16 +112,19 @@ func (u *uppercaser) run() error {
 		u.addExecuteActivityFuture(&req, selector)
 	})
 
-	// Continually select until there are too many requests and no pending
-	// selects.
+	// Continually select until there are too many requests, no pending selects,
+	// and no unresolved futures.
 	//
-	// The reason we check selector.HasPending even when we've reached the request
-	// limit is to make sure no events get lost. HasPending will continually
-	// return true while an unresolved future or a buffered signal exists. If, for
-	// example, we did not check this and there was an unhandled signal buffered
-	// locally, continue-as-new would be returned without it being handled and the
-	// new workflow wouldn't get the signal either. So it'd be lost.
-	for requestCount < u.requestsBeforeContinueAsNew || selector.HasPending() {
+	// The reason we check selector.HasPending and the unresolved future count even
+	// when we've reached the request limit is to make sure no events get lost.
+	// HasPending only returns true while a buffered signal or a resolved but
+	// unhandled future exists. It returns false for futures that are not yet
+	// resolved, so we track those separately. If, for example, we did not check
+	// this and there was an unhandled signal buffered locally, continue-as-new
+	// would be returned without it being handled and the new workflow wouldn't
+	// get the signal either. So it'd be lost. Similarly, if we did not wait on
+	// unresolved futures, an in-flight request would never get its response.
+	for requestCount < u.requestsBeforeContinueAsNew || selector.HasPending() || u.pendingFutures > 0 {
 		selector.Select(u)
 		if cancelled {
 			return temporal.NewCanceledError()
@@ -135,7 +140,9 @@ func (u *uppercaser) run() error {
 
 func (u *uppercaser) addExecuteActivityFuture(req *Request, selector workflow.Selector) {
 	// Add future for handling the result
+	u.pendingFutures++
 	selector.AddFuture(workflow.ExecuteActivity(u, UppercaseActivity, req.Input), func(f workflow.Future) {
+		u.pendingFutures--
 		resp := &Response{ID: req.ID}
 		if err := f.Get(u, &resp.Output); err != nil {
 			resp.Error = err.Error()
@@ -155,7 +162,9 @@ func (u *uppercaser) addExecuteActivityFuture(req *Request, selector workflow.Se
 		// these response activities. Therefore, if these take longer to be
 		// handled than the gap that may be needed between requests for
 		// continue-as-new, the workflow will never exit.
+		u.pendingFutures++
 		selector.AddFuture(workflow.ExecuteActivity(actCtx, req.ResponseActivity, resp), func(f workflow.Future) {
+			u.pendingFutures--
 			// Just log if there is an error
 			if err := f.Get(actCtx, nil); err != nil {
 				workflow.GetLogger(actCtx).Warn("Failure sending response activity", "error", err)
