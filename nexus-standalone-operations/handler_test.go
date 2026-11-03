@@ -33,7 +33,7 @@ func Test_StandaloneNexusOperations_Using_DevServer(t *testing.T) {
 	// Start the dev server with standalone Nexus support.
 	server, err := testsuite.StartDevServer(ctx, testsuite.DevServerOptions{
 		CachedDownload: testsuite.CachedDownload{
-			Version: "v1.7.4-standalone-nexus-operations",
+			Version: "v1.10.0",
 		},
 	})
 	require.NoError(t, err)
