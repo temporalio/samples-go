@@ -31,7 +31,7 @@ const (
 	TaskQueue = "google-adk-chat"
 
 	// ModelName is the Gemini model name the agent ships in-workflow.
-	ModelName = "gemini-2.0-flash"
+	ModelName = "gemini-3.8-flash"
 
 	// SendMessageUpdateName is the Update that delivers a user message and returns
 	// the agent's answer. An Update (rather than a signal + query) lets the caller

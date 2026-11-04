@@ -27,7 +27,7 @@ const (
 	// ModelName is the Gemini model the agent uses. The workflow only ships this
 	// name; the real model is reconstructed worker-side by the ModelFactory the
 	// worker registers (see worker/main.go).
-	ModelName = "gemini-2.0-flash"
+	ModelName = "gemini-3.8-flash"
 
 	// WeatherToolName is both the tool name the model sees and the Activity name
 	// the tool dispatches, so the worker must register GetWeather under this name.

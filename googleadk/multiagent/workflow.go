@@ -32,9 +32,9 @@ const (
 	// model names so the worker (and the test) can register a separate
 	// ModelFactory per agent and script each one independently. In production
 	// they all resolve to the same Gemini model behind the InvokeModel Activity.
-	CoordinatorModelName = "gemini-2.0-flash-coordinator"
-	WeatherModelName     = "gemini-2.0-flash-weather"
-	JokesModelName       = "gemini-2.0-flash-jokes"
+	CoordinatorModelName = "gemini-3.8-flash-coordinator"
+	WeatherModelName     = "gemini-3.8-flash-weather"
+	JokesModelName       = "gemini-3.8-flash-jokes"
 
 	// WeatherToolName is both the tool name the model sees and the Activity name
 	// the tool dispatches, so the worker must register GetWeather under this name.

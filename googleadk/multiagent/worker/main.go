@@ -31,7 +31,7 @@ func main() {
 	// model. The API key is read worker-side and never crosses into the workflow.
 	gemModel := func(ctx context.Context, name string) (model.LLM, error) {
 		// nil config reads GEMINI_API_KEY / GOOGLE_API_KEY from the env.
-		return gemini.NewModel(ctx, "gemini-2.0-flash", nil)
+		return gemini.NewModel(ctx, "gemini-3.8-flash", nil)
 	}
 	adkPlugin, err := googleadk.NewPlugin(googleadk.Config{
 		Models: map[string]googleadk.ModelFactory{
