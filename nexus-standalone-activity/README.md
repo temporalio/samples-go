@@ -1,7 +1,8 @@
 ## Nexus Operation Backed by a Standalone Activity
 
-> [!WARNING]
-> Standalone Nexus Operations and Standalone Activities are experimental and may be subject to backwards-incompatible changes. They require a Temporal server that implements and enables them via the dynamic configs shown below. Use the dev server build at https://github.com/temporalio/cli/releases/tag/v1.7.4-standalone-nexus-operations.
+> [!NOTE]
+> For local development, use [Temporal CLI v1.10.0 or later](https://docs.temporal.io/cli/setup-cli)
+> and enable Activity callbacks as shown below.
 
 This sample shows how to implement a Nexus Operation whose backing execution is a **Standalone Activity**.
 
@@ -18,10 +19,10 @@ The starter and worker connect to two different namespaces (a "caller" namespace
 
 ## Run locally against a dev server
 
-1) Start the [Temporal dev server build that supports standalone Nexus Operations](https://docs.temporal.io/standalone-nexus-operation#temporal-cli-support) with the required namespaces pre-created and Activity callbacks enabled:
+1) Start the Temporal dev server with the required namespaces pre-created and Activity callbacks enabled:
 
 ```bash
-./temporal server start-dev \
+temporal server start-dev \
   --dynamic-config-value activity.enableCallbacks=true \
   --namespace my-caller-namespace \
   --namespace my-handler-namespace
@@ -30,7 +31,7 @@ The starter and worker connect to two different namespaces (a "caller" namespace
 2) Create a Nexus endpoint that routes to the handler namespace and the worker's task queue:
 
 ```bash
-./temporal operator nexus endpoint create \
+temporal operator nexus endpoint create \
   --name my-nexus-endpoint \
   --target-namespace my-handler-namespace \
   --target-task-queue nexus-handler-queue

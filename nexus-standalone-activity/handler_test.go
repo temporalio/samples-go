@@ -33,7 +33,7 @@ func Test_NexusOperationStandaloneActivity_Using_DevServer(t *testing.T) {
 	// what lets a Standalone Activity complete a Nexus Operation.
 	server, err := testsuite.StartDevServer(ctx, testsuite.DevServerOptions{
 		CachedDownload: testsuite.CachedDownload{
-			Version: "v1.7.4-standalone-nexus-operations",
+			Version: "v1.10.0",
 		},
 		ExtraArgs: []string{
 			"--dynamic-config-value", "activity.enableCallbacks=true",

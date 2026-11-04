@@ -28,7 +28,7 @@ func Test_Activity(t *testing.T) {
 func Test_StandaloneActivity_Using_DevServer(t *testing.T) {
 	server, err := testsuite.StartDevServer(context.Background(), testsuite.DevServerOptions{
 		CachedDownload: testsuite.CachedDownload{
-			Version: "v1.5.2-standalone-activity-server",
+			Version: "v1.10.0",
 		},
 		ExtraArgs: []string{
 			"--dynamic-config-value", "activity.enableStandalone=true",
