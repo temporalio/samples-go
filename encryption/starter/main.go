@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/contrib/envconfig"
 	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/workflow"
 
@@ -13,7 +14,8 @@ import (
 
 func main() {
 	// The client is a heavyweight object that should be created once per process.
-	c, err := client.Dial(client.Options{
+	opts := envconfig.MustLoadDefaultClientOptions()
+	opts.DataConverter = encryption.NewEncryptionDataConverter(
 		// If you intend to let the dataConverter to decide encryption key for all workflows
 		// you can set the KeyID for the encryption encoder like so:
 		//
@@ -33,14 +35,14 @@ func main() {
 		//
 		// Set DataConverter to ensure that workflow inputs and results are
 		// encrypted/decrypted as required.
-		DataConverter: encryption.NewEncryptionDataConverter(
-			converter.GetDefaultDataConverter(),
-			encryption.DataConverterOptions{Compress: true},
-		),
-		// Use a ContextPropagator so that the KeyID value set in the workflow context is
-		// also availble in the context for activities.
-		ContextPropagators: []workflow.ContextPropagator{encryption.NewContextPropagator()},
-	})
+		converter.GetDefaultDataConverter(),
+		encryption.DataConverterOptions{Compress: true},
+	)
+
+	// Use a ContextPropagator so that the KeyID value set in the workflow context is
+	// also availble in the context for activities.
+	opts.ContextPropagators = []workflow.ContextPropagator{encryption.NewContextPropagator()}
+	c, err := client.Dial(opts)
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 	}
