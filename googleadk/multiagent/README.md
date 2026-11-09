@@ -15,7 +15,7 @@ workflow or a network round-trip — so the whole delegation is deterministic an
 replayable. Only the per-agent model calls and the `get_weather` tool cross the
 Activity boundary.
 
-Each agent is given a **distinct model name** (`gemini-2.0-flash-coordinator`,
+Each agent is given a **distinct model name** (`gemini-3.8-flash-coordinator`,
 `-weather`, `-jokes`) so tests can register and script a separate `FakeModel` per
 agent; in production all three names resolve to the same real Gemini model behind
 `googleadk.InvokeModel`.

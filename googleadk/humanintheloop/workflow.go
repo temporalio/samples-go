@@ -28,7 +28,7 @@ const (
 	TaskQueue = "google-adk-hitl"
 
 	// ModelName is the Gemini model name the agent ships in-workflow.
-	ModelName = "gemini-2.0-flash"
+	ModelName = "gemini-3.8-flash"
 
 	// DeleteToolName is the name of the sensitive function tool the model calls.
 	DeleteToolName = "delete_resource"
