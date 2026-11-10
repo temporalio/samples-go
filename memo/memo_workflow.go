@@ -119,12 +119,12 @@ func DescribeWorkflow(ctx context.Context, wfID string) (*workflowpb.WorkflowExe
 		return nil, err
 	}
 
-	resp, err := c.DescribeWorkflowExecution(ctx, wfID, "")
+	resp, err := c.DescribeWorkflow(ctx, wfID, "")
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.GetWorkflowExecutionInfo(), nil
+	return resp.RawResponse.GetWorkflowExecutionInfo(), nil
 }
 
 func getClientFromContext(ctx context.Context) (client.Client, error) {
