@@ -72,6 +72,10 @@ func (v validatedChildWorkflowFuture) GetChildWorkflowExecution() workflow.Futur
 }
 
 func (v validatedChildWorkflowFuture) SignalChildWorkflow(ctx workflow.Context, signalName string, data interface{}) workflow.Future {
+	return v.SignalChildWorkflowWithOptions(ctx, signalName, data, workflow.SignalChildWorkflowOptions{})
+}
+
+func (v validatedChildWorkflowFuture) SignalChildWorkflowWithOptions(ctx workflow.Context, signalName string, data interface{}, options workflow.SignalChildWorkflowOptions) workflow.Future {
 	f, s := workflow.NewFuture(ctx)
 	workflow.Go(ctx, func(ctx workflow.Context) {
 		// wait for validation
@@ -79,7 +83,7 @@ func (v validatedChildWorkflowFuture) SignalChildWorkflow(ctx workflow.Context, 
 		if err != nil {
 			s.SetError(err)
 		}
-		s.Chain(v.child.SignalChildWorkflow(ctx, signalName, data))
+		s.Chain(v.child.SignalChildWorkflowWithOptions(ctx, signalName, data, options))
 	})
 	return f
 }
