@@ -510,13 +510,13 @@ go.opentelemetry.io/proto/slim/otlp/profiles/v1development v0.0.1/go.mod h1:C7EH
 go.shabbyrobe.org/gocovmerge v0.0.0-20230507111327-fa4f82cfbf4d h1:Ns9kd1Rwzw7t0BR8XMphenji4SmIoNZPn8zhYmaVKP8=
 go.shabbyrobe.org/gocovmerge v0.0.0-20230507111327-fa4f82cfbf4d/go.mod h1:92Uoe3l++MlthCm+koNi0tcUCX3anayogF0Pa/sp24k=
 go.temporal.io/api v1.5.0/go.mod h1:BqKxEJJYdxb5dqf0ODfzfMxh8UEQ5L3zKS51FiIYYkA=
-go.temporal.io/api v1.63.5 h1:c11+kPYHkXXL3UiShPdbMD+xtvqGsbTibUA9ypmiCa4=
-go.temporal.io/api v1.63.5/go.mod h1:SrlW2JMwVlDP4nRWSNznUFqnSHd+YeMDS1BkYo63HCQ=
+go.temporal.io/api v1.64.3 h1:Q2oP9jVB5pSputb2j3BLAEjJsi8A2tSzMojqcSGyga0=
+go.temporal.io/api v1.64.3/go.mod h1:acM0I9WPuYg8W3Pd9jOZvEgi7mRUttUQ4+e7fowKVnM=
 go.temporal.io/googleadk v0.1.0 h1:ifTSSVDhsLLHe6BVESGSCY7nsZPsS3OPowF2ZtX54c4=
 go.temporal.io/googleadk v0.1.0/go.mod h1:QB5uj2PBqVRBcX7i4WjfvRlOQvAO/jkEYIkazE9ZLMI=
 go.temporal.io/sdk v1.12.0/go.mod h1:lSp3lH1lI0TyOsus0arnO3FYvjVXBZGi/G7DjnAnm6o=
-go.temporal.io/sdk v1.49.0 h1:CtGI0BUe/SCo3eoqTwuWWtXKueii9GBVus7KrKKH1Vo=
-go.temporal.io/sdk v1.49.0/go.mod h1:xP0FulN5JJSfisESUP60LlWsrKz2tLSStGjVdk8r5cc=
+go.temporal.io/sdk v1.51.0 h1:RsEghFfg91qWgNaecRgPrms9TA7iXskSzSQO2BwhJRs=
+go.temporal.io/sdk v1.51.0/go.mod h1:Gj2KwnQAlMhPRSX1RoqV3Zez8Y0U+6dCGxn1sg+j9kg=
 go.temporal.io/sdk/contrib/aws/lambdaworker v0.1.1 h1:AQBa7CN+EOWhZaf4vr46TfxTZM7yCsvrzAsKqrExxmQ=
 go.temporal.io/sdk/contrib/aws/lambdaworker v0.1.1/go.mod h1:Rgn/tlb4MDNAAjnXKNgHui4IY+MogMCk4Y4c2YA6Dcc=
 go.temporal.io/sdk/contrib/aws/lambdaworker/otel v0.1.1 h1:sMTtpD5jsb4FeJadYkoOOzb84oWYK2/g0keb3IRO6xY=
