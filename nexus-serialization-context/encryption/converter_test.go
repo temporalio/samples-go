@@ -119,6 +119,7 @@ func TestBoundConvertersKeepTheirContext(t *testing.T) {
 	base := encryption.NewEncryptedDataConverter()
 	first := converter.WithDataConverterSerializationContext(base, converter.NexusSerializationContext{Endpoint: service.Encrypted1Endpoint})
 	second := converter.WithDataConverterSerializationContext(base, converter.NexusSerializationContext{Endpoint: service.Encrypted2Endpoint})
+	workflow := converter.WithDataConverterSerializationContext(second, converter.WorkflowSerializationContext{Namespace: "handler", WorkflowID: "echo"})
 	// Use each converter after both bindings exist. Binding must also leave the base unchanged.
 	for _, tc := range []struct {
 		name, endpoint, key string
@@ -127,6 +128,7 @@ func TestBoundConvertersKeepTheirContext(t *testing.T) {
 		{"first", service.Encrypted1Endpoint, "handler-b-key-01", first},
 		{"second", service.Encrypted2Endpoint, "handler-b-key-02", second},
 		{"base", "", "handler-b-key-01", base},
+		{"rebound-workflow", "", "handler-b-key-01", workflow},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			payload, err := tc.dc.ToPayload("Hello from Nexus")
@@ -146,6 +148,7 @@ func TestEncryptionUsesFreshNonce(t *testing.T) {
 	require.NoError(t, err)
 	second, err := dc.ToPayload("same input")
 	require.NoError(t, err)
+	require.NotEqual(t, first.Data[:12], second.Data[:12])
 	require.NotEqual(t, first.Data, second.Data)
 }
 
