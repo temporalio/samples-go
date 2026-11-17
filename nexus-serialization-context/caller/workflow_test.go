@@ -15,7 +15,7 @@ import (
 	"github.com/temporalio/samples-go/nexus-serialization-context/service"
 )
 
-// This checks caller orchestration; native context propagation is verified separately against a server.
+// The test environment runs the caller and handlers without a server.
 func TestEncryptionWorkflow(t *testing.T) {
 	var suite testsuite.WorkflowTestSuite
 	env := suite.NewTestWorkflowEnvironment()

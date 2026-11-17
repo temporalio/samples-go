@@ -69,9 +69,8 @@ type nexusCodec struct {
 var _ converter.PayloadCodecWithSerializationContext = (*nexusCodec)(nil)
 
 func (c *nexusCodec) WithSerializationContext(ctx converter.SerializationContext) converter.PayloadCodec {
-	// Follow the SDK pattern: return a lightweight context-bound codec without
-	// mutating the shared instance. The assignment copies the struct pointed to by c;
-	// maps and underlying codecs are still shared and must remain read-only.
+	// Copy the struct so each call keeps its own endpoint.
+	// The map and configured codecs stay shared and read-only.
 	bound := *c
 	bound.endpoint = ""
 	if nexusCtx, ok := ctx.(converter.NexusSerializationContext); ok {
