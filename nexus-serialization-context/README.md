@@ -168,8 +168,7 @@ nexus-serialization-encrypted-1: sync="Hello from Nexus" async="Hello from Nexus
 nexus-serialization-encrypted-2: sync="Hello from Nexus" async="Hello from Nexus"
 ```
 
-All eight results should be `Hello from Nexus`. The starter exits when they are
-available; the workers and server keep running. If only `Started workflow` appears,
+All eight results should be `Hello from Nexus`. If only `Started workflow` appears,
 the caller is still waiting for results.
 
 The run creates five workflow executions: one caller and four async backing workflows.
