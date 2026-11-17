@@ -21,11 +21,15 @@ Nexus supplies the endpoint context used to select them. The context also identi
 service and operation, which a codec can use to select keys instead of, or along with,
 the endpoint.
 
-`nexusCodec` implements `converter.PayloadCodecWithSerializationContext`. Each worker
-configures it with an endpoint-to-codec map and a default codec for ordinary workflow
-payloads. The caller uses a separate key for its own input and
-final result, keeping those payloads independent of the keys shared with Nexus handlers.
-Each handler reuses its key 1 for backing workflow inputs.
+`nexusCodec` implements `converter.PayloadCodecWithSerializationContext`, using an
+endpoint-to-codec map and a default codec for ordinary workflow payloads. To use this
+pattern, wrap the codec with `converter.NewCodecDataConverter` and configure it through
+`client.Options.DataConverter` on the caller and handler clients. Both sides need
+matching keys and encodings for each endpoint.
+
+The caller uses a separate key for its own input and final result, keeping those
+payloads independent of the keys shared with Nexus handlers. Each handler reuses its
+key 1 for backing workflow inputs.
 
 | Ordinary workflow payload | Default key ID |
 |---|---|
@@ -37,34 +41,11 @@ These workflow payloads use AES-GCM without compression or endpoint metadata.
 An async Nexus result uses the key and compression chain selected by its endpoint,
 even when that differs from the backing workflow's input encryption.
 
-For synchronous operations, the SDK supplies Nexus context when decoding inputs and
-encoding results:
-
-```text
-Caller -- request encrypted with endpoint key --> Nexus endpoint --> Handler
-Caller <-- response encrypted with endpoint key -- Nexus endpoint <-- Handler
-```
-
-When an asynchronous handler starts `EchoWorkflow`, the SDK includes the Nexus endpoint,
-service, and operation in the workflow-start request. The server stores these fields in
-the `WorkflowExecutionStarted` history event. The worker SDK restores the Nexus context
-from that event when encoding the workflow's result, so `nexusCodec` can select the
-endpoint's codec and key from the worker's local configuration. The workflow's input
-still uses ordinary workflow context; the default codec encrypts it with that handler's
-key 1.
-
-```text
-Caller -- encrypted request --> Endpoint --> Handler
-                                               | decrypt with endpoint key
-                                               | encrypt workflow input with default key
-                                               v
-                                         EchoWorkflow
-                                               | worker decrypts input with default key
-                                               | runs echo logic
-                                               | encrypts result with endpoint key
-                                               v
-Caller <-- encrypted result -- Nexus completion
-```
+The SDK supplies Nexus context when encoding and decoding operation requests and
+results. For workflow-backed asynchronous operations, it preserves that context in
+workflow history and restores it when encoding the result. A call through endpoint 2
+can therefore return a result encrypted with key 2, as the caller expects, even though
+the backing workflow's input uses the handler's default key 1.
 
 The caller starts all eight operations before waiting for their results. Each operation
 keeps its own endpoint context, even when operations for different keys are in flight.
@@ -193,59 +174,6 @@ the caller is still waiting for results.
 
 The run creates five workflow executions: one caller and four async backing workflows.
 The four sync operations return directly from their handlers.
-
-## Inspect payloads
-
-To inspect the encryption metadata for a backing workflow's input and result, follow
-the async call through `nexus-serialization-compressed-encrypted-2`. These optional commands
-require [jq](https://jqlang.org/).
-
-Set `CALLER_WORKFLOW_ID` to the workflow ID printed by the starter. Find the async
-request in its history; the handler prefixes that request ID with `nexus-echo-` to
-form the backing workflow ID:
-
-```shell
-CALLER_WORKFLOW_ID='nexus-encryption-REPLACE-WITH-STARTER-ID'
-BACKING_WORKFLOW_ID=$(
-  ./temporal workflow show \
-    --namespace nexus-serialization-caller \
-    --workflow-id "$CALLER_WORKFLOW_ID" --output json |
-  jq -r '.events[].nexusOperationScheduledEventAttributes |
-    select(.endpoint == "nexus-serialization-compressed-encrypted-2" and .operation == "echo-async") |
-    "nexus-echo-" + .requestId'
-)
-```
-
-Inspect its start context and input/result metadata. JSON history represents metadata
-values as base64; this command decodes those labels:
-
-```shell
-./temporal workflow show \
-  --namespace nexus-serialization-compressed-encrypted-handler \
-  --workflow-id "$BACKING_WORKFLOW_ID" --output json |
-jq '.events[] |
-  if .workflowExecutionStartedEventAttributes then
-    .workflowExecutionStartedEventAttributes |
-    {context: .propagatedNexusSerializationContext,
-     inputMetadata: (.input.payloads[0].metadata | with_entries(.value |= @base64d))}
-  elif .workflowExecutionCompletedEventAttributes then
-    {resultMetadata: (.workflowExecutionCompletedEventAttributes.result.payloads[0].metadata |
-      with_entries(.value |= @base64d))}
-  else empty end'
-```
-
-The output should show:
-
-- `context` contains endpoint `nexus-serialization-compressed-encrypted-2`, service
-  `per-endpoint-encryption-service`, and operation `echo-async`.
-- `inputMetadata` has key ID `compressed-encrypted-1` and no endpoint label: the
-  backing workflow input uses the handler's ordinary workflow default.
-- `resultMetadata` has key ID `compressed-encrypted-2` and endpoint label
-  `nexus-serialization-compressed-encrypted-2`: the workflow result uses the propagated
-  Nexus context.
-
-Both payloads have encoding `binary/nexus-aes-gcm`. The compressed result's zlib metadata
-is inside the encrypted payload.
 
 ## Test
 
