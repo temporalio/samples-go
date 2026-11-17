@@ -6,7 +6,7 @@ import (
 	commonpb "go.temporal.io/api/common/v1"
 	"go.temporal.io/sdk/converter"
 
-	"github.com/temporalio/samples-go/nexus-per-endpoint-encryption/service"
+	"github.com/temporalio/samples-go/nexus-serialization-context/service"
 )
 
 // These are demonstration keys, not production secrets. Load real keys from a secure key store.
@@ -69,6 +69,9 @@ type nexusCodec struct {
 var _ converter.PayloadCodecWithSerializationContext = (*nexusCodec)(nil)
 
 func (c *nexusCodec) WithSerializationContext(ctx converter.SerializationContext) converter.PayloadCodec {
+	// Follow the SDK pattern: return a lightweight context-bound codec without
+	// mutating the shared instance. The assignment copies the struct pointed to by c;
+	// maps and underlying codecs are still shared and must remain read-only.
 	bound := *c
 	bound.endpoint = ""
 	if nexusCtx, ok := ctx.(converter.NexusSerializationContext); ok {

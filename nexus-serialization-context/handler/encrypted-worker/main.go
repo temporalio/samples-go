@@ -8,9 +8,9 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 
-	"github.com/temporalio/samples-go/nexus-per-endpoint-encryption/encryption"
-	"github.com/temporalio/samples-go/nexus-per-endpoint-encryption/handler"
-	"github.com/temporalio/samples-go/nexus-per-endpoint-encryption/service"
+	"github.com/temporalio/samples-go/nexus-serialization-context/encryption"
+	"github.com/temporalio/samples-go/nexus-serialization-context/handler"
+	"github.com/temporalio/samples-go/nexus-serialization-context/service"
 	"github.com/temporalio/samples-go/nexus/options"
 )
 

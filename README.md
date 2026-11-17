@@ -281,7 +281,7 @@ resource waiting for its successful completion
 
 - [**Nexus**](./nexus): Demonstrates how to use the Nexus APIs to facilitate cross namespace calls.
 
-- [**Nexus Per-Endpoint Encryption**](./nexus-per-endpoint-encryption): Select encryption keys and compression by endpoint for synchronous and workflow-backed asynchronous operations.
+- [**Nexus Serialization Context**](./nexus-serialization-context): Select encryption keys and compression by endpoint for synchronous and workflow-backed asynchronous operations.
 
 - [**Nexus Cancelation**](./nexus-cancelation): Demonstrates how to cancel a Nexus Operation from a caller Workflow.
 

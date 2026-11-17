@@ -3,7 +3,7 @@ package caller
 import (
 	"go.temporal.io/sdk/workflow"
 
-	"github.com/temporalio/samples-go/nexus-per-endpoint-encryption/service"
+	"github.com/temporalio/samples-go/nexus-serialization-context/service"
 )
 
 type operationPair struct{ sync, async workflow.NexusOperationFuture }

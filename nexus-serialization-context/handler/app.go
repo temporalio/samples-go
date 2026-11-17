@@ -9,7 +9,7 @@ import (
 	"go.temporal.io/sdk/temporalnexus"
 	"go.temporal.io/sdk/workflow"
 
-	"github.com/temporalio/samples-go/nexus-per-endpoint-encryption/service"
+	"github.com/temporalio/samples-go/nexus-serialization-context/service"
 )
 
 var SyncOperation = nexus.NewSyncOperation(service.SyncOperationName,

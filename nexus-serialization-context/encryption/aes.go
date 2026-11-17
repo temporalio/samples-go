@@ -44,6 +44,8 @@ func (c *aesGCMCodec) Encode(payloads []*commonpb.Payload) ([]*commonpb.Payload,
 		if err != nil {
 			return nil, err
 		}
+		// A nonce ("number used once") must not repeat for a given key.
+		// It is public and stored so the decoder can use it during decryption.
 		nonce := make([]byte, gcm.NonceSize())
 		if _, err := rand.Read(nonce); err != nil {
 			return nil, err
@@ -55,6 +57,8 @@ func (c *aesGCMCodec) Encode(payloads []*commonpb.Payload) ([]*commonpb.Payload,
 		if c.endpoint != "" {
 			metadata[MetadataEndpoint] = []byte(c.endpoint)
 		}
+		// Seal appends ciphertext and its authentication tag after the nonce prefix:
+		// [12-byte nonce][ciphertext][16-byte authentication tag].
 		result[i] = &commonpb.Payload{Metadata: metadata, Data: gcm.Seal(nonce, nonce, plaintext, []byte(c.endpoint))}
 	}
 	return result, nil
@@ -74,10 +78,13 @@ func (c *aesGCMCodec) Decode(payloads []*commonpb.Payload) ([]*commonpb.Payload,
 		if string(payload.Metadata[MetadataKeyID]) != c.keyID || string(payload.Metadata[MetadataEndpoint]) != c.endpoint {
 			return nil, fmt.Errorf("payload key or endpoint does not match codec for %q", c.keyID)
 		}
-		if len(payload.Data) < gcm.NonceSize() {
-			return nil, fmt.Errorf("encrypted payload is shorter than its nonce")
+		// Check the nonce prefix before slicing; Open validates the ciphertext and tag.
+		nonceSize := gcm.NonceSize()
+		if len(payload.Data) < nonceSize {
+			return nil, fmt.Errorf("encrypted payload is too short for its %d-byte nonce prefix", nonceSize)
 		}
-		plaintext, err := gcm.Open(nil, payload.Data[:gcm.NonceSize()], payload.Data[gcm.NonceSize():], []byte(c.endpoint))
+		nonce, ciphertext := payload.Data[:nonceSize], payload.Data[nonceSize:]
+		plaintext, err := gcm.Open(nil, nonce, ciphertext, []byte(c.endpoint))
 		if err != nil {
 			return nil, fmt.Errorf("decrypt payload with key %q: %w", c.keyID, err)
 		}
