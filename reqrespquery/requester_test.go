@@ -5,6 +5,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -52,4 +53,32 @@ func TestRequester(t *testing.T) {
 	res, err := req.RequestUppercase(context.Background(), "SoMe VaLuE")
 	require.NoError(t, err)
 	require.Equal(t, "SOME VALUE", res)
+}
+
+func TestRequesterTimeoutWithoutResponse(t *testing.T) {
+	c := &mocks.Client{}
+	// Queries succeed but never have a response yet
+	queryVal := &mocks.Value{}
+	queryVal.On("Get", mock.AnythingOfType("**reqrespquery.Response")).
+		Maybe().
+		Return(nil)
+	c.On("QueryWorkflow", mock.Anything, "some-workflow", "", "response", mock.AnythingOfType("string")).
+		Maybe().
+		Return(queryVal, nil)
+	c.On("SignalWorkflow", mock.Anything, "some-workflow", "", "request", mock.AnythingOfType("*reqrespquery.Request")).
+		Once().
+		Return(nil)
+
+	req, err := reqrespquery.NewRequester(reqrespquery.RequesterOptions{
+		Client:                c,
+		TargetWorkflowID:      "some-workflow",
+		ResponseQueryInterval: 10 * time.Millisecond,
+		ResponseTimeout:       50 * time.Millisecond,
+	})
+	require.NoError(t, err)
+
+	res, err := req.RequestUppercase(context.Background(), "some value")
+	require.Error(t, err)
+	require.ErrorIs(t, err, context.DeadlineExceeded)
+	require.Empty(t, res)
 }
