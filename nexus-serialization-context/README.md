@@ -20,8 +20,10 @@ Compression uses the SDK's zlib codec. Nexus supplies the endpoint context used 
 `nexusCodec` implements `converter.PayloadCodecWithSerializationContext` using an
 endpoint-to-codec map and a default codec for ordinary workflow payloads. To implement this
 pattern, wrap the codec with `converter.NewCodecDataConverter` and configure it through
-`client.Options.DataConverter` on the caller and handler clients. Both sides need
-matching keys and encodings for each endpoint.
+`client.Options.DataConverter` on the caller and handler clients.
+
+Because AES-GCM uses symmetric encryption, the caller and handler share a secret key
+for each endpoint. This sample uses that key for both requests and results.
 
 In this sample, the caller uses a separate key for its own input and final result, keeping those
 payloads independent of the keys shared with Nexus handlers. Each handler reuses its
@@ -50,7 +52,7 @@ No custom interceptor or workflow-header propagation is required.
 Note that a workflow execution produces one serialized result, shared by all Nexus operations
 attached to it. Operations that need differently encrypted results therefore need
 separate workflow executions. This sample starts a backing workflow for each async
-operation, using its Nexus request ID as the workflow ID suffix. As a result, retrying 
+operation, using its Nexus request ID as the workflow ID suffix. As a result, retrying
 the same request uses the same workflow ID.
 
 The outer encrypted payload includes `encoding`, `encryption-key-id`, and, for Nexus
