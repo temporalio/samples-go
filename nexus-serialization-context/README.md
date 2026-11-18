@@ -169,12 +169,6 @@ nexus-serialization-encrypted-2: sync="Hello from Nexus" async="Hello from Nexus
 All eight results should be `Hello from Nexus`. If only `Started workflow` appears,
 the caller is still waiting for results.
 
-To see what Temporal stored, open the printed workflow ID in the
-[Temporal UI](http://localhost:8233) under the `nexus-serialization-caller` namespace.
-In **History**, check **Input** on a **Nexus Operation Scheduled** event and **Result**
-on its **Nexus Operation Completed** event. The payload data is encrypted and shown in
-Base64. Look for `encryption-key-id` in the payload metadata to compare endpoints.
-
 The run creates five workflow executions: one caller and four async backing workflows.
 The four sync operations return directly from their handlers.
 
