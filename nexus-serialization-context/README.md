@@ -14,20 +14,16 @@ The caller and each handler run in separate namespaces.
 | Encrypted | `nexus-serialization-encrypted-1` | `encrypted-1` | AES-GCM |
 | Encrypted | `nexus-serialization-encrypted-2` | `encrypted-2` | AES-GCM |
 
-These four endpoint keys are distinct 128-bit AES keys. Compression runs before encryption;
-decoding decrypts before decompressing. AES-GCM authenticates the ciphertext.
-The AES-GCM codec is implemented in this sample; compression uses the SDK's zlib codec.
-Nexus supplies the endpoint context used to select them. The context also identifies the
-service and operation, which a codec can use to select keys instead of, or along with,
-the endpoint.
+These four endpoint keys are distinct 128-bit AES keys. The AES-GCM codec is implemented in this sample.
+Compression uses the SDK's zlib codec. Nexus supplies the endpoint context used to select them.
 
-`nexusCodec` implements `converter.PayloadCodecWithSerializationContext`, using an
-endpoint-to-codec map and a default codec for ordinary workflow payloads. To use this
+`nexusCodec` implements `converter.PayloadCodecWithSerializationContext` using an
+endpoint-to-codec map and a default codec for ordinary workflow payloads. To implement this
 pattern, wrap the codec with `converter.NewCodecDataConverter` and configure it through
 `client.Options.DataConverter` on the caller and handler clients. Both sides need
 matching keys and encodings for each endpoint.
 
-The caller uses a separate key for its own input and final result, keeping those
+In this sample, the caller uses a separate key for its own input and final result, keeping those
 payloads independent of the keys shared with Nexus handlers. Each handler reuses its
 key 1 for backing workflow inputs.
 
@@ -38,7 +34,7 @@ key 1 for backing workflow inputs.
 | Encrypted handler's backing workflow inputs | `encrypted-1` |
 
 These workflow payloads use AES-GCM without compression or endpoint metadata.
-An async Nexus result uses the key and compression chain selected by its endpoint,
+An async Nexus result will use the key and compression chain selected by its endpoint,
 even when that differs from the backing workflow's input encryption.
 
 The SDK supplies Nexus context when encoding and decoding operation requests and
@@ -51,11 +47,11 @@ The caller starts all eight operations before waiting for their results. Each op
 keeps its own endpoint context, even when operations for different keys are in flight.
 No custom interceptor or workflow-header propagation is required.
 
-A workflow execution produces one serialized result, shared by all Nexus operations
+Note that a workflow execution produces one serialized result, shared by all Nexus operations
 attached to it. Operations that need differently encrypted results therefore need
 separate workflow executions. This sample starts a backing workflow for each async
-operation, using its Nexus request ID as the workflow ID suffix. Retrying the same
-request uses the same workflow ID.
+operation, using its Nexus request ID as the workflow ID suffix. As a result, retrying 
+the same request uses the same workflow ID.
 
 The outer encrypted payload includes `encoding`, `encryption-key-id`, and, for Nexus
 payloads, `nexus-endpoint-name` metadata. For example:
@@ -69,8 +65,8 @@ nexus-endpoint-name: nexus-serialization-compressed-encrypted-1
 These labels identify the key and endpoint; they do not contain the key material.
 Ordinary workflow payloads have a key ID but no endpoint metadata or compression.
 
-The AES-GCM codec and hard-coded keys are for this example. Use an established encryption
-implementation and secure key storage for production.
+The AES-GCM codec and hard-coded keys are for this example. For production, use an established encryption
+implementation and secure key storage.
 
 ## Prerequisites
 
