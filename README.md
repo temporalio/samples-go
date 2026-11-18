@@ -281,6 +281,9 @@ resource waiting for its successful completion
 
 - [**Nexus**](./nexus): Demonstrates how to use the Nexus APIs to facilitate cross namespace calls.
 
+- [**Nexus Serialization Context**](./nexus-serialization-context): Demonstrates how to select encryption keys and
+  compression by endpoint for synchronous and workflow-backed asynchronous Nexus operations.
+
 - [**Nexus Cancelation**](./nexus-cancelation): Demonstrates how to cancel a Nexus Operation from a caller Workflow.
 
 - [**Nexus Context Propagation**](./nexus-context-propagation): Demonstrates how to propagate context through client 
