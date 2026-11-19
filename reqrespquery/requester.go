@@ -81,11 +81,16 @@ func (r *Requester) RequestUppercase(ctx context.Context, str string) (string, e
 		// Wait for interval or timeout
 		select {
 		case <-pollCtx.Done():
-			// If we timed out and not the original context, show last error
-			if ctx.Err() == nil && err != nil {
+			// If the original context ended, report that
+			if ctx.Err() != nil {
+				return "", ctx.Err()
+			}
+			// Otherwise we timed out waiting for the response. Show the last error
+			// if there was one.
+			if err != nil {
 				return "", fmt.Errorf("timeout, last error: %w", err)
 			}
-			return "", ctx.Err()
+			return "", fmt.Errorf("timeout waiting for response: %w", pollCtx.Err())
 		case <-t.C:
 		}
 	}
