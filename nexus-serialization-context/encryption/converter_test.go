@@ -19,6 +19,8 @@ func TestEndpointRoundTrips(t *testing.T) {
 	caller := encryption.NewCallerDataConverter()
 	compressed := encryption.NewCompressedEncryptedDataConverter()
 	encrypted := encryption.NewEncryptedDataConverter()
+	plain, err := converter.GetDefaultDataConverter().ToPayload("plain")
+	require.NoError(t, err)
 	for _, tc := range []struct {
 		endpoint, keyID, key string
 		handler              converter.DataConverter
@@ -48,6 +50,8 @@ func TestEndpointRoundTrips(t *testing.T) {
 					var message string
 					require.NoError(t, direction.decode.FromPayload(payload, &message))
 					require.Equal(t, "Hello from Nexus", message)
+					require.NoError(t, direction.decode.FromPayload(plain, &message))
+					require.Equal(t, "plain", message)
 				})
 			}
 		})

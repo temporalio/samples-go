@@ -59,7 +59,7 @@ func newDataConverter(endpoints map[string]converter.PayloadCodec, workflowCodec
 	})
 }
 
-// Bound copies share read-only configuration; concurrent operations never change each other's endpoint.
+// Bound copies share read-only configuration. Each operation keeps its own endpoint.
 type nexusCodec struct {
 	endpoints     map[string]converter.PayloadCodec
 	workflowCodec converter.PayloadCodec

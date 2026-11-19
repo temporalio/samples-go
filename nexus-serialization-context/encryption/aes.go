@@ -78,7 +78,7 @@ func (c *aesGCMCodec) Decode(payloads []*commonpb.Payload) ([]*commonpb.Payload,
 		if string(payload.Metadata[MetadataKeyID]) != c.keyID || string(payload.Metadata[MetadataEndpoint]) != c.endpoint {
 			return nil, fmt.Errorf("payload key or endpoint does not match codec for %q", c.keyID)
 		}
-		// Check the nonce prefix before slicing; Open validates the ciphertext and tag.
+		// Check the nonce prefix before slicing. Open validates the ciphertext and tag.
 		nonceSize := gcm.NonceSize()
 		if len(payload.Data) < nonceSize {
 			return nil, fmt.Errorf("encrypted payload is too short for its %d-byte nonce prefix", nonceSize)

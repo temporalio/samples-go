@@ -19,7 +19,7 @@ var SyncOperation = nexus.NewSyncOperation(service.SyncOperationName,
 
 var AsyncOperation = temporalnexus.NewWorkflowRunOperation(service.AsyncOperationName, EchoWorkflow,
 	func(_ context.Context, _ service.EchoInput, options nexus.StartOperationOptions) (client.StartWorkflowOptions, error) {
-		// The same Nexus request retries with the same ID; independent operations get separate workflows.
+		// Retries reuse the Nexus request ID. Independent operations get separate workflows.
 		if options.RequestID == "" {
 			return client.StartWorkflowOptions{}, fmt.Errorf("missing Nexus request ID")
 		}
