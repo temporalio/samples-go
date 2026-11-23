@@ -12,6 +12,7 @@ import (
 	"go.temporal.io/sdk/testsuite"
 
 	"google.golang.org/adk/v2/model"
+	"google.golang.org/genai"
 
 	"go.temporal.io/googleadk"
 
@@ -98,4 +99,47 @@ func TestApprovalWorkflowDenied(t *testing.T) {
 	var res humanintheloop.Result
 	require.NoError(t, env.GetWorkflowResult(&res))
 	assert.False(t, res.Approved, "the workflow must record the human's denial")
+}
+
+// TestApprovalWorkflowTwoConfirmations proves the workflow keeps pending
+// confirmations across passes: the model asks for two deletes in one response,
+// and ADK emits each confirmation request only once. The workflow must wait for
+// both decisions before it finishes.
+func TestApprovalWorkflowTwoConfirmations(t *testing.T) {
+	var s testsuite.WorkflowTestSuite
+	env := s.NewTestWorkflowEnvironment()
+
+	env.RegisterWorkflow(humanintheloop.ApprovalWorkflow)
+
+	twoDeletes := googleadk.FunctionCallResponse("call-1", humanintheloop.DeleteToolName, map[string]any{"resource": "prod-db"})
+	twoDeletes.Content.Parts = append(twoDeletes.Content.Parts, &genai.Part{
+		FunctionCall: &genai.FunctionCall{ID: "call-2", Name: humanintheloop.DeleteToolName, Args: map[string]any{"resource": "staging-db"}},
+	})
+	acts, err := googleadk.NewActivities(googleadk.Config{
+		Models: map[string]googleadk.ModelFactory{
+			humanintheloop.ModelName: scriptedModelFactory(
+				twoDeletes,
+				googleadk.TextResponse("Deleted prod-db. Waiting on staging-db."),
+				googleadk.TextResponse("Deleted staging-db."),
+			),
+		},
+	})
+	require.NoError(t, err)
+	env.RegisterActivityWithOptions(acts.InvokeModel, activity.RegisterOptions{Name: googleadk.InvokeModelActivityName})
+
+	for _, delay := range []time.Duration{time.Second, 2 * time.Second} {
+		env.RegisterDelayedCallback(func() {
+			env.SignalWorkflow(googleadk.ConfirmationSignalName, googleadk.ConfirmationDecision{Confirmed: true})
+		}, delay)
+	}
+
+	env.ExecuteWorkflow(humanintheloop.ApprovalWorkflow, "Please delete prod-db and staging-db.")
+
+	require.True(t, env.IsWorkflowCompleted())
+	require.NoError(t, env.GetWorkflowError())
+
+	var res humanintheloop.Result
+	require.NoError(t, env.GetWorkflowResult(&res))
+	assert.True(t, res.Approved)
+	assert.Equal(t, "Deleted staging-db.", res.Answer)
 }
