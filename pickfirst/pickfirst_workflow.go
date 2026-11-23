@@ -18,6 +18,7 @@ import (
 func SamplePickFirstWorkflow(ctx workflow.Context) (string, error) {
 	selector := workflow.NewSelector(ctx)
 	var firstResponse string
+	var firstErr error
 
 	// Use one cancel handler to cancel all of them. Cancelling on parent handler will close all the child ones
 	// as well.
@@ -40,9 +41,9 @@ func SamplePickFirstWorkflow(ctx workflow.Context) (string, error) {
 	f2 := workflow.ExecuteActivity(childCtx, SampleActivity, 1, 1*time.Second)
 	pendingFutures := []workflow.Future{f1, f2}
 	selector.AddFuture(f1, func(f workflow.Future) {
-		_ = f.Get(ctx, &firstResponse)
+		firstErr = f.Get(ctx, &firstResponse)
 	}).AddFuture(f2, func(f workflow.Future) {
-		_ = f.Get(ctx, &firstResponse)
+		firstErr = f.Get(ctx, &firstResponse)
 	})
 
 	// wait for any of the future to complete
@@ -57,6 +58,10 @@ func SamplePickFirstWorkflow(ctx workflow.Context) (string, error) {
 	// set WaitForCancellation to false through WithWaitForCancellation(false)
 	for _, f := range pendingFutures {
 		_ = f.Get(ctx, nil)
+	}
+	if firstErr != nil {
+		// The first branch to finish failed, so fail the workflow instead of reporting success.
+		return "", firstErr
 	}
 	workflow.GetLogger(ctx).Info("Workflow completed.")
 	return firstResponse, nil

@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/converter"
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/testsuite"
 	"go.temporal.io/sdk/worker"
 )
@@ -59,6 +60,22 @@ func (s *UnitTestSuite) Test_WorkflowBranchOne() {
 	s.NoError(env.GetWorkflowResult(&result))
 	s.Equal("Branch 1 done in 1s.", result)
 	env.AssertExpectations(s.T())
+}
+
+func (s *UnitTestSuite) Test_WorkflowFirstBranchFails() {
+	env := s.NewTestWorkflowEnvironment()
+	env.RegisterActivity(SampleActivity)
+	// Branch 1 fails first with a non-retryable error while branch 0 is still running.
+	env.OnActivity(SampleActivity, mock.Anything, 0, mock.Anything).After(5*time.Second).Return("Branch 0 done in 5s.", nil)
+	env.OnActivity(SampleActivity, mock.Anything, 1, mock.Anything).After(1*time.Second).
+		Return("", temporal.NewNonRetryableApplicationError("branch 1 failed", "BranchFailed", nil))
+	env.ExecuteWorkflow(SamplePickFirstWorkflow)
+
+	s.True(env.IsWorkflowCompleted())
+	// The first branch to finish failed, so the workflow must fail rather than return an empty result.
+	err := env.GetWorkflowError()
+	s.Error(err)
+	s.ErrorContains(err, "branch 1 failed")
 }
 
 func (s *UnitTestSuite) Test_CancelActivity() {
