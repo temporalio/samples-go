@@ -14,6 +14,9 @@ decls:
   "go.temporal.io/googleadk.ExportSession": false
   "go.temporal.io/googleadk.PendingConfirmations": false
   "google.golang.org/adk/v2/tool/functiontool.New": false
+  # googleadk.NewContext calls it to warn about HTTP sent from Workflow code.
+  # It only adds a hook to the context, but uses reflection to do it.
+  "net/http/httptrace.WithClientTrace": false
   # The SDK's Workflow tracer enforces a replay-safe provider. OpenTelemetry
   # 1.45 attribute normalization uses reflection that the checker cannot prove safe.
   "go.temporal.io/sdk/contrib/opentelemetry-v2.Tracer": false

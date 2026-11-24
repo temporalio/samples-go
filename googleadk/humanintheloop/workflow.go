@@ -10,6 +10,8 @@
 package humanintheloop
 
 import (
+	"slices"
+
 	"go.temporal.io/sdk/workflow"
 
 	"google.golang.org/adk/v2/agent"
@@ -32,6 +34,9 @@ const (
 
 	// DeleteToolName is the name of the sensitive function tool the model calls.
 	DeleteToolName = "delete_resource"
+
+	// PendingConfirmationsQuery returns the requests still awaiting a decision.
+	PendingConfirmationsQuery = "pending-confirmations"
 )
 
 // DeleteArgs is the argument schema the model fills in for the delete tool.
@@ -41,7 +46,7 @@ type DeleteArgs struct {
 
 // Result is the serializable output of ApprovalWorkflow.
 type Result struct {
-	// Approved reports the human's decision.
+	// Approved is true when at least one decision was received and all were approvals.
 	Approved bool
 	// Answer is the agent's final text after the decision was applied.
 	Answer string
@@ -71,8 +76,8 @@ func deleteResource(tctx agent.Context, args DeleteArgs) (map[string]any, error)
 // ApprovalWorkflow runs the agent and, when the sensitive tool pauses awaiting a
 // human decision, durably blocks on a Temporal signal named
 // googleadk.ConfirmationSignalName carrying a googleadk.ConfirmationDecision. Once
-// the decision arrives it resumes the agent with googleadk.ConfirmationResponse,
-// so the tool runs (or is blocked) according to the human's choice.
+// all pending requests have decisions, it resumes the agent with
+// googleadk.ConfirmationResponse, so each tool runs (or is blocked) as decided.
 // @@@SNIPSTART googleadk-hitl-workflow
 func ApprovalWorkflow(ctx workflow.Context, request string) (Result, error) {
 	delTool, err := functiontool.New[DeleteArgs, map[string]any](
@@ -111,8 +116,16 @@ func ApprovalWorkflow(ctx workflow.Context, request string) (Result, error) {
 	msg := genai.NewContentFromText(request, genai.RoleUser)
 
 	var res Result
-	// Drive the run in passes: each Run call is one pass over the same session. A
-	// pass either completes (no pending confirmation) or pauses awaiting a human.
+	var waiting []googleadk.PendingConfirmation
+	if err := workflow.SetQueryHandler(ctx, PendingConfirmationsQuery, func() ([]googleadk.PendingConfirmation, error) {
+		return waiting, nil
+	}); err != nil {
+		return Result{}, err
+	}
+	var denied bool
+	decisions := workflow.GetSignalChannel(ctx, googleadk.ConfirmationSignalName)
+	// Run each pass over the same session, then answer all its confirmations
+	// before letting the model take another step.
 	for {
 		var events []*session.Event
 		for ev, err := range r.Run(adkCtx, "user-1", "session-1", msg, agent.RunConfig{}) {
@@ -132,32 +145,44 @@ func ApprovalWorkflow(ctx workflow.Context, request string) (Result, error) {
 			}
 		}
 
-		pending := googleadk.PendingConfirmations(events)
-		if len(pending) == 0 {
+		waiting = googleadk.PendingConfirmations(events)
+		if len(waiting) == 0 {
 			// The agent finished without (further) confirmations needed.
 			return res, nil
 		}
 
-		// The agent paused. Durably wait for the human's decision to arrive as a
-		// Temporal signal. This is the whole point: the workflow can sit here for
-		// as long as it takes — across worker restarts — without losing state.
+		// Durably wait for a decision on every pending confirmation. The workflow
+		// can wait across worker restarts without losing requests or decisions.
 		//
-		// This handles one pending confirmation per pass — the recommended
-		// pattern (see the googleadk.ConfirmationResponse docs): resuming
-		// several decisions at once can re-dispatch the approved tool calls in
-		// an order that is not replay-stable. Any other pending confirmations
-		// simply surface again on the next pass.
-		var decision googleadk.ConfirmationDecision
-		workflow.GetSignalChannel(ctx, googleadk.ConfirmationSignalName).Receive(ctx, &decision)
-		res.Approved = decision.Confirmed
-
-		// Match the decision to the pending confirmation and resume the run with
-		// it as the next message. ADK re-dispatches (or blocks) the original tool
-		// call based on Confirmed.
-		if decision.FunctionCallID == "" {
-			decision.FunctionCallID = pending[0].FunctionCallID
+		// Omit FunctionCallID only when one request remains. Query
+		// PendingConfirmationsQuery for the IDs, tool arguments, and hints.
+		var batch []googleadk.ConfirmationDecision
+		for len(waiting) > 0 {
+			var decision googleadk.ConfirmationDecision
+			decisions.Receive(ctx, &decision)
+			if decision.FunctionCallID == "" {
+				if len(waiting) != 1 {
+					workflow.GetLogger(ctx).Warn("Ignoring confirmation without an ID: several requests are pending")
+					continue
+				}
+				decision.FunctionCallID = waiting[0].FunctionCallID
+			}
+			i := slices.IndexFunc(waiting, func(p googleadk.PendingConfirmation) bool {
+				return p.FunctionCallID == decision.FunctionCallID
+			})
+			if i < 0 {
+				workflow.GetLogger(ctx).Warn("Ignoring confirmation for an unknown or already decided request", "FunctionCallID", decision.FunctionCallID)
+				continue
+			}
+			waiting = slices.Delete(waiting, i, i+1)
+			batch = append(batch, decision)
+			denied = denied || !decision.Confirmed
+			res.Approved = !denied
 		}
-		msg = googleadk.ConfirmationResponse(decision)
+
+		// Resume once with all decisions. ADK executes or blocks each original
+		// tool call before the model takes another step.
+		msg = googleadk.ConfirmationResponse(batch...)
 	}
 }
 
