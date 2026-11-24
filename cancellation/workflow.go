@@ -47,3 +47,5 @@ func YourWorkflow(ctx workflow.Context) error {
 	logger.Info("Workflow Execution complete.")
 	return nil
 }
+
+// @@@SNIPEND
