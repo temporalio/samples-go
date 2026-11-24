@@ -14,10 +14,9 @@ How it works:
    **durably blocks on a Temporal signal** (`googleadk.ConfirmationSignalName`,
    read with `workflow.GetSignalChannel`) carrying a
    `googleadk.ConfirmationDecision`.
-3. When the decision arrives, the workflow resumes the run with
-   `googleadk.ConfirmationResponse(decision)`. ADK re-dispatches the original
-   tool call, which now sees a confirmation and performs the delete (or is blocked
-   if denied).
+3. Once every pending request has a decision, the workflow resumes the run with
+   `googleadk.ConfirmationResponse(decisions...)`. ADK re-dispatches the approved
+   tool calls and blocks those that were denied before the model takes another step.
 
 **This is the differentiator: the wait for the human is durable.** The workflow
 can sit blocked for minutes or days and survive worker restarts — no state is lost.
@@ -31,11 +30,14 @@ When the approval signal finally arrives, the agent resumes exactly where it pau
   runs worker-side under Temporal's retry/timeout policy. The confirmation gate is
   identical either way: the tool still calls `ctx.RequestConfirmation(...)` before
   doing the work.
-- **The workflow keeps pending confirmations across passes.** ADK emits each
-  confirmation request once, so when the model asks for several deletes, the
-  workflow resumes after each decision and keeps waiting for the others. A
-  decision without a `FunctionCallID` answers the oldest pending confirmation,
-  and one that names no pending confirmation is dropped.
+- **The workflow waits for all pending decisions before resuming.** ADK emits
+  each confirmation request once, so the workflow keeps them until every request
+  has a decision. Query `pending-confirmations` to see each request's
+  `FunctionCallID`, tool arguments, and hint. A decision may omit `FunctionCallID`
+  only when one request remains. Ambiguous, unknown, or duplicate decisions are
+  dropped with a warning.
+- **`Result.Approved` is true only when at least one decision was received and
+  every decision was an approval.** A later approval does not hide an earlier denial.
 
 ### Prerequisites
 
