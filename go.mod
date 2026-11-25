@@ -13,7 +13,7 @@ require (
 	github.com/golang/snappy v0.0.4
 	github.com/google/uuid v1.6.0
 	github.com/johannesboyne/gofakes3 v0.0.0-20260208201424-4c385a1f6a73
-	github.com/nexus-rpc/sdk-go v0.7.0
+	github.com/nexus-rpc/sdk-go v0.8.0
 	github.com/openai/openai-go v1.12.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pborman/uuid v1.2.1
@@ -29,7 +29,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.45.0
 	go.temporal.io/api v1.64.3
 	go.temporal.io/googleadk v0.1.0
-	go.temporal.io/sdk v1.51.0
+	go.temporal.io/sdk v1.52.0
 	go.temporal.io/sdk/contrib/aws/lambdaworker v0.1.1
 	go.temporal.io/sdk/contrib/aws/lambdaworker/otel v0.1.1
 	go.temporal.io/sdk/contrib/aws/s3driver v0.2.0
