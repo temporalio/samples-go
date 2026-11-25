@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/testsuite"
 )
 
@@ -56,4 +57,19 @@ func (s *UnitTestSuite) Test_Workflow_SlowProcessing() {
 
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())
+}
+
+func (s *UnitTestSuite) Test_Workflow_ProcessingFailure() {
+	env := s.NewTestWorkflowEnvironment()
+	processingErr := temporal.NewNonRetryableApplicationError("order processing failed", "OrderProcessingFailure", nil)
+	env.OnActivity(OrderProcessingActivity, mock.Anything).Return(processingErr).Once()
+
+	env.ExecuteWorkflow(SampleTimerWorkflow, time.Minute)
+
+	s.True(env.IsWorkflowCompleted())
+	var applicationErr *temporal.ApplicationError
+	s.Require().ErrorAs(env.GetWorkflowError(), &applicationErr)
+	s.Equal("OrderProcessingFailure", applicationErr.Type())
+	s.Equal("order processing failed", applicationErr.Message())
+	env.AssertExpectations(s.T())
 }
