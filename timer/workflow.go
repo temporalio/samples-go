@@ -24,9 +24,11 @@ func SampleTimerWorkflow(ctx workflow.Context, processingTimeThreshold time.Dura
 	// but we won't cancel the operation. If the operation finishes before the timer fires, then we want to cancel the timer.
 
 	var processingDone bool
+	var processingErr error
 	f := workflow.ExecuteActivity(ctx, OrderProcessingActivity)
 	selector.AddFuture(f, func(f workflow.Future) {
 		processingDone = true
+		processingErr = f.Get(ctx, nil)
 		// cancel timerFuture
 		cancelHandler()
 	})
@@ -48,6 +50,10 @@ func SampleTimerWorkflow(ctx workflow.Context, processingTimeThreshold time.Dura
 		// processing not done yet, so the handler for timer will send out notification email.
 		// we still want the order processing to finish, so wait on it.
 		selector.Select(ctx)
+	}
+
+	if processingErr != nil {
+		return processingErr
 	}
 
 	workflow.GetLogger(ctx).Info("Workflow completed.")
