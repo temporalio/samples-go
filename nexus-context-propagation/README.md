@@ -39,6 +39,8 @@ go run ./starter \
 
 which should result in:
 ```
-2025/02/27 12:57:40 Started workflow WorkflowID nexus_hello_caller_workflow_20240723195740 RunID c9789128-2fcd-4083-829d-95e43279f6d7
-2025/02/27 12:57:40 Workflow result: ¡Hola! Nexus, caller-id: samples-go 👋
+2025/02/28 14:54:29 Started workflow WorkflowID nexus_hello_caller_workflow_20250228145225 RunID 01954ec2-d1d2-72b7-a6cc-a83de5421754
+2025/02/28 14:54:30 Workflow result: Nexus Echo 👋, caller-id: samples-go
+2025/02/28 14:54:30 Started workflow WorkflowID nexus_hello_caller_workflow_20250228145430 RunID 01954ec4-bc4d-7dac-a311-d4ceacacfa9a
+2025/02/28 14:54:31 Workflow result: ¡Hola! Nexus, caller-id: samples-go 👋
 ```
